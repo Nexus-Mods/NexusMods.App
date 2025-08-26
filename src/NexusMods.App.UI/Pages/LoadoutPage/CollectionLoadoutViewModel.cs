@@ -16,6 +16,7 @@ using NexusMods.Abstractions.Jobs;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Pages.CollectionDownload;
+using NexusMods.CrossPlatform.Process;
 using NexusMods.MnemonicDB.Abstractions.Query;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Paths;
@@ -190,28 +191,26 @@ public class CollectionLoadoutViewModel : APageViewModel<ICollectionLoadoutViewM
                     .AddTo(disposables);
             }
 
-            Adapter.MessageSubject.SubscribeAwait(async (message, _) =>
+            Adapter.MessageSubject.SubscribeAwait(async (message, cancellationToken) =>
             {
-                // Toggle item state
-                if (message.IsT0){
-                    await LoadoutViewModel.ToggleItemEnabledState(message.AsT0.Ids, connection);
-                    return;
-                }
-
-                // Open collection
-                if (message.IsT1)
-                {
-                    var data = message.AsT1;
-                    LoadoutViewModel.OpenItemCollectionPage(
-                        data.Ids,
-                        data.NavigationInformation,
-                        pageContext.LoadoutId,
-                        GetWorkspaceController(),
-                        connection
-                    );
-                    return;
-                }
-                
+                await message.Match<Task>(
+                    toggleEnableStateMessage => 
+                        LoadoutViewModel.ToggleItemEnabledState(toggleEnableStateMessage.Ids, connection),
+                    openCollectionMessage =>
+                    {
+                        LoadoutViewModel.OpenItemCollectionPage(openCollectionMessage.Ids, 
+                            openCollectionMessage.NavigationInformation, 
+                            pageContext.LoadoutId, GetWorkspaceController(), connection);
+                        return Task.CompletedTask;
+                    },
+                    viewModPageMessage =>
+                    {
+                        LoadoutViewModel.OpenModPageFor(viewModPageMessage.Ids, connection,  
+                            serviceProvider.GetRequiredService<IOSInterop>(),
+                            cancellationToken);
+                        return Task.CompletedTask;
+                    }
+                );
             }, awaitOperation: AwaitOperation.Parallel, configureAwait: false).AddTo(disposables);
         });
     }

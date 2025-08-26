@@ -566,7 +566,9 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                             },
                             viewModPageMessage =>
                             {
-                                OpenModPageFor(viewModPageMessage.Ids, cancellationToken);
+                                OpenModPageFor(viewModPageMessage.Ids, _connection, 
+                                    _serviceProvider.GetRequiredService<IOSInterop>(), 
+                                    cancellationToken);
                                 return Task.CompletedTask;
                             }
                         );
@@ -641,20 +643,19 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
         );
     }
 
-    private void OpenModPageFor(LoadoutItemId[] ids, CancellationToken cancellationToken)
+    internal static void OpenModPageFor(LoadoutItemId[] ids, IConnection connection, IOSInterop os, CancellationToken cancellationToken)
     {
         if (ids.Length == 0) return;
         var loadoutItemId = ids.First();
         
-        LibraryLinkedLoadoutItem.TryGet(_connection.Db, loadoutItemId.Value, out var linkedItem);
+        LibraryLinkedLoadoutItem.TryGet(connection.Db, loadoutItemId.Value, out var linkedItem);
         if (linkedItem is null) return;
         var libraryItem = linkedItem.Value.LibraryItemId;
-        NexusModsLibraryItem.TryGet(_connection.Db, libraryItem.Value, out var nexusModsLibraryItem);
+        NexusModsLibraryItem.TryGet(connection.Db, libraryItem.Value, out var nexusModsLibraryItem);
         if (nexusModsLibraryItem is null) return;
         var modPage = nexusModsLibraryItem.Value.ModPageMetadata;
         
         var url = NexusModsUrlBuilder.GetModUri(modPage.GameDomain, modPage.Uid.ModId);
-        var os = _serviceProvider.GetRequiredService<IOSInterop>();
         
         os.OpenUrl(url, cancellationToken: cancellationToken);
     }
