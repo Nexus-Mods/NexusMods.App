@@ -135,8 +135,8 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
                     .QueryWhenChanged(jobs =>
                         {
                             if (jobs.Items.FirstOrDefault()?.Definition is SynchronizeLoadoutJob sJob && sJob.LoadoutId == loadoutId)
-                                return sJob.StatusMessage.AsSystemObservable();;
-                            return new BindableReactiveProperty<string>(value: "NONE").AsSystemObservable();
+                                return sJob.StatusMessage.AsSystemObservable();
+                            return new BindableReactiveProperty<string>(value: "").AsSystemObservable();
                         }
                     ).Switch()
                     .OnUI()
