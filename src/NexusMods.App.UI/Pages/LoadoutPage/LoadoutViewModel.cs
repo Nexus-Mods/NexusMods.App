@@ -12,6 +12,7 @@ using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Extensions;
+using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.Types;
@@ -551,23 +552,24 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
             {
                 Adapter.Activate().AddTo(disposables);
 
-                Adapter.MessageSubject.SubscribeAwait(async (message, _) =>
+                Adapter.MessageSubject.SubscribeAwait(async (message, cancellationToken) =>
                     {
-                        // Toggle item state
-                        if (message.IsT0)
-                        {
-                            await ToggleItemEnabledState(message.AsT0.Ids, _connection);
-                            return;
-                        }
-
-                        // Open collection
-                        if (message.IsT1)
-                        {
-                            var data = message.AsT1;
-                            OpenItemCollectionPage(data.Ids, data.NavigationInformation, loadoutId,
-                                GetWorkspaceController(), _connection
-                            );
-                        }
+                        await message.Match<Task>(
+                            toggleEnableStateMessage => 
+                                ToggleItemEnabledState(toggleEnableStateMessage.Ids, _connection),
+                            openCollectionMessage =>
+                            {
+                                OpenItemCollectionPage(openCollectionMessage.Ids, 
+                                    openCollectionMessage.NavigationInformation, 
+                                    loadoutId, GetWorkspaceController(), _connection);
+                                return Task.CompletedTask;
+                            },
+                            viewModPageMessage =>
+                            {
+                                OpenModPageFor(viewModPageMessage.Ids, cancellationToken);
+                                return Task.CompletedTask;
+                            }
+                        );
                     }, awaitOperation: AwaitOperation.Parallel, configureAwait: false
                 ).AddTo(disposables);
 
@@ -637,6 +639,24 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                     .DisposeWith(disposables);
             }
         );
+    }
+
+    private void OpenModPageFor(LoadoutItemId[] ids, CancellationToken cancellationToken)
+    {
+        if (ids.Length == 0) return;
+        var loadoutItemId = ids.First();
+        
+        LibraryLinkedLoadoutItem.TryGet(_connection.Db, loadoutItemId.Value, out var linkedItem);
+        if (linkedItem is null) return;
+        var libraryItem = linkedItem.Value.LibraryItemId;
+        NexusModsLibraryItem.TryGet(_connection.Db, libraryItem.Value, out var nexusModsLibraryItem);
+        if (nexusModsLibraryItem is null) return;
+        var modPage = nexusModsLibraryItem.Value.ModPageMetadata;
+        
+        var url = NexusModsUrlBuilder.GetModUri(modPage.GameDomain, modPage.Uid.ModId);
+        var os = _serviceProvider.GetRequiredService<IOSInterop>();
+        
+        os.OpenUrl(url, cancellationToken: cancellationToken);
     }
 
     private Uri GetCollectionChangelogUri(CollectionMetadata.ReadOnly collection)

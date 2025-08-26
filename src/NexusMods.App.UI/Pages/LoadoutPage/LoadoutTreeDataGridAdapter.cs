@@ -15,7 +15,7 @@ namespace NexusMods.App.UI.Pages.LoadoutPage;
 public readonly record struct ToggleEnableStateMessage(LoadoutItemId[] Ids);
 
 public readonly record struct OpenCollectionMessage(LoadoutItemId[] Ids, NavigationInformation NavigationInformation);
-public readonly record struct ViewModPageMessage(NexusModsModPageMetadataId ModPageMetadataId);
+public readonly record struct ViewModPageMessage(LoadoutItemId[] Ids);
 
 public class LoadoutTreeDataGridAdapter :
     TreeDataGridAdapter<CompositeItemModel<EntityId>, EntityId>,
@@ -101,9 +101,9 @@ public class LoadoutTreeDataGridAdapter :
             factory: static (self, itemModel, component) => component.CommandViewModPage.Subscribe((self, itemModel, component), static (_, state) =>
             {
                 var (self, model, _) = state;
-                var entityId = model.Key;
+                var ids = GetLoadoutItemIds(model).ToArray();
 
-                self.MessageSubject.OnNext(new ViewModPageMessage(GetModPageId(self._connection.Db, model)));
+                self.MessageSubject.OnNext(new ViewModPageMessage(ids));
             })
         );
     }
