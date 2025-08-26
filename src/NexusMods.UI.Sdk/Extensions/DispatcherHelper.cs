@@ -58,4 +58,15 @@ public static class DispatcherHelper
         
         return Dispatcher.UIThread.InvokeAsync(func);
     }
+    
+    public static void EnsureOnUIThread(Action action)
+    {
+        if (Dispatcher.UIThread.CheckAccess())
+        {
+            action();
+            return;
+        }
+        
+        Dispatcher.UIThread.Invoke(action);
+    }
 }
