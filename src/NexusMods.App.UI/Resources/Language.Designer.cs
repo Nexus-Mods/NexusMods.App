@@ -3039,7 +3039,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Applied {0} successfully.
+        ///   Looks up a localized string similar to Loadout applied successfully.
         /// </summary>
         public static string ToastNotification_Applied__0__successfully {
             get {
@@ -3048,7 +3048,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Collection Add failed: {0} is not a managed game.
+        ///   Looks up a localized string similar to Collection add failed: app isn&apos;t managing {0}.
         /// </summary>
         public static string ToastNotification_Collection_Add_failed___0__is_not_a_managed_game {
             get {
@@ -3057,7 +3057,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Collection Add failed: An unknown error occurred.
+        ///   Looks up a localized string similar to Failed to add Collection.
         /// </summary>
         public static string ToastNotification_Collection_Add_failed__An_unknown_error_occurred {
             get {
@@ -3102,7 +3102,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Download failed: An unknown error occurred.
+        ///   Looks up a localized string similar to Download failed.
         /// </summary>
         public static string ToastNotification_Download_failed__An_unknown_error_occurred {
             get {
@@ -3111,7 +3111,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Download failed: game is not managed - {0}.
+        ///   Looks up a localized string similar to Download failed: app isn&apos;t managing {0}.
         /// </summary>
         public static string ToastNotification_Download_failed__game_is_not_managed____0_ {
             get {
@@ -3120,7 +3120,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Download failed: User is not logged in.
+        ///   Looks up a localized string similar to Download failed: not logged in to Nexus Mods.
         /// </summary>
         public static string ToastNotification_Download_failed__User_is_not_logged_in {
             get {
@@ -3138,7 +3138,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Draft revision uploaded successfully.
+        ///   Looks up a localized string similar to Draft Revision uploaded successfully.
         /// </summary>
         public static string ToastNotification_Draft_revision_uploaded_successfully {
             get {
@@ -3156,7 +3156,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Library Items deleted.
+        ///   Looks up a localized string similar to Mod deleted.
         /// </summary>
         public static string ToastNotification_Items_deleted {
             get {
@@ -3192,7 +3192,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Mods removed.
+        ///   Looks up a localized string similar to Mod uninstalled.
         /// </summary>
         public static string ToastNotification_Mods_removed {
             get {
@@ -3219,7 +3219,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Uploading draft collection revision....
+        ///   Looks up a localized string similar to Uploading draft Collection Revision....
         /// </summary>
         public static string ToastNotification_Uploading_draft_collection_revision___ {
             get {
@@ -3228,7 +3228,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Uploading new collection revision....
+        ///   Looks up a localized string similar to Uploading new Collection Revision....
         /// </summary>
         public static string ToastNotification_Uploading_new_collection_revision___ {
             get {

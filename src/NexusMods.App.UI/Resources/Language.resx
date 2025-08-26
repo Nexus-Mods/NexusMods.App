@@ -1167,16 +1167,16 @@ Keep the downloaded files in your library in case you want to retry the installa
         <value>Signed in successfully</value>
     </data>
     <data name="ToastNotification_Items_deleted" xml:space="preserve">
-        <value>Library Items deleted</value>
+        <value>Mod deleted</value>
     </data>
     <data name="ToastNotification_Mods_removed" xml:space="preserve">
-        <value>Mods removed</value>
+        <value>Mod uninstalled</value>
     </data>
     <data name="ToastNotification_Installed_to__0_" xml:space="preserve">
         <value>Installed to {0}</value>
     </data>
     <data name="ToastNotification_Applied__0__successfully" xml:space="preserve">
-        <value>Applied {0} successfully</value>
+        <value>Loadout applied successfully</value>
     </data>
     <data name="ToastNotification_Collection_removed" xml:space="preserve">
         <value>Collection removed</value>
@@ -1188,7 +1188,7 @@ Keep the downloaded files in your library in case you want to retry the installa
         <value>Collection installed</value>
     </data>
     <data name="ToastNotification_Draft_revision_uploaded_successfully" xml:space="preserve">
-        <value>Draft revision uploaded successfully</value>
+        <value>Draft Revision uploaded successfully</value>
     </data>
     <data name="ToastNotification_Mod_updated____0_" xml:space="preserve">
         <value>Mod updated - {0}</value>
@@ -1206,25 +1206,25 @@ Keep the downloaded files in your library in case you want to retry the installa
         <value>Adding new Collection to Library</value>
     </data>
     <data name="ToastNotification_Collection_Add_failed___0__is_not_a_managed_game" xml:space="preserve">
-        <value>Collection Add failed: {0} is not a managed game</value>
+        <value>Collection add failed: app isn't managing {0}</value>
     </data>
     <data name="ToastNotification_Collection_Add_failed__An_unknown_error_occurred" xml:space="preserve">
-        <value>Collection Add failed: An unknown error occurred</value>
+        <value>Failed to add Collection</value>
     </data>
     <data name="ToastNotification_Download_failed__User_is_not_logged_in" xml:space="preserve">
-        <value>Download failed: User is not logged in</value>
+        <value>Download failed: not logged in to Nexus Mods</value>
     </data>
     <data name="ToastNotification_Download_skipped__file_already_exists____0__" xml:space="preserve">
         <value>Download skipped: file already exists - {0} </value>
     </data>
     <data name="ToastNotification_Download_failed__game_is_not_managed____0_" xml:space="preserve">
-        <value>Download failed: game is not managed - {0}</value>
+        <value>Download failed: app isn't managing {0}</value>
     </data>
     <data name="ToastNotification_Download_failed__An_unknown_error_occurred" xml:space="preserve">
-        <value>Download failed: An unknown error occurred</value>
+        <value>Download failed</value>
     </data>
     <data name="ToastNotification_Uploading_new_collection_revision___" xml:space="preserve">
-        <value>Uploading new collection revision...</value>
+        <value>Uploading new Collection Revision...</value>
     </data>
     <data name="ToastNotification_Collection_status_changed_to__0__" xml:space="preserve">
         <value>Collection status changed to {0} </value>
@@ -1236,6 +1236,6 @@ Keep the downloaded files in your library in case you want to retry the installa
         <value>Unlisted</value>
     </data>
     <data name="ToastNotification_Uploading_draft_collection_revision___" xml:space="preserve">
-        <value>Uploading draft collection revision...</value>
+        <value>Uploading draft Collection Revision...</value>
     </data>
 </root>

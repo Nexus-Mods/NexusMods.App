@@ -143,7 +143,7 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
                 await _syncService.Synchronize(_loadoutId);
             });
             
-            _notificationService.ShowToast(string.Format(Language.ToastNotification_Applied__0__successfully, loadout.Name), ToastNotificationVariant.Success);
+            _notificationService.ShowToast(Language.ToastNotification_Applied__0__successfully, ToastNotificationVariant.Success);
         }
         catch (ExecutableInUseException)
         {
