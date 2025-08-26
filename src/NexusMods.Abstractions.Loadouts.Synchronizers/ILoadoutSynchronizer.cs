@@ -41,13 +41,13 @@ public interface ILoadoutSynchronizer
     /// <summary>
     /// Run the groupings on the game folder and return a new loadout with the changes applied.
     /// </summary>
-    Task<Loadout.ReadOnly> RunActions(Dictionary<GamePath, SyncNode> syncTree, Loadout.ReadOnly loadout);
+    Task<Loadout.ReadOnly> RunActions(Dictionary<GamePath, SyncNode> syncTree, Loadout.ReadOnly loadout, SynchronizeLoadoutJob? job = null);
     
     /// <summary>
     /// Synchronizes the loadout with the game folder, any changes in the game folder will be added to the loadout, and any
     /// new changes in the loadout will be applied to the game folder.
     /// </summary>
-    Task<Loadout.ReadOnly> Synchronize(Loadout.ReadOnly loadout);
+    Task<Loadout.ReadOnly> Synchronize(Loadout.ReadOnly loadout, SynchronizeLoadoutJob? job = null);
     
     
     /// <summary>

@@ -20,4 +20,6 @@ public interface IApplyControlViewModel : IViewModelInterface
     bool IsApplying { get; }
     
     string ApplyButtonText { get; }
+    
+    string ProcessingText { get; }
 }

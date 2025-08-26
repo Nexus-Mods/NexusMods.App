@@ -330,32 +330,20 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
     {
         var isPremium = _loginManager.IsPremium;
         if (!isPremium)
-            // Note(sewer): Per design, in the future this will expand the mod rows.
-            //              But, due to the TreeDataGrid bug, we can't do that today, yet.
+        {
             await UpdateAndReplaceForMultiModPagesFreeOnly(cancellationToken, [updateAndReplaceMessage.Updates]);
+        }
         else
+        {
             await UpdateAndReplaceForMultiModPagesPremiumOnly(cancellationToken, [updateAndReplaceMessage.Updates]);
+        }
     }
 
     private async ValueTask UpdateAndReplaceForMultiModPagesFreeOnly(CancellationToken cancellationToken, IEnumerable<ModUpdatesOnModPage> updatesOnPageCollection)
     {
-        // Show the original dialog
-        var dialog = DialogFactory.CreateStandardDialog(
-            Language.Dialog_ReplaceNotSupported_Title,
-            new StandardDialogParameters()
-            {
-                Text = Language.Dialog_ReplaceNotSupported_Text,
-            },
-            [DialogStandardButtons.Ok, DialogStandardButtons.Cancel]
-        );
-        
-        var dialogResult = await WindowManager.ShowDialog(dialog, DialogWindowType.Modal);
-        if (dialogResult.ButtonId != DialogStandardButtons.Ok.Id)
-        {
-            // User cancelled, don't proceed
-            return;
-        }
-        
+        // Note(sewer): Per design, in the future this will expand the mod rows.
+        //              But, due to the TreeDataGrid bug, we can't do that today, yet.
+        // Instead update and keep old for free users.
         await UpdateAndKeepOldFree(updatesOnPageCollection, cancellationToken);
     }
 
@@ -956,7 +944,10 @@ After asking design, we're choosing to simply open the mod page for now.
 
     private ValueTask UpdateSelectedItems(CancellationToken cancellationToken)
     {
-        return UpdateSelectedItemsInternal(useUpdateAndReplace: true, cancellationToken);
+        // TEMPORARY: Use conditional default behavior based on Premium status to avoid unwanted dialog for free users
+        // Original: return UpdateSelectedItemsInternal(useUpdateAndReplace: true, cancellationToken);
+        var isPremium = _loginManager.IsPremium;
+        return UpdateSelectedItemsInternal(useUpdateAndReplace: isPremium, cancellationToken);
     }
 
     private ValueTask UpdateAndKeepOldSelectedItems(CancellationToken cancellationToken)
