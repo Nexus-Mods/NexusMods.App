@@ -57,7 +57,7 @@ public interface IFileStore
     /// <param name="files"></param>
     /// <param name="token"></param>
     /// <returns></returns>
-    Task ExtractFiles(IEnumerable<(Hash Hash, AbsolutePath Dest)> files, CancellationToken token = default);
+    Task ExtractFiles(IEnumerable<(Hash Hash, AbsolutePath Dest)> files, CancellationToken token = default, Action<(int Current, int Max)>? progress = null);
 
     /// <summary>
     /// Extract the given files from archives.
