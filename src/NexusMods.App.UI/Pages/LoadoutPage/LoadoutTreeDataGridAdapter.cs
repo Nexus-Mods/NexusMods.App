@@ -107,13 +107,6 @@ public class LoadoutTreeDataGridAdapter :
             })
         );
     }
-    
-    static NexusModsModPageMetadataId GetModPageId(IDb db, CompositeItemModel<EntityId> itemModel)
-    {
-        var entityId = itemModel.Key;
-        //TODO
-        throw new NotImplementedException("Mod page ID retrieval is not implemented yet.");
-    }
 
     private static IEnumerable<LoadoutItemId> GetLoadoutItemIds(CompositeItemModel<EntityId> itemModel)
     {
