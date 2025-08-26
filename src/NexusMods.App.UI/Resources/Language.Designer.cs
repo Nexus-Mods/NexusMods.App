@@ -3156,7 +3156,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Items deleted.
+        ///   Looks up a localized string similar to Library Items deleted.
         /// </summary>
         public static string ToastNotification_Items_deleted {
             get {
