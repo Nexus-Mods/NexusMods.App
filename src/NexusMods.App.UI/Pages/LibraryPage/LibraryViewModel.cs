@@ -36,6 +36,8 @@ using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Networking.NexusWebApi.UpdateFilters;
 using NexusMods.Paths;
+using NexusMods.UI.Sdk.Dialog;
+using NexusMods.UI.Sdk.Dialog.Enums;
 using ObservableCollections;
 using OneOf;
 using R3;
@@ -265,7 +267,8 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
                         async updateAndKeepOldMessage => await HandleUpdateAndKeepOldMessage(updateAndKeepOldMessage, cancellationToken),
                         async viewChangelogMessage => await HandleViewChangelogMessage(viewChangelogMessage, cancellationToken),
                         async viewModPageMessage => await HandleViewModPageMessage(viewModPageMessage, cancellationToken),
-                        async hideUpdatesMessage => await HandleHideUpdatesMessage(hideUpdatesMessage, cancellationToken)
+                        async hideUpdatesMessage => await HandleHideUpdatesMessage(hideUpdatesMessage, cancellationToken),
+                        async deleteItemMessage => await HandleDeleteItemMessage(deleteItemMessage, cancellationToken)
                     );
                 },
                 awaitOperation: AwaitOperation.Parallel,
@@ -323,32 +326,20 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
     {
         var isPremium = _loginManager.IsPremium;
         if (!isPremium)
-            // Note(sewer): Per design, in the future this will expand the mod rows.
-            //              But, due to the TreeDataGrid bug, we can't do that today, yet.
+        {
             await UpdateAndReplaceForMultiModPagesFreeOnly(cancellationToken, [updateAndReplaceMessage.Updates]);
+        }
         else
+        {
             await UpdateAndReplaceForMultiModPagesPremiumOnly(cancellationToken, [updateAndReplaceMessage.Updates]);
+        }
     }
 
     private async ValueTask UpdateAndReplaceForMultiModPagesFreeOnly(CancellationToken cancellationToken, IEnumerable<ModUpdatesOnModPage> updatesOnPageCollection)
     {
-        // Show the original dialog
-        var dialog = DialogFactory.CreateStandardDialog(
-            Language.Dialog_ReplaceNotSupported_Title,
-            new StandardDialogParameters()
-            {
-                Text = Language.Dialog_ReplaceNotSupported_Text,
-            },
-            [DialogStandardButtons.Ok, DialogStandardButtons.Cancel]
-        );
-        
-        var dialogResult = await WindowManager.ShowDialog(dialog, DialogWindowType.Modal);
-        if (dialogResult.ButtonId != DialogStandardButtons.Ok.Id)
-        {
-            // User cancelled, don't proceed
-            return;
-        }
-        
+        // Note(sewer): Per design, in the future this will expand the mod rows.
+        //              But, due to the TreeDataGrid bug, we can't do that today, yet.
+        // Instead update and keep old for free users.
         await UpdateAndKeepOldFree(updatesOnPageCollection, cancellationToken);
     }
 
@@ -736,6 +727,15 @@ After asking design, we're choosing to simply open the mod page for now.
         );
     }
     
+    private async ValueTask HandleDeleteItemMessage(DeleteItemMessage deleteItemMessage, CancellationToken cancellationToken)
+    {
+        var ids = deleteItemMessage.Ids;
+        if (ids.Length == 0) return;
+        
+        var toRemove = ids.Select(id => LibraryItem.Load(_connection.Db, id)).ToArray();
+        await LibraryItemRemover.RemoveAsync(_connection, _serviceProvider.GetRequiredService<IOverlayController>(), _libraryService, toRemove);
+    }
+    
     private async ValueTask HandleHideUpdatesMessage(HideUpdatesMessage hideUpdatesMessage, CancellationToken cancellationToken)
     {
         var modUpdateFilterService = _serviceProvider.GetRequiredService<IModUpdateFilterService>();
@@ -835,13 +835,16 @@ After asking design, we're choosing to simply open the mod page for now.
     private LibraryItemId[] GetSelectedIds()
     {
         var ids = Adapter.SelectedModels
-            .Select(static model => model.GetOptional<LibraryComponents.InstallAction>(LibraryColumns.Actions.InstallComponentKey))
-            .Where(static optional => optional.HasValue)
-            .SelectMany(static optional => optional.Value.ItemIds)
+            .SelectMany(static model => GetLibraryItemIds(model))
             .Distinct()
             .ToArray();
 
         return ids;
+    }
+    
+    private static IEnumerable<LibraryItemId> GetLibraryItemIds(CompositeItemModel<EntityId> itemModel)
+    {
+        return itemModel.Get<LibraryComponents.LibraryItemIds>(LibraryColumns.Actions.LibraryItemIdsComponentKey).ItemIds;
     }
 
     private IEnumerable<CompositeItemModel<EntityId>> GetSelectedModelsWithUpdates()
@@ -924,7 +927,10 @@ After asking design, we're choosing to simply open the mod page for now.
 
     private ValueTask UpdateSelectedItems(CancellationToken cancellationToken)
     {
-        return UpdateSelectedItemsInternal(useUpdateAndReplace: true, cancellationToken);
+        // TEMPORARY: Use conditional default behavior based on Premium status to avoid unwanted dialog for free users
+        // Original: return UpdateSelectedItemsInternal(useUpdateAndReplace: true, cancellationToken);
+        var isPremium = _loginManager.IsPremium;
+        return UpdateSelectedItemsInternal(useUpdateAndReplace: isPremium, cancellationToken);
     }
 
     private ValueTask UpdateAndKeepOldSelectedItems(CancellationToken cancellationToken)
@@ -1046,16 +1052,17 @@ public readonly record struct UpdateAndKeepOldMessage(ModUpdatesOnModPage Update
 public readonly record struct ViewChangelogMessage(OneOf<NexusModsModPageMetadataId, NexusModsLibraryItemId> Id);
 public readonly record struct ViewModPageMessage(OneOf<NexusModsModPageMetadataId, NexusModsLibraryItemId> Id);
 public readonly record struct HideUpdatesMessage(OneOf<NexusModsModPageMetadataId, NexusModsLibraryItemId> Id);
+public readonly record struct DeleteItemMessage(LibraryItemId[] Ids);
 
 public class LibraryTreeDataGridAdapter :
     TreeDataGridAdapter<CompositeItemModel<EntityId>, EntityId>,
-    ITreeDataGirdMessageAdapter<OneOf<InstallMessage, UpdateAndReplaceMessage, UpdateAndKeepOldMessage, ViewChangelogMessage, ViewModPageMessage, HideUpdatesMessage>>
+    ITreeDataGirdMessageAdapter<OneOf<InstallMessage, UpdateAndReplaceMessage, UpdateAndKeepOldMessage, ViewChangelogMessage, ViewModPageMessage, HideUpdatesMessage, DeleteItemMessage>>
 {
     private readonly ILibraryDataProvider[] _libraryDataProviders;
     private readonly LibraryFilter _libraryFilter;
     private readonly IConnection _connection;
 
-    public Subject<OneOf<InstallMessage, UpdateAndReplaceMessage, UpdateAndKeepOldMessage, ViewChangelogMessage, ViewModPageMessage, HideUpdatesMessage>> MessageSubject { get; } = new();
+    public Subject<OneOf<InstallMessage, UpdateAndReplaceMessage, UpdateAndKeepOldMessage, ViewChangelogMessage, ViewModPageMessage, HideUpdatesMessage, DeleteItemMessage>> MessageSubject { get; } = new();
 
     public LibraryTreeDataGridAdapter(IServiceProvider serviceProvider, LibraryFilter libraryFilter)
     {
@@ -1078,8 +1085,8 @@ public class LibraryTreeDataGridAdapter :
             state: this,
             factory: static (self, itemModel, component) => component.CommandInstall.Subscribe((self, itemModel, component), static (_, state) =>
             {
-                var (self, _, component) = state;
-                var ids = component.ItemIds.ToArray();
+                var (self, model, component) = state;
+                var ids = GetLibraryItemIds(model).ToArray();
 
                 self.MessageSubject.OnNext(new InstallMessage(ids));
             })
@@ -1148,6 +1155,18 @@ public class LibraryTreeDataGridAdapter :
                 self.MessageSubject.OnNext(new ViewModPageMessage(GetModPageIdOneOfType(self._connection.Db, entityId)));
             })
         );
+        
+        model.SubscribeToComponentAndTrack<LibraryComponents.DeleteItemAction, LibraryTreeDataGridAdapter>(
+            key: LibraryColumns.Actions.DeleteItemComponentKey,
+            state: this,
+            factory: static (self, itemModel, component) => component.CommandDeleteItem.Subscribe((self, itemModel, component), static (_, state) =>
+            {
+                var (self, model, component) = state;
+                var ids = GetLibraryItemIds(model).ToArray();
+
+                self.MessageSubject.OnNext(new DeleteItemMessage(ids));
+            })
+        );
 
         model.SubscribeToComponentAndTrack<LibraryComponents.HideUpdatesAction, LibraryTreeDataGridAdapter>(
             key: LibraryColumns.Actions.HideUpdatesComponentKey,
@@ -1160,6 +1179,11 @@ public class LibraryTreeDataGridAdapter :
                 self.MessageSubject.OnNext(new HideUpdatesMessage(GetModPageIdOneOfType(self._connection.Db, entityId)));
             })
         );
+    }
+    
+    private static IEnumerable<LibraryItemId> GetLibraryItemIds(CompositeItemModel<EntityId> itemModel)
+    {
+        return itemModel.Get<LibraryComponents.LibraryItemIds>(LibraryColumns.Actions.LibraryItemIdsComponentKey).ItemIds;
     }
 
     protected override IColumn<CompositeItemModel<EntityId>>[] CreateColumns(bool viewHierarchical)

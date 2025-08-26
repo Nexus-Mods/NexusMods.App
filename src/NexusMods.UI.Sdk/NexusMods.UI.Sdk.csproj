@@ -34,6 +34,7 @@
         <PackageReference Include="SkiaSharp.NativeAssets.Win32" />
         <PackageReference Include="System.Reactive" />
         <PackageReference Include="TextMateSharp.Grammars" />
+        <PackageReference Include="TransparentValueObjects" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     </ItemGroup>
 
     <ItemGroup>

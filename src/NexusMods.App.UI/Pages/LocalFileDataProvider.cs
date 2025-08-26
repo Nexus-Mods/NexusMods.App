@@ -84,9 +84,10 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
         itemModel.Add(SharedColumns.Name.NameComponentKey, new NameComponent(value: localFile.AsLibraryFile().AsLibraryItem().Name));
         itemModel.Add(LibraryColumns.DownloadedDate.ComponentKey, new DateComponent(value: localFile.GetCreatedAt()));
         itemModel.Add(SharedColumns.ItemSize.ComponentKey, new SizeComponent(value: localFile.AsLibraryFile().Size));
+        itemModel.Add(LibraryColumns.Actions.LibraryItemIdsComponentKey, new LibraryComponents.LibraryItemIds(localFile.AsLibraryFile().AsLibraryItem()));
 
         LibraryDataProviderHelper.AddInstalledDateComponent(itemModel, linkedLoadoutItemsObservable);
-        LibraryDataProviderHelper.AddInstallActionComponent(itemModel, localFile.AsLibraryFile().AsLibraryItem(), linkedLoadoutItemsObservable);
+        LibraryDataProviderHelper.AddInstallActionComponent(itemModel, linkedLoadoutItemsObservable);
         LibraryDataProviderHelper.AddViewChangelogActionComponent(itemModel, isEnabled: false);
         LibraryDataProviderHelper.AddViewModPageActionComponent(itemModel, isEnabled: false);
         LibraryDataProviderHelper.AddHideUpdatesActionComponent(itemModel, isEnabled: false, isVisible: false);

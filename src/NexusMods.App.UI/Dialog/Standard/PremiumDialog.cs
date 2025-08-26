@@ -1,7 +1,10 @@
+using NexusMods.Abstractions.Telemetry;
 using NexusMods.App.UI.Dialog.Enums;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.CrossPlatform.Process;
+using NexusMods.UI.Sdk.Dialog;
+using NexusMods.UI.Sdk.Dialog.Enums;
 using NexusMods.UI.Sdk.Icons;
 
 namespace NexusMods.App.UI.Dialog.Standard;
@@ -48,8 +51,7 @@ public static class PremiumDialog
         
         if (result.ButtonId == ButtonDefinitionId.From("go-premium"))
         {
-            var premiumUrl = new Uri("https://next.nexusmods.com/premium");
-            await osInterop.OpenUrl(premiumUrl);
+            await osInterop.OpenUrl(NexusModsUrlBuilder.LearnAboutPremiumUri);
         }
 
         return result.ButtonId;

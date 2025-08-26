@@ -970,18 +970,20 @@ To apply changes or launch the game again, please close the game first.</value>
         <value>Go Premium for one-click collection downloads</value>
     </data>
     <data name="UpgradeToPremiumView_Desc1" xml:space="preserve">
-        <value>Download an entire mod collection at full speed with one click without leaving the app. Free users can install mods individually from the list.</value>
+        <value>Download this entire collection automatically, at full speed, without leaving the app.</value>
     </data>
 
     <data name="UpgradeToPremiumView_Desc2" xml:space="preserve">
-        <value>Premium users also get:</value>
+        <value>With Premium you also get:</value>
     </data>
-
+    <data name="UpgradeToPremiumView_Bullet0" xml:space="preserve">
+        <value>Seamless in-app mod updates, no websites or manual downloads.</value>
+    </data>
     <data name="UpgradeToPremiumView_Bullet1" xml:space="preserve">
         <value>Uncapped downloads speeds</value>
     </data>
     <data name="UpgradeToPremiumView_Bullet2" xml:space="preserve">
-        <value>No Ads for life, even if you cancel!</value>
+        <value>Ad-free for life, even if you cancel later</value>
     </data>
     <data name="UpgradeToPremiumView_Bullet3" xml:space="preserve">
         <value>Support the creators - Premium helps reward mod authors</value>
@@ -1093,9 +1095,23 @@ Keep the downloaded files in your library in case you want to retry the installa
     <data name="PremiumDialog_UpdateManuallyButton" xml:space="preserve">
         <value>Update mods manually</value>
     </data>
+    <data name="DialogPremiumCollection_DialogTitle" xml:space="preserve">
+        <value>Unlock 1-click collections with Premium</value>
+    </data>
+    <data name="DialogPremiumCollection_UpgradeToPremium" xml:space="preserve">
+        <value>Unlock Auto-download</value>
+    </data>
+    <data name="DialogPremiumCollection_LearnMore" xml:space="preserve">
+        <value>Learn more</value>
+    </data>
+    <data name="DialogPremiumCollection_Cancel" xml:space="preserve">
+        <value>Continue with manual install</value>
+    </data>
+    
     <data name="PremiumDialog_GoPremiumButton" xml:space="preserve">
         <value>Go Premium</value>
     </data>
+    
     <data name="Library_Update_SomeDownloadsFailed_Title" xml:space="preserve">
         <value>Some Mod Updates Failed to Download</value>
     </data>
@@ -1140,5 +1156,8 @@ Keep the downloaded files in your library in case you want to retry the installa
     </data>
     <data name="Loadout_Dialog_ShareCollection_ChangeVisibilityMessage" xml:space="preserve">
         <value>You can change the visibility at any time in your collection settings.</value>
+    </data>
+    <data name="Library_DeleteItem_Text" xml:space="preserve">
+        <value>Delete</value>
     </data>
 </root>

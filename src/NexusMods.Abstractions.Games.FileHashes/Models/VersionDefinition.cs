@@ -1,4 +1,3 @@
-using NexusMods.Abstractions.EpicGameStore.Models;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Models;

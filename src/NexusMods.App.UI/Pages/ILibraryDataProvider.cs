@@ -92,7 +92,6 @@ public static class LibraryDataProviderHelper
 
     public static void AddInstallActionComponent(
         CompositeItemModel<EntityId> itemModel,
-        LibraryItem.ReadOnly libraryItem,
         IObservable<IChangeSet<LoadoutItem.ReadOnly, EntityId>> linkedItemsObservable)
     {
         itemModel.Add(LibraryColumns.Actions.InstallComponentKey, new LibraryComponents.InstallAction(
@@ -100,24 +99,21 @@ public static class LibraryDataProviderHelper
                 initialValue: false,
                 valueObservable: linkedItemsObservable.IsNotEmpty(),
                 subscribeWhenCreated: true
-            ),
-            itemId: libraryItem
+            )
         ));
     }
 
     public static void AddInstallActionComponent(
         CompositeItemModel<EntityId> parentItemModel,
-        IObservable<MatchesData> matchesObservable,
-        IObservable<IChangeSet<LibraryItem.ReadOnly, EntityId>> libraryItemsObservable)
+        IObservable<MatchesData> matchesObservable)
     {
         parentItemModel.Add(LibraryColumns.Actions.InstallComponentKey, new LibraryComponents.InstallAction(
             matches: new ValueComponent<MatchesData>(
                 initialValue: default(MatchesData),
                 valueObservable: matchesObservable,
                 subscribeWhenCreated: true
-            ),
-            childrenItemIdsObservable: libraryItemsObservable.TransformImmutable(static x => x.LibraryItemId)
-        ));
+            ))
+        );
     }
 
     public static void AddViewChangelogActionComponent(
@@ -132,6 +128,13 @@ public static class LibraryDataProviderHelper
         bool isEnabled = true)
     {
         itemModel.Add(LibraryColumns.Actions.ViewModPageComponentKey, new SharedComponents.ViewModPageAction(isEnabled));
+    }
+    
+    public static void AddDeleteItemActionComponent(
+        CompositeItemModel<EntityId> itemModel,
+        bool isEnabled = true)
+    {
+        itemModel.Add(LibraryColumns.Actions.DeleteItemComponentKey, new LibraryComponents.DeleteItemAction(isEnabled));
     }
 
     public static void AddHideUpdatesActionComponent(

@@ -103,7 +103,7 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
             HasChildrenObservable = hasChildrenObservable,
             ChildrenObservable = childrenObservable,
         };
-
+        
         parentItemModel.Add(SharedColumns.Name.NameComponentKey, new NameComponent(value: modPage.Name));
         parentItemModel.Add(SharedColumns.Name.ImageComponentKey, ImageComponent.FromPipeline(_thumbnailLoader.Value, modPage.Id, initialValue: ImagePipelines.ModPageThumbnailFallback));
 
@@ -199,8 +199,10 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
 
                 return new MatchesData(numInstalled, numTotal);
             });
-
-        LibraryDataProviderHelper.AddInstallActionComponent(parentItemModel, matchesObservable, libraryItems.TransformImmutable(static x => x.AsLibraryItem()));
+        
+        
+        parentItemModel.Add(LibraryColumns.Actions.LibraryItemIdsComponentKey, new LibraryComponents.LibraryItemIds(libraryItems.TransformImmutable(static x => x.AsLibraryItem().LibraryItemId)));
+        LibraryDataProviderHelper.AddInstallActionComponent(parentItemModel, matchesObservable);
         LibraryDataProviderHelper.AddViewChangelogActionComponent(parentItemModel);
         LibraryDataProviderHelper.AddViewModPageActionComponent(parentItemModel);
 
@@ -216,6 +218,8 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
             .Select(optional => optional.HasValue && optional.Value.HasAnyUpdates)
             .ToObservable();
         LibraryDataProviderHelper.AddHideUpdatesActionComponent(parentItemModel, updatesOnPageUnfiltered, _modUpdateFilterService, isVisibleObservable);
+        
+        LibraryDataProviderHelper.AddDeleteItemActionComponent(parentItemModel);
 
         return parentItemModel;
     }
@@ -230,6 +234,7 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
 
         var itemModel = new CompositeItemModel<EntityId>(libraryItem.Id);
 
+        itemModel.Add(LibraryColumns.Actions.LibraryItemIdsComponentKey, new LibraryComponents.LibraryItemIds(libraryItem.AsLibraryItem()));
         itemModel.Add(SharedColumns.Name.NameComponentKey, new NameComponent(value: fileMetadata.Name));
         itemModel.Add(LibraryColumns.DownloadedDate.ComponentKey, new DateComponent(value: libraryItem.GetCreatedAt()));
         itemModel.Add(LibraryColumns.ItemVersion.CurrentVersionComponentKey, new VersionComponent(value: fileMetadata.Version));
@@ -238,7 +243,7 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
             itemModel.Add(SharedColumns.ItemSize.ComponentKey, new SizeComponent(value: size));
 
         LibraryDataProviderHelper.AddInstalledDateComponent(itemModel, linkedLoadoutItemsObservable);
-        LibraryDataProviderHelper.AddInstallActionComponent(itemModel, libraryItem.AsLibraryItem(), linkedLoadoutItemsObservable);
+        LibraryDataProviderHelper.AddInstallActionComponent(itemModel, linkedLoadoutItemsObservable);
         LibraryDataProviderHelper.AddViewChangelogActionComponent(itemModel);
         LibraryDataProviderHelper.AddViewModPageActionComponent(itemModel);
 
@@ -283,6 +288,8 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
             .ToObservable();
         
         LibraryDataProviderHelper.AddHideUpdatesActionComponent(itemModel, newestFileUnfiltered, _modUpdateFilterService, isVisibleObservable);
+        
+        LibraryDataProviderHelper.AddDeleteItemActionComponent(itemModel);
 
         return itemModel;
     }
