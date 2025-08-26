@@ -53,8 +53,8 @@ public class SynchronizerService : ISynchronizerService
         var metaData = GameInstallMetadata.Load(db, loadout.InstallationInstance.GameMetadataId);
         var hasPreviousLoadout = GameInstallMetadata.LastSyncedLoadoutTransaction.TryGetValue(metaData, out var lastId);
 
-        var lastScannedDiskState = metaData.DiskStateAsOf(metaData.LastScannedDiskStateTransaction);
-        var previousDiskState = hasPreviousLoadout ? metaData.DiskStateAsOf(Transaction.Load(db, lastId)) : lastScannedDiskState;
+        var lastScannedDiskState = synchronizer.GetLastScannedDiskState(metaData);
+        var previousDiskState = hasPreviousLoadout ? synchronizer.GetPreviouslyAppliedDiskState(metaData) : lastScannedDiskState;
         
         return synchronizer.LoadoutToDiskDiff(loadout, previousDiskState, lastScannedDiskState);
     }
@@ -71,8 +71,8 @@ public class SynchronizerService : ISynchronizerService
                 var metaData = GameInstallMetadata.Load(db, loadout.InstallationInstance.GameMetadataId);
                 var hasPreviousLoadout = GameInstallMetadata.LastSyncedLoadoutTransaction.TryGetValue(metaData, out var lastId);
 
-                var lastScannedDiskState = metaData.DiskStateEntries;
-                var previousDiskState = hasPreviousLoadout ? metaData.DiskStateAsOf(Transaction.Load(db, lastId)) : lastScannedDiskState;
+                var lastScannedDiskState = synchronizer.GetDiskStateForGame(metaData);
+                var previousDiskState = hasPreviousLoadout ? synchronizer.GetLastScannedDiskState(metaData) : lastScannedDiskState;
         
                 return ValueTask.FromResult(synchronizer.ShouldSynchronize(loadout, previousDiskState, lastScannedDiskState));
             });

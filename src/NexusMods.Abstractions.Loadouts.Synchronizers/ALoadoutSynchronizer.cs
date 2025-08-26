@@ -195,7 +195,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
 
 
-    public Dictionary<GamePath, SyncNode> BuildSyncTree(IEnumerable<PathPartPair> currentState, IEnumerable<PathPartPair> previousState, Loadout.ReadOnly loadout)
+    public Dictionary<GamePath, SyncNode> BuildSyncTree<T>(T latestDiskState, T previousDiskState, Loadout.ReadOnly loadout) where T : IEnumerable<PathPartPair>
     {
         var referenceDb = _fileHashService.Current;
         Dictionary<GamePath, SyncNode> syncTree = new();
@@ -294,7 +294,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             syncTree.Remove(file);
         }
         
-        MergeStates(currentState, previousState, syncTree);
+        MergeStates(latestDiskState, previousDiskState, syncTree);
         return syncTree;
     }
 
@@ -302,7 +302,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     {
         var locatorIds = loadout.LocatorIds.Distinct().ToArray();
         if (locatorIds.Length != loadout.LocatorIds.Count)
-            Logger.LogWarning("Found duplicate locator IDs `{LocatorIds}` on Loadout {} for game `{Game}` when getting game state", loadout.LocatorIds, loadout.Name, loadout.InstallationInstance.Game.Name);
+            Logger.LogWarning("Found duplicate locator IDs `{LocatorIds}` on Loadout {Name} for game `{Game}` when getting game state", loadout.LocatorIds, loadout.Name, loadout.InstallationInstance.Game.Name);
         
         foreach (var item in _fileHashService.GetGameFiles((loadout.InstallationInstance.Store, locatorIds)))
         {
@@ -365,28 +365,21 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     {
         var metadata = await ReindexState(loadout.InstallationInstance, ignoreModifiedDates: false, Connection);
 
-        var currentItems = GetDiskStateForGame(metadata.Db, metadata);
-        List<PathPartPair> prevItems;
-        if (!metadata.Contains(GameInstallMetadata.LastSyncedLoadout))
-        {
-            prevItems = new List<PathPartPair>();
-        }
-        else
-        {
-            var txId = GameInstallMetadata.LastSyncedLoadoutTransactionId.Get(metadata);
-            var asOfDb = metadata.Db.Connection.AsOf(TxId.From(txId.Value));
-            prevItems = GetDiskStateForGame(asOfDb, metadata);
-        }
-
+        var currentItems = GetDiskStateForGame(metadata);
+        var prevItems = ((ILoadoutSynchronizer)this).GetPreviouslyAppliedDiskState(metadata);
+        
         return BuildSyncTree(currentItems, prevItems, loadout);
     }
+
+
     
     /// <summary>
     /// This is a highly optimized way to load all the disk state for a game. It's a sorted merge
     /// join over all the required attributes for the results
     /// </summary>
-    public unsafe List<PathPartPair> GetDiskStateForGame(IDb db, GameInstallMetadataId metadataId)
+    public unsafe List<PathPartPair> GetDiskStateForGame(GameInstallMetadata.ReadOnly metadata)
     {
+        var db = metadata.Db;
         var pairs = new List<PathPartPair>();
         var mainAttrId = db.AttributeCache.GetAttributeId(DiskStateEntry.GameId.Id);
         var pathAttrId = db.AttributeCache.GetAttributeId(DiskStateEntry.Path.Id);
@@ -397,7 +390,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         // We start with a single reference iterator, that points to the game data we are trying to access
         // Since this data will return results sorted by E (entry Id) we can merge join to any other data 
         // that is sorted in the same order
-        using var iterator = db.LightweightDatoms(SliceDescriptor.Create(mainAttrId, metadataId));
+        using var iterator = db.LightweightDatoms(SliceDescriptor.Create(mainAttrId, metadata));
         
         // Now we have iterators for each field to load
         using var pathIterator = db.LightweightDatoms(SliceDescriptor.Create(pathAttrId));
@@ -427,6 +420,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 Path = gamePath,
                 Part = new SyncNodePart
                 {
+                    EntityId = iterator.KeyPrefix.E,
                     Hash = MemoryMarshal.Read<Hash>(hashIterator.ValueSpan),
                     Size = MemoryMarshal.Read<Size>(sizeIterator.ValueSpan),
                     LastModifiedTicks = MemoryMarshal.Read<long>(lastModifiedIterator.ValueSpan),
@@ -435,15 +429,6 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             pairs.Add(pathPartPair);
         }
         return pairs;
-    }
-    
-    
-    public Dictionary<GamePath, SyncNode> BuildSyncTree<T>(T latestDiskState, T previousDiskState, Loadout.ReadOnly loadout)
-        where T : IEnumerable<DiskStateEntry.ReadOnly>
-    {
-        var currentState = DiskStateToPathPartPair(latestDiskState);
-        var previousTree = DiskStateToPathPartPair(previousDiskState);
-        return BuildSyncTree(currentState, previousTree, loadout);
     }
 
     /// <summary>
@@ -1146,9 +1131,9 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     /// <summary>
     /// Returns true if the loadout state doesn't match the last scanned disk state.
     /// </summary>
-    public bool ShouldSynchronize(Loadout.ReadOnly loadout, DiskState previousDiskState, DiskState lastScannedDiskState)
+    public bool ShouldSynchronize(Loadout.ReadOnly loadout, IEnumerable<PathPartPair> previousDiskState, IEnumerable<PathPartPair> lastScannedDiskState)
     {
-        var syncTree = BuildSyncTree(DiskStateToPathPartPair(lastScannedDiskState), DiskStateToPathPartPair(previousDiskState), loadout);
+        var syncTree = BuildSyncTree(lastScannedDiskState, previousDiskState, loadout);
         // Process the sync tree to get the actions populated in the nodes
         ProcessSyncTree(syncTree);
         
@@ -1156,9 +1141,9 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     }
     
     /// <inheritdoc />
-    public FileDiffTree LoadoutToDiskDiff(Loadout.ReadOnly loadout, DiskState previousDiskState, DiskState lastScannedDiskState)
+    public FileDiffTree LoadoutToDiskDiff(Loadout.ReadOnly loadout, List<PathPartPair> previousDiskState, List<PathPartPair> lastScannedDiskState)
     {
-        var syncTree = BuildSyncTree(DiskStateToPathPartPair(lastScannedDiskState), DiskStateToPathPartPair(previousDiskState), loadout);
+        var syncTree = BuildSyncTree(lastScannedDiskState, previousDiskState, loadout);
         // Process the sync tree to get the actions populated in the nodes
         ProcessSyncTree(syncTree);
 

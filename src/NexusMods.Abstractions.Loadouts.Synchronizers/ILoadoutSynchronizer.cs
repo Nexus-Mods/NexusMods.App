@@ -3,6 +3,7 @@ using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.GC;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Loadouts.Files.Diff;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 
 namespace NexusMods.Abstractions.Loadouts.Synchronizers;
@@ -31,7 +32,7 @@ public interface ILoadoutSynchronizer
     /// <summary>
     /// Builds a sync tree from the latest stored disk state and the previous disk state.
     /// </summary>
-    Dictionary<GamePath, SyncNode> BuildSyncTree<T>(T latestDiskState, T previousDiskState, Loadout.ReadOnly loadout) where T : IEnumerable<DiskStateEntry.ReadOnly>;
+    Dictionary<GamePath, SyncNode> BuildSyncTree<T>(T latestDiskState, T previousDiskState, Loadout.ReadOnly loadout) where T : IEnumerable<PathPartPair>;
     
     /// <summary>
     /// Processes the sync tree to create the signature and actions for each file, changes are made in-place on the tree.
@@ -60,13 +61,72 @@ public interface ILoadoutSynchronizer
     /// If true, all files will be rehashed.
     /// </param>
     Task<GameInstallMetadata.ReadOnly> RescanFiles(GameInstallation gameInstallation, bool ignoreModifiedDate = false);
+
+    /// <summary>
+    /// Get the disk state for a game as of a specific transaction.
+    /// </summary>
+    /// <param name="metadata"></param>
+    /// <param name="asOfTxId"></param>
+    /// <returns></returns>
+    public List<PathPartPair> GetDiskStateForGameAsOf(GameInstallMetadata.ReadOnly metadata, TxId asOfTxId)
+    {
+        var db = metadata.Db.Connection.AsOf(asOfTxId);
+        var oldMetadata = GameInstallMetadata.Load(db, metadata.Id);
+        return GetDiskStateForGame(oldMetadata);
+    }
+    
+    
+
+    /// <summary>
+    /// Gets the previously applied disk state for a game.
+    /// </summary>
+    public List<PathPartPair> GetPreviouslyAppliedDiskState(GameInstallMetadata.ReadOnly metadata)
+    {
+        List<PathPartPair> prevItems;
+        if (!metadata.Contains(GameInstallMetadata.LastSyncedLoadout))
+        {
+            prevItems = [];
+        }
+        else
+        {
+            var txId = GameInstallMetadata.LastSyncedLoadoutTransactionId.Get(metadata);
+            var asOfDb = metadata.Db.Connection.AsOf(TxId.From(txId.Value));
+            var oldMetadata = GameInstallMetadata.Load(asOfDb, metadata.Id);
+            prevItems = GetDiskStateForGame(oldMetadata);
+        }
+        return prevItems;
+    }
+    
+    /// <summary>
+    /// Gets the previously applied disk state for a game.
+    /// </summary>
+    public List<PathPartPair> GetLastScannedDiskState(GameInstallMetadata.ReadOnly metadata)
+    {
+        List<PathPartPair> prevItems;
+        if (!GameInstallMetadata.LastScannedDiskStateTransaction.TryGetValue(metadata, out var txId))
+        {
+            prevItems = [];
+        }
+        else
+        {
+            var asOfDb = metadata.Db.Connection.AsOf(TxId.From(txId.Value));
+            var oldMetadata = GameInstallMetadata.Load(asOfDb, metadata.Id);
+            prevItems = GetDiskStateForGame(oldMetadata);
+        }
+        return prevItems;
+    }
+    
+    /// <summary>
+    /// Get the disk state for a game from the given database.
+    /// </summary>
+    public List<PathPartPair> GetDiskStateForGame(GameInstallMetadata.ReadOnly metadata);
     
     #endregion
     
     
     #region High Level Methods
     
-    public bool ShouldSynchronize(Loadout.ReadOnly loadout, DiskState previousState, DiskState lastScannedState);
+    public bool ShouldSynchronize(Loadout.ReadOnly loadout, IEnumerable<PathPartPair> previousState, IEnumerable<PathPartPair> lastScannedState);
     
     /// <summary>
     /// Computes the difference between a loadout and a disk state, assuming the loadout to be the newer state.
@@ -75,7 +135,7 @@ public interface ILoadoutSynchronizer
     /// <param name="previousState">The old state, e.g. last applied DiskState</param>
     /// <param name="lastScannedState">The last scanned state, e.g. the last time the game folder was scanned</param>
     /// <returns>A tree of all the files with associated <see cref="FileChangeType"/></returns>
-    FileDiffTree LoadoutToDiskDiff(Loadout.ReadOnly loadout, DiskState previousState, DiskState lastScannedState);
+    FileDiffTree LoadoutToDiskDiff(Loadout.ReadOnly loadout, List<PathPartPair> previousState, List<PathPartPair> lastScannedState);
     
     /// <summary>
     /// Creates a loadout for a game, managing the game if it has not previously
