@@ -621,6 +621,42 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Continue with manual install.
+        /// </summary>
+        public static string DialogPremiumCollection_Cancel {
+            get {
+                return ResourceManager.GetString("DialogPremiumCollection_Cancel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unlock 1-click collections with Premium.
+        /// </summary>
+        public static string DialogPremiumCollection_DialogTitle {
+            get {
+                return ResourceManager.GetString("DialogPremiumCollection_DialogTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Learn more.
+        /// </summary>
+        public static string DialogPremiumCollection_LearnMore {
+            get {
+                return ResourceManager.GetString("DialogPremiumCollection_LearnMore", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unlock Auto-download.
+        /// </summary>
+        public static string DialogPremiumCollection_UpgradeToPremium {
+            get {
+                return ResourceManager.GetString("DialogPremiumCollection_UpgradeToPremium", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Apply changes: Adding {0} Modifying {1} Removing {2}.
         /// </summary>
         public static string DiffTreeViewModel_StatusBar__Apply_changes {
@@ -1563,6 +1599,15 @@ namespace NexusMods.App.UI.Resources {
         public static string LeftMenu_Label_Utilities {
             get {
                 return ResourceManager.GetString("LeftMenu_Label_Utilities", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete.
+        /// </summary>
+        public static string Library_DeleteItem_Text {
+            get {
+                return ResourceManager.GetString("Library_DeleteItem_Text", resourceCulture);
             }
         }
         
@@ -3111,6 +3156,15 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Seamless in-app mod updates, no websites or manual downloads..
+        /// </summary>
+        public static string UpgradeToPremiumView_Bullet0 {
+            get {
+                return ResourceManager.GetString("UpgradeToPremiumView_Bullet0", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Uncapped downloads speeds.
         /// </summary>
         public static string UpgradeToPremiumView_Bullet1 {
@@ -3120,7 +3174,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to No Ads for life, even if you cancel!.
+        ///   Looks up a localized string similar to Ad-free for life, even if you cancel later.
         /// </summary>
         public static string UpgradeToPremiumView_Bullet2 {
             get {
@@ -3147,7 +3201,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Download an entire mod collection at full speed with one click without leaving the app. Free users can install mods individually from the list..
+        ///   Looks up a localized string similar to Download this entire collection automatically, at full speed, without leaving the app..
         /// </summary>
         public static string UpgradeToPremiumView_Desc1 {
             get {
@@ -3156,7 +3210,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Premium users also get:.
+        ///   Looks up a localized string similar to With Premium you also get:.
         /// </summary>
         public static string UpgradeToPremiumView_Desc2 {
             get {

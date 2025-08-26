@@ -92,4 +92,9 @@ public enum CacheUpdaterResultStatus
     /// </summary>
     // ReSharper disable once UnusedMember.Global
     RateLimited, // Placeholder.
+    
+    /// <summary>
+    /// We didn't obtain this information because the user is not logged in.
+    /// </summary>
+    NotLoggedIn,
 }

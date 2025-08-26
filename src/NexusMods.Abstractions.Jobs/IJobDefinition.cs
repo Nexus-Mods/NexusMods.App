@@ -3,7 +3,19 @@ using JetBrains.Annotations;
 namespace NexusMods.Abstractions.Jobs;
 
 [PublicAPI]
-public interface IJobDefinition;
+public interface IJobDefinition
+{
+    /// <summary>
+    /// Gets whether this job supports pausing and resuming.
+    /// When false, calls to <see cref="IJobMonitor.Pause(NexusMods.Abstractions.Jobs.JobId)"/> will cancel the job instead.
+    /// </summary>
+    bool SupportsPausing => false;
+
+    /// <summary>
+    /// Get the job state data for external access. Returns null if job has no externally visible state.
+    /// </summary>
+    IPublicJobStateData? GetJobStateData() => null;
+}
 
 /// <summary>
 /// A typed job definition that returns a result

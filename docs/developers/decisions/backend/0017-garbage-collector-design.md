@@ -60,7 +60,7 @@ and obtain the hashes of all files in the archive.
 As with any `Garbage Collector`, we need to identify all the 'roots' of a tree
 from which files may be referenced from.
 
-***As of current time, the following are the known roots in the `DataStore`:***
+***As of current time, the following are the known roots in the system:***
 
 - Mod Library
     - Any item in the library may be added to a loadout at any time, thus must
@@ -69,11 +69,12 @@ from which files may be referenced from.
       which are not retracted. These are the files that are stored inside archives
       added to the library.
 - Loadouts
-    - Loadouts have some `LoadoutItems` which do not correspond to a `LibraryItem`.
+    - Loadouts contain `LoadoutFile` objects that represent files used in active loadouts.
+    - This includes both files linked to library items and files that do not correspond to a `LibraryItem`.
     - Example: `Overrides` (External Changes) files.
 - Backed up files
-    - Base type of `BackedUpFile`.
-    - Derived types may use names like `SynchronizerBackedUpFile`.
+    - More specifically, `GameBackedUpFile` objects which represent backed up game files.
+    - These are files that have been backed up to preserve original game state.
 
 The `DataModel` has the following approximate structure:
 
@@ -151,84 +152,44 @@ some files need to be dropped from small (Max `1MB` with current settings) SOLID
 
 This process is therefore bottlenecked entirely by the speed of I/O.
 
-#### Updating the DataStore
+#### Updating File Mappings
 
 !!! note "An extra step is needed."
 
-The `DataStore` (see: [`NxFileStore`][nx-file-store]), has copies of the [`FileEntry`][nx-toc] structs
-from the Nx archives (as [`ArchivedFile`][archived-file]). These include the info needed to
-extract the files and must be updated.
+The file store (see: [`NxFileStore`][nx-file-store]) maintains an in-memory mapping of file hashes to their
+corresponding archive locations. After repacking operations, this mapping must be recreated to reflect
+the new archive structure and ensure files can be located correctly.
 
-!!! danger "Possibility of corruption in event of power loss."
+!!! tip "Keep it simple."
 
-    The new archive file ***MUST NOT*** replace the old archive on the filesystem.
-
-It is not possible to replace the old `.nx` archive and update the [`ArchivedFile`][archived-file]
-entries in an atomic fashion. Therefore, during repacking, always create a *new* archive file,
-and then point the existing [`ArchivedFile`][archived-file] entries to the new archive instead.
+    After all repacking operations are complete, the system recreates its in-memory mapping by
+    scanning all available archives and building a fresh hash-to-archive index. This saves us from unnecessary
+    complexity and tracking during the GC process.
 
 #### Concurrency and Locks
 
 !!! warning "Files actively in use by [`NxFileStore`][nx-file-store] cannot be deleted during `GC` process."
 
-A concurrent change to [`ArchivedFile`][archived-file] in itself is not dangerous, given that
-by the time it is updated, the new archive will exist alive and well.
-
-However, if [`NxFileStore`][nx-file-store] is actively extracting a file from an archive,
-the GC should not delete the source `.nx` archive, a lock must be placed to prevent
+If [`NxFileStore`][nx-file-store] is actively extracting a file from an archive,
+the GC should not delete the source `.nx` archive. A lock must be placed to prevent
 that edge case from happening.
+
+The file store's mapping recreation after repacking is also protected by this same lock
+to ensure consistency between file operations and garbage collection.
 
 #### Edge Case: Duplicate Items
 
 !!! danger "Sometimes we may have a duplicate item in two distinct `.nx` archives."
 
-Sometimes developers may make an error while working on the App and not put the correct
-safety procedures (i.e. taking a write lock) to ensure that no duplicates are created
-within the Nx Archives.
+    This can happen due to a power outage during the Garbage Collection process, or
+    due to programmer error. (e.g. Not taking a write lock in a new API)
 
-This is dangerous, because there are two sources of truth
-for where a given hash is stored, *the archives* and [*the DataStore*](#updating-the-datastore).  
+Duplicates are handled gracefully in the current implementation.
 
-##### Reproduction
-
-To understand the dangers involved, let's try reproducing the bug.
-
-!!! note "The bug is fixed today."
-
-    Today, the 'bug' is fixed as of commit ( `34de799623cf9688e6c3dcabca7fe029426583ed` ) , however prior to it;
-    the bug could be reproduced in the way listed below.
-
-We will make an assumption that we have an un-patched GC and faulty code that
-creates duplicates.
-
-Create 2 archives:
-
-- dummy-1 (zip)
-- dummy-2 (zip)
-
-Inside `dummy-1`, add 1 file.
-Inside `dummy-2`, add the file from `dummy-1`, and an additional file.
-
-Add the `dummy-1` and `dummy-2` archives from disk in the following order:
-
-- dummy-1
-- dummy-2
-
-Adding `dummy-2` creates a duplicate file due to an error by the programmer,
-the `DataStore` entry for the duplicate hash will be re-routed to `dummy-2` when
-it previously pointed to `dummy-1`.
-
-If we now delete `dummy-1`; the error should have a 50-50 chance of reproducing;
-depending on order archives are processed. There is a risk retracting the item in the
-DataStore will retract the item in the wrong archive/container.
-
-!!! note "There is some RNG involved."
-
-    Reproduction is non-determinstic, due to nature of data.
-    Bigger archives with duplicates are more likely to yield errors.
-
-    So you can replace `dummy-1` with `SMAPI 4` and `dummy-2` with `SMAPI 3` 
-    for a more reliable reproduction.
+Internally, we maintain a dictionary of hash to archive paths.
+The last mapped item wins, in case of duplicates.
+This is okay, and is not expected to yield any side effects; the duplicates
+will simply be cleaned up during the next GC run.
 
 ## Core Code Design
 
@@ -307,7 +268,7 @@ public delegate void RepackDelegate(IProgress<double> progress, List<Hash> hashe
 This makes testing easier, and provides greater flexibility.
 
 To this method we plug a function to [Remove Unused Items](#removing-unused-items)
-and [Update the DataStore](#updating-the-datastore).
+and recreate the file mappings after repacking is complete.
 
 ## Open Questions
 
@@ -322,14 +283,6 @@ Some of these will be decided in the future, based on results.
 ## Future Work
 
 These items would eventually require their own separate ADR and issues.
-
-### Hard deletion of old loadout data on GC.
-
-!!! note "Post GC, legacy loadout data does not serve much usefulness"
-
-Leftover legacy data in the Database would instead slow down queries, including
-those needed by `Garbage Collection` itself. Ideally, entire entities could be completely
-removed from the `DataStore`. 
 
 ### Limiting Archive Sizes on Backup
 
@@ -388,6 +341,5 @@ No planned work for this yet; just a far future concern needing addressing.
 [archive-locations]: https://github.com/Nexus-Mods/NexusMods.App/blob/6a9cee951ad68e17bf24e4e64aa8906f5a63a590/src/NexusMods.DataModel/DataModelSettings.cs#L27
 [header-parser]: https://nexus-mods.github.io/NexusMods.Archives.Nx/Library/Headers/HeaderParser/
 [202x-architecture]: https://www.nexusmods.com/Core/Libs/Common/Widgets/DownloadPopUp?id=480708&nmm=1&game_id=1704
-[archived-file]: https://github.com/Nexus-Mods/NexusMods.App/blob/93c9c5e124e53ac1ceb1dbcc978b8a8f6de59914/src/NexusMods.DataModel/ArchiveContents/ArchivedFile.cs#L17
 [nx-file-store]: https://github.com/Nexus-Mods/NexusMods.App/blob/93c9c5e124e53ac1ceb1dbcc978b8a8f6de59914/src/NexusMods.DataModel/NxFileStore.cs#L31
 [nx-toc]: https://nexus-mods.github.io/NexusMods.Archives.Nx/Specification/Table-Of-Contents/

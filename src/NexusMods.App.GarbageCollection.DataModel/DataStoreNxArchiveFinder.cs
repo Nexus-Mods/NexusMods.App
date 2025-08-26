@@ -12,7 +12,7 @@ namespace NexusMods.App.GarbageCollection.DataModel;
 public static class DataStoreNxArchiveFinder
 {
     /// <summary>
-    /// This method walks through all the archives that the data store can
+    /// This method walks through all the archives that the App can
     /// see, adding their details to the garbage collector.
     /// </summary>
     /// <param name="archiveLocations">Folders of where to search for archives.</param>
