@@ -22,7 +22,7 @@ public interface IWindowNotificationService
     /// <param name="buttonDefinitions">Array of buttons to be added to the toast (no need to pass in the Close button)</param>
     /// <param name="buttonHandler">Callback for handling button clicks, should take the ButtonDefinitionId of the clicked button</param>
     /// <returns></returns>
-    public bool Show(
+    public bool ShowToast(
         string message,
         ToastNotificationVariant type = ToastNotificationVariant.Neutral,
         TimeSpan? expiration = null,

@@ -15,12 +15,14 @@ using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.Overlays;
 using NexusMods.App.UI.Pages.Changelog;
 using NexusMods.App.UI.Pages.Settings;
+using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.CrossPlatform;
 using NexusMods.CrossPlatform.Process;
 using NexusMods.Paths;
 using NexusMods.Telemetry;
+using NexusMods.UI.Sdk;
 using R3;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -34,6 +36,7 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
 {
     private readonly ILoginManager _loginManager;
     private readonly ILogger<TopBarViewModel> _logger;
+    private readonly IWindowNotificationService _notificationService;
 
     [Reactive] public string ActiveWorkspaceTitle { get; [UsedImplicitly] set; } = string.Empty;
     [Reactive] public string ActiveWorkspaceSubtitle { get; [UsedImplicitly] set; } = string.Empty;
@@ -73,10 +76,12 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
         IOverlayController overlayController,
         IOSInterop osInterop,
         ISettingsManager settingsManager,
-        IFileSystem fileSystem)
+        IFileSystem fileSystem,
+        IWindowNotificationService notificationService)
     {
         _logger = logger;
         _loginManager = loginManager;
+        _notificationService = notificationService;
 
         var workspaceController = windowManager.ActiveWorkspaceController;
 
@@ -235,6 +240,10 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
     {
         _logger.LogInformation("Logging into Nexus Mods");
         await _loginManager.LoginAsync();
+        
+        if (await _loginManager.GetIsUserLoggedInAsync())
+            _notificationService.ShowToast(Language.ToastNotification_Signed_in_successfully, ToastNotificationVariant.Success);
+            
     }
 
     private async Task Logout()

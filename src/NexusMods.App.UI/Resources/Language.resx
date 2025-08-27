@@ -1160,4 +1160,82 @@ Keep the downloaded files in your library in case you want to retry the installa
     <data name="Library_DeleteItem_Text" xml:space="preserve">
         <value>Delete</value>
     </data>
+    <data name="ToastNotification_Settings_saved" xml:space="preserve">
+        <value>Settings saved</value>
+    </data>
+    <data name="ToastNotification_Signed_in_successfully" xml:space="preserve">
+        <value>Signed in successfully</value>
+    </data>
+    <data name="ToastNotification_Items_deleted" xml:space="preserve">
+        <value>Mod deleted</value>
+    </data>
+    <data name="ToastNotification_Mods_removed" xml:space="preserve">
+        <value>Mod uninstalled</value>
+    </data>
+    <data name="ToastNotification_Installed_to__0_" xml:space="preserve">
+        <value>Installed to {0}</value>
+    </data>
+    <data name="ToastNotification_Applied__0__successfully" xml:space="preserve">
+        <value>Loadout applied successfully</value>
+    </data>
+    <data name="ToastNotification_Collection_removed" xml:space="preserve">
+        <value>Collection removed</value>
+    </data>
+    <data name="ToastNotification_Collection_deleted" xml:space="preserve">
+        <value>Collection deleted</value>
+    </data>
+    <data name="ToastNotification_Collection_installed" xml:space="preserve">
+        <value>Collection installed</value>
+    </data>
+    <data name="ToastNotification_Draft_revision_uploaded_successfully" xml:space="preserve">
+        <value>Draft Revision uploaded successfully</value>
+    </data>
+    <data name="ToastNotification_Mod_updated____0_" xml:space="preserve">
+        <value>Mod updated - {0}</value>
+    </data>
+    <data name="ToastNotification_Adding_collection____0_" xml:space="preserve">
+        <value>Collection added successfully - {0}</value>
+    </data>
+    <data name="ToastNotification_Mod_Download_started" xml:space="preserve">
+        <value>Mod Download started</value>
+    </data>
+    <data name="ToastNotification_Mod_Download_Completed____0_" xml:space="preserve">
+        <value>Mod Download Completed - {0}</value>
+    </data>
+    <data name="ToastNotification_Adding_new_Collection_to_Library" xml:space="preserve">
+        <value>Adding new Collection to Library</value>
+    </data>
+    <data name="ToastNotification_Collection_Add_failed___0__is_not_a_managed_game" xml:space="preserve">
+        <value>Collection add failed: app isn't managing {0}</value>
+    </data>
+    <data name="ToastNotification_Collection_Add_failed__An_unknown_error_occurred" xml:space="preserve">
+        <value>Failed to add Collection</value>
+    </data>
+    <data name="ToastNotification_Download_failed__User_is_not_logged_in" xml:space="preserve">
+        <value>Download failed: not logged in to Nexus Mods</value>
+    </data>
+    <data name="ToastNotification_Download_skipped__file_already_exists____0__" xml:space="preserve">
+        <value>Download skipped: file already exists - {0} </value>
+    </data>
+    <data name="ToastNotification_Download_failed__game_is_not_managed____0_" xml:space="preserve">
+        <value>Download failed: app isn't managing {0}</value>
+    </data>
+    <data name="ToastNotification_Download_failed__An_unknown_error_occurred" xml:space="preserve">
+        <value>Download failed</value>
+    </data>
+    <data name="ToastNotification_Uploading_new_collection_revision___" xml:space="preserve">
+        <value>Uploading new Collection Revision...</value>
+    </data>
+    <data name="ToastNotification_Collection_status_changed_to__0__" xml:space="preserve">
+        <value>Collection status changed to {0} </value>
+    </data>
+    <data name="CollectionStatus_Listed" xml:space="preserve">
+        <value>Listed</value>
+    </data>
+    <data name="CollectionStatus_Unlisted" xml:space="preserve">
+        <value>Unlisted</value>
+    </data>
+    <data name="ToastNotification_Uploading_draft_collection_revision___" xml:space="preserve">
+        <value>Uploading draft Collection Revision...</value>
+    </data>
 </root>

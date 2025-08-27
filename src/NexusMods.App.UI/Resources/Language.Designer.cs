@@ -430,6 +430,24 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Listed.
+        /// </summary>
+        public static string CollectionStatus_Listed {
+            get {
+                return ResourceManager.GetString("CollectionStatus_Listed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unlisted.
+        /// </summary>
+        public static string CollectionStatus_Unlisted {
+            get {
+                return ResourceManager.GetString("CollectionStatus_Unlisted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Create new.
         /// </summary>
         public static string CreateNewLoadoutCarViewTexBlock {
@@ -2999,6 +3017,222 @@ namespace NexusMods.App.UI.Resources {
         public static string StringFormatters__SecondsRemaining_secs {
             get {
                 return ResourceManager.GetString("StringFormatters__SecondsRemaining_secs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Collection added successfully - {0}.
+        /// </summary>
+        public static string ToastNotification_Adding_collection____0_ {
+            get {
+                return ResourceManager.GetString("ToastNotification_Adding_collection____0_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Adding new Collection to Library.
+        /// </summary>
+        public static string ToastNotification_Adding_new_Collection_to_Library {
+            get {
+                return ResourceManager.GetString("ToastNotification_Adding_new_Collection_to_Library", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Loadout applied successfully.
+        /// </summary>
+        public static string ToastNotification_Applied__0__successfully {
+            get {
+                return ResourceManager.GetString("ToastNotification_Applied__0__successfully", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Collection add failed: app isn&apos;t managing {0}.
+        /// </summary>
+        public static string ToastNotification_Collection_Add_failed___0__is_not_a_managed_game {
+            get {
+                return ResourceManager.GetString("ToastNotification_Collection_Add_failed___0__is_not_a_managed_game", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to add Collection.
+        /// </summary>
+        public static string ToastNotification_Collection_Add_failed__An_unknown_error_occurred {
+            get {
+                return ResourceManager.GetString("ToastNotification_Collection_Add_failed__An_unknown_error_occurred", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Collection deleted.
+        /// </summary>
+        public static string ToastNotification_Collection_deleted {
+            get {
+                return ResourceManager.GetString("ToastNotification_Collection_deleted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Collection installed.
+        /// </summary>
+        public static string ToastNotification_Collection_installed {
+            get {
+                return ResourceManager.GetString("ToastNotification_Collection_installed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Collection removed.
+        /// </summary>
+        public static string ToastNotification_Collection_removed {
+            get {
+                return ResourceManager.GetString("ToastNotification_Collection_removed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Collection status changed to {0} .
+        /// </summary>
+        public static string ToastNotification_Collection_status_changed_to__0__ {
+            get {
+                return ResourceManager.GetString("ToastNotification_Collection_status_changed_to__0__", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Download failed.
+        /// </summary>
+        public static string ToastNotification_Download_failed__An_unknown_error_occurred {
+            get {
+                return ResourceManager.GetString("ToastNotification_Download_failed__An_unknown_error_occurred", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Download failed: app isn&apos;t managing {0}.
+        /// </summary>
+        public static string ToastNotification_Download_failed__game_is_not_managed____0_ {
+            get {
+                return ResourceManager.GetString("ToastNotification_Download_failed__game_is_not_managed____0_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Download failed: not logged in to Nexus Mods.
+        /// </summary>
+        public static string ToastNotification_Download_failed__User_is_not_logged_in {
+            get {
+                return ResourceManager.GetString("ToastNotification_Download_failed__User_is_not_logged_in", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Download skipped: file already exists - {0} .
+        /// </summary>
+        public static string ToastNotification_Download_skipped__file_already_exists____0__ {
+            get {
+                return ResourceManager.GetString("ToastNotification_Download_skipped__file_already_exists____0__", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Draft Revision uploaded successfully.
+        /// </summary>
+        public static string ToastNotification_Draft_revision_uploaded_successfully {
+            get {
+                return ResourceManager.GetString("ToastNotification_Draft_revision_uploaded_successfully", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Installed to {0}.
+        /// </summary>
+        public static string ToastNotification_Installed_to__0_ {
+            get {
+                return ResourceManager.GetString("ToastNotification_Installed_to__0_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mod deleted.
+        /// </summary>
+        public static string ToastNotification_Items_deleted {
+            get {
+                return ResourceManager.GetString("ToastNotification_Items_deleted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mod Download Completed - {0}.
+        /// </summary>
+        public static string ToastNotification_Mod_Download_Completed____0_ {
+            get {
+                return ResourceManager.GetString("ToastNotification_Mod_Download_Completed____0_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mod Download started.
+        /// </summary>
+        public static string ToastNotification_Mod_Download_started {
+            get {
+                return ResourceManager.GetString("ToastNotification_Mod_Download_started", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mod updated - {0}.
+        /// </summary>
+        public static string ToastNotification_Mod_updated____0_ {
+            get {
+                return ResourceManager.GetString("ToastNotification_Mod_updated____0_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mod uninstalled.
+        /// </summary>
+        public static string ToastNotification_Mods_removed {
+            get {
+                return ResourceManager.GetString("ToastNotification_Mods_removed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Settings saved.
+        /// </summary>
+        public static string ToastNotification_Settings_saved {
+            get {
+                return ResourceManager.GetString("ToastNotification_Settings_saved", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Signed in successfully.
+        /// </summary>
+        public static string ToastNotification_Signed_in_successfully {
+            get {
+                return ResourceManager.GetString("ToastNotification_Signed_in_successfully", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Uploading draft Collection Revision....
+        /// </summary>
+        public static string ToastNotification_Uploading_draft_collection_revision___ {
+            get {
+                return ResourceManager.GetString("ToastNotification_Uploading_draft_collection_revision___", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Uploading new Collection Revision....
+        /// </summary>
+        public static string ToastNotification_Uploading_new_collection_revision___ {
+            get {
+                return ResourceManager.GetString("ToastNotification_Uploading_new_collection_revision___", resourceCulture);
             }
         }
         
