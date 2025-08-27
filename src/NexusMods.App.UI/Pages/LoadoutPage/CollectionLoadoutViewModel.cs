@@ -16,9 +16,11 @@ using NexusMods.Abstractions.Jobs;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Pages.CollectionDownload;
+using NexusMods.App.UI.Resources;
 using NexusMods.MnemonicDB.Abstractions.Query;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Paths;
+using NexusMods.UI.Sdk;
 using R3;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -40,6 +42,7 @@ public class CollectionLoadoutViewModel : APageViewModel<ICollectionLoadoutViewM
         var tilePipeline = ImagePipelines.GetCollectionTileImagePipeline(serviceProvider);
         var backgroundPipeline = ImagePipelines.GetCollectionBackgroundImagePipeline(serviceProvider);
         var userAvatarPipeline = ImagePipelines.GetUserAvatarPipeline(serviceProvider);
+        var notificationService = serviceProvider.GetRequiredService<IWindowNotificationService>();
         
         var nexusCollectionGroup = NexusCollectionLoadoutGroup.Load(connection.Db, pageContext.GroupId);
         var group = nexusCollectionGroup.AsCollectionGroup();
@@ -125,6 +128,8 @@ public class CollectionLoadoutViewModel : APageViewModel<ICollectionLoadoutViewM
                 tx.Delete(nexusCollectionGroup.Id, recursive: true);
                 
                 await tx.Commit();
+                
+                notificationService.ShowToast(Language.ToastNotification_Collection_removed);
             },
             awaitOperation: AwaitOperation.Drop,
             configureAwait: false

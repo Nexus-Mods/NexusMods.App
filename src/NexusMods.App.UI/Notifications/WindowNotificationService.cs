@@ -35,7 +35,7 @@ public class WindowNotificationService : IWindowNotificationService
     }
 
     /// <Inheritdoc />
-    public bool Show(
+    public bool ShowToast(
         string message,
         ToastNotificationVariant type = ToastNotificationVariant.Neutral,
         TimeSpan? expiration = null,
@@ -44,18 +44,22 @@ public class WindowNotificationService : IWindowNotificationService
     {
         var manager = GetNotificationManager();
         if (manager == null) return false;
+
+        DispatcherHelper.EnsureOnUIThread(() =>
+            {
+                // TODO: Use ToastNotificationVariant
+                // TODO: Use buttons and handler
         
-        // TODO: Use ToastNotificationVariant
-        // TODO: Use buttons and handler
+                var notification = new Notification(
+                    null,
+                    message,
+                    NotificationType.Information,
+                    expiration ?? TimeSpan.FromSeconds(5));
         
-        var notification = new Notification(
-            null,
-            message,
-            NotificationType.Information,
-            expiration ?? TimeSpan.FromSeconds(5));
-        
-        manager.Show(notification);
-        
+                manager.Show(notification);
+                return;
+            }
+        );
         return true;
     }
 }

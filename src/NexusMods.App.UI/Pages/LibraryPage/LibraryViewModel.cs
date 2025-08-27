@@ -27,6 +27,7 @@ using NexusMods.App.UI.Overlays;
 using NexusMods.App.UI.Pages.Library;
 using NexusMods.App.UI.Pages.LibraryPage.Collections;
 using NexusMods.App.UI.Resources;
+using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Collections;
@@ -36,6 +37,7 @@ using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Networking.NexusWebApi.UpdateFilters;
 using NexusMods.Paths;
+using NexusMods.UI.Sdk;
 using NexusMods.UI.Sdk.Dialog;
 using NexusMods.UI.Sdk.Dialog.Enums;
 using ObservableCollections;
@@ -90,6 +92,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
     private readonly ILoginManager _loginManager;
     private readonly NexusModsLibrary _nexusModsLibrary;
     private readonly TemporaryFileManager _temporaryFileManager;
+    private readonly IWindowNotificationService _notificationService;
 
     public LibraryTreeDataGridAdapter Adapter { get; }
     private ReadOnlyObservableCollection<ICollectionCardViewModel> _collections = new([]);
@@ -114,6 +117,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         _modUpdateService = serviceProvider.GetRequiredService<IModUpdateService>();
         _loginManager = serviceProvider.GetRequiredService<ILoginManager>();
         _temporaryFileManager = serviceProvider.GetRequiredService<TemporaryFileManager>();
+        _notificationService = serviceProvider.GetRequiredService<IWindowNotificationService>();
 
         var collectionDownloader = new CollectionDownloader(serviceProvider);
         var tileImagePipeline = ImagePipelines.GetCollectionTileImagePipeline(serviceProvider);
@@ -584,6 +588,9 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
                             NewItem = newLibraryItem,
                             InstallResult = result,
                         });
+
+                        if (result == LibraryItemReplacementResult.Success)
+                            _notificationService.ShowToast(string.Format(Language.ToastNotification_Mod_updated____0_, newLibraryItem.Name), ToastNotificationVariant.Success);
                     }
                 }
             }
@@ -734,6 +741,8 @@ After asking design, we're choosing to simply open the mod page for now.
         
         var toRemove = ids.Select(id => LibraryItem.Load(_connection.Db, id)).ToArray();
         await LibraryItemRemover.RemoveAsync(_connection, _serviceProvider.GetRequiredService<IOverlayController>(), _libraryService, toRemove);
+
+        _notificationService.ShowToast(Language.ToastNotification_Items_deleted);
     }
     
     private async ValueTask HandleHideUpdatesMessage(HideUpdatesMessage hideUpdatesMessage, CancellationToken cancellationToken)
@@ -830,6 +839,9 @@ After asking design, we're choosing to simply open the mod page for now.
             body: (i, innerCancellationToken) => InstallLibraryItem(items[i], _loadout, targetLoadoutGroup, innerCancellationToken, useAdvancedInstaller),
             cancellationToken: cancellationToken
         );
+        
+        var targetCollection = LoadoutItem.Load(db, targetLoadoutGroup);
+        _notificationService.ShowToast(string.Format(Language.ToastNotification_Installed_to__0_, targetCollection.Name));
     }
 
     private LibraryItemId[] GetSelectedIds()
@@ -874,6 +886,9 @@ After asking design, we're choosing to simply open the mod page for now.
         try
         {
             await _libraryService.InstallItem(libraryItem, loadout, parent: targetLoadoutGroup, installer: useAdvancedInstaller ? _advancedInstaller : null);
+            
+            var targetCollection  = LoadoutItem.Load(_connection.Db, targetLoadoutGroup);
+            _notificationService.ShowToast(string.Format(Language.ToastNotification_Installed_to__0_, targetCollection.Name));
         }
         catch (OperationCanceledException)
         {
@@ -888,6 +903,8 @@ After asking design, we're choosing to simply open the mod page for now.
         var db = _connection.Db;
         var toRemove = GetSelectedIds().Select(id => LibraryItem.Load(db, id)).ToArray();
         await LibraryItemRemover.RemoveAsync(_connection, _serviceProvider.GetRequiredService<IOverlayController>(), _libraryService, toRemove);
+        
+        _notificationService.ShowToast(Language.ToastNotification_Items_deleted);
     }
 
     private async ValueTask AddFilesFromDisk(IStorageProvider storageProvider, CancellationToken cancellationToken)

@@ -2,7 +2,6 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using DynamicData;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.UI;
@@ -16,6 +15,7 @@ using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.UI.Sdk;
 using R3;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -30,6 +30,7 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
     private readonly IConnection _conn;
     private readonly ISynchronizerService _syncService;
     private readonly IJobMonitor _jobMonitor;
+    private readonly IWindowNotificationService _notificationService;
 
     private readonly LoadoutId _loadoutId;
     private readonly IServiceProvider _serviceProvider;
@@ -55,6 +56,7 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
         _syncService = serviceProvider.GetRequiredService<ISynchronizerService>();
         _conn = serviceProvider.GetRequiredService<IConnection>();
         _jobMonitor = serviceProvider.GetRequiredService<IJobMonitor>();
+        _notificationService = serviceProvider.GetRequiredService<IWindowNotificationService>();
         var windowManager = serviceProvider.GetRequiredService<IWindowManager>();
         
         _gameMetadataId = NexusMods.Abstractions.Loadouts.Loadout.Load(_conn.Db, loadoutId).InstallationId;
@@ -148,17 +150,19 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
 
     private async Task Apply()
     {
+        var loadout = NexusMods.Abstractions.Loadouts.Loadout.Load(_conn.Db, _loadoutId);
         try
         {
             await Task.Run(async () =>
             {
                 await _syncService.Synchronize(_loadoutId);
             });
+            
+            _notificationService.ShowToast(Language.ToastNotification_Applied__0__successfully, ToastNotificationVariant.Success);
         }
         catch (ExecutableInUseException)
         {
-            var marker = NexusMods.Abstractions.Loadouts.Loadout.Load(_conn.Db, _loadoutId);
-            await MessageBoxOkViewModel.ShowGameAlreadyRunningError(_serviceProvider, marker.Installation.Name);
+            await MessageBoxOkViewModel.ShowGameAlreadyRunningError(_serviceProvider, loadout.Installation.Name);
         }
     }
 }
