@@ -30,17 +30,23 @@ using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.Settings;
 using NexusMods.Abstractions.UI;
+using NexusMods.App.UI.Controls.MarkdownRenderer;
 using NexusMods.App.UI.Controls.MiniGameWidget.ComingSoon;
 using NexusMods.App.UI.Controls.MiniGameWidget.Standard;
+using NexusMods.App.UI.Dialog;
+using NexusMods.App.UI.Dialog.Enums;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Overlays;
-using NexusMods.App.UI.Overlays.ManageGameWarning;
 using NexusMods.App.UI.Pages.LibraryPage;
 using NexusMods.App.UI.Settings;
 using NexusMods.Collections;
 using NexusMods.CrossPlatform.Process;
+using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Paths;
+using NexusMods.Sdk;
 using NexusMods.Telemetry;
+using NexusMods.UI.Sdk.Dialog;
+using NexusMods.UI.Sdk.Dialog.Enums;
 
 namespace NexusMods.App.UI.Pages.MyGames;
 
@@ -53,6 +59,9 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
     private readonly CollectionDownloader _collectionDownloader;
     private readonly IWindowManager _windowManager;
     private readonly IJobMonitor _jobMonitor;
+    private readonly IOverlayController _overlayController;
+    private readonly IConnection _connection;
+    private readonly IServiceProvider _serviceProvider;
 
     private ReadOnlyObservableCollection<IViewModelInterface> _supportedGames = new([]);
     private ReadOnlyObservableCollection<IGameWidgetViewModel> _installedGames = new([]);
@@ -79,11 +88,13 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
         _collectionDownloader = serviceProvider.GetRequiredService<CollectionDownloader>();
         _libraryService = serviceProvider.GetRequiredService<ILibraryService>();
         _jobMonitor = serviceProvider.GetRequiredService<IJobMonitor>();
+        _overlayController = overlayController;
+        _connection = conn;
 
         TabTitle = Language.MyGames;
         TabIcon = IconValues.GamepadOutline;
 
-        var provider = serviceProvider;
+        _serviceProvider = serviceProvider;
         _windowManager = windowManager;
 
         OpenRoadmapCommand = ReactiveCommand.CreateFromTask(async () =>
@@ -105,24 +116,10 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
                     .ToObservableChangeSet()
                     .Transform(installation =>
                         {
-                            var vm = provider.GetRequiredService<IGameWidgetViewModel>();
+                            var vm = _serviceProvider.GetRequiredService<IGameWidgetViewModel>();
                             vm.Installation = installation;
 
-                            vm.AddGameCommand = ReactiveCommand.CreateFromTask(async () =>
-                            {
-                                if (GetJobRunningForGameInstallation(installation).IsT1) return;
-                                
-                                // Warn the user about overrides, if they deny, do not add the game
-                                var result = await overlayController.EnqueueAndWait(new ManageGameWarningViewModel());
-                                if (!result) return;
-
-                                vm.State = GameWidgetState.AddingGame;
-                                await Task.Run(async () => await ManageGame(installation));
-                                vm.State = GameWidgetState.ManagedGame;
-
-                                Tracking.AddEvent(Events.Game.AddGame, new EventMetadata(name: $"{installation.Game.Name} - {installation.Store}"));
-                                NavigateToLoadoutLibrary(conn, installation);
-                            });
+                            vm.AddGameCommand = ReactiveCommand.CreateFromTask(async () => await AddGameHandler(installation, vm));
 
                             vm.RemoveAllLoadoutsCommand = ReactiveCommand.CreateFromTask(async () =>
                             {
@@ -196,7 +193,7 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
                 var miniGameWidgetViewModels = supportedGamesAsIGame
                     .Select(game =>
                         {
-                            var vm = provider.GetRequiredService<IMiniGameWidgetViewModel>();
+                            var vm = _serviceProvider.GetRequiredService<IMiniGameWidgetViewModel>();
                             vm.Game = game;
                             vm.Name = game.Name;
                             // is this supported game installed?
@@ -211,7 +208,7 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
                     .OrderByDescending(vm => vm.IsFound)
                     .ToList();
 
-                var comingSoonMiniGameWidget = provider.GetRequiredService<IComingSoonMiniGameWidgetViewModel>();
+                var comingSoonMiniGameWidget = _serviceProvider.GetRequiredService<IComingSoonMiniGameWidgetViewModel>();
 
                 // create a new ReadOnlyObservableCollection from miniGameWidgetViewModels and comingSoonMiniGameWidget
                 _supportedGames = new ReadOnlyObservableCollection<IViewModelInterface>(
@@ -248,10 +245,116 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
             await _collectionDownloader.DeleteCollection(collection);
         }
     }
-
-    private async Task ManageGame(GameInstallation installation)
+    
+    private async Task AddGameHandler(GameInstallation installation, IGameWidgetViewModel vm)
     {
-        await installation.GetGame().Synchronizer.CreateLoadout(installation);
+        if (GetJobRunningForGameInstallation(installation).IsT1) return;
+
+        vm.State = GameWidgetState.AddingGame;
+        var loadout = await Task.Run(async () => await ManageGame(installation));
+        
+        // Check if there are external changes
+        var changeEntries = await GetExternalChangesItems(loadout);
+        vm.State = GameWidgetState.ManagedGame;
+        
+        // Offer to clean them up
+        if (changeEntries.Length > 0)
+        {
+            var (revert, doNothing, clean) = (ButtonDefinitionId.Cancel, ButtonDefinitionId.From("doNothing"), ButtonDefinitionId.Accept);
+            var result = await ShowCleanGameFolderDialog(revert,
+                doNothing,
+                clean,
+                changeEntries,
+                installation
+            );
+            
+            if (result == revert)
+            {
+                // Revert the loadout creation
+                vm.State = GameWidgetState.RemovingGame;
+                await Task.Run(async () => await installation.GetGame().Synchronizer.UnManage(installation, cleanGameFolder: false));
+                vm.State = GameWidgetState.DetectedGame;
+                return;
+            }
+            if (result == clean)
+            {
+                vm.State = GameWidgetState.AddingGame;
+                await CleanGameFolder(installation, loadout);
+                vm.State = GameWidgetState.ManagedGame;
+            }
+        }
+        
+        Tracking.AddEvent(Events.Game.AddGame, new EventMetadata(name: $"{installation.Game.Name} - {installation.Store}"));
+        NavigateToLoadoutLibrary(_connection, installation);
+    }
+    
+    private ValueTask<LoadoutItemWithTargetPath.ReadOnly[]> GetExternalChangesItems(Loadout.ReadOnly loadout)
+    {
+        var db = _connection.Db;
+        if (!LoadoutOverridesGroup.FindByOverridesFor(db, loadout.Id).TryGetFirst(out var overrideGroup))
+            return ValueTask.FromResult<LoadoutItemWithTargetPath.ReadOnly[]>([]);
+
+        return ValueTask.FromResult(overrideGroup.AsLoadoutItemGroup().Children.OfTypeLoadoutItemWithTargetPath().ToArray());
+    }
+    
+    private async Task<ButtonDefinitionId> ShowCleanGameFolderDialog(
+        ButtonDefinitionId revert,
+        ButtonDefinitionId doNothing,
+        ButtonDefinitionId clean,
+        LoadoutItemWithTargetPath.ReadOnly[] changeEntries,
+        GameInstallation installation)
+    {
+        var markdownVm = _serviceProvider.GetRequiredService<IMarkdownRendererViewModel>();
+        markdownVm.Contents = $"""
+            We found {changeEntries.Length} files in the game folder that aren’t part of a clean install. To avoid conflicts with mods, **we recommend starting with a clean folder**.
+            #### Important
+            If you keep existing files (not recommended):
+            - The existing files will be placed in **External Changes**.
+            - Files in External Changes **override any mods you install later**.
+            - If you stop managing this game or uninstall the app, those **files will be permanently removed**.
+            """;
+        
+        var dialog = DialogFactory.CreateStandardDialog(
+            title: $"Your {installation.Game.Name} folder isn't a clean install",
+            new StandardDialogParameters()
+            {
+                Markdown = markdownVm,
+            },
+            buttonDefinitions:
+            [
+                new DialogButtonDefinition("Cancel", revert),
+                new DialogButtonDefinition("Keep existing files", doNothing, ButtonAction.Reject),
+                new DialogButtonDefinition("Clean folder", clean, ButtonAction.Accept, ButtonStyling.Primary),
+            ]
+        );
+        
+        return (await _windowManager.ShowDialog(dialog, DialogWindowType.Modal)).ButtonId;
+    }
+    
+    private async Task CleanGameFolder(GameInstallation installation, Loadout.ReadOnly loadout)
+    {
+        var db = _connection.Db;
+        var tx = _connection.BeginTransaction();
+        var changeEntries = await GetExternalChangesItems(loadout.Rebase()); 
+        
+        // Remove items from External Changes mod
+        foreach (var entry in changeEntries)
+        {
+            tx.Delete(entry.Id, recursive: false);
+        }
+        await tx.Commit();
+
+        loadout = loadout.Rebase();
+        var game = installation.GetGame();
+        var syncer = game.Synchronizer;
+        
+        // Apply clean state to game folder
+        await syncer.Synchronize(Loadout.Load(db, loadout));
+    }
+
+    private async Task<Loadout.ReadOnly> ManageGame(GameInstallation installation)
+    {
+        return await installation.GetGame().Synchronizer.CreateLoadout(installation);
     }
     
     private Optional<LoadoutId> GetLoadout(IConnection conn, GameInstallation installation)
