@@ -1638,13 +1638,13 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     }
 
     /// <inheritdoc />
-    public async Task UnManage(GameInstallation installation, bool runGc = true)
+    public async Task UnManage(GameInstallation installation, bool runGc = true, bool cleanGameFolder = true)
     {
         await _jobMonitor.Begin(new UnmanageGameJob(installation), async ctx =>
             {
                 var metadata = installation.GetMetadata(Connection);
 
-                if (GetCurrentlyActiveLoadout(installation).HasValue)
+                if (GetCurrentlyActiveLoadout(installation).HasValue && cleanGameFolder)
                     await DeactivateCurrentLoadout(installation);
 
                 await ctx.YieldAsync();
@@ -1665,7 +1665,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 {
                     Logger.LogInformation("Deleting loadout {Loadout} - {ShortName}", loadout.Name, loadout.ShortName);
                     await ctx.YieldAsync();
-                    await DeleteLoadout(loadout, GarbageCollectorRunMode.DoNotRun);
+                    await DeleteLoadout(loadout, GarbageCollectorRunMode.DoNotRun, deactivateIfActive: cleanGameFolder);
                 }
                 
                 // Retract all `GameBakedUpFile` entries to allow for game file backups to be cleaned up from the FileStore
@@ -1675,7 +1675,23 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                     if (file.GameInstallId.Value == installation.GameMetadataId)
                         tx.Delete(file, recursive: false);
                 }
-
+                
+                // Delete the last applied/scanned disk state data
+                metadata = metadata.Rebase();
+                
+                foreach (var entry in metadata.DiskStateEntries)
+                {
+                    tx.Delete(entry, recursive: false);
+                }
+                if (metadata.Contains(GameInstallMetadata.LastSyncedLoadoutId))
+                    tx.Retract(metadata, GameInstallMetadata.LastSyncedLoadoutId, metadata.LastSyncedLoadoutId.Value);
+                if (metadata.Contains(GameInstallMetadata.LastSyncedLoadoutTransactionId))
+                    tx.Retract(metadata, GameInstallMetadata.LastSyncedLoadoutTransactionId, metadata.LastSyncedLoadoutTransactionId.Value);
+                if (metadata.Contains(GameInstallMetadata.InitialDiskStateTransactionId))
+                    tx.Retract(metadata, GameInstallMetadata.InitialDiskStateTransactionId, metadata.InitialDiskStateTransactionId.Value);
+                if (metadata.Contains(GameInstallMetadata.LastScannedDiskStateTransactionId))
+                    tx.Retract(metadata, GameInstallMetadata.LastScannedDiskStateTransactionId ,metadata.LastScannedDiskStateTransactionId.Value);
+                
                 await tx.Commit();
 
                 if (runGc)
@@ -1785,7 +1801,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     }
 
     /// <inheritdoc />
-    public async Task DeleteLoadout(LoadoutId loadoutId, GarbageCollectorRunMode gcRunMode = GarbageCollectorRunMode.RunAsynchronously)
+    public async Task DeleteLoadout(LoadoutId loadoutId, GarbageCollectorRunMode gcRunMode = GarbageCollectorRunMode.RunAsynchronously, bool deactivateIfActive = true)
     {
         {
             using var tx1 = Connection.BeginTransaction();
@@ -1797,7 +1813,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         Debug.Assert(!loadout.IsVisible(), "loadout shouldn't be visible anymore");
 
         var metadata = GameInstallMetadata.Load(Connection.Db, loadout.InstallationInstance.GameMetadataId);
-        if (GameInstallMetadata.LastSyncedLoadout.TryGetValue(metadata, out var lastAppliedLoadout) && lastAppliedLoadout == loadoutId.Value)
+        if (deactivateIfActive && GameInstallMetadata.LastSyncedLoadout.TryGetValue(metadata, out var lastAppliedLoadout) && lastAppliedLoadout == loadoutId.Value)
         {
             await DeactivateCurrentLoadout(loadout.InstallationInstance);
         }
