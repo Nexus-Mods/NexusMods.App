@@ -10,6 +10,10 @@
         <Style Selector="^.LoadoutColumns_EnabledState">
             <Setter Property="HorizontalAlignment" Value="Left" />
 
+            <Style Selector="^ StackPanel">
+                <Setter Property="Spacing" Value="8" />
+            </Style>
+            
             <Style Selector="^ Border.LoadoutColumns_EnabledState_LockedEnabledState">
                 <!-- <Setter Property="Background" Value="DarkSlateGray" /> -->
                 <Style Selector="^ controls|StandardButton">
