@@ -517,17 +517,17 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
         
         void Section(string sectionName, Transaction.ReadOnly asOf)
         {
-            var entries = metadata.DiskStateAsOf(asOf);
+            var entries = Synchronizer.GetDiskStateForGameAsOf(metadata, TxId.From(asOf.Id.Value));;
             sb.AppendLine($"{sectionName} - ({entries.Count})");
             sb.AppendLine("| Path | Hash | Size |");
             sb.AppendLine("| --- | --- | --- |");
-            foreach (var entry in entries.OrderBy(e=> e.Path)) 
-                sb.AppendLine($"| {FmtPath(entry.Path)} | {entry.Hash} | {entry.Size} |");
+            foreach (var pair in entries.OrderBy(e=> e.Path)) 
+                sb.AppendLine($"| {FmtPath(pair.Path)} | {pair.Part.Hash} | {pair.Part.Size} |");
         }
         
-        static string FmtPath((EntityId entityId, LocationId locationId, RelativePath relativePath) targetPath)
+        static string FmtPath(GamePath targetPath)
         {
-            return $"{{{targetPath.locationId}, {targetPath.relativePath}}}";
+            return $"{{{targetPath.LocationId}, {targetPath.Path}}}";
         }
     }
 
