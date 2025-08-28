@@ -68,9 +68,10 @@ public class NxFileStore : IFileStore
     {
         var oldFrozenArchives = _archives;
         Dictionary<AbsolutePath, ArchiveContents> archives;
-        
+
         using (_lock.ReadLock())
         {
+
             archives = _archiveLocations
                 .SelectMany(folder => folder.EnumerateFiles(KnownExtensions.Nx))
                 .AsParallel()
