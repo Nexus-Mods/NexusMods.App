@@ -67,25 +67,30 @@ public class NxFileStore : IFileStore
     public void ReloadCaches()
     {
         var oldFrozenArchives = _archives;
+        Dictionary<AbsolutePath, ArchiveContents> archives;
         
-        var archives = _archiveLocations
-            .SelectMany(folder => folder.EnumerateFiles(KnownExtensions.Nx))
-            .AsParallel()
-            .Select(file =>
-                {
-                    var info = file.FileInfo;
-                    if (oldFrozenArchives.TryGetValue(file, out var oldArchive) && oldArchive.LastModified == info.LastWriteTimeUtc && oldArchive.Size == info.Size)
-                        return oldArchive;
+        using (_lock.ReadLock())
+        {
+            archives = _archiveLocations
+                .SelectMany(folder => folder.EnumerateFiles(KnownExtensions.Nx))
+                .AsParallel()
+                .Select(file =>
+                    {
+                        var info = file.FileInfo;
+                        if (oldFrozenArchives.TryGetValue(file, out var oldArchive) && oldArchive.LastModified == info.LastWriteTimeUtc && oldArchive.Size == info.Size)
+                            return oldArchive;
                     
-                    using var stream = file.Read();
-                    var provider = new FromStreamProvider(stream);
-                    var header = HeaderParser.ParseHeader(provider);
-                    Dictionary<Hash, FileEntry> entries = new();
-                    foreach (var entry in header.Entries)
-                        entries[Hash.From(entry.Hash)] = entry;
-                    return new ArchiveContents(file, info.Size, info.LastWriteTimeUtc, entries.ToFrozenDictionary());
-                }
-            ).ToDictionary(static x => x.ArchivePath);
+                        using var stream = file.Read();
+                        var provider = new FromStreamProvider(stream);
+                        var header = HeaderParser.ParseHeader(provider);
+                        Dictionary<Hash, FileEntry> entries = new();
+                        foreach (var entry in header.Entries)
+                            entries[Hash.From(entry.Hash)] = entry;
+                        return new ArchiveContents(file, info.Size, info.LastWriteTimeUtc, entries.ToFrozenDictionary());
+                    }
+                ).ToDictionary(static x => x.ArchivePath);
+        }
+        
         var index = new Dictionary<Hash, ArchiveContents>();
         
         foreach (var archive in archives.Values)
@@ -97,6 +102,54 @@ public class NxFileStore : IFileStore
         }
         _archivesByEntry = index.ToFrozenDictionary();
         _archives = archives.ToFrozenDictionary();
+    }
+
+    /// <summary>
+    /// Adds a newly created archive to the caches
+    /// Accesses the new archive's header to get the list of files
+    /// Uses a lock-free compare-and-swap approach to handle concurrent updates to the caches
+    /// </summary>
+    private void AddArchiveToCache(AbsolutePath archivePath)
+    {
+        // Read the new archive's header
+        using var stream = archivePath.Read();
+        var provider = new FromStreamProvider(stream);
+        var header = HeaderParser.ParseHeader(provider);
+        
+        var entries = new Dictionary<Hash, FileEntry>();
+        foreach (var entry in header.Entries)
+            entries[Hash.From(entry.Hash)] = entry;
+        
+        var info = archivePath.FileInfo;
+        var newArchive = new ArchiveContents(archivePath, info.Size, info.LastWriteTimeUtc, entries.ToFrozenDictionary());
+        
+        // Use compare-and-swap with retry to handle concurrent updates
+        while (true)
+        {
+            // Capture current state
+            var currentArchives = _archives;
+            var currentIndex = _archivesByEntry;
+            
+            // Create new dictionaries with the additional archive
+            var newArchives = currentArchives.ToDictionary();
+            newArchives[archivePath] = newArchive;
+            
+            var newIndex = currentIndex.ToDictionary();
+            foreach (var entry in newArchive.Entries)
+                newIndex[entry.Key] = newArchive;
+            
+            var newArchivesFrozen = newArchives.ToFrozenDictionary();
+            var newIndexFrozen = newIndex.ToFrozenDictionary();
+            
+            // Atomic compare-and-swap: only update if the references haven't changed
+            // In case of a partial update succeeding, retrying should be fine as the operation is idempotent
+            if (ReferenceEquals(Interlocked.CompareExchange(ref _archives, newArchivesFrozen, currentArchives), currentArchives) &&
+                ReferenceEquals(Interlocked.CompareExchange(ref _archivesByEntry, newIndexFrozen, currentIndex), currentIndex))
+            {
+                // Both updates completed atomically
+                break;
+            }
+        }
     }
 
     /// <inheritdoc />
@@ -146,8 +199,8 @@ public class NxFileStore : IFileStore
         var finalPath = outputPath.ReplaceExtension(KnownExtensions.Nx);
 
         await outputPath.MoveToAsync(finalPath, token: token);
-        await using var os = finalPath.Read();
-        ReloadCaches();
+        
+        AddArchiveToCache(finalPath);
     }
 
     /// <inheritdoc />
