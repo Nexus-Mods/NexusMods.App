@@ -274,6 +274,8 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
                 vm.State = GameWidgetState.RemovingGame;
                 await Task.Run(async () => await installation.GetGame().Synchronizer.UnManage(installation, cleanGameFolder: false));
                 vm.State = GameWidgetState.DetectedGame;
+                
+                Tracking.AddEvent(Events.Game.RevertManageOnDirty, new EventMetadata(name: $"{installation.Game.Name} - {installation.Store}"));
                 return;
             }
             if (result == clean)
@@ -281,7 +283,12 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
                 vm.State = GameWidgetState.AddingGame;
                 await CleanGameFolder(installation, loadout);
                 vm.State = GameWidgetState.ManagedGame;
+                
+                Tracking.AddEvent(Events.Game.CleanGameOnManage, new EventMetadata(name: $"{installation.Game.Name} - {installation.Store}"));
             }
+            
+            // do nothing, so keep the files
+            Tracking.AddEvent(Events.Game.KeepDirtyOnManage, new EventMetadata(name: $"{installation.Game.Name} - {installation.Store}"));
         }
         
         Tracking.AddEvent(Events.Game.AddGame, new EventMetadata(name: $"{installation.Game.Name} - {installation.Store}"));
