@@ -67,25 +67,31 @@ public class NxFileStore : IFileStore
     public void ReloadCaches()
     {
         var oldFrozenArchives = _archives;
+        Dictionary<AbsolutePath, ArchiveContents> archives;
         
-        var archives = _archiveLocations
-            .SelectMany(folder => folder.EnumerateFiles(KnownExtensions.Nx))
-            .AsParallel()
-            .Select(file =>
-                {
-                    var info = file.FileInfo;
-                    if (oldFrozenArchives.TryGetValue(file, out var oldArchive) && oldArchive.LastModified == info.LastWriteTimeUtc && oldArchive.Size == info.Size)
-                        return oldArchive;
+        {
+            using var readLock = _lock.ReadLock();
+            
+            archives = _archiveLocations
+                .SelectMany(folder => folder.EnumerateFiles(KnownExtensions.Nx))
+                .AsParallel()
+                .Select(file =>
+                    {
+                        var info = file.FileInfo;
+                        if (oldFrozenArchives.TryGetValue(file, out var oldArchive) && oldArchive.LastModified == info.LastWriteTimeUtc && oldArchive.Size == info.Size)
+                            return oldArchive;
                     
-                    using var stream = file.Read();
-                    var provider = new FromStreamProvider(stream);
-                    var header = HeaderParser.ParseHeader(provider);
-                    Dictionary<Hash, FileEntry> entries = new();
-                    foreach (var entry in header.Entries)
-                        entries[Hash.From(entry.Hash)] = entry;
-                    return new ArchiveContents(file, info.Size, info.LastWriteTimeUtc, entries.ToFrozenDictionary());
-                }
-            ).ToDictionary(static x => x.ArchivePath);
+                        using var stream = file.Read();
+                        var provider = new FromStreamProvider(stream);
+                        var header = HeaderParser.ParseHeader(provider);
+                        Dictionary<Hash, FileEntry> entries = new();
+                        foreach (var entry in header.Entries)
+                            entries[Hash.From(entry.Hash)] = entry;
+                        return new ArchiveContents(file, info.Size, info.LastWriteTimeUtc, entries.ToFrozenDictionary());
+                    }
+                ).ToDictionary(static x => x.ArchivePath);
+        }
+        
         var index = new Dictionary<Hash, ArchiveContents>();
         
         foreach (var archive in archives.Values)
