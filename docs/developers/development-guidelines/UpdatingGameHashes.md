@@ -92,11 +92,11 @@ Now for each major game store, the files need to be indexed.
 ### Indexing Steam Files
 First of all, login to Steam via the CLI (or the UI of the app):
 
-`dotnet run -- --as-main steam login`
+`dotnet run -- as-main steam login`
 
 Now index the game:
 
-`dotnet run -- --as-main steam app index -a {AppId} -o {GithubCloneFolder}/json`
+`dotnet run -- as-main steam app index -a {AppId} -o {GithubCloneFolder}/json`
 
 The AppId in this case is the Steam AppId, so check below for per-game instructions as many games have DLC and expansions
 that need to be indexed as well. Also notice how the path is postfixed with the `json` folder. This command will often 
@@ -106,11 +106,11 @@ need to rehash it. Be aware of this if you are debugging the code and need to co
 ### Indexing GOG Files
 For GOG, the process is very similar. First, login to GOG via the CLI (or the UI of the app):
 
-`dotnet run -- --as-main gog login`
+`dotnet run -- as-main gog login`
 
 Now index the game:
 
-`dotnet run -- --as-main gog app index -p {ProductId} -o {GithubCloneFolder}/json`
+`dotnet run -- as-main gog app index -p {ProductId} -o {GithubCloneFolder}/json`
 
 The rest is similar to the Steam indexing process.
 
