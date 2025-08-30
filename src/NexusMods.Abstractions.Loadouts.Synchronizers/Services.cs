@@ -1,3 +1,4 @@
+using fff;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.MnemonicDB.Abstractions;
 
@@ -13,6 +14,7 @@ public static class Services
     /// </summary>
     public static IServiceCollection AddLoadoutsSynchronizers(this IServiceCollection services)
     {
+        services.AddSynchronizerQueriesSql();
         return services;
     }
 }

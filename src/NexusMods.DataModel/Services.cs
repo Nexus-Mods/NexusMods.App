@@ -6,6 +6,7 @@ using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.GC;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Sorting;
+using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.Serialization.ExpressionGenerator;
 using NexusMods.DataModel.CommandLine.Verbs;
 using NexusMods.DataModel.Diagnostics;
@@ -41,7 +42,7 @@ public static class Services
         // Settings
         coll.AddSettings<DataModelSettings>();
         coll.AddSettingsStorageBackend<MnemonicDBSettingsBackend>(isDefault: true);
-        coll.AddAttributeCollection(typeof(Setting));
+        coll.AddSettingModel();
 
         coll.AddSingleton<DatomStoreSettings>(sp =>
             {
@@ -74,7 +75,7 @@ public static class Services
         // Game Registry
         coll.AddSingleton<IGameRegistry, GameRegistry.GameRegistry>();
         coll.AddHostedService(s => (GameRegistry.GameRegistry)s.GetRequiredService<IGameRegistry>());
-        coll.AddAttributeCollection(typeof(GameInstallMetadata));
+        coll.AddGameInstallMetadataModel();
         
         // File Store
         coll.AddAllSingleton<IFileStore, NxFileStore>();
@@ -82,6 +83,7 @@ public static class Services
         coll.AddAllSingleton<IToolManager, ToolManager>();
 
         // Disk State and Synchronizer
+        coll.AddLoadoutsSynchronizers();
         coll.AddDiskStateEntryModel();
         coll.AddAllSingleton<ISynchronizerService, SynchronizerService>();
 

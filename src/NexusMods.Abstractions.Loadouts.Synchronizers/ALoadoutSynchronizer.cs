@@ -197,6 +197,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
     public Dictionary<GamePath, SyncNode> BuildSyncTree<T>(T latestDiskState, T previousDiskState, Loadout.ReadOnly loadout) where T : IEnumerable<PathPartPair>
     {
+        var sw = Stopwatch.StartNew();
         var referenceDb = _fileHashService.Current;
         Dictionary<GamePath, SyncNode> syncTree = new();
         
@@ -292,6 +293,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         }
         
         MergeStates(latestDiskState, previousDiskState, syncTree);
+        Console.WriteLine($"Built sync tree in {sw.ElapsedMilliseconds}ms");
         return syncTree;
     }
 

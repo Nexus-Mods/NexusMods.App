@@ -76,7 +76,7 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable
             };
 
             var store = new DatomStore(_provider.GetRequiredService<ILogger<DatomStore>>(), settings, backend);
-            var connection = new Connection(_provider.GetRequiredService<ILogger<Connection>>(), store, _provider, [], readOnlyMode: true);
+            var connection = new Connection(_provider.GetRequiredService<ILogger<Connection>>(), store, _provider, [], readOnlyMode: true, prefix: "hashes", queryEngine: _provider.GetRequiredService<IQueryEngine>());
             var connectedDb = new ConnectedDb(connection.Db, store, backend, databaseInfo);
 
             _databases[databaseInfo.Path] = connectedDb;

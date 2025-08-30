@@ -21,5 +21,10 @@
     <ItemGroup>
       <InternalsVisibleTo Include="NexusMods.Benchmarks" />
     </ItemGroup>
+    <ItemGroup>
+      <None Remove="SynchronizerQueries.sql" />
+      <AdditionalFiles Include="SynchronizerQueries.sql" />
+      <UpToDateCheckInput Include="SynchronizerQueries.sql"/>
+    </ItemGroup>
 
 </Project>

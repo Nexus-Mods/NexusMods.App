@@ -1,6 +1,7 @@
 using System.Buffers;
 using System.Collections.Concurrent;
 using System.Collections.Frozen;
+using System.Collections.Immutable;
 using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Settings;
@@ -18,6 +19,7 @@ using NexusMods.Paths;
 using NexusMods.Paths.Utilities;
 using NexusMods.Sdk.Threading;
 using System.Diagnostics;
+using NexusMods.DataModel.TableFunctions;
 using NexusMods.Sdk.FileStore;
 using NexusMods.Sdk.IO;
 
@@ -62,7 +64,10 @@ public class NxFileStore : IFileStore
 
         _logger = logger;
         ReloadCaches();
+        conn.DuckDBQueryEngine.Register(new FileStoreTableFunction(this));
     }
+
+    public ImmutableArray<Hash> AllHashes => _archivesByEntry.Keys;
 
     public void ReloadCaches()
     {
