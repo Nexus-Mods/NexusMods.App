@@ -3,6 +3,7 @@ using NexusMods.Abstractions.GameLocators.GameCapabilities;
 using NexusMods.Abstractions.GameLocators.Stores.GOG;
 using NexusMods.Abstractions.GameLocators.Stores.Steam;
 using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Paths;
 using NexusMods.Sdk.IO;
@@ -31,6 +32,8 @@ public class Fallout4 : AGame, ISteamGame, IGogGame
     {
         return [];
     }
+
+    protected override ILoadoutSynchronizer MakeSynchronizer(IServiceProvider provider) => new Fallout4Synchronizer(provider);
 
     public override SupportType SupportType => SupportType.Unsupported;
     public IEnumerable<uint> SteamIds => [377160];

@@ -4,6 +4,7 @@ using NexusMods.Abstractions.Steam;
 using NexusMods.Abstractions.Steam.DTOs;
 using NexusMods.Abstractions.Steam.Values;
 using NexusMods.Networking.Steam.DTOs;
+using NexusMods.Networking.Steam.Exceptions;
 using NexusMods.Paths;
 using NexusMods.Sdk.IO;
 using Polly;
@@ -241,7 +242,7 @@ public class Session : ISteamSession
         if (requestCodeResult == 0)
         {
             _logger.LogWarning("Failed to get request code for depot {0} manifest {1}", depotId.Value, manifestId.Value);
-            throw new Exception("Failed to get request code for depot " + depotId.Value + " manifest " + manifestId.Value);
+            throw new FailedToGetRequestCode(appId, depotId, manifestId);
         }
 
         _logger.LogInformation("Got request code depot {1} manifest {2}", depotId.Value, manifestId.Value);
