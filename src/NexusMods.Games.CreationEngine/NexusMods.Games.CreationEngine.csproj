@@ -12,6 +12,10 @@
       <EmbeddedResource Include="Resources\SkyrimSE\thumbnail.webp" />
       <None Remove="Resources\SkyrimSE\tile.webp" />
       <EmbeddedResource Include="Resources\SkyrimSE\tile.webp" />
+      <None Remove="Resources\Fallout4\thumbnail.webp" />
+      <EmbeddedResource Include="Resources\Fallout4\thumbnail.webp" />
+      <None Remove="Resources\Fallout4\tile.webp" />
+      <EmbeddedResource Include="Resources\Fallout4\tile.webp" />
     </ItemGroup>
 
 </Project>
