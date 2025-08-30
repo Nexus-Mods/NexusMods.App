@@ -67,6 +67,8 @@ public class SynchronizerService : ISynchronizerService
             {
                 var db = _conn.Db;
                 var loadout = Loadout.Load(db, loadoutId);
+                if (!loadout.IsValid())
+                    return ValueTask.FromResult(false);
                 var synchronizer = loadout.InstallationInstance.GetGame().Synchronizer;
                 var metaData = GameInstallMetadata.Load(db, loadout.InstallationInstance.GameMetadataId);
                 var hasPreviousLoadout = GameInstallMetadata.LastSyncedLoadoutTransaction.TryGetValue(metaData, out var lastId);

@@ -23,7 +23,7 @@ public class Dialog : IDialog
     /// <returns>A task that represents the asynchronous operation, containing the result of the dialog.</returns>
     public Task<StandardDialogResult> Show(Window owner, bool isModal = false)
     {
-        return DispatcherHelper.EnsureOnUIThreadAsync(() =>
+        return DispatcherHelper.EnsureOnUIThreadAsync(async () =>
             {
                 var window = new DialogWindow()
                 {
@@ -62,11 +62,11 @@ public class Dialog : IDialog
 
                 // show the window in the taskbar if it's not modal
                 if (isModal)
-                    window.Show(owner);
+                    await window.ShowDialog(owner);
                 else
                     window.Show();
 
-                return tcs.Task;
+                return await tcs.Task;
             }
         );
     }

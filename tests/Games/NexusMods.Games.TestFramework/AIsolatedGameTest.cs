@@ -503,10 +503,12 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
         if (!string.IsNullOrEmpty(comments))
             sb.AppendLine(comments);
         
-        Section("### Initial State", metadata.InitialDiskStateTransaction);
+        if (metadata.Contains(GameInstallMetadata.InitialDiskStateTransaction))
+            Section("### Initial State", metadata.InitialDiskStateTransaction);
         if (metadata.Contains(GameInstallMetadata.LastSyncedLoadoutTransaction)) 
             Section("### Last Synced State", metadata.LastSyncedLoadoutTransaction);
-        Section("### Current State", metadata.LastScannedDiskStateTransaction);
+        if (metadata.Contains(GameInstallMetadata.LastScannedDiskStateTransaction))
+            Section("### Current State", metadata.LastScannedDiskStateTransaction);
         if (loadouts is not null)
         {
             foreach (var loadout in loadouts)

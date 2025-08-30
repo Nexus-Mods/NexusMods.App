@@ -18,6 +18,7 @@ public class DialogStandardContentDesignViewModel : AViewModel<IDialogStandardCo
     public string Heading { get; } = "Sample Heading";
     public IconValue? Icon { get; } = IconValues.Cog;
     public IMarkdownRendererViewModel? MarkdownRenderer { get; }
+    public bool ShowMarkdownCopyButton { get; } = true;
     [Reactive] public string InputText { get; set; } = "Sample input text";
     public string InputLabel { get; set; } = "Sample Input Label";
     public string InputWatermark { get; set; } = "Enter text here...";

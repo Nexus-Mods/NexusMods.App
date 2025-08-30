@@ -9,6 +9,7 @@ public struct StandardDialogParameters
     public string Heading { get; set; }
     public IconValue? Icon { get; set; }
     public IMarkdownRendererViewModel? Markdown { get; set; }
+    public bool ShowMarkdownCopyButton { get; set; }
     public string InputLabel { get; set; }
     public string InputWatermark { get; set; }
     public string InputText { get; set; }

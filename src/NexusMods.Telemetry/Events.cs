@@ -16,6 +16,9 @@ public static class Events
         public static readonly EventDefinition RemoveGame = new(Category, Action: "Remove Game");
         public static readonly EventDefinition LaunchGame = new(Category, Action: "Launch Game");
         public static readonly EventDefinition ExitGame = new(Category, Action: "Exit Game");
+        public static readonly EventDefinition CleanGameOnManage = new(Category, Action: "Clean Game On Manage");
+        public static readonly EventDefinition KeepDirtyOnManage = new(Category, Action: "Keep Dirty On Game");
+        public static readonly EventDefinition RevertManageOnDirty = new(Category, Action: "Revert Game Manage On Dirty");
     }
 
     public static class Loadout
