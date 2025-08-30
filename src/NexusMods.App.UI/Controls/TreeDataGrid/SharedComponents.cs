@@ -1,0 +1,43 @@
+using NexusMods.Abstractions.UI;
+using R3;
+
+namespace NexusMods.App.UI.Controls;
+
+/// <summary>
+/// Collection of shared IItemModelComponents that can be used in TreeDataGrid.
+/// </summary>
+public static class SharedComponents
+{
+    public sealed class ViewModPageAction : ReactiveR3Object, IItemModelComponent<ViewModPageAction>, IComparable<ViewModPageAction>
+    {
+        public ReactiveCommand<Unit> CommandViewModPage { get; } = new();
+        public IReadOnlyBindableReactiveProperty<bool> IsEnabled { get; }
+
+        public int CompareTo(ViewModPageAction? other)
+        {
+            if (other is null) return 1;
+            return 0; // All view mod page actions are considered equal for sorting
+        }
+
+        public ViewModPageAction(bool isEnabled = true)
+        {
+            IsEnabled = new BindableReactiveProperty<bool>(isEnabled);
+        }
+
+        private bool _isDisposed;
+        protected override void Dispose(bool disposing)
+        {
+            if (!_isDisposed)
+            {
+                if (disposing)
+                {
+                    Disposable.Dispose(CommandViewModPage, IsEnabled);
+                }
+
+                _isDisposed = true;
+            }
+
+            base.Dispose(disposing);
+        }
+    }
+}

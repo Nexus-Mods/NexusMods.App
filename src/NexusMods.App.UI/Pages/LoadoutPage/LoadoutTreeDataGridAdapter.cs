@@ -3,6 +3,7 @@ using Avalonia.Controls.Models.TreeDataGrid;
 using DynamicData;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.MnemonicDB.Abstractions;
@@ -14,20 +15,23 @@ namespace NexusMods.App.UI.Pages.LoadoutPage;
 public readonly record struct ToggleEnableStateMessage(LoadoutItemId[] Ids);
 
 public readonly record struct OpenCollectionMessage(LoadoutItemId[] Ids, NavigationInformation NavigationInformation);
+public readonly record struct ViewModPageMessage(LoadoutItemId[] Ids);
 
 public class LoadoutTreeDataGridAdapter :
     TreeDataGridAdapter<CompositeItemModel<EntityId>, EntityId>,
-    ITreeDataGirdMessageAdapter<OneOf<ToggleEnableStateMessage, OpenCollectionMessage>>
+    ITreeDataGirdMessageAdapter<OneOf<ToggleEnableStateMessage, OpenCollectionMessage, ViewModPageMessage>>
 {
-    public Subject<OneOf<ToggleEnableStateMessage, OpenCollectionMessage>> MessageSubject { get; } = new();
+    public Subject<OneOf<ToggleEnableStateMessage, OpenCollectionMessage, ViewModPageMessage>> MessageSubject { get; } = new();
 
     private readonly ILoadoutDataProvider[] _loadoutDataProviders;
     private readonly LoadoutFilter _loadoutFilter;
+    private readonly IConnection _connection;
 
     public LoadoutTreeDataGridAdapter(IServiceProvider serviceProvider, LoadoutFilter loadoutFilter)
     {
         _loadoutDataProviders = serviceProvider.GetServices<ILoadoutDataProvider>().ToArray();
         _loadoutFilter = loadoutFilter;
+        _connection = serviceProvider.GetRequiredService<IConnection>();
     }
 
     protected override IObservable<IChangeSet<CompositeItemModel<EntityId>, EntityId>> GetRootsObservable(bool viewHierarchical)
@@ -89,6 +93,18 @@ public class LoadoutTreeDataGridAdapter :
                     self.MessageSubject.OnNext(new OpenCollectionMessage(ids, navInfo));
                 }
             )
+        );
+        
+        model.SubscribeToComponentAndTrack<SharedComponents.ViewModPageAction, LoadoutTreeDataGridAdapter>(
+            key: LoadoutColumns.EnabledState.ViewModPageComponentKey,
+            state: this,
+            factory: static (self, itemModel, component) => component.CommandViewModPage.Subscribe((self, itemModel, component), static (_, state) =>
+            {
+                var (self, model, _) = state;
+                var ids = GetLoadoutItemIds(model).ToArray();
+
+                self.MessageSubject.OnNext(new ViewModPageMessage(ids));
+            })
         );
     }
 

@@ -1161,7 +1161,7 @@ public class LibraryTreeDataGridAdapter :
             })
         );
 
-        model.SubscribeToComponentAndTrack<LibraryComponents.ViewModPageAction, LibraryTreeDataGridAdapter>(
+        model.SubscribeToComponentAndTrack<SharedComponents.ViewModPageAction, LibraryTreeDataGridAdapter>(
             key: LibraryColumns.Actions.ViewModPageComponentKey,
             state: this,
             factory: static (self, itemModel, component) => component.CommandViewModPage.Subscribe((self, itemModel, component), static (_, state) =>

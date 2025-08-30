@@ -82,8 +82,8 @@ public static class LibraryColumns
             var aViewChangelog = a.GetOptional<LibraryComponents.ViewChangelogAction>(key: ViewChangelogComponentKey);
             var bViewChangelog = b.GetOptional<LibraryComponents.ViewChangelogAction>(key: ViewChangelogComponentKey);
 
-            var aViewModPage = a.GetOptional<LibraryComponents.ViewModPageAction>(key: ViewModPageComponentKey);
-            var bViewModPage = b.GetOptional<LibraryComponents.ViewModPageAction>(key: ViewModPageComponentKey);
+            var aViewModPage = a.GetOptional<SharedComponents.ViewModPageAction>(key: ViewModPageComponentKey);
+            var bViewModPage = b.GetOptional<SharedComponents.ViewModPageAction>(key: ViewModPageComponentKey);
 
             var aHideUpdates = a.GetOptional<LibraryComponents.HideUpdatesAction>(key: HideUpdatesComponentKey);
             var bHideUpdates = b.GetOptional<LibraryComponents.HideUpdatesAction>(key: HideUpdatesComponentKey);
@@ -100,7 +100,7 @@ public static class LibraryColumns
                 Optional<LibraryComponents.InstallAction> install, 
                 Optional<LibraryComponents.UpdateAction> update, 
                 Optional<LibraryComponents.ViewChangelogAction> viewChangelog, 
-                Optional<LibraryComponents.ViewModPageAction> viewModPage, 
+                Optional<SharedComponents.ViewModPageAction> viewModPage, 
                 Optional<LibraryComponents.HideUpdatesAction> hideUpdates, 
                 Optional<LibraryComponents.DeleteItemAction> deleteItem)
             {
@@ -516,38 +516,6 @@ public static class LibraryComponents
         }
     }
 
-    public sealed class ViewModPageAction : ReactiveR3Object, IItemModelComponent<ViewModPageAction>, IComparable<ViewModPageAction>
-    {
-        public ReactiveCommand<Unit> CommandViewModPage { get; } = new();
-        public IReadOnlyBindableReactiveProperty<bool> IsEnabled { get; }
-
-        public int CompareTo(ViewModPageAction? other)
-        {
-            if (other is null) return 1;
-            return 0; // All view mod page actions are considered equal for sorting
-        }
-
-        public ViewModPageAction(bool isEnabled = true)
-        {
-            IsEnabled = new BindableReactiveProperty<bool>(isEnabled);
-        }
-
-        private bool _isDisposed;
-        protected override void Dispose(bool disposing)
-        {
-            if (!_isDisposed)
-            {
-                if (disposing)
-                {
-                    Disposable.Dispose(CommandViewModPage, IsEnabled);
-                }
-
-                _isDisposed = true;
-            }
-
-            base.Dispose(disposing);
-        }
-    }
     
     public sealed class DeleteItemAction : ReactiveR3Object, IItemModelComponent<DeleteItemAction>, IComparable<DeleteItemAction>
     {

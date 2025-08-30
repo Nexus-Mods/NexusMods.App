@@ -159,6 +159,7 @@ public static class LoadoutColumns
         public static readonly ComponentKey ParentCollectionDisabledComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(LoadoutComponents.ParentCollectionDisabled));
         public static readonly ComponentKey LockedEnabledStateComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(LoadoutComponents.LockedEnabledState));
         public static readonly ComponentKey MixLockedAndParentDisabledComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(LoadoutComponents.MixLockedAndParentDisabled));
+        public static readonly ComponentKey ViewModPageComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(SharedComponents.ViewModPageAction));
         public static string GetColumnHeader() => "Actions";
         public static string GetColumnTemplateResourceKey() => ColumnTemplateResourceKey;
     }

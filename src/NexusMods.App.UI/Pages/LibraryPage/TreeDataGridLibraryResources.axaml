@@ -154,7 +154,7 @@
            
             <!-- more options -->
             <controls:StandardButton
-                ToolTip.Tip="{x:Static resources:Language.Library_MoreOptions_ToolTip}"
+                ToolTip.Tip="{x:Static resources:Language.Menu_MoreOptions_ToolTip}"
                 x:Name="HamburgerMenuButton"
                 LeftIcon="{x:Static icons:IconValues.MoreVertical}"
                 ShowIcon="Left"
@@ -251,10 +251,10 @@
                         <!-- View Mod Page -->
                         <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
                             <controls:ComponentControl.ComponentTemplate>
-                                <controls:ComponentTemplate x:TypeArguments="local:LibraryComponents+ViewModPageAction"
+                                <controls:ComponentTemplate x:TypeArguments="controls:SharedComponents+ViewModPageAction"
                                                             ComponentKey="{x:Static local:LibraryColumns+Actions.ViewModPageComponentKey}">
                                     <controls:ComponentTemplate.DataTemplate>
-                                        <DataTemplate DataType="{x:Type local:LibraryComponents+ViewModPageAction}">
+                                        <DataTemplate DataType="{x:Type controls:SharedComponents+ViewModPageAction}">
                                             <MenuItem Header="{x:Static resources:Language.Library_ViewModPage_Text}"
                                                       Command="{CompiledBinding CommandViewModPage}"
                                                       IsEnabled="{CompiledBinding IsEnabled.Value}">

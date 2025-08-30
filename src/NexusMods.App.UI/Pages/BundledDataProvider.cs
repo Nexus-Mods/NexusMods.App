@@ -4,6 +4,7 @@ using DynamicData.Aggregation;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Collections;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Pages.LoadoutPage;
 using NexusMods.MnemonicDB.Abstractions;
@@ -49,7 +50,7 @@ public class BundledDataProvider : ILoadoutDataProvider
         var childrenObservable = UIObservableExtensions.ReturnFactory(() =>
             new ChangeSet<CompositeItemModel<EntityId>, EntityId>(
                 [
-                    new Change<CompositeItemModel<EntityId>, EntityId>(ChangeReason.Add, item.Id, LoadoutDataProviderHelper.ToChildItemModel(_connection, loadoutItem)),
+                    new Change<CompositeItemModel<EntityId>, EntityId>(ChangeReason.Add, item.Id, ToBundledChildLoadoutItemModel(_connection, loadoutItem)),
                 ]
             )
         );
@@ -71,7 +72,15 @@ public class BundledDataProvider : ILoadoutDataProvider
         LoadoutDataProviderHelper.AddParentCollectionDisabled(_connection, parentItemModel, loadoutItem);
         LoadoutDataProviderHelper.AddLockedEnabledState(parentItemModel, loadoutItem);
         LoadoutDataProviderHelper.AddEnabledStateToggle(_connection, parentItemModel, loadoutItem);
+        LoadoutDataProviderHelper.AddViewModPageActionComponent(parentItemModel, isEnabled: false);
 
         return parentItemModel;
+    }
+    
+    private static CompositeItemModel<EntityId> ToBundledChildLoadoutItemModel(IConnection connection, LoadoutItem.ReadOnly loadoutItem)
+    {
+        var childModel = LoadoutDataProviderHelper.ToChildItemModel(connection, loadoutItem);
+        LoadoutDataProviderHelper.AddViewModPageActionComponent(childModel, isEnabled: false);
+        return childModel;
     }
 }

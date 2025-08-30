@@ -1073,7 +1073,7 @@ Keep the downloaded files in your library in case you want to retry the installa
     <data name="Library_UpdateMod_ToolTip" xml:space="preserve">
         <value>Update mod</value>
     </data>
-    <data name="Library_MoreOptions_ToolTip" xml:space="preserve">
+    <data name="Menu_MoreOptions_ToolTip" xml:space="preserve">
         <value>More options</value>
     </data>
     <data name="Library_UpdateModAndReplace_ToolTip" xml:space="preserve">

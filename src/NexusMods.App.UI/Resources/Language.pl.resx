@@ -1026,7 +1026,7 @@ Zachować pobrane pliki w bibliotece na wypadek późniejszej próby instalacji?
 	<data name="Library_UpdateMod_ToolTip" xml:space="preserve">
 		<value>Zaktualizuj mod</value>
 	</data>
-	<data name="Library_MoreOptions_ToolTip" xml:space="preserve">
+	<data name="Menu_MoreOptions_ToolTip" xml:space="preserve">
 		<value>Więcej opcji</value>
 	</data>
 	<data name="Library_UpdateModAndReplace_ToolTip" xml:space="preserve">
