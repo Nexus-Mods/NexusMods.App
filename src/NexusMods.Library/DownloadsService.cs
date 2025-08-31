@@ -13,6 +13,7 @@ using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Sdk;
+using NexusMods.App.UI.Extensions;
 
 namespace NexusMods.Library;
 
@@ -51,27 +52,14 @@ public sealed class DownloadsService : IDownloadsService, IDisposable
         // TODO: Move completed download jobs to a field in this class, as we don't persist them in JobMonitor.
 
         // Monitor Nexus Mods download jobs and transform them into DownloadInfo
+        var adapter = new SourceCacheAdapter<DownloadInfo, DownloadId>(_downloadCache);
         _jobMonitor.GetObservableChangeSet<NexusModsDownloadJob>()
-            .Subscribe(changes =>
+            .Transform(job =>
             {
-                foreach (var change in changes)
-                {
-                    var nexusJob = (NexusModsDownloadJob)change.Current.Definition;
-                    var info = CreateDownloadInfo(nexusJob, nexusJob.HttpDownloadJob.Job);
-                    
-                    switch (change.Reason)
-                    {
-                        case ChangeReason.Add:
-                        case ChangeReason.Update:
-                        case ChangeReason.Refresh:
-                            _downloadCache.AddOrUpdate(info);
-                            break;
-                        case ChangeReason.Remove:
-                            _downloadCache.RemoveKey(info.Id);
-                            break;
-                    }
-                }
+                var nexusJob = (NexusModsDownloadJob)job.Definition;
+                return CreateDownloadInfo(nexusJob, nexusJob.HttpDownloadJob.Job);
             })
+            .Subscribe(adapter.Adapt)
             .DisposeWith(_disposables);
             
         // Update download info with a 0.5s poll.
