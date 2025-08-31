@@ -80,7 +80,7 @@ public interface IDownloadsService
     /// <summary>
     /// Cancels selected downloads.
     /// </summary>
-    void CancelSelected(IEnumerable<JobId> jobIds);
+    void CancelRange(IEnumerable<JobId> jobIds);
     
     /// <summary>
     /// Resolves a library file for a completed download using FileId/GameId matching.

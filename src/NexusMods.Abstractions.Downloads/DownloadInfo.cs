@@ -56,14 +56,9 @@ public class DownloadInfo : ReactiveObject
     [Reactive] public JobStatus Status { get; set; }
     
     /// <summary>
-    /// Source URL of the download.
-    /// </summary>
-    [Reactive] public Optional<Uri> DownloadUri { get; set; }
-    
-    /// <summary>
     /// The page URL where the download originated.
     /// </summary>
-    [Reactive] public Uri DownloadPageUri { get; set; } = null!;
+    [Reactive] public Optional<Uri> DownloadPageUri { get; set; }
     
     /// <summary>
     /// When the download completed.

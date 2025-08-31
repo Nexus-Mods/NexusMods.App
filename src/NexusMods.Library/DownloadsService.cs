@@ -129,7 +129,7 @@ public sealed class DownloadsService : IDownloadsService, IDisposable
                 _jobMonitor.Resume(download.Id);
         }
     }
-    public void CancelSelected(IEnumerable<JobId> jobIds)
+    public void CancelRange(IEnumerable<JobId> jobIds)
     {
         foreach (var jobId in jobIds)
             _jobMonitor.Cancel(jobId);
@@ -159,7 +159,6 @@ public sealed class DownloadsService : IDownloadsService, IDisposable
         info.DownloadedBytes = GetDownloadedBytes(state);
         info.TransferRate = Size.FromLong((long)(httpDownloadJob.RateOfProgress.HasValue ? httpDownloadJob.RateOfProgress.Value : 0));
         info.Status = httpDownloadJob.Status;
-        info.DownloadUri = httpJobDefinition.Uri;
         info.DownloadPageUri = httpJobDefinition.DownloadPageUri;
         info.CompletedAt = httpDownloadJob.Status == JobStatus.Completed ? DateTimeOffset.UtcNow : Optional<DateTimeOffset>.None;
     }
