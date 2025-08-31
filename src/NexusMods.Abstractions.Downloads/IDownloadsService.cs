@@ -19,28 +19,23 @@ public interface IDownloadsService
     /// <summary>
     /// Observable of all active downloads (Running or Paused status).
     /// </summary>
-    IObservable<IChangeSet<DownloadInfo, JobId>> ActiveDownloads { get; }
+    IObservable<IChangeSet<DownloadInfo, DownloadId>> ActiveDownloads { get; }
     
     /// <summary>
     /// Observable of all completed downloads.
     /// </summary>
-    IObservable<IChangeSet<DownloadInfo, JobId>> CompletedDownloads { get; }
+    IObservable<IChangeSet<DownloadInfo, DownloadId>> CompletedDownloads { get; }
     
     /// <summary>
     /// Observable of all downloads regardless of status.
     /// </summary>
-    IObservable<IChangeSet<DownloadInfo, JobId>> AllDownloads { get; }
+    IObservable<IChangeSet<DownloadInfo, DownloadId>> AllDownloads { get; }
     
     /// <summary>
     /// Get downloads filtered by game.
     /// </summary>
-    IObservable<IChangeSet<DownloadInfo, JobId>> GetDownloadsForGame(GameId gameId);
+    IObservable<IChangeSet<DownloadInfo, DownloadId>> GetDownloadsForGame(GameId gameId);
     
-    
-    /// <summary>
-    /// Pauses a specific download.
-    /// </summary>
-    void PauseDownload(JobId jobId);
     
     /// <summary>
     /// Pauses a specific download.
@@ -50,17 +45,7 @@ public interface IDownloadsService
     /// <summary>
     /// Resumes a specific download.
     /// </summary>
-    void ResumeDownload(JobId jobId);
-    
-    /// <summary>
-    /// Resumes a specific download.
-    /// </summary>
     void ResumeDownload(DownloadInfo downloadInfo);
-    
-    /// <summary>
-    /// Cancels a specific download.
-    /// </summary>
-    void CancelDownload(JobId jobId);
     
     /// <summary>
     /// Cancels a specific download.
@@ -80,7 +65,7 @@ public interface IDownloadsService
     /// <summary>
     /// Cancels selected downloads.
     /// </summary>
-    void CancelRange(IEnumerable<JobId> jobIds);
+    void CancelRange(IEnumerable<DownloadInfo> downloads);
     
     /// <summary>
     /// Resolves a library file for a completed download using FileId/GameId matching.

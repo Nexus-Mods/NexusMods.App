@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using DynamicData;
@@ -27,7 +28,10 @@ public sealed class DownloadsService : IDownloadsService, IDisposable
     private readonly IConnection _connection;
     private readonly CompositeDisposable _disposables = new();
     
-    private readonly SourceCache<DownloadInfo, JobId> _downloadCache = new(x => x.Id);
+    // Mapping from JobId to DownloadId to maintain consistency
+    private readonly ConcurrentDictionary<JobId, DownloadId> _jobIdToDownloadId = new();
+    
+    private readonly SourceCache<DownloadInfo, DownloadId> _downloadCache = new(x => x.Id);
     
     /// <summary>
     /// Constructor.
@@ -48,11 +52,26 @@ public sealed class DownloadsService : IDownloadsService, IDisposable
 
         // Monitor Nexus Mods download jobs and transform them into DownloadInfo
         _jobMonitor.GetObservableChangeSet<NexusModsDownloadJob>()
-            .Transform(job => {
-                var nexusJob = (NexusModsDownloadJob)job.Definition;
-                return CreateDownloadInfo(nexusJob, nexusJob.HttpDownloadJob.Job);
+            .Subscribe(changes =>
+            {
+                foreach (var change in changes)
+                {
+                    var nexusJob = (NexusModsDownloadJob)change.Current.Definition;
+                    var info = CreateDownloadInfo(nexusJob, nexusJob.HttpDownloadJob.Job);
+                    
+                    switch (change.Reason)
+                    {
+                        case ChangeReason.Add:
+                        case ChangeReason.Update:
+                        case ChangeReason.Refresh:
+                            _downloadCache.AddOrUpdate(info);
+                            break;
+                        case ChangeReason.Remove:
+                            _downloadCache.RemoveKey(info.Id);
+                            break;
+                    }
+                }
             })
-            .PopulateInto(_downloadCache)
             .DisposeWith(_disposables);
             
         // Update download info with a 0.5s poll.
@@ -68,16 +87,14 @@ public sealed class DownloadsService : IDownloadsService, IDisposable
                     if (change.Reason is not (ChangeReason.Refresh or ChangeReason.Update))
                         continue;
 
-                    if (_downloadCache.Lookup(change.Current.Id).HasValue)
+                    // Look up the DownloadId for this JobId
+                    if (_jobIdToDownloadId.TryGetValue(change.Current.Id, out var downloadId))
                     {
-                        var nexusJob = (NexusModsDownloadJob)change.Current.Definition;
-                        UpdateDownloadInfo(_downloadCache.Lookup(change.Current.Id).Value, nexusJob, nexusJob.HttpDownloadJob.Job);
-                    }
-                    else
-                    {
-                        var nexusJob = (NexusModsDownloadJob)change.Current.Definition;
-                        var info = CreateDownloadInfo(nexusJob, nexusJob.HttpDownloadJob.Job);
-                        _downloadCache.AddOrUpdate(info);
+                        if (_downloadCache.Lookup(downloadId).HasValue)
+                        {
+                            var nexusJob = (NexusModsDownloadJob)change.Current.Definition;
+                            UpdateDownloadInfo(_downloadCache.Lookup(downloadId).Value, nexusJob, nexusJob.HttpDownloadJob.Job);
+                        }
                     }
                 }
             })
@@ -85,39 +102,48 @@ public sealed class DownloadsService : IDownloadsService, IDisposable
     }
     
     // Observable properties implementation
-    public IObservable<IChangeSet<DownloadInfo, JobId>> ActiveDownloads => 
+    public IObservable<IChangeSet<DownloadInfo, DownloadId>> ActiveDownloads => 
         _downloadCache.Connect()
             .AutoRefresh(x => x.Status)
             .Filter(x => x.Status.IsActive());
     
-    public IObservable<IChangeSet<DownloadInfo, JobId>> CompletedDownloads =>
+    public IObservable<IChangeSet<DownloadInfo, DownloadId>> CompletedDownloads =>
         _downloadCache.Connect()
             .AutoRefresh(x => x.Status)
             .Filter(x => x.Status == JobStatus.Completed);
     
-    public IObservable<IChangeSet<DownloadInfo, JobId>> AllDownloads =>
+    public IObservable<IChangeSet<DownloadInfo, DownloadId>> AllDownloads =>
         _downloadCache.Connect();
     
-    public IObservable<IChangeSet<DownloadInfo, JobId>> GetDownloadsForGame(GameId gameId) =>
+    public IObservable<IChangeSet<DownloadInfo, DownloadId>> GetDownloadsForGame(GameId gameId) =>
         _downloadCache.Connect()
             .Filter(x => x.GameId.Equals(gameId));
     
     
     // Control operations
-    public void PauseDownload(JobId jobId) => _jobMonitor.Pause(jobId);
-    public void PauseDownload(DownloadInfo downloadInfo) => _jobMonitor.Pause(downloadInfo.Id);
+    public void PauseDownload(DownloadInfo downloadInfo) 
+    {
+        if (downloadInfo.JobId.HasValue)
+            _jobMonitor.Pause(downloadInfo.JobId.Value);
+    }
     
-    public void ResumeDownload(JobId jobId) => _jobMonitor.Resume(jobId);
-    public void ResumeDownload(DownloadInfo downloadInfo) => _jobMonitor.Resume(downloadInfo.Id);
+    public void ResumeDownload(DownloadInfo downloadInfo) 
+    {
+        if (downloadInfo.JobId.HasValue)
+            _jobMonitor.Resume(downloadInfo.JobId.Value);
+    }
     
-    public void CancelDownload(JobId jobId) => _jobMonitor.Cancel(jobId);
-    public void CancelDownload(DownloadInfo downloadInfo) => _jobMonitor.Cancel(downloadInfo.Id);
+    public void CancelDownload(DownloadInfo downloadInfo) 
+    {
+        if (downloadInfo.JobId.HasValue)
+            _jobMonitor.Cancel(downloadInfo.JobId.Value);
+    }
     public void PauseAll()
     {
         foreach (var download in _downloadCache.Items)
         {
-            if (download.Status == JobStatus.Running)
-                _jobMonitor.Pause(download.Id);
+            if (download.Status == JobStatus.Running && download.JobId.HasValue)
+                _jobMonitor.Pause(download.JobId.Value);
         }
     }
 
@@ -125,21 +151,28 @@ public sealed class DownloadsService : IDownloadsService, IDisposable
     {
         foreach (var download in _downloadCache.Items)
         {
-            if (download.Status == JobStatus.Paused)
-                _jobMonitor.Resume(download.Id);
+            if (download.Status == JobStatus.Paused && download.JobId.HasValue)
+                _jobMonitor.Resume(download.JobId.Value);
         }
     }
-    public void CancelRange(IEnumerable<JobId> jobIds)
+    public void CancelRange(IEnumerable<DownloadInfo> downloads)
     {
-        foreach (var jobId in jobIds)
-            _jobMonitor.Cancel(jobId);
+        foreach (var download in downloads)
+        {
+            if (download.JobId.HasValue)
+                _jobMonitor.Cancel(download.JobId.Value);
+        }
     }
     
     private DownloadInfo CreateDownloadInfo(NexusModsDownloadJob nexusJob, IJob httpDownloadJob)
     {
+        // Check if we already have a DownloadId for this JobId, otherwise generate a new one
+        var downloadId = _jobIdToDownloadId.GetOrAdd(httpDownloadJob.Id, _ => DownloadId.New());
+        
         var info = new DownloadInfo 
         { 
-            Id = httpDownloadJob.Id,
+            Id = downloadId,
+            JobId = Optional<JobId>.Create(httpDownloadJob.Id),
             GameId = nexusJob.FileMetadata.Uid.GameId,
         };
         PopulateDownloadInfo(info, nexusJob, httpDownloadJob);
@@ -205,9 +238,13 @@ public sealed class DownloadsService : IDownloadsService, IDisposable
         // Only resolve for completed downloads
         if (downloadInfo.Status != JobStatus.Completed)
             return Optional<LibraryFile.ReadOnly>.None;
+            
+        // Only resolve if we have a valid JobId
+        if (!downloadInfo.JobId.HasValue)
+            return Optional<LibraryFile.ReadOnly>.None;
         
         // Find the original job from the job monitor
-        var job = _jobMonitor.Jobs.FirstOrDefault(j => j.Id == downloadInfo.Id);
+        var job = _jobMonitor.Jobs.FirstOrDefault(j => j.Id == downloadInfo.JobId.Value);
         if (job?.Definition is not NexusModsDownloadJob nexusJob)
             return Optional<LibraryFile.ReadOnly>.None;
         
