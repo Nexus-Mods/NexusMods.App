@@ -40,21 +40,21 @@ public static class RunGarbageCollector
                 NxRepacker.RepackArchive(progress, toArchive, toRemove, archive, false, out var newArchivePath);
                 toUpdateInDataStore.Add(new ToUpdateInDataStoreEntry(toRemove, archive.FilePath, newArchivePath));
             });
-        }
+            
+            // Note(sewer):
+            // SAFETY: There is a small risk here that we experience a power outage, or crash when deleting these
+            // store paths. In such a case, there may be multiple copies of a file in the store with a given hash.
+            // This is not a problem, since the DataStore will only ever use one of them.
+            // This is accounted for in `ReloadCaches`.
+            foreach (var entry in toUpdateInDataStore)
+            {
+                // Delete original archive. At this point, all hashes in here have been repacked
+                // and are no longer in use.
+                entry.OldFilePath.Delete();
+            }
         
-        // Note(sewer):
-        // SAFETY: There is a small risk here that we experience a power outage, or crash when deleting these
-        // store paths. In such a case, there may be multiple copies of a file in the store with a given hash.
-        // This is not a problem, since the DataStore will only ever use one of them.
-        // This is accounted for in `ReloadCaches`.
-        foreach (var entry in toUpdateInDataStore)
-        {
-            // Delete original archive. At this point, all hashes in here have been repacked
-            // and are no longer in use.
-            entry.OldFilePath.Delete();
+            store.ReloadCaches();
         }
-        
-        store.ReloadCaches();
     }
 
     private record struct ToUpdateInDataStoreEntry(List<Hash> ToRemove, AbsolutePath OldFilePath, AbsolutePath NewFilePath);

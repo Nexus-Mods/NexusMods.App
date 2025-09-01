@@ -88,6 +88,7 @@ public interface IFileStore
 
     /// <summary>
     /// Reload any caches that may be stale due to GC operations
+    /// <remarks>This should be run under the store write lock</remarks>
     /// </summary>
     void ReloadCaches();
 }
