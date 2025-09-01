@@ -91,7 +91,7 @@ public partial class Fallout4 : AGame, ISteamGame, IGogGame
         },
         new PredicateBasedInstaller(_serviceProvider) 
         { 
-            Root = static n => n.HasAnyDirectChildFolder("meshes", "textures", "Interface", "F4SE", "sound", "scripts", "MCM", "strings", "Materials"), 
+            Root = static n => n.HasAnyDirectChildFolder("meshes", "textures", "Interface", "F4SE", "sound", "scripts", "MCM", "strings", "Materials", "Config"), 
             Destination = KnownPaths.Data, 
         },
         new PredicateBasedInstaller(_serviceProvider)

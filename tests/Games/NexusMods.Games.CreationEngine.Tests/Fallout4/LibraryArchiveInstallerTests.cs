@@ -40,6 +40,8 @@ public class LibraryArchiveInstallerTests(ITestOutputHelper outputHelper) : AIso
     [InlineData("Red Shift PA", 46589,188004)]
     // Just an archive with the exe in the root
     [InlineData("Fallout 4 Downgrader", 81630, 364228)]
+    // Config folder at root, that puts files into Data/Config
+    [InlineData("Customizable Character Rim Lighting Settings", 60927, 343009)]
     public async Task CanInstallMod(string name, uint modId, uint fileId)
     {
         var loadout = await CreateLoadout();
