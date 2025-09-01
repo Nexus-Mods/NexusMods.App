@@ -36,6 +36,10 @@ public class LibraryArchiveInstallerTests(ITestOutputHelper outputHelper) : AIso
     [InlineData("Natural Landscapes - Invisible Dirt Fix", 71554, 278064)]
     // Data folder with top level license files
     [InlineData("Disk Cache Enabler", 74841, 290028)]
+    // Preview .jpg files in root, ESL/ESPs in sub-folders
+    [InlineData("Red Shift PA", 46589,188004)]
+    // Just an archive with the exe in the root
+    [InlineData("Fallout 4 Downgrader", 81630, 364228)]
     public async Task CanInstallMod(string name, uint modId, uint fileId)
     {
         var loadout = await CreateLoadout();

@@ -1,4 +1,4 @@
-﻿| BuffBaka Settings for Buffout 4 and Baka Scrapheap  | {Game}/Data/F4SE/Plugins/BakaScrapHeap.toml                       | 0xEB77EE3D906582F9 | 283 B      | 
+﻿89| BuffBaka Settings for Buffout 4 and Baka Scrapheap  | {Game}/Data/F4SE/Plugins/BakaScrapHeap.toml                       | 0xEB77EE3D906582F9 | 283 B      | 
 | BuffBaka Settings for Buffout 4 and Baka Scrapheap  | {Game}/Data/F4SE/Plugins/Buffout4.toml                            | 0xCC1858124447CB50 | 2.524 KB   | 
 | MCM Booster                                         | {Game}/Data/Interface/MainMenu.swf                                | 0xC8FB2B8E17939E0E | 64.035 KB  | 
 | MCM Booster                                         | {Game}/Data/MCM/Config/ZZ_MCMBooster/config.json                  | 0xEF6E1EC929730AF8 | 1.684 KB   | 

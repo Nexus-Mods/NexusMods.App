@@ -7,6 +7,7 @@ using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
+using NexusMods.Games.CreationEngine.Installers;
 using NexusMods.Games.FOMOD;
 using NexusMods.Games.Generic.Installers;
 using NexusMods.Paths;
@@ -102,6 +103,12 @@ public partial class Fallout4 : AGame, ISteamGame, IGogGame
         {
             Root = static n => n.HasDirectChild("Tools"),
             Destination = KnownPaths.Game,
-        }
+        },
+        new PredicateBasedInstaller(_serviceProvider)
+        {
+            Root = static n => n.HasDirectChild("FO4Down.exe"),
+            Destination = new GamePath(LocationId.Game, "Tools/FO4Down"),
+        },
+        new FallbackInstaller(_serviceProvider)
     ];
 }
