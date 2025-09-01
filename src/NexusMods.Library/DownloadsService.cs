@@ -79,14 +79,11 @@ public sealed class DownloadsService : IDownloadsService, IDisposable
                         continue;
 
                     // Look up the DownloadId for this JobId
-                    if (_jobIdToDownloadId.TryGetValue(change.Current.Id, out var downloadId))
-                    {
-                        if (_downloadCache.Lookup(downloadId).HasValue)
-                        {
-                            var nexusJob = (NexusModsDownloadJob)change.Current.Definition;
-                            UpdateDownloadInfo(_downloadCache.Lookup(downloadId).Value, nexusJob, nexusJob.HttpDownloadJob.Job);
-                        }
-                    }
+                    if (!_jobIdToDownloadId.TryGetValue(change.Current.Id, out var downloadId)) continue;
+                    if (!_downloadCache.Lookup(downloadId).HasValue) continue;
+
+                    var nexusJob = (NexusModsDownloadJob)change.Current.Definition;
+                    UpdateDownloadInfo(_downloadCache.Lookup(downloadId).Value, nexusJob, nexusJob.HttpDownloadJob.Job);
                 }
             })
             .DisposeWith(_disposables);
