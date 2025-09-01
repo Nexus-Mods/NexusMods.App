@@ -50,6 +50,27 @@ public class PredicateBasedInstaller : ALibraryArchiveInstaller
         /// Returns true if this node has a direct child that ends with the given postfix.
         /// </summary>
         public bool HasDirectChildEndingIn(string postfix) => _node.Value.Item.Children.Any(c => c.Key.ToString().EndsWith(postfix));
+
+        /// <summary>
+        /// Returns true if any of the direct children of this node are files with the given extensions.
+        /// </summary>
+        public bool IsRootWith(params ReadOnlySpan<Extension> extensions)
+        {
+            if (_node.Key != RelativePath.Empty)
+                return false;
+            foreach (var child in _node.Value.Item.Children)
+            {
+                for (int extIdx = 0; extIdx < extensions.Length; extIdx++)
+                {
+                    if (!child.Value.Item.IsFile)
+                        continue;
+                    if (child.Key.Extension == extensions[extIdx])
+                        return true;
+                }
+            }
+
+            return false;
+        }
     }
 
     public override ValueTask<InstallerResult> ExecuteAsync(LibraryArchive.ReadOnly libraryArchive, LoadoutItemGroup.New loadoutGroup, ITransaction transaction, Loadout.ReadOnly loadout, CancellationToken cancellationToken)

@@ -71,6 +71,11 @@ public partial class SkyrimSE : AGame, ISteamGame, IGogGame
             Root = static n => n.ThisNameLike(SkseRegex()),
             Destination = new GamePath(LocationId.Game, ""),
         },
+        new PredicateBasedInstaller(_serviceProvider)
+        {
+            Root = static n => n.IsRootWith(KnownCEExtensions.BSA, KnownCEExtensions.ESM, KnownCEExtensions.ESL, KnownCEExtensions.ESP),
+            Destination = new GamePath(LocationId.Game, "Data"),
+        },
         new PredicateBasedInstaller(_serviceProvider) 
         { 
             Root = static n => n.ThisNameIs("Interface"), 
@@ -98,7 +103,7 @@ public partial class SkyrimSE : AGame, ISteamGame, IGogGame
         },
         new PredicateBasedInstaller(_serviceProvider) 
         { 
-            Root = static n => n.HasDirectChildFolder("meshes") || n.HasDirectChildFolder("textures"), 
+            Root = static n => n.HasDirectChildFolder("meshes") || n.HasDirectChildFolder("textures") || n.HasDirectChildFolder("SKSE"), 
             Destination = new GamePath(LocationId.Game, "Data"), 
         },
         new PredicateBasedInstaller(_serviceProvider)

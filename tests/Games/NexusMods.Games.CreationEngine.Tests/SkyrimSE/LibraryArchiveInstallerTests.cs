@@ -38,6 +38,10 @@ public class LibraryArchiveInstallerTests(ITestOutputHelper outputHelper) : AIso
     [InlineData("Magic Student (WIChangeLocation04) Quest Fix", 80676, 340731)]
     // An archive that contains a file swapper "_SWAP.ini" file
     [InlineData("Lightened Skyrim - Base Object Swapper edition", 111475, 652709)]
+    // Raw BSA/ESP files in an archive (no subfolders)
+    [InlineData("Vanilla Purity Patch", 157236, 659486)]
+    // A SKSE folder in the root
+    [InlineData("Exit Sneak On Sprint", 138669, 584283)]
     public async Task CanInstallMod(string name, uint modId, uint fileId)
     {
         var loadout = await CreateLoadout();
