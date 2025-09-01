@@ -37,6 +37,11 @@ public class PredicateBasedInstaller : ALibraryArchiveInstaller
         }
 
         /// <summary>
+        /// True if this node is the root (no parent folder)
+        /// </summary>
+        public bool IsRoot => _node.Key == RelativePath.Empty;
+
+        /// <summary>
         /// Returns true if this node has a direct child folder with the given path.
         /// </summary>
         public bool HasDirectChildFolder(RelativePath path) => _node.Value.Item.Children.TryGetValue(path, out var child) && !child.Item.IsFile;

@@ -27,6 +27,8 @@ public class LibraryArchiveInstallerTests(ITestOutputHelper outputHelper) : AIso
     [InlineData("Shortcut to Curie", 31766, 129553)]
     // Has BA2/ESL files in a sub-folder named "zapgun"
     [InlineData("Zap Gun -ESL version", 53998, 217156)]
+    // A tool installed to the Tools folder
+    [InlineData("Collective Modding Toolkit", 87907, 344771)]
     public async Task CanInstallMod(string name, uint modId, uint fileId)
     {
         var loadout = await CreateLoadout();

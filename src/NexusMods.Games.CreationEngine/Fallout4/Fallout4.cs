@@ -95,6 +95,11 @@ public partial class Fallout4 : AGame, ISteamGame, IGogGame
         {
             Root = static n => n.HasDirectChildEndingIn("_SWAP.ini"),
             Destination = KnownPaths.Data,
+        },
+        new PredicateBasedInstaller(_serviceProvider)
+        {
+            Root = static n => n.IsRoot && n.HasDirectChild("Tools"),
+            Destination = KnownPaths.Game,
         }
     ];
 }
