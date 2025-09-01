@@ -52,13 +52,16 @@ public sealed class DownloadsService : IDownloadsService, IDisposable
         // TODO: Move completed download jobs to a field in this class, as we don't persist them in JobMonitor.
 
         // Monitor Nexus Mods download jobs and transform them into DownloadInfo
-        var adapter = new SourceCacheAdapter<DownloadInfo, DownloadId>(_downloadCache);
-        _jobMonitor.GetObservableChangeSet<NexusModsDownloadJob>()
-            .Transform(job =>
+        var adapter = new TransformingSourceCacheAdapter<IJob, JobId, DownloadInfo, DownloadId>(
+            _downloadCache,
+            job =>
             {
                 var nexusJob = (NexusModsDownloadJob)job.Definition;
                 return CreateDownloadInfo(nexusJob, nexusJob.HttpDownloadJob.Job);
-            })
+            },
+            job => _jobIdToDownloadId.GetOrAdd(job.Id, _ => DownloadId.New()));
+            
+        _jobMonitor.GetObservableChangeSet<NexusModsDownloadJob>()
             .Subscribe(adapter.Adapt)
             .DisposeWith(_disposables);
             
