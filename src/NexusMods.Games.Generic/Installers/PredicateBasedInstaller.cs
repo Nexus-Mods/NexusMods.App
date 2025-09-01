@@ -68,6 +68,11 @@ public class PredicateBasedInstaller : ALibraryArchiveInstaller
         /// Returns true if this node has a direct child that ends with the given postfix.
         /// </summary>
         public bool HasDirectChildEndingIn(string postfix) => _node.Value.Item.Children.Any(c => c.Key.ToString().EndsWith(postfix));
+        
+        /// <summary>
+        /// Returns true if this node has a direct child with the given name.
+        /// </summary>
+        public bool HasDirectChild(string name) => _node.Value.Item.Children.Any(c => c.Key.ToString().Equals(name, StringComparison.InvariantCultureIgnoreCase));
 
         /// <summary>
         /// Returns true if any of the direct children of this node are files with the given extensions.
