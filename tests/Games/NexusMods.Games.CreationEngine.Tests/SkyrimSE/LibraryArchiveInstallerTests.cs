@@ -30,6 +30,8 @@ public class LibraryArchiveInstallerTests(ITestOutputHelper outputHelper) : AIso
     [InlineData("Nordic Chair", 102400, 439688)]
     // Just contains a .swf file in an `Interface` folder
     [InlineData("Better Dialogue Controls", 1429, 11022)]
+    // Just files in a meshes folder base
+    [InlineData("Floating Ash Pile Fix", 63434, 264466)]
     public async Task CanInstallMod(string name, uint modId, uint fileId)
     {
         var loadout = await CreateLoadout();

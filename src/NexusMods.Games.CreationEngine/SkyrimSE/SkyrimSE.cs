@@ -94,6 +94,11 @@ public class SkyrimSE : AGame, ISteamGame, IGogGame
                 },
                 new InstallFolderTarget
                 {
+                    KnownSourceFolderNames = ["meshes"],
+                    DestinationGamePath = new GamePath(LocationId.Game, "Data/meshes"),
+                },
+                new InstallFolderTarget
+                {
                     KnownValidFileExtensions = [KnownCEExtensions.BSA, KnownCEExtensions.BA2, KnownCEExtensions.ESM, KnownCEExtensions.ESP, KnownCEExtensions.ESL],
                     DestinationGamePath = new GamePath(LocationId.Game, "Data"),
                 },
