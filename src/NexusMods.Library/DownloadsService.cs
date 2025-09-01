@@ -49,20 +49,55 @@ public sealed class DownloadsService : IDownloadsService, IDisposable
     
     private void InitializeObservables()
     {
-        // TODO: Move completed download jobs to a field in this class, as we don't persist them in JobMonitor.
+        // TODO: Restore completed downloads from persistent storage on application boot.
 
         // Monitor Nexus Mods download jobs and transform them into DownloadInfo
-        var adapter = new TransformingSourceCacheAdapter<IJob, JobId, DownloadInfo, DownloadId>(
-            _downloadCache,
-            job =>
-            {
-                var nexusJob = (NexusModsDownloadJob)job.Definition;
-                return CreateDownloadInfo(nexusJob, nexusJob.HttpDownloadJob.Job);
-            },
-            job => _jobIdToDownloadId.GetOrAdd(job.Id, _ => DownloadId.New()));
-            
+        // Handle completed downloads by keeping them in cache when removed from JobMonitor
         _jobMonitor.GetObservableChangeSet<NexusModsDownloadJob>()
-            .Subscribe(adapter.Adapt)
+            .Subscribe(changes =>
+            {
+                _downloadCache.Edit(updater =>
+                {
+                    foreach (var change in changes)
+                    {
+                        switch (change.Reason)
+                        {
+                            case ChangeReason.Add:
+                            case ChangeReason.Update:
+                            case ChangeReason.Refresh:
+                                var nexusJob = (NexusModsDownloadJob)change.Current.Definition;
+                                var downloadInfo = CreateDownloadInfo(nexusJob, nexusJob.HttpDownloadJob.Job);
+                                var downloadId = _jobIdToDownloadId.GetOrAdd(change.Current.Id, _ => DownloadId.New());
+                                updater.AddOrUpdate(downloadInfo, downloadId);
+                                break;
+                            case ChangeReason.Remove:
+                                // Note(sewer): JobMonitor removes all jobs after completion, but we want to keep the completed jobs
+                                //              to show in the 'Completed' tab.
+                                //              Cancelled jobs can also yield a ChangeReason.Remove, so we need to make a distinction here. 
+                                if (change.Previous.Value.Status == JobStatus.Completed)
+                                {
+                                    // Keep completed downloads but mark them as completed (clears JobId, etc.)
+                                    if (_jobIdToDownloadId.TryGetValue(change.Key, out var completedDownloadId))
+                                    {
+                                        var existingItem = updater.Lookup(completedDownloadId);
+                                        if (existingItem.HasValue)
+                                            MarkJobAsCompleted(existingItem.Value);
+                                    }
+                                }
+                                else
+                                {
+                                    // Remove non-completed downloads normally
+                                    if (_jobIdToDownloadId.TryRemove(change.Key, out var removedDownloadId))
+                                        updater.RemoveKey(removedDownloadId);
+                                }
+                                break;
+                            case ChangeReason.Moved:
+                                // Nothing to do for moves
+                                break;
+                        }
+                    }
+                });
+            })
             .DisposeWith(_disposables);
             
         // Update download info with a 0.5s poll.
@@ -183,7 +218,21 @@ public sealed class DownloadsService : IDownloadsService, IDisposable
         info.DownloadPageUri = httpJobDefinition.DownloadPageUri;
         info.CompletedAt = httpDownloadJob.Status == JobStatus.Completed ? DateTimeOffset.UtcNow : Optional<DateTimeOffset>.None;
     }
-    
+
+    private void MarkJobAsCompleted(DownloadInfo downloadInfo)
+    {
+        // Clear the JobId since the job no longer exists in JobMonitor
+        downloadInfo.JobId = Optional<JobId>.None;
+        
+        // Reset transient properties that are only relevant for active downloads
+        downloadInfo.TransferRate = Size.Zero;
+        
+        // Set completion timestamp
+        downloadInfo.CompletedAt = DateTimeOffset.UtcNow;
+        
+        // Keep Progress at 100% and other completed state
+    }
+
     // Helper methods
 
     private string ExtractName(NexusModsDownloadJob nexusJob)

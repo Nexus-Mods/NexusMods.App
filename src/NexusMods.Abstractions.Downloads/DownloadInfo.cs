@@ -24,7 +24,7 @@ public class DownloadInfo : ReactiveObject
     /// The job ID for this download. Only valid for active downloads.
     /// Consumers should generally use Id instead, but this is available for service implementations.
     /// </summary>
-    public Optional<JobId> JobId { get; init; }
+    public Optional<JobId> JobId { get; set; }
     
     /// <summary>
     /// Display name of the download (typically mod name).
