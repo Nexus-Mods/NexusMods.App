@@ -42,6 +42,8 @@ public class LibraryArchiveInstallerTests(ITestOutputHelper outputHelper) : AIso
     [InlineData("Vanilla Purity Patch", 157236, 659486)]
     // A SKSE folder in the root
     [InlineData("Exit Sneak On Sprint", 138669, 584283)]
+    // A FOMOD with two variants of files, one for AE, one for SE
+    [InlineData("SSE Engine Fixes", 17230, 659756)]
     public async Task CanInstallMod(string name, uint modId, uint fileId)
     {
         var loadout = await CreateLoadout();

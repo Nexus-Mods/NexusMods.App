@@ -58,7 +58,7 @@ public partial class SkyrimSE : AGame, ISteamGame, IGogGame
     
     public override ILibraryItemInstaller[] LibraryItemInstallers =>
     [
-        FomodXmlInstaller.Create(_serviceProvider, new GamePath(LocationId.Game, "")),
+        FomodXmlInstaller.Create(_serviceProvider, new GamePath(LocationId.Game, "Data")),
         // Files in a Data folder
         new PredicateBasedInstaller(_serviceProvider)
         {
@@ -76,9 +76,14 @@ public partial class SkyrimSE : AGame, ISteamGame, IGogGame
             Root = static n => n.IsRootWith(KnownCEExtensions.BSA, KnownCEExtensions.ESM, KnownCEExtensions.ESL, KnownCEExtensions.ESP),
             Destination = new GamePath(LocationId.Game, "Data"),
         },
+        new PredicateBasedInstaller(_serviceProvider)
+        {
+            Root = static n => n.ThisNameIs("SKSE"),
+            Destination = new GamePath(LocationId.Game, "Data/SKSE"),
+        },
         new PredicateBasedInstaller(_serviceProvider) 
         { 
-            Root = static n => n.HasAnyDirectChildFolder("meshes", "textures", "SKSE", "Interface", "sound", "scripts"), 
+            Root = static n => n.HasAnyDirectChildFolder("meshes", "textures", "Interface", "SKSE", "sound", "scripts"), 
             Destination = new GamePath(LocationId.Game, "Data"), 
         },
         new PredicateBasedInstaller(_serviceProvider)

@@ -7,6 +7,7 @@ using NexusMods.Abstractions.Collections;
 using NexusMods.Abstractions.Collections.Types;
 using NexusMods.Abstractions.Collections.Json;
 using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Library.Installers;
@@ -187,6 +188,20 @@ public class InstallCollectionDownloadJob : IJobDefinitionWithStart<InstallColle
     }
 
     /// <summary>
+    /// This is how we should get a fomod installer. We don't want to get it from DI or new it up, because
+    /// the game may set custom target folders or other settings. So we'll have to get the game instance
+    /// and find the installer that matches the type 
+    /// </summary>
+    private FomodXmlInstaller GetFomodXmlInstaller(CancellationToken cancellationToken)
+    {
+        var loadout = Loadout.Load(Connection.Db, TargetLoadout);
+        var game = loadout.InstallationInstance.GetGame();
+        var installer = game.LibraryItemInstallers.OfType<FomodXmlInstaller>().FirstOrDefault();
+        
+        return installer ?? throw new InvalidOperationException("FomodXmlInstaller not found");
+    }
+
+    /// <summary>
     /// Install a fomod with predefined choices.
     /// </summary>
     private async Task<LoadoutItemGroup.ReadOnly> InstallFomodWithPredefinedChoices(CancellationToken cancellationToken)
@@ -195,7 +210,7 @@ public class InstallCollectionDownloadJob : IJobDefinitionWithStart<InstallColle
         if (!libraryFile.TryGetAsLibraryArchive(out var libraryArchive))
             throw new NotImplementedException();
 
-        var fomodInstaller = FomodXmlInstaller.Create(ServiceProvider, new GamePath(LocationId.Game, ""));
+        var fomodInstaller = GetFomodXmlInstaller(cancellationToken);
 
         using var tx = Connection.BeginTransaction();
         var group = new LoadoutItemGroup.New(tx, out var id)

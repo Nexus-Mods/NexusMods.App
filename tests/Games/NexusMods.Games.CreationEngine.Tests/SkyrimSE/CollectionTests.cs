@@ -1,11 +1,13 @@
-using System.Security.Policy;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Collections;
 using NexusMods.Games.TestFramework;
+using NexusMods.Hashing.xxHash3;
 using NexusMods.HyperDuck;
 using NexusMods.Paths;
 using NexusMods.StandardGameLocators.TestHelpers;
@@ -55,14 +57,17 @@ public class CollectionTests(ITestOutputHelper outputHelper) : AIsolatedGameTest
         var items = CollectionDownloader.GetItems(revisionMetadata, CollectionDownloader.ItemType.Required);
         var installJob = await InstallCollectionJob.Create(ServiceProvider, loadout, collectionFile, revisionMetadata, items);
         
-        var collectionFiles = Connection.Query<(string, string, ulong, ulong)>("""
-           SELECT mod.Name, file.Name, file.Hash, file.Size 
-           FROM mdb_LoadoutFile() file
-           LEFT JOIN mdb_LoadoutItemGroup() mod on file.Parent = mod.Id
-           LEFT JOIN mdb_LoadoutItemGroup() collection on mod.Parent = collection.Id
-           WHERE collection.Id = $1
-           """, installJob.Collection.Id.Value);
-        
+        List<(string Mod, GamePath Path, Hash Hash, Size Size)> collectionFiles = new();
+
+        foreach (var mod in installJob.AsCollectionGroup().AsLoadoutItemGroup().Children.OfTypeLoadoutItemGroup())
+        {
+            foreach (var file in mod.Children.OfTypeLoadoutItemWithTargetPath().OfTypeLoadoutFile())
+            {
+                collectionFiles.Add((mod.AsLoadoutItem().Name, file.AsLoadoutItemWithTargetPath().TargetPath, file.Hash, file.Size));
+            }
+        }
+
+        collectionFiles.Sort();
         await VerifyTable(collectionFiles);
     }
     
