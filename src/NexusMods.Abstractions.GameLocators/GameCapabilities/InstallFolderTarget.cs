@@ -1,4 +1,5 @@
-﻿using NexusMods.Paths;
+﻿using Microsoft.Extensions.FileSystemGlobbing;
+using NexusMods.Paths;
 
 namespace NexusMods.Abstractions.GameLocators.GameCapabilities;
 

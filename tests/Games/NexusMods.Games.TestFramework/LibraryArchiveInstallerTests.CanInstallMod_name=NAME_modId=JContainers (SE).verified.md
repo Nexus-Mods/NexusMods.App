@@ -1,0 +1,11 @@
+﻿| {Game}/Data/SKSE/Plugins/JCData/Domains/.force-install           | 0x2D06800538D394C2 | 0 B      | 
+| {Game}/Data/SKSE/Plugins/JCData/InternalLuaScripts/api_for_lua.h | 0xB678B5883C609720 | 1.825 KB | 
+| {Game}/Data/SKSE/Plugins/JCData/InternalLuaScripts/init.lua      | 0xFE3254F2FDDE37FF | 5.34 KB  | 
+| {Game}/Data/SKSE/Plugins/JCData/InternalLuaScripts/jc.lua        | 0x311423B75F04F82F | 12.61 KB | 
+| {Game}/Data/SKSE/Plugins/JCData/lua/jc/init.lua                  | 0xF9A5BD1F83C9BA44 | 3.698 KB | 
+| {Game}/Data/SKSE/Plugins/JCData/lua/testing/basic.lua            | 0x4E9065DF92D2D4E4 | 5.001 KB | 
+| {Game}/Data/SKSE/Plugins/JCData/lua/testing/init.lua             | 0x0A5E8F20119DF690 | 267 B    | 
+| {Game}/Data/SKSE/Plugins/JCData/lua/testing/jc-tests.lua         | 0x4D5AA18D5EB418DD | 964 B    | 
+| {Game}/Data/SKSE/Plugins/JCData/lua/testing/misc.lua             | 0xD203EC1E41FF9299 | 1007 B   | 
+| {Game}/Data/SKSE/Plugins/JCData/lua/testing/test.lua             | 0x2D06800538D394C2 | 0 B      | 
+| {Game}/Data/SKSE/Plugins/JContainers64.dll                       | 0x4EF472D2A3F307A9 | 2.796 MB | 

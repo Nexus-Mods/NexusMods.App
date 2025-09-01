@@ -1,4 +1,6 @@
 using System.IO.Compression;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 using DynamicData.Kernel;
 using FluentAssertions;
@@ -585,4 +587,44 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
 
         return Task.CompletedTask;
     }
+    
+    /// <summary>
+    /// Formats the tuples into a markdown table and runs verify on the resulting data
+    /// </summary>
+    protected SettingsTask VerifyTable<T>(IEnumerable<T> table, string? name = null)
+        where T : ITuple
+    {
+        List<List<string>> rows = new();
+        Dictionary<int, int> cellWidths = new();
+
+        foreach (var row in table)
+        {
+            var rowCells = new List<string>();
+            rows.Add(rowCells);
+            for (var cellIdx = 0; cellIdx < row.Length; cellIdx++)
+            {
+                var cellData = row[cellIdx]?.ToString() ?? string.Empty;
+                ref var existingWidth = ref CollectionsMarshal.GetValueRefOrAddDefault(cellWidths, cellIdx, out var exists);
+                existingWidth = Math.Max(existingWidth, cellData.Length);
+                rowCells.Add(cellData);
+            }
+        }
+
+        var sb = new StringBuilder();
+        foreach (var row in rows)
+        {
+            sb.Append("| ");
+            for (var i = 0; i < row.Count; i++)
+            {
+                sb.Append(row[i].PadRight(cellWidths[i]));
+                sb.Append(" | ");
+            }
+            sb.AppendLine();
+        }
+        var task = Verify(sb.ToString(), extension: "md");
+        if (name is not null)
+            task.UseParameters("NAME", name);
+        return task;
+    }
+
 }
