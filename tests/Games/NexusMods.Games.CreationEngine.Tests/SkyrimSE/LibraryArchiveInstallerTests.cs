@@ -32,6 +32,12 @@ public class LibraryArchiveInstallerTests(ITestOutputHelper outputHelper) : AIso
     [InlineData("Better Dialogue Controls", 1429, 11022)]
     // Just files in a meshes folder base
     [InlineData("Floating Ash Pile Fix", 63434, 264466)]
+    // Files in a sounds folder base
+    [InlineData("Misc Voice Consistency Fixes", 135051, 568516)]
+    // Script/Source folders
+    [InlineData("Magic Student (WIChangeLocation04) Quest Fix", 80676, 340731)]
+    // An archive that contains a file swapper "_SWAP.ini" file
+    [InlineData("Lightened Skyrim - Base Object Swapper edition", 111475, 652709)]
     public async Task CanInstallMod(string name, uint modId, uint fileId)
     {
         var loadout = await CreateLoadout();

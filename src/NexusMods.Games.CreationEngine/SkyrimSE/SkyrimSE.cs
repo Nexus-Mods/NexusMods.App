@@ -88,8 +88,23 @@ public partial class SkyrimSE : AGame, ISteamGame, IGogGame
         },
         new PredicateBasedInstaller(_serviceProvider) 
         { 
+            Root = static n => n.ThisNameIs("sound"), 
+            Destination = new GamePath(LocationId.Game, "Data/sound"), 
+        },
+        new PredicateBasedInstaller(_serviceProvider) 
+        { 
+            Root = static n => n.HasDirectChildFolder("scripts"), 
+            Destination = new GamePath(LocationId.Game, "Data"), 
+        },
+        new PredicateBasedInstaller(_serviceProvider) 
+        { 
             Root = static n => n.HasDirectChildFolder("meshes") || n.HasDirectChildFolder("textures"), 
             Destination = new GamePath(LocationId.Game, "Data"), 
         },
+        new PredicateBasedInstaller(_serviceProvider)
+        {
+            Root = static n => n.HasDirectChildEndingIn("_SWAP.ini"),
+            Destination = new GamePath(LocationId.Game, "Data"),
+        }
     ];
 }

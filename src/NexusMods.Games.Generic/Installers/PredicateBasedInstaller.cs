@@ -44,22 +44,34 @@ public class PredicateBasedInstaller : ALibraryArchiveInstaller
         /// <summary>
         /// Returns true if this node's name matches the given name.'
         /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
         public bool ThisNameIs(string name) => !_node.Value.Item.IsFile && _node.Key == RelativePath.FromUnsanitizedInput(name);
+
+        /// <summary>
+        /// Returns true if this node has a direct child that ends with the given postfix.
+        /// </summary>
+        public bool HasDirectChildEndingIn(string postfix) => _node.Value.Item.Children.Any(c => c.Key.ToString().EndsWith(postfix));
     }
 
     public override ValueTask<InstallerResult> ExecuteAsync(LibraryArchive.ReadOnly libraryArchive, LoadoutItemGroup.New loadoutGroup, ITransaction transaction, Loadout.ReadOnly loadout, CancellationToken cancellationToken)
     {
         var tree = libraryArchive.GetTree();
 
-        var isFound = tree
-            .EnumerateChildrenBfs()
-            .Where(x => Root(new Node(x)))
-            .Select(x => x.Value.Item)
-            .TryGetFirst(out var found);
-        
+        bool isFound = false;
+        LibraryArchiveTree found = default!;
+        if (Root(new Node(new KeyValuePair<RelativePath, KeyedBox<RelativePath, LibraryArchiveTree>>("", tree))))
+        {
+            isFound = true;
+            found = tree;
+        }
+        else
+        {
+            isFound = tree
+                .EnumerateChildrenBfs()
+                .Where(x => Root(new Node(x)))
+                .Select(x => x.Value.Item)
+                .TryGetFirst(out found);
+        }
+
         if (!isFound)
             return ValueTask.FromResult<InstallerResult>(new NotSupported(Reason: "Found no matching root"));
 
