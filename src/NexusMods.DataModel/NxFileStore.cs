@@ -229,6 +229,18 @@ public class NxFileStore : IFileStore
         // Capacity is set to 'expected archive count' + 1.
         Parallel.ForEach(files, file =>
         {
+            // Create the directory, this will speed up extraction in Nx
+            // down the road. Usually the difference is negligible, but in
+            // extra special with 100s of directories scenarios, it can
+            // save a second or two.
+            var containingDir = file.Dest.Parent;
+            if (createdDirectories.TryAdd(containingDir, 0))
+                containingDir.CreateDirectory();
+            
+#if DEBUG
+            Debug.Assert(destPaths.TryAdd(file.Dest, 0), $"Duplicate destination path: {file.Dest}. Should not happen.");
+#endif
+            
             // Create empty files as empty
             if (file.Hash == EmptyFile)
             {
@@ -236,25 +248,13 @@ public class NxFileStore : IFileStore
                 return;
             }
 
-            if (TryGetLocation(file.Hash,
-                    out var archivePath, out var fileEntry))
+            if (TryGetLocation(file.Hash, out var archivePath, out var fileEntry))
             {
                 var group = groupedFiles.GetOrAdd(archivePath, _ => new List<(Hash, FileEntry, AbsolutePath)>());
                 lock (group)
                 {
                     group.Add((file.Hash, fileEntry, file.Dest));
                 }
-
-                // Create the directory, this will speed up extraction in Nx
-                // down the road. Usually the difference is negligible, but in
-                // extra special with 100s of directories scenarios, it can
-                // save a second or two.
-                var containingDir = file.Dest.Parent;
-                if (createdDirectories.TryAdd(containingDir, 0))
-                    containingDir.CreateDirectory();
-#if DEBUG
-                Debug.Assert(destPaths.TryAdd(file.Dest, 0), $"Duplicate destination path: {file.Dest}. Should not happen.");
-#endif
             }
             else
             {
