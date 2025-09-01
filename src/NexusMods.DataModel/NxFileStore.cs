@@ -63,34 +63,30 @@ public class NxFileStore : IFileStore
         _logger = logger;
         ReloadCaches();
     }
-
+    
+    /// <inheritdoc />
     public void ReloadCaches()
     {
         var oldFrozenArchives = _archives;
-        Dictionary<AbsolutePath, ArchiveContents> archives;
-        
-        {
-            using var readLock = _lock.ReadLock();
-            
-            archives = _archiveLocations
-                .SelectMany(folder => folder.EnumerateFiles(KnownExtensions.Nx))
-                .AsParallel()
-                .Select(file =>
-                    {
-                        var info = file.FileInfo;
-                        if (oldFrozenArchives.TryGetValue(file, out var oldArchive) && oldArchive.LastModified == info.LastWriteTimeUtc && oldArchive.Size == info.Size)
-                            return oldArchive;
-                    
-                        using var stream = file.Read();
-                        var provider = new FromStreamProvider(stream);
-                        var header = HeaderParser.ParseHeader(provider);
-                        Dictionary<Hash, FileEntry> entries = new();
-                        foreach (var entry in header.Entries)
-                            entries[Hash.From(entry.Hash)] = entry;
-                        return new ArchiveContents(file, info.Size, info.LastWriteTimeUtc, entries.ToFrozenDictionary());
-                    }
-                ).ToDictionary(static x => x.ArchivePath);
-        }
+
+        var archives = _archiveLocations
+            .SelectMany(folder => folder.EnumerateFiles(KnownExtensions.Nx))
+            .AsParallel()
+            .Select(file =>
+                {
+                    var info = file.FileInfo;
+                    if (oldFrozenArchives.TryGetValue(file, out var oldArchive) && oldArchive.LastModified == info.LastWriteTimeUtc && oldArchive.Size == info.Size)
+                        return oldArchive;
+                
+                    using var stream = file.Read();
+                    var provider = new FromStreamProvider(stream);
+                    var header = HeaderParser.ParseHeader(provider);
+                    Dictionary<Hash, FileEntry> entries = new();
+                    foreach (var entry in header.Entries)
+                        entries[Hash.From(entry.Hash)] = entry;
+                    return new ArchiveContents(file, info.Size, info.LastWriteTimeUtc, entries.ToFrozenDictionary());
+                }
+            ).ToDictionary(static x => x.ArchivePath);
         
         var index = new Dictionary<Hash, ArchiveContents>();
         
@@ -105,6 +101,54 @@ public class NxFileStore : IFileStore
         _archives = archives.ToFrozenDictionary();
     }
 
+    /// <summary>
+    /// Adds a newly created archive to the caches
+    /// Accesses the new archive's header to get the list of files
+    /// Uses a lock-free compare-and-swap approach to handle concurrent updates to the caches
+    /// </summary>
+    private void AddArchiveToCache(AbsolutePath archivePath)
+    {
+        // Read the new archive's header
+        using var stream = archivePath.Read();
+        var provider = new FromStreamProvider(stream);
+        var header = HeaderParser.ParseHeader(provider);
+        
+        var entries = new Dictionary<Hash, FileEntry>();
+        foreach (var entry in header.Entries)
+            entries[Hash.From(entry.Hash)] = entry;
+        
+        var info = archivePath.FileInfo;
+        var newArchive = new ArchiveContents(archivePath, info.Size, info.LastWriteTimeUtc, entries.ToFrozenDictionary());
+        
+        // Use compare-and-swap with retry to handle concurrent updates
+        while (true)
+        {
+            // Capture current state
+            var currentArchives = _archives;
+            var currentIndex = _archivesByEntry;
+            
+            // Create new dictionaries with the additional archive
+            var newArchives = currentArchives.ToDictionary();
+            newArchives[archivePath] = newArchive;
+            
+            var newIndex = currentIndex.ToDictionary();
+            foreach (var entry in newArchive.Entries)
+                newIndex[entry.Key] = newArchive;
+            
+            var newArchivesFrozen = newArchives.ToFrozenDictionary();
+            var newIndexFrozen = newIndex.ToFrozenDictionary();
+            
+            // Atomic compare-and-swap: only update if the references haven't changed
+            // In case of a partial update succeeding, retrying should be fine as the operation is idempotent
+            if (ReferenceEquals(Interlocked.CompareExchange(ref _archives, newArchivesFrozen, currentArchives), currentArchives) &&
+                ReferenceEquals(Interlocked.CompareExchange(ref _archivesByEntry, newIndexFrozen, currentIndex), currentIndex))
+            {
+                // Both updates completed atomically
+                break;
+            }
+        }
+    }
+
     /// <inheritdoc />
     public ValueTask<bool> HaveFile(Hash hash) => ValueTask.FromResult(_archivesByEntry.ContainsKey(hash));
 
@@ -116,44 +160,49 @@ public class NxFileStore : IFileStore
 
         if (distinct.Length == 0)
             return;
-        
-        var streams = new List<Stream>();
-        foreach (var backup in distinct)
-        {
-            if (deduplicate && await HaveFile(backup.Hash))
-                continue;
 
-            var stream = await backup.StreamFactory.GetStreamAsync();
-            streams.Add(stream);
-            builder.AddFile(stream, new AddFileParams
+        // NOTE(AL12rs): We take a read lock here to prevent write access to the archives being read
+        // While this is also creating an archive, we don't take the write lock, as the archive new and thus not known yet
+        using (_lock.ReadLock())
+        {
+            var streams = new List<Stream>();
+            foreach (var backup in distinct)
             {
-                RelativePath = backup.Hash.ToHex(),
-            });
-        }
+                if (deduplicate && await HaveFile(backup.Hash))
+                    continue;
+
+                var stream = await backup.StreamFactory.GetStreamAsync();
+                streams.Add(stream);
+                builder.AddFile(stream, new AddFileParams
+                {
+                    RelativePath = backup.Hash.ToHex(),
+                });
+            }
         
-        // If we already have all the files (HaveFile), there is nothing to back up.
-        if (streams.Count == 0)
-            return;
+            // If we already have all the files (HaveFile), there is nothing to back up.
+            if (streams.Count == 0)
+                return;
 
-        _logger.LogDebug("Backing up {Count} files of {Size} in size", distinct.Length, distinct.Sum(s => s.Size));
-        var guid = Guid.NewGuid();
-        var id = guid.ToString();
-        var outputPath = _archiveLocations.First().Combine(id).AppendExtension(KnownExtensions.Tmp);
+            _logger.LogDebug("Backing up {Count} files of {Size} in size", distinct.Length, distinct.Sum(s => s.Size));
+            var guid = Guid.NewGuid();
+            var id = guid.ToString();
+            var outputPath = _archiveLocations.First().Combine(id).AppendExtension(KnownExtensions.Tmp);
 
-        await using (var outputStream = outputPath.Create())
-        {
-            builder.WithOutput(outputStream);
-            builder.Build();
+            await using (var outputStream = outputPath.Create())
+            {
+                builder.WithOutput(outputStream);
+                builder.Build();
+            }
+
+            foreach (var stream in streams)
+                await stream.DisposeAsync();
+
+            var finalPath = outputPath.ReplaceExtension(KnownExtensions.Nx);
+
+            await outputPath.MoveToAsync(finalPath, token: token);
+            
+            AddArchiveToCache(finalPath);
         }
-
-        foreach (var stream in streams)
-            await stream.DisposeAsync();
-
-        var finalPath = outputPath.ReplaceExtension(KnownExtensions.Nx);
-
-        await outputPath.MoveToAsync(finalPath, token: token);
-        await using var os = finalPath.Read();
-        ReloadCaches();
     }
 
     /// <inheritdoc />
@@ -365,7 +414,7 @@ public class NxFileStore : IFileStore
     }
     
     /// <inheritdoc />
-    public AsyncFriendlyReaderWriterLock.WriteLockDisposable Lock() => _lock.WriteLock();
+    public AsyncFriendlyReaderWriterLock.WriteLockDisposable WriteLock() => _lock.WriteLock();
     
 
     private class ChunkedArchiveStream : IChunkedStreamSource
