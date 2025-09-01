@@ -12,8 +12,8 @@ public class WindowNotificationService : IWindowNotificationService
 
     /// <summary>
     /// Lazy initialization, as main window may not available at creation time
+    /// Needs to be called on UI thread
     /// </summary>
-    /// <returns></returns>
     private WindowNotificationManager? GetNotificationManager()
     {
         if (_notificationManager != null)
@@ -26,16 +26,12 @@ public class WindowNotificationService : IWindowNotificationService
         }
         
         // Must be on UI thread to create the WindowNotificationManager
-        DispatcherHelper.EnsureOnUIThread(() =>
-            {
-                _notificationManager = new WindowNotificationManager(desktopLifetime.MainWindow)
-                {
-                    Position = NotificationPosition.BottomCenter,
-                    MaxItems = 4,
-                };
-            }
-        );
-
+        _notificationManager = new WindowNotificationManager(desktopLifetime.MainWindow)
+        {
+            Position = NotificationPosition.BottomCenter,
+            MaxItems = 4,
+        };
+            
         return _notificationManager;
     }
 
