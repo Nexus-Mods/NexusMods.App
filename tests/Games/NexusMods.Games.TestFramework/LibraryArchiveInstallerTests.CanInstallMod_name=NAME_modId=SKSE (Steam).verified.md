@@ -124,6 +124,8 @@
 | {Game}/Data/Scripts/wornobject.pex                                          | 0xD427A9D5672F5548 | 1.606 KB   | 
 | {Game}/skse64_1_6_1170.dll                                                  | 0x3858BF54D7F1E1C7 | 1.119 MB   | 
 | {Game}/skse64_loader.exe                                                    | 0xBDC84E5E136A3406 | 220.5 KB   | 
+| {Game}/skse64_readme.txt                                                    | 0x550BA40F704CA0B1 | 6.693 KB   | 
+| {Game}/skse64_whatsnew.txt                                                  | 0x4C7F69F6C1F0D6A4 | 22.601 KB  | 
 | {Game}/src/common/common/.gitignore                                         | 0x838A939E5B34C509 | 178 B      | 
 | {Game}/src/common/common/common.vcproj                                      | 0x89BF8ACBB0FC68CC | 6.793 KB   | 
 | {Game}/src/common/common/common.vcxproj                                     | 0xD6BA4B21C626B58C | 7.382 KB   | 
@@ -198,6 +200,7 @@
 | {Game}/src/skse64/skse64.sln                                                | 0x0CFAAC0983DE116B | 7.885 KB   | 
 | {Game}/src/skse64/skse64/BSModelDB.cpp                                      | 0x937C683B3E1097B9 | 150 B      | 
 | {Game}/src/skse64/skse64/BSModelDB.h                                        | 0x3F2FD52DBF01E09A | 1.23 KB    | 
+| {Game}/src/skse64/skse64/CMakeLists.txt                                     | 0xED79547DD819EC77 | 8.528 KB   | 
 | {Game}/src/skse64/skse64/Colors.cpp                                         | 0x7E9D802D88580470 | 3.124 KB   | 
 | {Game}/src/skse64/skse64/Colors.h                                           | 0x9F810EF7DAC7731A | 1.222 KB   | 
 | {Game}/src/skse64/skse64/CustomMenu.cpp                                     | 0xF60B86E80767A2A3 | 1.747 KB   | 
@@ -491,6 +494,7 @@
 | {Game}/src/skse64/skse64/Translation.h                                      | 0x5C3911C6EC751021 | 144 B      | 
 | {Game}/src/skse64/skse64_common/BranchTrampoline.cpp                        | 0xF51C43F45F8D0CCB | 5.238 KB   | 
 | {Game}/src/skse64/skse64_common/BranchTrampoline.h                          | 0x432E7D19E8928A0A | 1.186 KB   | 
+| {Game}/src/skse64/skse64_common/CMakeLists.txt                              | 0x9C3C2C8405F7E4BF | 1.69 KB    | 
 | {Game}/src/skse64/skse64_common/Relocation.cpp                              | 0x7BF628E1BD170141 | 1.856 KB   | 
 | {Game}/src/skse64/skse64_common/Relocation.h                                | 0xADB8E514470C4999 | 1.648 KB   | 
 | {Game}/src/skse64/skse64_common/SafeWrite.cpp                               | 0x694B67220AF33908 | 1.304 KB   | 
@@ -501,11 +505,14 @@
 | {Game}/src/skse64/skse64_common/skse_version.rc                             | 0xA452DD1C9AB907A5 | 897 B      | 
 | {Game}/src/skse64/skse64_common/Utilities.cpp                               | 0x13623A882C396C64 | 7.181 KB   | 
 | {Game}/src/skse64/skse64_common/Utilities.h                                 | 0xD34EF0A7C527EBDC | 10.713 KB  | 
+| {Game}/src/skse64/skse64_license.txt                                        | 0xCEDC4ADCA91023C1 | 259 B      | 
+| {Game}/src/skse64/skse64_loader/CMakeLists.txt                              | 0xDCE141640EF10289 | 2.016 KB   | 
 | {Game}/src/skse64/skse64_loader/main.cpp                                    | 0x2FA454A64FC27C58 | 9.443 KB   | 
 | {Game}/src/skse64/skse64_loader/Options.cpp                                 | 0x8AA8577461D59242 | 5.298 KB   | 
 | {Game}/src/skse64/skse64_loader/Options.h                                   | 0x70875F49910324B4 | 536 B      | 
 | {Game}/src/skse64/skse64_loader/skse64_loader.vcxproj                       | 0x76771D91DF30C72B | 5.534 KB   | 
 | {Game}/src/skse64/skse64_loader/skse64_loader.vcxproj.filters               | 0x4F132FC7BEC49E30 | 422 B      | 
+| {Game}/src/skse64/skse64_loader_common/CMakeLists.txt                       | 0x95359A97E69C3432 | 1.771 KB   | 
 | {Game}/src/skse64/skse64_loader_common/IdentifyEXE.cpp                      | 0x73916B63AD9AFA8C | 13.373 KB  | 
 | {Game}/src/skse64/skse64_loader_common/IdentifyEXE.h                        | 0x9D8392009217A832 | 345 B      | 
 | {Game}/src/skse64/skse64_loader_common/Inject.cpp                           | 0xBEA826ADA8CCFF6D | 4.749 KB   | 
@@ -516,10 +523,12 @@
 | {Game}/src/skse64/skse64_loader_common/skse64_loader_common.vcxproj.filters | 0x91771645A2F6A15D | 535 B      | 
 | {Game}/src/skse64/skse64_loader_common/Steam.cpp                            | 0xFC050980BB8D3A4C | 4.164 KB   | 
 | {Game}/src/skse64/skse64_loader_common/Steam.h                              | 0xD3E8DF2298B630E2 | 72 B       | 
+| {Game}/src/skse64/skse64_steam_loader/CMakeLists.txt                        | 0xF310E543F28EBCDC | 1.91 KB    | 
 | {Game}/src/skse64/skse64_steam_loader/main.cpp                              | 0xC10EB1C82C1F51A5 | 3.204 KB   | 
 | {Game}/src/skse64/skse64_steam_loader/skse64_steam_loader.def               | 0xAA3B14DFCA1D154F | 31 B       | 
 | {Game}/src/skse64/skse64_steam_loader/skse64_steam_loader.vcxproj           | 0x5D46BCD8D01D1A0A | 5.558 KB   | 
 | {Game}/src/skse64/skse64_steam_loader/skse64_steam_loader.vcxproj.filters   | 0x93B4C0E640322ED8 | 311 B      | 
+| {Game}/src/skse64/xbyak/CMakeLists.txt                                      | 0x37C43AD01D31068B | 1.691 KB   | 
 | {Game}/src/skse64/xbyak/COPYRIGHT                                           | 0xD66DB2010F0A3059 | 3.368 KB   | 
 | {Game}/src/skse64/xbyak/xbyak.h                                             | 0x2A74665CB95F7959 | 73.779 KB  | 
 | {Game}/src/skse64/xbyak/xbyak_bin2hex.h                                     | 0x451349CA4980016B | 4.403 KB   | 

@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.GameLocators.GameCapabilities;
 using NexusMods.Abstractions.GameLocators.Stores.GOG;
@@ -14,7 +15,7 @@ using NexusMods.Sdk.IO;
 
 namespace NexusMods.Games.CreationEngine.SkyrimSE;
 
-public class SkyrimSE : AGame, ISteamGame, IGogGame
+public partial class SkyrimSE : AGame, ISteamGame, IGogGame
 {
     private readonly IServiceProvider _serviceProvider;
 
@@ -52,75 +53,43 @@ public class SkyrimSE : AGame, ISteamGame, IGogGame
     public override IStreamFactory GameImage =>
         new EmbeddedResourceStreamFactory<SkyrimSE>("NexusMods.Games.CreationEngine.Resources.SkyrimSE.tile.webp");
 
+    [GeneratedRegex("skse64_\\d+_\\d+_\\d+", RegexOptions.IgnoreCase)]
+    private static partial Regex SkseRegex();
+    
     public override ILibraryItemInstaller[] LibraryItemInstallers =>
     [
         FomodXmlInstaller.Create(_serviceProvider, new GamePath(LocationId.Game, "")),
-        new GenericPatternMatchInstaller(_serviceProvider)
+        // Files in a Data folder
+        new PredicateBasedInstaller(_serviceProvider)
         {
-            InstallFolderTargets =
-            [
-                // Script Extender
-                new InstallFolderTarget
-                {
-                    DestinationGamePath = new GamePath(LocationId.Game, RelativePath.Empty),
-                    KnownValidFileExtensions = [KnownExtensions.Exe],
-                    FileExtensionsToDiscard =
-                    [
-                        KnownExtensions.Txt,
-                    ],
-                },
-                new InstallFolderTarget
-                {
-                    KnownSourceFolderNames = ["SKSE"],
-                    DestinationGamePath = new GamePath(LocationId.Game, "Data/SKSE"),
-                    FileExtensionsToDiscard =
-                    [
-                        KnownExtensions.Txt,
-                    ],
-                },
-                new InstallFolderTarget
-                {
-                    KnownSourceFolderNames = ["Data"],
-                    DestinationGamePath = new GamePath(LocationId.Game, "Data"),
-                    FileExtensionsToDiscard =
-                    [
-                        KnownExtensions.Txt,
-                    ],
-                },
-                new InstallFolderTarget
-                {
-                    KnownSourceFolderNames = ["Interface"],
-                    DestinationGamePath = new GamePath(LocationId.Game, "Data/Interface"),
-                },
-                new InstallFolderTarget
-                {
-                    KnownSourceFolderNames = ["meshes"],
-                    DestinationGamePath = new GamePath(LocationId.Game, "Data/meshes"),
-                },
-                new InstallFolderTarget
-                {
-                    KnownValidFileExtensions = [KnownCEExtensions.BSA, KnownCEExtensions.BA2, KnownCEExtensions.ESM, KnownCEExtensions.ESP, KnownCEExtensions.ESL],
-                    DestinationGamePath = new GamePath(LocationId.Game, "Data"),
-                },
-                new InstallFolderTarget
-                {
-                    SubTargets = [
-                        new InstallFolderTarget()
-                        {
-                            KnownSourceFolderNames = ["Scripts"],
-                            DestinationGamePath = new GamePath(LocationId.Game, "Data/Scripts"),
-                        },
-                        new InstallFolderTarget()
-                        {
-                            KnownSourceFolderNames = ["Source"],
-                            DestinationGamePath = new GamePath(LocationId.Game, "Data/Source"),
-                            
-                        }
-                    ]
-                },
-                
-            ],
+            Root = static n => n.ThisNameIs("Data"),
+            Destination = new GamePath(LocationId.Game, "Data"),
         },
-
+        // SKSE wraps its files in a folder named after the skse version
+        new PredicateBasedInstaller(_serviceProvider)
+        {
+            Root = static n => n.ThisNameLike(SkseRegex()),
+            Destination = new GamePath(LocationId.Game, ""),
+        },
+        new PredicateBasedInstaller(_serviceProvider) 
+        { 
+            Root = static n => n.ThisNameIs("Interface"), 
+            Destination = new GamePath(LocationId.Game, "Data/Interface"), 
+        },
+        new PredicateBasedInstaller(_serviceProvider) 
+        { 
+            Root = static n => n.ThisNameIs("meshes"), 
+            Destination = new GamePath(LocationId.Game, "Data/meshes"), 
+        },
+        new PredicateBasedInstaller(_serviceProvider) 
+        { 
+            Root = static n => n.ThisNameIs("textures"), 
+            Destination = new GamePath(LocationId.Game, "Data/textures"), 
+        },
+        new PredicateBasedInstaller(_serviceProvider) 
+        { 
+            Root = static n => n.HasDirectChildFolder("meshes") || n.HasDirectChildFolder("textures"), 
+            Destination = new GamePath(LocationId.Game, "Data"), 
+        },
     ];
 }

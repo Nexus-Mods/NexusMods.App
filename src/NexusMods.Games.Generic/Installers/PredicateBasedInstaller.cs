@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
@@ -6,7 +7,9 @@ using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
+using NexusMods.Paths.Trees;
 using NexusMods.Paths.Trees.Traits;
+using NexusMods.Sdk;
 
 namespace NexusMods.Games.Generic.Installers;
 
@@ -16,48 +19,80 @@ public class PredicateBasedInstaller : ALibraryArchiveInstaller
     {
         
     }
-    
-    public required Func<RelativePath, bool> Root { get; init; }
+    public required Func<Node, bool> Root { get; init; }
     public required GamePath Destination { get; init; }
-    public required Func<RelativePath, bool> Predicate { get; init; }
+
+    public ref struct Node
+    {
+        private readonly KeyValuePair<RelativePath, KeyedBox<RelativePath, LibraryArchiveTree>> _node;
+
+        public Node(KeyValuePair<RelativePath, KeyedBox<RelativePath, LibraryArchiveTree>> node)
+        {
+            _node = node; 
+        }
+
+        /// <summary>
+        /// Returns true if this node has a direct child folder with the given path.
+        /// </summary>
+        public bool HasDirectChildFolder(RelativePath path) => _node.Value.Item.Children.TryGetValue(path, out var child) && !child.Item.IsFile;
+
+        /// <summary>
+        /// Returns true if this node's name matches the given glob.
+        /// </summary>
+        public bool ThisNameLike(Regex regex) => regex.IsMatch(_node.Key.ToString());
+        
+        /// <summary>
+        /// Returns true if this node's name matches the given name.'
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public bool ThisNameIs(string name) => !_node.Value.Item.IsFile && _node.Key == RelativePath.FromUnsanitizedInput(name);
+    }
 
     public override ValueTask<InstallerResult> ExecuteAsync(LibraryArchive.ReadOnly libraryArchive, LoadoutItemGroup.New loadoutGroup, ITransaction transaction, Loadout.ReadOnly loadout, CancellationToken cancellationToken)
     {
         var tree = libraryArchive.GetTree();
 
-        var root = tree
+        var isFound = tree
             .EnumerateChildrenBfs()
-            .SingleOrDefault(x => Root(x.Key));
+            .Where(x => Root(new Node(x)))
+            .Select(x => x.Value.Item)
+            .TryGetFirst(out var found);
+        
+        if (!isFound)
+            return ValueTask.FromResult<InstallerResult>(new NotSupported(Reason: "Found no matching root"));
 
-        var children = tree.EnumerateChildrenBfs()
-            .Where(c => c.Value.Item.LibraryFile.HasValue)
-            .Where(c => c.Key.InFolder(root.Key))
-            .Select(c =>
-                {
-                    var dest = Destination;
-                    var newRelative = dest.Path.Join(c.Key.RelativeTo(root.Key));
-                    return (new GamePath(dest.LocationId, newRelative), c.Value.Item.LibraryFile.Value);
-                }
-            );
-
-        foreach (var (destination, libraryFile) in children)
+        var rootDestination = Destination;
+        int handled = 0;
+        foreach (var (_, libraryFile) in tree.EnumerateChildrenBfs())
         {
+            if (!libraryFile.Item.IsFile) 
+                continue;
+            if (!libraryFile.Item.Value.Path.InFolder(found.Path))
+                continue;
+
+            var destinationPath = Destination.Path / libraryFile.Item.Path.RelativeTo(found.Path); 
             _ = new LoadoutFile.New(transaction, out var id)
             {
                 LoadoutItemWithTargetPath = new LoadoutItemWithTargetPath.New(transaction, id)
                 {
-                    TargetPath = (loadout.Id, destination.LocationId, destination.Path),
+                    TargetPath = (loadout.Id, rootDestination.LocationId, destinationPath),
                     LoadoutItem = new LoadoutItem.New(transaction, id)
                     {
-                        Name = destination.FileName,
+                        Name = libraryFile.Item.Path.Name,
                         LoadoutId = loadout.Id,
                         ParentId = loadoutGroup.Id,
                     },
                 },
-                Hash = libraryFile.Hash,
-                Size = libraryFile.Size,
+                Hash = libraryFile.Item.LibraryFile.Value.Hash,
+                Size = libraryFile.Item.LibraryFile.Value.Size,
             };
+            handled++;
         }
+        
+        if (handled != libraryArchive.Children.Count)
+            return ValueTask.FromResult<InstallerResult>(new NotSupported(Reason: "Did not handle all files"));
 
         return ValueTask.FromResult<InstallerResult>(new Success());
     }
