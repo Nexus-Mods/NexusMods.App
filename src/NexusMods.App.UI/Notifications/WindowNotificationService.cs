@@ -25,28 +25,33 @@ public class WindowNotificationService : IWindowNotificationService
             return null;
         }
         
-        _notificationManager = new WindowNotificationManager(desktopLifetime.MainWindow)
-        {
-            Position = NotificationPosition.BottomCenter,
-            MaxItems = 4,
-        };
+        // Must be on UI thread to create the WindowNotificationManager
+        DispatcherHelper.EnsureOnUIThread(() =>
+            {
+                _notificationManager = new WindowNotificationManager(desktopLifetime.MainWindow)
+                {
+                    Position = NotificationPosition.BottomCenter,
+                    MaxItems = 4,
+                };
+            }
+        );
 
         return _notificationManager;
     }
 
     /// <Inheritdoc />
-    public bool ShowToast(
+    public void ShowToast(
         string message,
         ToastNotificationVariant type = ToastNotificationVariant.Neutral,
         TimeSpan? expiration = null,
         DialogButtonDefinition[]? buttonDefinitions = null,
         Action<ButtonDefinitionId>? buttonHandler = null)
     {
-        var manager = GetNotificationManager();
-        if (manager == null) return false;
-
         DispatcherHelper.EnsureOnUIThread(() =>
             {
+                var manager = GetNotificationManager();
+                if (manager == null) return;
+                
                 // TODO: Use ToastNotificationVariant
                 // TODO: Use buttons and handler
         
@@ -55,12 +60,12 @@ public class WindowNotificationService : IWindowNotificationService
                     message,
                     NotificationType.Information,
                     expiration ?? TimeSpan.FromSeconds(5));
-        
+                
+                // Must be on UI thread to show the notification
                 manager.Show(notification);
                 return;
             }
         );
-        return true;
     }
 }
 
