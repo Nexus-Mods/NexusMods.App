@@ -160,44 +160,49 @@ public class NxFileStore : IFileStore
 
         if (distinct.Length == 0)
             return;
-        
-        var streams = new List<Stream>();
-        foreach (var backup in distinct)
-        {
-            if (deduplicate && await HaveFile(backup.Hash))
-                continue;
 
-            var stream = await backup.StreamFactory.GetStreamAsync();
-            streams.Add(stream);
-            builder.AddFile(stream, new AddFileParams
+        // NOTE(AL12rs): We take a read lock here to prevent write access to the archives being read
+        // While this is also creating an archive, we don't take the write lock, as the archive new and thus not known yet
+        using (_lock.ReadLock())
+        {
+            var streams = new List<Stream>();
+            foreach (var backup in distinct)
             {
-                RelativePath = backup.Hash.ToHex(),
-            });
-        }
+                if (deduplicate && await HaveFile(backup.Hash))
+                    continue;
+
+                var stream = await backup.StreamFactory.GetStreamAsync();
+                streams.Add(stream);
+                builder.AddFile(stream, new AddFileParams
+                {
+                    RelativePath = backup.Hash.ToHex(),
+                });
+            }
         
-        // If we already have all the files (HaveFile), there is nothing to back up.
-        if (streams.Count == 0)
-            return;
+            // If we already have all the files (HaveFile), there is nothing to back up.
+            if (streams.Count == 0)
+                return;
 
-        _logger.LogDebug("Backing up {Count} files of {Size} in size", distinct.Length, distinct.Sum(s => s.Size));
-        var guid = Guid.NewGuid();
-        var id = guid.ToString();
-        var outputPath = _archiveLocations.First().Combine(id).AppendExtension(KnownExtensions.Tmp);
+            _logger.LogDebug("Backing up {Count} files of {Size} in size", distinct.Length, distinct.Sum(s => s.Size));
+            var guid = Guid.NewGuid();
+            var id = guid.ToString();
+            var outputPath = _archiveLocations.First().Combine(id).AppendExtension(KnownExtensions.Tmp);
 
-        await using (var outputStream = outputPath.Create())
-        {
-            builder.WithOutput(outputStream);
-            builder.Build();
+            await using (var outputStream = outputPath.Create())
+            {
+                builder.WithOutput(outputStream);
+                builder.Build();
+            }
+
+            foreach (var stream in streams)
+                await stream.DisposeAsync();
+
+            var finalPath = outputPath.ReplaceExtension(KnownExtensions.Nx);
+
+            await outputPath.MoveToAsync(finalPath, token: token);
+            
+            AddArchiveToCache(finalPath);
         }
-
-        foreach (var stream in streams)
-            await stream.DisposeAsync();
-
-        var finalPath = outputPath.ReplaceExtension(KnownExtensions.Nx);
-
-        await outputPath.MoveToAsync(finalPath, token: token);
-        
-        AddArchiveToCache(finalPath);
     }
 
     /// <inheritdoc />
@@ -409,7 +414,7 @@ public class NxFileStore : IFileStore
     }
     
     /// <inheritdoc />
-    public AsyncFriendlyReaderWriterLock.WriteLockDisposable Lock() => _lock.WriteLock();
+    public AsyncFriendlyReaderWriterLock.WriteLockDisposable WriteLock() => _lock.WriteLock();
     
 
     private class ChunkedArchiveStream : IChunkedStreamSource

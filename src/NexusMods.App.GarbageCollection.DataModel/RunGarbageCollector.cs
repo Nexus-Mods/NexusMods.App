@@ -29,7 +29,7 @@ public static class RunGarbageCollector
         var toUpdateInDataStore = new List<ToUpdateInDataStoreEntry>();
 
         logger.LogInformation("Running garbage collector");
-        using (store.Lock())
+        using (store.WriteLock())
         {
             var gc = new ArchiveGarbageCollector<NxParsedHeaderState, FileEntryWrapper>();
             DataStoreNxArchiveFinder.FindAllArchives(archiveLocations, gc);
