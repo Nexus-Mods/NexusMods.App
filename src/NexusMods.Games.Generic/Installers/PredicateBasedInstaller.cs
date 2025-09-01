@@ -162,8 +162,8 @@ public class PredicateBasedInstaller : ALibraryArchiveInstaller
                 if (IgnoreFiles.Any(i => IsIgnored(i, libraryFile.Item.Value.Path)))
                 {
                     handled++;
-                    continue;
                 }
+                continue;
             }
 
             var destinationPath = Destination.Path / libraryFile.Item.Path.RelativeTo(found.Path); 
