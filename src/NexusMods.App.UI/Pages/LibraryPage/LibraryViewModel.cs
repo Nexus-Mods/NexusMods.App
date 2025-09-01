@@ -841,7 +841,6 @@ After asking design, we're choosing to simply open the mod page for now.
         );
         
         var targetCollection = LoadoutItem.Load(db, targetLoadoutGroup);
-        _notificationService.ShowToast(string.Format(Language.ToastNotification_Installed_to__0_, targetCollection.Name));
     }
 
     private LibraryItemId[] GetSelectedIds()
