@@ -13,6 +13,9 @@ using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using Polly;
 using Polly.Retry;
+using System.ComponentModel;
+using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.Networking.HttpDownloader;
 
@@ -301,7 +304,7 @@ public record HttpDownloadJob : IJobDefinitionWithStart<HttpDownloadJob, Absolut
 /// Public interface for external access to download information
 /// </summary>
 [PublicAPI]
-public interface IHttpDownloadState : IPublicJobStateData
+public interface IHttpDownloadState : IPublicJobStateData, INotifyPropertyChanged
 {
     /// <summary>
     /// Content length from HTTP headers
@@ -317,10 +320,10 @@ public interface IHttpDownloadState : IPublicJobStateData
 /// <summary>
 /// Internal mutable state that persists across pause/resume cycles
 /// </summary>
-internal sealed class HttpDownloadState : IHttpDownloadState
+internal sealed class HttpDownloadState : ReactiveObject, IHttpDownloadState
 {
-    public Optional<Size> ContentLength { get; set; }
+    [Reactive] public Optional<Size> ContentLength { get; set; }
+    [Reactive] public Size TotalBytesDownloaded { get; set; }
     public Optional<EntityTagHeaderValue> ETag { get; set; }
     public Optional<bool> AcceptRanges { get; set; }
-    public Size TotalBytesDownloaded { get; set; }
 }

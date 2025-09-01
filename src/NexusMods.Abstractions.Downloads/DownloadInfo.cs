@@ -1,3 +1,5 @@
+using System.Reactive.Disposables;
+using System.Runtime.CompilerServices;
 using DynamicData.Kernel;
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Jobs;
@@ -7,10 +9,13 @@ using NexusMods.Paths;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
+[assembly: InternalsVisibleTo("NexusMods.Library")]
+
 namespace NexusMods.Abstractions.Downloads;
 
 /// <summary>
 /// Represents download information for UI display.
+/// Thread safety is not guaranteed - UI consumers should use OnUI() or similar.
 /// </summary>
 [PublicAPI]
 public class DownloadInfo : ReactiveObject
@@ -70,4 +75,9 @@ public class DownloadInfo : ReactiveObject
     /// When the download completed.
     /// </summary>
     [Reactive] public Optional<DateTimeOffset> CompletedAt { get; set; }
+    
+    /// <summary>
+    /// Internal subscription management for reactive updates.
+    /// </summary>
+    internal CompositeDisposable? Subscriptions { get; set; }
 }

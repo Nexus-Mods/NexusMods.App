@@ -1,6 +1,6 @@
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Reactive.Disposables;
-using System.Reactive.Linq;
 using DynamicData;
 using DynamicData.Kernel;
 using NexusMods.Abstractions.Downloads;
@@ -12,8 +12,7 @@ using NexusMods.Paths;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Abstractions.NexusModsLibrary;
-using NexusMods.Sdk;
-using NexusMods.App.UI.Extensions;
+using ReactiveUI;
 
 namespace NexusMods.Library;
 
@@ -46,7 +45,7 @@ public sealed class DownloadsService : IDownloadsService, IDisposable
 
         InitializeObservables();
     }
-    
+
     private void InitializeObservables()
     {
         // TODO: Restore completed downloads from persistent storage on application boot.
@@ -66,9 +65,15 @@ public sealed class DownloadsService : IDownloadsService, IDisposable
                             case ChangeReason.Update:
                             case ChangeReason.Refresh:
                                 var nexusJob = (NexusModsDownloadJob)change.Current.Definition;
-                                var downloadInfo = CreateDownloadInfo(nexusJob, nexusJob.HttpDownloadJob.Job);
+                                var httpDownloadJob = nexusJob.HttpDownloadJob.Job;
+                                var downloadInfo = CreateDownloadInfo(nexusJob, httpDownloadJob);
                                 var downloadId = _jobIdToDownloadId.GetOrAdd(change.Current.Id, _ => DownloadId.New());
                                 updater.AddOrUpdate(downloadInfo, downloadId);
+                                
+                                // Subscribe to job observables for reactive updates
+                                if (change.Reason == ChangeReason.Add)
+                                    SubscribeToJobObservables(httpDownloadJob, downloadInfo);
+
                                 break;
                             case ChangeReason.Remove:
                                 // Note(sewer): JobMonitor removes all jobs after completion, but we want to keep the completed jobs
@@ -81,14 +86,25 @@ public sealed class DownloadsService : IDownloadsService, IDisposable
                                     {
                                         var existingItem = updater.Lookup(completedDownloadId);
                                         if (existingItem.HasValue)
-                                            MarkJobAsCompleted(existingItem.Value);
+                                        {
+                                            var completedDownload = existingItem.Value;
+                                            MarkJobAsCompleted(completedDownload);
+                                            // Clean up observable subscriptions
+                                            completedDownload.Subscriptions?.Dispose();
+                                        }
                                     }
                                 }
                                 else
                                 {
-                                    // Remove non-completed downloads normally
+                                    // Remove non-completed downloads normally  
                                     if (_jobIdToDownloadId.TryRemove(change.Key, out var removedDownloadId))
+                                    {
+                                        var existingItem = updater.Lookup(removedDownloadId);
+                                        if (existingItem.HasValue)
+                                            existingItem.Value.Subscriptions?.Dispose();
+
                                         updater.RemoveKey(removedDownloadId);
+                                    }
                                 }
                                 break;
                             case ChangeReason.Moved:
@@ -97,29 +113,6 @@ public sealed class DownloadsService : IDownloadsService, IDisposable
                         }
                     }
                 });
-            })
-            .DisposeWith(_disposables);
-            
-        // Update download info with a 0.5s poll.
-        // Note(sewer): We're polling by choice here, in the interest of efficiency.
-        // Some items, e.g. transfer rate, amount downloaded, can change constantly; at unpredictable intervals.
-        // Likewise, others, are not inherently observable.
-        _jobMonitor.GetObservableChangeSet<NexusModsDownloadJob>()
-            .AutoRefreshOnObservable(_ => Observable.Interval(TimeSpan.FromMilliseconds(500)))
-            .Subscribe(changes =>
-            {
-                foreach (var change in changes)
-                {
-                    if (change.Reason is not (ChangeReason.Refresh or ChangeReason.Update))
-                        continue;
-
-                    // Look up the DownloadId for this JobId
-                    if (!_jobIdToDownloadId.TryGetValue(change.Current.Id, out var downloadId)) continue;
-                    if (!_downloadCache.Lookup(downloadId).HasValue) continue;
-
-                    var nexusJob = (NexusModsDownloadJob)change.Current.Definition;
-                    UpdateDownloadInfo(_downloadCache.Lookup(downloadId).Value, nexusJob, nexusJob.HttpDownloadJob.Job);
-                }
             })
             .DisposeWith(_disposables);
     }
@@ -191,35 +184,62 @@ public sealed class DownloadsService : IDownloadsService, IDisposable
     {
         // Check if we already have a DownloadId for this JobId, otherwise generate a new one
         var downloadId = _jobIdToDownloadId.GetOrAdd(httpDownloadJob.Id, _ => DownloadId.New());
+        var httpJobDefinition = nexusJob.HttpDownloadJob.JobDefinition;
         
         var info = new DownloadInfo 
         { 
             Id = downloadId,
             JobId = Optional<JobId>.Create(httpDownloadJob.Id),
             GameId = nexusJob.FileMetadata.Uid.GameId,
+            Name = ExtractName(nexusJob),
+            DownloadPageUri = httpJobDefinition.DownloadPageUri,
+            // FileSize, Progress, DownloadedBytes, TransferRate, Status, CompletedAt are set by observable subscriptions
         };
-        PopulateDownloadInfo(info, nexusJob, httpDownloadJob);
+        
         return info;
     }
-    
-    private void UpdateDownloadInfo(DownloadInfo info, NexusModsDownloadJob nexusJob, IJob httpDownloadJob) => PopulateDownloadInfo(info, nexusJob, httpDownloadJob);
 
-    private void PopulateDownloadInfo(DownloadInfo info, NexusModsDownloadJob nexusJob, IJob httpDownloadJob)
+    private void SubscribeToJobObservables(IJob httpDownloadJob, DownloadInfo downloadInfo)
     {
-        var httpJobDefinition = nexusJob.HttpDownloadJob.JobDefinition;
+        // Ensure we don't have existing subscriptions for this job
+        downloadInfo.Subscriptions?.Dispose();
         
-        info.Name = ExtractName(nexusJob);
+        var jobDisposables = new CompositeDisposable();
+        
+        // Subscribe to progress changes
+        httpDownloadJob.ObservableProgress
+            .Subscribe(progress => downloadInfo.Progress = progress.HasValue ? progress.Value : Percent.Zero)
+            .DisposeWith(jobDisposables);
+        
+        // Subscribe to rate of progress changes
+        httpDownloadJob.ObservableRateOfProgress
+            .Subscribe(rateOfProgress => downloadInfo.TransferRate = Size.FromLong((long)(rateOfProgress.HasValue ? rateOfProgress.Value : 0)))
+            .DisposeWith(jobDisposables);
+        
+        // Subscribe to status changes
+        httpDownloadJob.ObservableStatus
+            .Subscribe(status => downloadInfo.Status = status)
+            .DisposeWith(jobDisposables);
+        
+        // Subscribe to reactive properties from IHttpDownloadState
         var state = httpDownloadJob.GetJobStateData<IHttpDownloadState>();
-        info.FileSize = GetFileSize(state);
-        info.Progress = httpDownloadJob.Progress.HasValue ? httpDownloadJob.Progress.Value : Percent.Zero;
-        info.DownloadedBytes = GetDownloadedBytes(state);
-        info.TransferRate = Size.FromLong((long)(httpDownloadJob.RateOfProgress.HasValue ? httpDownloadJob.RateOfProgress.Value : 0));
-        info.Status = httpDownloadJob.Status;
-        info.DownloadPageUri = httpJobDefinition.DownloadPageUri;
-        info.CompletedAt = httpDownloadJob.Status == JobStatus.Completed ? DateTimeOffset.UtcNow : Optional<DateTimeOffset>.None;
+        Debug.Assert(state != null, "IHttpDownloadState should always exist for HttpDownloadJob");
+        
+        // Subscribe to ContentLength changes (FileSize)
+        state.WhenAnyValue(x => x.ContentLength)
+            .Subscribe(contentLength => downloadInfo.FileSize = contentLength.HasValue ? contentLength.Value : Size.Zero)
+            .DisposeWith(jobDisposables);
+
+        // Subscribe to TotalBytesDownloaded changes (DownloadedBytes)
+        state.WhenAnyValue(x => x.TotalBytesDownloaded)
+            .Subscribe(totalBytes => downloadInfo.DownloadedBytes = totalBytes)
+            .DisposeWith(jobDisposables);
+        
+        // Store the subscription for later disposal
+        downloadInfo.Subscriptions = jobDisposables;
     }
 
-    private void MarkJobAsCompleted(DownloadInfo downloadInfo)
+    private static void MarkJobAsCompleted(DownloadInfo downloadInfo)
     {
         // Clear the JobId since the job no longer exists in JobMonitor
         downloadInfo.JobId = Optional<JobId>.None;
@@ -258,17 +278,6 @@ public sealed class DownloadsService : IDownloadsService, IDisposable
         var nameWithoutExt = Path.GetFileNameWithoutExtension(destinationFileName);
         return nameWithoutExt.Replace('_', ' ').Replace('-', ' ');
     }
-    
-    private Size GetFileSize(IHttpDownloadState? state)
-    {
-        return state?.ContentLength.HasValue == true 
-            ? state.ContentLength.Value :
-            // If content length not available, use downloaded bytes
-            // This can happen on some HTTP servers.
-            state?.TotalBytesDownloaded ?? Size.Zero;
-    }
-    
-    private Size GetDownloadedBytes(IHttpDownloadState? state) => state?.TotalBytesDownloaded ?? Size.Zero;
 
     public Optional<LibraryFile.ReadOnly> ResolveLibraryFile(DownloadInfo downloadInfo)
     {
@@ -311,6 +320,10 @@ public sealed class DownloadsService : IDownloadsService, IDisposable
     
     public void Dispose()
     {
+        // Dispose all job subscriptions
+        foreach (var downloadInfo in _downloadCache.Items)
+            downloadInfo.Subscriptions?.Dispose();
+        
         _disposables.Dispose();
         _downloadCache.Dispose();
     }
