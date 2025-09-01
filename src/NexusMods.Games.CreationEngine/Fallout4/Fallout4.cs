@@ -63,6 +63,7 @@ public partial class Fallout4 : AGame, ISteamGame, IGogGame
         {
             Root = static n => n.ThisNameIs("Data"),
             Destination = KnownPaths.Data,
+            IgnoreFiles = ["fomod/info.xml"],  
         },
         new PredicateBasedInstaller(_serviceProvider)
         {
@@ -77,7 +78,7 @@ public partial class Fallout4 : AGame, ISteamGame, IGogGame
         },
         new PredicateBasedInstaller(_serviceProvider)
         {
-            Root = static n => n.IsRootWith(KnownCEExtensions.BA2, KnownCEExtensions.ESM, KnownCEExtensions.ESL, KnownCEExtensions.ESP),
+            Root = static n => n.HashDirectChildrenWith(KnownCEExtensions.BA2, KnownCEExtensions.ESM, KnownCEExtensions.ESL, KnownCEExtensions.ESP),
             Destination = KnownPaths.Data,
         },
         new PredicateBasedInstaller(_serviceProvider)

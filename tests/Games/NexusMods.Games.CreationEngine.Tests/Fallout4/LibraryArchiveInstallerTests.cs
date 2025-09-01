@@ -23,6 +23,10 @@ public class LibraryArchiveInstallerTests(ITestOutputHelper outputHelper) : AIso
     // DLL and INI file in the root folder
     [InlineData("xSE Plugin Preloader F4", 33946, 323314)]
     [InlineData("xSE Plugin Preloader F4 (older)", 33946, 221778)]
+    // Has a fomod folder, but with no actual fomod installer script, just info.xml
+    [InlineData("Shortcut to Curie", 31766, 129553)]
+    // Has BA2/ESL files in a sub-folder named "zapgun"
+    [InlineData("Zap Gun -ESL version", 53998, 217156)]
     public async Task CanInstallMod(string name, uint modId, uint fileId)
     {
         var loadout = await CreateLoadout();

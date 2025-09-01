@@ -21,6 +21,11 @@ public class PredicateBasedInstaller : ALibraryArchiveInstaller
     }
     public required Func<Node, bool> Root { get; init; }
     public required GamePath Destination { get; init; }
+    
+    /// <summary>
+    /// Files in this array will not be installed, and will not cause the installer to fail if they exist.
+    /// </summary>
+    public RelativePath[] IgnoreFiles { get; init; } = [];
 
     public ref struct Node
     {
@@ -94,6 +99,25 @@ public class PredicateBasedInstaller : ALibraryArchiveInstaller
 
             return false;
         }
+        
+        /// <summary>
+        /// Returns true if any of the direct children of this node are files with the given extensions.
+        /// </summary>
+        public bool HashDirectChildrenWith(params ReadOnlySpan<Extension> extensions)
+        {
+            foreach (var child in _node.Value.Item.Children)
+            {
+                for (int extIdx = 0; extIdx < extensions.Length; extIdx++)
+                {
+                    if (!child.Value.Item.IsFile)
+                        continue;
+                    if (child.Key.Extension == extensions[extIdx])
+                        return true;
+                }
+            }
+
+            return false;
+        }
     }
 
     public override ValueTask<InstallerResult> ExecuteAsync(LibraryArchive.ReadOnly libraryArchive, LoadoutItemGroup.New loadoutGroup, ITransaction transaction, Loadout.ReadOnly loadout, CancellationToken cancellationToken)
@@ -121,12 +145,20 @@ public class PredicateBasedInstaller : ALibraryArchiveInstaller
 
         var rootDestination = Destination;
         int handled = 0;
+        int total = 0;
         foreach (var (_, libraryFile) in tree.EnumerateChildrenBfs())
         {
             if (!libraryFile.Item.IsFile) 
                 continue;
+            
+            total++;
             if (!libraryFile.Item.Value.Path.InFolder(found.Path))
+            {
+                // ignored files don't need to be installed
+                if (IgnoreFiles.Contains(libraryFile.Item.Value.Path)) 
+                    handled++;
                 continue;
+            }
 
             var destinationPath = Destination.Path / libraryFile.Item.Path.RelativeTo(found.Path); 
             _ = new LoadoutFile.New(transaction, out var id)
@@ -147,7 +179,7 @@ public class PredicateBasedInstaller : ALibraryArchiveInstaller
             handled++;
         }
         
-        if (handled != libraryArchive.Children.Count)
+        if (handled != total)
             return ValueTask.FromResult<InstallerResult>(new NotSupported(Reason: "Did not handle all files"));
 
         return ValueTask.FromResult<InstallerResult>(new Success());
