@@ -20,8 +20,9 @@ public class LibraryArchiveInstallerTests(ITestOutputHelper outputHelper) : AIso
     }
     
     [Theory]
-    // DLL and INI file in the root folder
+    // DLL and INI file in the root folder (winhttp.dll)
     [InlineData("xSE Plugin Preloader F4", 33946, 323314)]
+    // DLL with a different name (iphlapi.dll)
     [InlineData("xSE Plugin Preloader F4 (older)", 33946, 221778)]
     // Has a fomod folder, but with no actual fomod installer script, just info.xml
     [InlineData("Shortcut to Curie", 31766, 129553)]
@@ -29,6 +30,10 @@ public class LibraryArchiveInstallerTests(ITestOutputHelper outputHelper) : AIso
     [InlineData("Zap Gun -ESL version", 53998, 217156)]
     // A tool installed to the Tools folder
     [InlineData("Collective Modding Toolkit", 87907, 344771)]
+    // Files in a `strings` sub-folder
+    [InlineData("A StoryWealth - Point Lookout", 60927, 243052)]
+    // Folder named "Materials" in root
+    [InlineData("Natural Landscapes - Invisible Dirt Fix", 71554, 278064)]
     public async Task CanInstallMod(string name, uint modId, uint fileId)
     {
         var loadout = await CreateLoadout();
