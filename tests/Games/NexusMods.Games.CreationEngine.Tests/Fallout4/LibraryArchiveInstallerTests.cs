@@ -34,6 +34,8 @@ public class LibraryArchiveInstallerTests(ITestOutputHelper outputHelper) : AIso
     [InlineData("A StoryWealth - Point Lookout", 60927, 243052)]
     // Folder named "Materials" in root
     [InlineData("Natural Landscapes - Invisible Dirt Fix", 71554, 278064)]
+    // Data folder with top level license files
+    [InlineData("Disk Cache Enabler", 74841, 290028)]
     public async Task CanInstallMod(string name, uint modId, uint fileId)
     {
         var loadout = await CreateLoadout();

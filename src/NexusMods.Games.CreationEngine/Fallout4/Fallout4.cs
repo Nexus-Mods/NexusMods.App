@@ -10,6 +10,7 @@ using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Games.FOMOD;
 using NexusMods.Games.Generic.Installers;
 using NexusMods.Paths;
+using NexusMods.Paths.Utilities;
 using NexusMods.Sdk.IO;
 
 namespace NexusMods.Games.CreationEngine.Fallout4;
@@ -55,6 +56,7 @@ public partial class Fallout4 : AGame, ISteamGame, IGogGame
     [GeneratedRegex("f4se_\\d+_\\d+_\\d+", RegexOptions.IgnoreCase)]
     private static partial Regex F4seRegex();
     
+    
     public override ILibraryItemInstaller[] LibraryItemInstallers =>
     [
         FomodXmlInstaller.Create(_serviceProvider, new GamePath(LocationId.Game, "Data")),
@@ -63,7 +65,7 @@ public partial class Fallout4 : AGame, ISteamGame, IGogGame
         {
             Root = static n => n.ThisNameIs("Data"),
             Destination = KnownPaths.Data,
-            IgnoreFiles = ["fomod/info.xml"],  
+            IgnoreFiles = ["fomod/info.xml", KnownExtensions.Txt],  
         },
         new PredicateBasedInstaller(_serviceProvider)
         {
@@ -98,7 +100,7 @@ public partial class Fallout4 : AGame, ISteamGame, IGogGame
         },
         new PredicateBasedInstaller(_serviceProvider)
         {
-            Root = static n => n.IsRoot && n.HasDirectChild("Tools"),
+            Root = static n => n.HasDirectChild("Tools"),
             Destination = KnownPaths.Game,
         }
     ];

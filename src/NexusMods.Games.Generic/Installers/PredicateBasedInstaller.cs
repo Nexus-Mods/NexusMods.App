@@ -25,7 +25,7 @@ public class PredicateBasedInstaller : ALibraryArchiveInstaller
     /// <summary>
     /// Files in this array will not be installed, and will not cause the installer to fail if they exist.
     /// </summary>
-    public RelativePath[] IgnoreFiles { get; init; } = [];
+    public object[] IgnoreFiles { get; init; } = [];
 
     public ref struct Node
     {
@@ -159,10 +159,11 @@ public class PredicateBasedInstaller : ALibraryArchiveInstaller
             total++;
             if (!libraryFile.Item.Value.Path.InFolder(found.Path))
             {
-                // ignored files don't need to be installed
-                if (IgnoreFiles.Contains(libraryFile.Item.Value.Path)) 
+                if (IgnoreFiles.Any(i => IsIgnored(i, libraryFile.Item.Value.Path)))
+                {
                     handled++;
-                continue;
+                    continue;
+                }
             }
 
             var destinationPath = Destination.Path / libraryFile.Item.Path.RelativeTo(found.Path); 
@@ -188,5 +189,16 @@ public class PredicateBasedInstaller : ALibraryArchiveInstaller
             return ValueTask.FromResult<InstallerResult>(new NotSupported(Reason: "Did not handle all files"));
 
         return ValueTask.FromResult<InstallerResult>(new Success());
+    }
+
+    private bool IsIgnored(object pattern, RelativePath path)
+    {
+        return pattern switch
+        {
+            string s => s.Equals(path, StringComparison.InvariantCultureIgnoreCase),
+            Regex r => r.IsMatch(path),
+            Extension e => path.Extension == e,
+            _ => throw new Exception($"No handler for pattern type {pattern.GetType()}")
+        };
     }
 }
