@@ -78,32 +78,7 @@ public partial class SkyrimSE : AGame, ISteamGame, IGogGame
         },
         new PredicateBasedInstaller(_serviceProvider) 
         { 
-            Root = static n => n.ThisNameIs("Interface"), 
-            Destination = new GamePath(LocationId.Game, "Data/Interface"), 
-        },
-        new PredicateBasedInstaller(_serviceProvider) 
-        { 
-            Root = static n => n.ThisNameIs("meshes"), 
-            Destination = new GamePath(LocationId.Game, "Data/meshes"), 
-        },
-        new PredicateBasedInstaller(_serviceProvider) 
-        { 
-            Root = static n => n.ThisNameIs("textures"), 
-            Destination = new GamePath(LocationId.Game, "Data/textures"), 
-        },
-        new PredicateBasedInstaller(_serviceProvider) 
-        { 
-            Root = static n => n.ThisNameIs("sound"), 
-            Destination = new GamePath(LocationId.Game, "Data/sound"), 
-        },
-        new PredicateBasedInstaller(_serviceProvider) 
-        { 
-            Root = static n => n.HasDirectChildFolder("scripts"), 
-            Destination = new GamePath(LocationId.Game, "Data"), 
-        },
-        new PredicateBasedInstaller(_serviceProvider) 
-        { 
-            Root = static n => n.HasDirectChildFolder("meshes") || n.HasDirectChildFolder("textures") || n.HasDirectChildFolder("SKSE"), 
+            Root = static n => n.HasAnyDirectChildFolder("meshes", "textures", "SKSE", "Interface", "sound", "scripts"), 
             Destination = new GamePath(LocationId.Game, "Data"), 
         },
         new PredicateBasedInstaller(_serviceProvider)

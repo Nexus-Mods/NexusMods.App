@@ -35,6 +35,24 @@ public class PredicateBasedInstaller : ALibraryArchiveInstaller
         /// Returns true if this node has a direct child folder with the given path.
         /// </summary>
         public bool HasDirectChildFolder(RelativePath path) => _node.Value.Item.Children.TryGetValue(path, out var child) && !child.Item.IsFile;
+        
+        /// <summary>
+        /// Returns true if this node has a direct child folder with any of the given paths.
+        /// </summary>
+        public bool HasAnyDirectChildFolder(params ReadOnlySpan<string> path)
+        {
+            foreach (var child in _node.Children())
+            {
+                if (child.IsFile())
+                    continue;
+                for (var i = 0; i < path.Length; i++)
+                {
+                    if (child.Key.ToString().EndsWith(path[i], StringComparison.InvariantCultureIgnoreCase))
+                        return true;
+                }
+            }
+            return false;
+        }
 
         /// <summary>
         /// Returns true if this node's name matches the given glob.
