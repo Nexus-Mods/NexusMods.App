@@ -46,6 +46,7 @@ public class LibraryArchiveInstallerTests(ITestOutputHelper outputHelper) : AIso
     [InlineData("SSE Engine Fixes", 17230, 659756)]
     // Description Framework Configs
     [InlineData("Creation Club Item Descriptions", 106048, 598464)]
+    [Trait("RequiresNetworking", "True")]
     public async Task CanInstallMod(string name, uint modId, uint fileId)
     {
         var loadout = await CreateLoadout();

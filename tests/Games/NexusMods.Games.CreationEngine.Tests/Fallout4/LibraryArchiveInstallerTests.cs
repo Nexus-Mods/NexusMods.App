@@ -42,6 +42,7 @@ public class LibraryArchiveInstallerTests(ITestOutputHelper outputHelper) : AIso
     [InlineData("Fallout 4 Downgrader", 81630, 364228)]
     // Config folder at root, that puts files into Data/Config
     [InlineData("Customizable Character Rim Lighting Settings", 60927, 343009)]
+    [Trait("RequiresNetworking", "True")]
     public async Task CanInstallMod(string name, uint modId, uint fileId)
     {
         var loadout = await CreateLoadout();
