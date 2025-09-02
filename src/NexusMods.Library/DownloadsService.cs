@@ -28,7 +28,7 @@ public sealed class DownloadsService : IDownloadsService, IDisposable
     private readonly IConnection _connection;
     private readonly CompositeDisposable _disposables = new();
     
-    private readonly SourceCache<DownloadInfo, JobId> _downloadCache = new(x => x.Id);
+    private readonly SourceCache<DownloadInfo, DownloadId> _downloadCache = new(x => x.Id);
     
     /// <summary>
     /// Constructor.
@@ -64,7 +64,7 @@ public sealed class DownloadsService : IDownloadsService, IDisposable
                                 var nexusJob = (NexusModsDownloadJob)change.Current.Definition;
                                 var httpDownloadJob = nexusJob.HttpDownloadJob.Job;
                                 var downloadInfo = CreateDownloadInfo(nexusJob, httpDownloadJob);
-                                updater.AddOrUpdate(downloadInfo, change.Current.Id);
+                                updater.AddOrUpdate(downloadInfo, (DownloadId)change.Current.Id);
                                 
                                 // Subscribe to job observables for reactive updates
                                 if (change.Reason == ChangeReason.Add)
@@ -78,7 +78,7 @@ public sealed class DownloadsService : IDownloadsService, IDisposable
                                 if (change.Previous.Value.Status == JobStatus.Completed)
                                 {
                                     // Keep completed downloads but mark them as completed
-                                    var existingItem = updater.Lookup(change.Key);
+                                    var existingItem = updater.Lookup((DownloadId)change.Key);
                                     if (existingItem.HasValue)
                                     {
                                         var completedDownload = existingItem.Value;
@@ -90,11 +90,11 @@ public sealed class DownloadsService : IDownloadsService, IDisposable
                                 else
                                 {
                                     // Remove non-completed downloads normally  
-                                    var existingItem = updater.Lookup(change.Key);
+                                    var existingItem = updater.Lookup((DownloadId)change.Key);
                                     if (existingItem.HasValue)
                                         existingItem.Value.Subscriptions?.Dispose();
 
-                                    updater.RemoveKey(change.Key);
+                                    updater.RemoveKey((DownloadId)change.Key);
                                 }
                                 break;
                             case ChangeReason.Moved:
@@ -108,22 +108,22 @@ public sealed class DownloadsService : IDownloadsService, IDisposable
     }
     
     // Observable properties implementation
-    public IObservable<IChangeSet<DownloadInfo, JobId>> ActiveDownloads => 
+    public IObservable<IChangeSet<DownloadInfo, DownloadId>> ActiveDownloads => 
         _downloadCache.Connect()
             .AutoRefresh(x => x.Status)
             .Filter(x => x.Status.IsActive())
             .RefCount();
     
-    public IObservable<IChangeSet<DownloadInfo, JobId>> CompletedDownloads =>
+    public IObservable<IChangeSet<DownloadInfo, DownloadId>> CompletedDownloads =>
         _downloadCache.Connect()
             .AutoRefresh(x => x.Status)
             .Filter(x => x.Status == JobStatus.Completed)
             .RefCount();
     
-    public IObservable<IChangeSet<DownloadInfo, JobId>> AllDownloads =>
+    public IObservable<IChangeSet<DownloadInfo, DownloadId>> AllDownloads =>
         _downloadCache.Connect();
     
-    public IObservable<IChangeSet<DownloadInfo, JobId>> GetDownloadsForGame(GameId gameId) =>
+    public IObservable<IChangeSet<DownloadInfo, DownloadId>> GetDownloadsForGame(GameId gameId) =>
         _downloadCache.Connect()
             .Filter(x => x.GameId.Equals(gameId));
     

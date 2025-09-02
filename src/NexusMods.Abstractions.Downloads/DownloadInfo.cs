@@ -21,9 +21,9 @@ namespace NexusMods.Abstractions.Downloads;
 public class DownloadInfo : ReactiveObject
 {
     /// <summary>
-    /// Unique identifier for this download (JobId).
+    /// Unique identifier for this download (DownloadId).
     /// </summary>
-    public required JobId Id { get; init; }
+    public required DownloadId Id { get; init; }
     
     /// <summary>
     /// Display name of the download (typically mod name).

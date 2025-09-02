@@ -19,22 +19,22 @@ public interface IDownloadsService
     /// <summary>
     /// Observable of all active downloads (Running or Paused status).
     /// </summary>
-    IObservable<IChangeSet<DownloadInfo, JobId>> ActiveDownloads { get; }
+    IObservable<IChangeSet<DownloadInfo, DownloadId>> ActiveDownloads { get; }
     
     /// <summary>
     /// Observable of all completed downloads.
     /// </summary>
-    IObservable<IChangeSet<DownloadInfo, JobId>> CompletedDownloads { get; }
+    IObservable<IChangeSet<DownloadInfo, DownloadId>> CompletedDownloads { get; }
     
     /// <summary>
     /// Observable of all downloads regardless of status.
     /// </summary>
-    IObservable<IChangeSet<DownloadInfo, JobId>> AllDownloads { get; }
+    IObservable<IChangeSet<DownloadInfo, DownloadId>> AllDownloads { get; }
     
     /// <summary>
     /// Get downloads filtered by game.
     /// </summary>
-    IObservable<IChangeSet<DownloadInfo, JobId>> GetDownloadsForGame(GameId gameId);
+    IObservable<IChangeSet<DownloadInfo, DownloadId>> GetDownloadsForGame(GameId gameId);
     
     
     /// <summary>
