@@ -3,8 +3,8 @@ using System.Runtime.CompilerServices;
 using DynamicData.Kernel;
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Jobs;
-using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -69,6 +69,15 @@ public class DownloadInfo : ReactiveObject
     /// When the download completed.
     /// </summary>
     [Reactive] public Optional<DateTimeOffset> CompletedAt { get; set; }
+    
+    /// <summary>
+    /// Entity ID of the file metadata associated with this download.
+    /// </summary>
+    /// <remarks>
+    /// We store the EntityId rather than NexusModsFileMetadata.ReadOnly to avoid circular dependency issues.
+    /// The full FileMetadata can be retrieved from the database using this ID.
+    /// </remarks>
+    [Reactive] public required EntityId FileMetadataId { get; set; }
     
     /// <summary>
     /// Internal subscription management for reactive updates.
