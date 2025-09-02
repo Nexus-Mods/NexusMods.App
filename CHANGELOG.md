@@ -2,7 +2,7 @@
 This update contains a selection of bug fixes and quality of life improvements.
 
 ## Skyrim Support Work Begins!
-**Important: Skyrim SE support is now visible under the unsupported games toggle. This is an early developer preview only — it’s not ready for normal use or testing.**
+**⚠️ Warning: Do not enable Skyrim SE support in the app unless you are prepared to rebuild your mod setup from scratch. This is an early developer preview only - it’s not ready for normal use or testing.**
 
 It's been the #1 most requested game to mod with the app (and rightfully so!), so we're pleased to announce that work on support for Skyrim Special Edition has begun. The road ahead is long and winding, but we've got the foundations in place now and will be building on them in future releases. 
 
