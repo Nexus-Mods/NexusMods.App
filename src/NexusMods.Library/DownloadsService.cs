@@ -49,7 +49,7 @@ public sealed class DownloadsService : IDownloadsService, IDisposable
 
         // Monitor Nexus Mods download jobs and transform them into DownloadInfo
         // Handle completed downloads by keeping them in cache when removed from JobMonitor
-        _jobMonitor.GetObservableChangeSet<NexusModsDownloadJob>()
+        _jobMonitor.GetObservableChangeSet<INexusModsDownloadJob>()
             .Subscribe(changes =>
             {
                 _downloadCache.Edit(updater =>
@@ -61,10 +61,10 @@ public sealed class DownloadsService : IDownloadsService, IDisposable
                             case ChangeReason.Add:
                             case ChangeReason.Update:
                             case ChangeReason.Refresh:
-                                var nexusJob = (NexusModsDownloadJob)change.Current.Definition;
+                                var nexusJob = (INexusModsDownloadJob)change.Current.Definition;
                                 var httpDownloadJob = nexusJob.HttpDownloadJob.Job;
                                 var downloadInfo = CreateDownloadInfo(nexusJob, httpDownloadJob);
-                                updater.AddOrUpdate(downloadInfo, (DownloadId)change.Current.Id);
+                                updater.AddOrUpdate(downloadInfo, change.Current.Id);
                                 
                                 // Subscribe to job observables for reactive updates
                                 if (change.Reason == ChangeReason.Add)
@@ -78,7 +78,7 @@ public sealed class DownloadsService : IDownloadsService, IDisposable
                                 if (change.Previous.Value.Status == JobStatus.Completed)
                                 {
                                     // Keep completed downloads but mark them as completed
-                                    var existingItem = updater.Lookup((DownloadId)change.Key);
+                                    var existingItem = updater.Lookup(change.Key);
                                     if (existingItem.HasValue)
                                     {
                                         var completedDownload = existingItem.Value;
@@ -90,11 +90,11 @@ public sealed class DownloadsService : IDownloadsService, IDisposable
                                 else
                                 {
                                     // Remove non-completed downloads normally  
-                                    var existingItem = updater.Lookup((DownloadId)change.Key);
+                                    var existingItem = updater.Lookup(change.Key);
                                     if (existingItem.HasValue)
                                         existingItem.Value.Subscriptions?.Dispose();
 
-                                    updater.RemoveKey((DownloadId)change.Key);
+                                    updater.RemoveKey(change.Key);
                                 }
                                 break;
                             case ChangeReason.Moved:
@@ -168,7 +168,7 @@ public sealed class DownloadsService : IDownloadsService, IDisposable
         }
     }
     
-    private DownloadInfo CreateDownloadInfo(NexusModsDownloadJob nexusJob, IJob httpDownloadJob)
+    private DownloadInfo CreateDownloadInfo(INexusModsDownloadJob nexusJob, IJob httpDownloadJob)
     {
         var httpJobDefinition = nexusJob.HttpDownloadJob.JobDefinition;
         
@@ -212,7 +212,7 @@ public sealed class DownloadsService : IDownloadsService, IDisposable
         
         // Subscribe to ContentLength changes (FileSize)
         state.WhenAnyValue(x => x.ContentLength)
-            .Subscribe(contentLength => downloadInfo.FileSize = contentLength.HasValue ? contentLength.Value : Size.Zero)
+            .Subscribe(contentLength => downloadInfo.FileSize = contentLength.HasValue ? contentLength.Value : Size.From(0))
             .DisposeWith(jobDisposables);
 
         // Subscribe to TotalBytesDownloaded changes (DownloadedBytes)
@@ -227,7 +227,7 @@ public sealed class DownloadsService : IDownloadsService, IDisposable
     private static void MarkJobAsCompleted(DownloadInfo downloadInfo)
     {
         // Reset transient properties that are only relevant for active downloads
-        downloadInfo.TransferRate = Size.Zero;
+        downloadInfo.TransferRate = Size.From(0);
         
         // Set completion timestamp
         downloadInfo.CompletedAt = DateTimeOffset.UtcNow;
@@ -237,7 +237,7 @@ public sealed class DownloadsService : IDownloadsService, IDisposable
 
     // Helper methods
 
-    private string ExtractName(NexusModsDownloadJob nexusJob)
+    private string ExtractName(INexusModsDownloadJob nexusJob)
     {
         // Direct access to file name from FileMetadata
         var fileName = nexusJob.FileMetadata.Name;
