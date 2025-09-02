@@ -77,13 +77,13 @@ public class PredicateBasedInstaller : ALibraryArchiveInstaller
         /// <summary>
         /// Returns true if this node has a direct child that ends with the given postfix.
         /// </summary>
-        public bool HasDirectChildEndingIn(string postfix) => _node.Value.Item.Children.Any(c => c.Key.ToString().EndsWith(postfix));
+        public bool HasDirectChildEndingIn(string postfix) => _node.Value.Item.Children.Any(c => c.Key.ToString().EndsWith(postfix, StringComparison.InvariantCultureIgnoreCase));
         
         /// <summary>
         /// Returns true if this node has a direct child with the given name.
         /// </summary>
         public bool HasDirectChild(string name) => _node.Value.Item.Children.Any(c => c.Key.ToString().Equals(name, StringComparison.InvariantCultureIgnoreCase));
-
+        
         /// <summary>
         /// Returns true if any of the direct children of this node are files with the given extensions.
         /// </summary>
@@ -108,11 +108,11 @@ public class PredicateBasedInstaller : ALibraryArchiveInstaller
         /// <summary>
         /// Returns true if any of the direct children of this node are files with the given extensions.
         /// </summary>
-        public bool HashDirectChildrenWith(params ReadOnlySpan<Extension> extensions)
+        public bool HasDirectChildrenWith(params ReadOnlySpan<Extension> extensions)
         {
             foreach (var child in _node.Value.Item.Children)
             {
-                for (int extIdx = 0; extIdx < extensions.Length; extIdx++)
+                for (var extIdx = 0; extIdx < extensions.Length; extIdx++)
                 {
                     if (!child.Value.Item.IsFile)
                         continue;

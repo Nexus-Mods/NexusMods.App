@@ -65,6 +65,13 @@ public partial class SkyrimSE : AGame, ISteamGame, IGogGame
         {
             Root = static n => n.ThisNameIs("Data"),
             Destination = new GamePath(LocationId.Game, "Data"),
+            IgnoreFiles = ["fomod/info.xml", KnownExtensions.Txt],
+        },
+        // 
+        new PredicateBasedInstaller(_serviceProvider)
+        {
+            Root = static n => n.HasDirectChild("d3dx9_42.dll"),
+            Destination = KnownPaths.Game,
         },
         // SKSE wraps its files in a folder named after the skse version
         new PredicateBasedInstaller(_serviceProvider)
@@ -74,7 +81,7 @@ public partial class SkyrimSE : AGame, ISteamGame, IGogGame
         },
         new PredicateBasedInstaller(_serviceProvider)
         {
-            Root = static n => n.IsRootWith(KnownCEExtensions.BSA, KnownCEExtensions.ESM, KnownCEExtensions.ESL, KnownCEExtensions.ESP),
+            Root = static n => n.HasDirectChildrenWith(KnownCEExtensions.BSA, KnownCEExtensions.ESM, KnownCEExtensions.ESL, KnownCEExtensions.ESP),
             Destination = new GamePath(LocationId.Game, "Data"),
         },
         new PredicateBasedInstaller(_serviceProvider)
@@ -84,7 +91,7 @@ public partial class SkyrimSE : AGame, ISteamGame, IGogGame
         },
         new PredicateBasedInstaller(_serviceProvider) 
         { 
-            Root = static n => n.HasAnyDirectChildFolder("meshes", "textures", "Interface", "SKSE", "sound", "scripts"), 
+            Root = static n => n.HasAnyDirectChildFolder("meshes", "textures", "Interface", "SKSE", "sound", "scripts", "Shaders", "Nemesis_Engine", "Grass"), 
             Destination = new GamePath(LocationId.Game, "Data"), 
         },
         new PredicateBasedInstaller(_serviceProvider)
@@ -95,6 +102,31 @@ public partial class SkyrimSE : AGame, ISteamGame, IGogGame
         new PredicateBasedInstaller(_serviceProvider)
         {
             Root = static n => n.HasDirectChildEndingIn("_DESC.ini"),
+            Destination = new GamePath(LocationId.Game, "Data"),
+        },
+        new PredicateBasedInstaller(_serviceProvider)
+        {
+            Root = static n => n.HasDirectChildEndingIn("_FLM.ini"),
+            Destination = new GamePath(LocationId.Game, "Data"),
+        },
+        new PredicateBasedInstaller(_serviceProvider)
+        {
+            Root = static n => n.HasDirectChildEndingIn("_DISTR.ini"),
+            Destination = new GamePath(LocationId.Game, "Data"),
+        },
+        new PredicateBasedInstaller(_serviceProvider)
+        {
+            Root = static n => n.HasDirectChildEndingIn("_KID.ini"),
+            Destination = new GamePath(LocationId.Game, "Data"),
+        },
+        new PredicateBasedInstaller(_serviceProvider)
+        {
+            Root = static n => n.HasDirectChildEndingIn("_ANIO.ini"),
+            Destination = new GamePath(LocationId.Game, "Data"),
+        },
+        new PredicateBasedInstaller(_serviceProvider)
+        {
+            Root = static n => n.HasDirectChildEndingIn("_WIN.ini"),
             Destination = new GamePath(LocationId.Game, "Data"),
         },
         new FallbackInstaller(_serviceProvider)
