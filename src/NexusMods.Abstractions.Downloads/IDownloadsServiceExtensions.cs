@@ -48,7 +48,7 @@ public static class IDownloadsServiceExtensions
     /// <summary>
     /// Gets downloads that match a specific status.
     /// </summary>
-    public static IObservable<IChangeSet<DownloadInfo, DownloadId>> GetDownloadsByStatus(
+    public static IObservable<IChangeSet<DownloadInfo, JobId>> GetDownloadsByStatus(
         this IDownloadsService service, 
         JobStatus status)
     {
@@ -60,7 +60,7 @@ public static class IDownloadsServiceExtensions
     /// <summary>
     /// Gets failed downloads.
     /// </summary>
-    public static IObservable<IChangeSet<DownloadInfo, DownloadId>> FailedDownloads(this IDownloadsService service)
+    public static IObservable<IChangeSet<DownloadInfo, JobId>> FailedDownloads(this IDownloadsService service)
     {
         return service.GetDownloadsByStatus(JobStatus.Failed);
     }

@@ -28,10 +28,7 @@ public sealed class DownloadsService : IDownloadsService, IDisposable
     private readonly IConnection _connection;
     private readonly CompositeDisposable _disposables = new();
     
-    // Mapping from JobId to DownloadId to maintain consistency
-    private readonly ConcurrentDictionary<JobId, DownloadId> _jobIdToDownloadId = new();
-    
-    private readonly SourceCache<DownloadInfo, DownloadId> _downloadCache = new(x => x.Id);
+    private readonly SourceCache<DownloadInfo, JobId> _downloadCache = new(x => x.Id);
     
     /// <summary>
     /// Constructor.
@@ -67,8 +64,7 @@ public sealed class DownloadsService : IDownloadsService, IDisposable
                                 var nexusJob = (NexusModsDownloadJob)change.Current.Definition;
                                 var httpDownloadJob = nexusJob.HttpDownloadJob.Job;
                                 var downloadInfo = CreateDownloadInfo(nexusJob, httpDownloadJob);
-                                var downloadId = _jobIdToDownloadId.GetOrAdd(change.Current.Id, _ => DownloadId.New());
-                                updater.AddOrUpdate(downloadInfo, downloadId);
+                                updater.AddOrUpdate(downloadInfo, change.Current.Id);
                                 
                                 // Subscribe to job observables for reactive updates
                                 if (change.Reason == ChangeReason.Add)
@@ -81,30 +77,24 @@ public sealed class DownloadsService : IDownloadsService, IDisposable
                                 //              Cancelled jobs can also yield a ChangeReason.Remove, so we need to make a distinction here. 
                                 if (change.Previous.Value.Status == JobStatus.Completed)
                                 {
-                                    // Keep completed downloads but mark them as completed (clears JobId, etc.)
-                                    if (_jobIdToDownloadId.TryGetValue(change.Key, out var completedDownloadId))
+                                    // Keep completed downloads but mark them as completed
+                                    var existingItem = updater.Lookup(change.Key);
+                                    if (existingItem.HasValue)
                                     {
-                                        var existingItem = updater.Lookup(completedDownloadId);
-                                        if (existingItem.HasValue)
-                                        {
-                                            var completedDownload = existingItem.Value;
-                                            MarkJobAsCompleted(completedDownload);
-                                            // Clean up observable subscriptions
-                                            completedDownload.Subscriptions?.Dispose();
-                                        }
+                                        var completedDownload = existingItem.Value;
+                                        MarkJobAsCompleted(completedDownload);
+                                        // Clean up observable subscriptions
+                                        completedDownload.Subscriptions?.Dispose();
                                     }
                                 }
                                 else
                                 {
                                     // Remove non-completed downloads normally  
-                                    if (_jobIdToDownloadId.TryRemove(change.Key, out var removedDownloadId))
-                                    {
-                                        var existingItem = updater.Lookup(removedDownloadId);
-                                        if (existingItem.HasValue)
-                                            existingItem.Value.Subscriptions?.Dispose();
+                                    var existingItem = updater.Lookup(change.Key);
+                                    if (existingItem.HasValue)
+                                        existingItem.Value.Subscriptions?.Dispose();
 
-                                        updater.RemoveKey(removedDownloadId);
-                                    }
+                                    updater.RemoveKey(change.Key);
                                 }
                                 break;
                             case ChangeReason.Moved:
@@ -118,20 +108,20 @@ public sealed class DownloadsService : IDownloadsService, IDisposable
     }
     
     // Observable properties implementation
-    public IObservable<IChangeSet<DownloadInfo, DownloadId>> ActiveDownloads => 
+    public IObservable<IChangeSet<DownloadInfo, JobId>> ActiveDownloads => 
         _downloadCache.Connect()
             .AutoRefresh(x => x.Status)
             .Filter(x => x.Status.IsActive());
     
-    public IObservable<IChangeSet<DownloadInfo, DownloadId>> CompletedDownloads =>
+    public IObservable<IChangeSet<DownloadInfo, JobId>> CompletedDownloads =>
         _downloadCache.Connect()
             .AutoRefresh(x => x.Status)
             .Filter(x => x.Status == JobStatus.Completed);
     
-    public IObservable<IChangeSet<DownloadInfo, DownloadId>> AllDownloads =>
+    public IObservable<IChangeSet<DownloadInfo, JobId>> AllDownloads =>
         _downloadCache.Connect();
     
-    public IObservable<IChangeSet<DownloadInfo, DownloadId>> GetDownloadsForGame(GameId gameId) =>
+    public IObservable<IChangeSet<DownloadInfo, JobId>> GetDownloadsForGame(GameId gameId) =>
         _downloadCache.Connect()
             .Filter(x => x.GameId.Equals(gameId));
     
@@ -139,27 +129,24 @@ public sealed class DownloadsService : IDownloadsService, IDisposable
     // Control operations
     public void PauseDownload(DownloadInfo downloadInfo) 
     {
-        if (downloadInfo.JobId.HasValue)
-            _jobMonitor.Pause(downloadInfo.JobId.Value);
+        _jobMonitor.Pause(downloadInfo.Id);
     }
     
     public void ResumeDownload(DownloadInfo downloadInfo) 
     {
-        if (downloadInfo.JobId.HasValue)
-            _jobMonitor.Resume(downloadInfo.JobId.Value);
+        _jobMonitor.Resume(downloadInfo.Id);
     }
     
     public void CancelDownload(DownloadInfo downloadInfo) 
     {
-        if (downloadInfo.JobId.HasValue)
-            _jobMonitor.Cancel(downloadInfo.JobId.Value);
+        _jobMonitor.Cancel(downloadInfo.Id);
     }
     public void PauseAll()
     {
         foreach (var download in _downloadCache.Items)
         {
-            if (download.Status == JobStatus.Running && download.JobId.HasValue)
-                _jobMonitor.Pause(download.JobId.Value);
+            if (download.Status == JobStatus.Running)
+                _jobMonitor.Pause(download.Id);
         }
     }
 
@@ -167,29 +154,25 @@ public sealed class DownloadsService : IDownloadsService, IDisposable
     {
         foreach (var download in _downloadCache.Items)
         {
-            if (download.Status == JobStatus.Paused && download.JobId.HasValue)
-                _jobMonitor.Resume(download.JobId.Value);
+            if (download.Status == JobStatus.Paused)
+                _jobMonitor.Resume(download.Id);
         }
     }
     public void CancelRange(IEnumerable<DownloadInfo> downloads)
     {
         foreach (var download in downloads)
         {
-            if (download.JobId.HasValue)
-                _jobMonitor.Cancel(download.JobId.Value);
+            _jobMonitor.Cancel(download.Id);
         }
     }
     
     private DownloadInfo CreateDownloadInfo(NexusModsDownloadJob nexusJob, IJob httpDownloadJob)
     {
-        // Check if we already have a DownloadId for this JobId, otherwise generate a new one
-        var downloadId = _jobIdToDownloadId.GetOrAdd(httpDownloadJob.Id, _ => DownloadId.New());
         var httpJobDefinition = nexusJob.HttpDownloadJob.JobDefinition;
         
         var info = new DownloadInfo 
         { 
-            Id = downloadId,
-            JobId = Optional<JobId>.Create(httpDownloadJob.Id),
+            Id = httpDownloadJob.Id,
             GameId = nexusJob.FileMetadata.Uid.GameId,
             Name = ExtractName(nexusJob),
             DownloadPageUri = httpJobDefinition.DownloadPageUri,
@@ -241,9 +224,6 @@ public sealed class DownloadsService : IDownloadsService, IDisposable
 
     private static void MarkJobAsCompleted(DownloadInfo downloadInfo)
     {
-        // Clear the JobId since the job no longer exists in JobMonitor
-        downloadInfo.JobId = Optional<JobId>.None;
-        
         // Reset transient properties that are only relevant for active downloads
         downloadInfo.TransferRate = Size.Zero;
         
@@ -285,12 +265,8 @@ public sealed class DownloadsService : IDownloadsService, IDisposable
         if (downloadInfo.Status != JobStatus.Completed)
             return Optional<LibraryFile.ReadOnly>.None;
             
-        // Only resolve if we have a valid JobId
-        if (!downloadInfo.JobId.HasValue)
-            return Optional<LibraryFile.ReadOnly>.None;
-        
-        // Find the original job from the job monitor
-        var job = _jobMonitor.Jobs.FirstOrDefault(j => j.Id == downloadInfo.JobId.Value);
+        // Find the original job from the job monitor using the JobId
+        var job = _jobMonitor.Jobs.FirstOrDefault(j => j.Id == downloadInfo.Id);
         if (job?.Definition is not NexusModsDownloadJob nexusJob)
             return Optional<LibraryFile.ReadOnly>.None;
         
