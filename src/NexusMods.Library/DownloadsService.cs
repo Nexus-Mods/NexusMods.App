@@ -111,12 +111,14 @@ public sealed class DownloadsService : IDownloadsService, IDisposable
     public IObservable<IChangeSet<DownloadInfo, JobId>> ActiveDownloads => 
         _downloadCache.Connect()
             .AutoRefresh(x => x.Status)
-            .Filter(x => x.Status.IsActive());
+            .Filter(x => x.Status.IsActive())
+            .RefCount();
     
     public IObservable<IChangeSet<DownloadInfo, JobId>> CompletedDownloads =>
         _downloadCache.Connect()
             .AutoRefresh(x => x.Status)
-            .Filter(x => x.Status == JobStatus.Completed);
+            .Filter(x => x.Status == JobStatus.Completed)
+            .RefCount();
     
     public IObservable<IChangeSet<DownloadInfo, JobId>> AllDownloads =>
         _downloadCache.Connect();
