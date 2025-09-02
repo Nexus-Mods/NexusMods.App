@@ -1,6 +1,7 @@
-using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Threading;
 using NexusMods.App.UI.Dialog.Enums;
+using NexusMods.UI.Sdk;
 
 namespace NexusMods.App.UI.Dialog;
 
@@ -22,47 +23,51 @@ public class Dialog : IDialog
     /// <returns>A task that represents the asynchronous operation, containing the result of the dialog.</returns>
     public Task<StandardDialogResult> Show(Window owner, bool isModal = false)
     {
-        var window = new DialogWindow()
-        {
-            DataContext = _viewModel,
-
-            Title = _viewModel.WindowTitle,
-            Width = _viewModel.DialogWindowSize switch
+        return DispatcherHelper.EnsureOnUIThreadAsync(() =>
             {
-                DialogWindowSize.Small => 320,
-                DialogWindowSize.Medium => 480,
-                DialogWindowSize.Large => 800
-            },
-            MaxHeight = _viewModel.DialogWindowSize switch
-            {
-                DialogWindowSize.Small => 360,
-                DialogWindowSize.Medium => 540,
-                DialogWindowSize.Large => 540
-            },
-            CanResize = true,
-            SizeToContent = SizeToContent.Height, // Height is set by Avalonia based on content, we set the width above
-            WindowStartupLocation = WindowStartupLocation.CenterScreen,
-            ShowInTaskbar = !isModal, // Show the window in the taskbar if it's not modal
+                var window = new DialogWindow()
+                {
+                    DataContext = _viewModel,
 
-            MinWidth = 240,
-            MinHeight = 150
-        };
+                    Title = _viewModel.WindowTitle,
+                    Width = _viewModel.DialogWindowSize switch
+                    {
+                        DialogWindowSize.Small => 320,
+                        DialogWindowSize.Medium => 480,
+                        DialogWindowSize.Large => 800
+                    },
+                    MaxHeight = _viewModel.DialogWindowSize switch
+                    {
+                        DialogWindowSize.Small => 360,
+                        DialogWindowSize.Medium => 540,
+                        DialogWindowSize.Large => 540
+                    },
+                    CanResize = true,
+                    SizeToContent = SizeToContent.Height, // Height is set by Avalonia based on content, we set the width above
+                    WindowStartupLocation = WindowStartupLocation.CenterScreen,
+                    ShowInTaskbar = !isModal, // Show the window in the taskbar if it's not modal
 
-        var tcs = new TaskCompletionSource<StandardDialogResult>();
+                    MinWidth = 240,
+                    MinHeight = 150
+                };
 
-        // when the window is closed, set the result and complete the task
-        window.Closed += (o, args) =>
-        {
-            window.Dispose();
-            tcs.TrySetResult(_viewModel.Result);
-        };
+                var tcs = new TaskCompletionSource<StandardDialogResult>();
 
-        // show the window in the taskbar if it's not modal
-        if (isModal)
-            window.ShowDialog(owner);
-        else
-            window.Show();
+                // when the window is closed, set the result and complete the task
+                window.Closed += (o, args) =>
+                {
+                    window.Dispose();
+                    tcs.TrySetResult(_viewModel.Result);
+                };
 
-        return tcs.Task;
+                // show the window in the taskbar if it's not modal
+                if (isModal)
+                    window.Show(owner);
+                else
+                    window.Show();
+
+                return tcs.Task;
+            }
+        );
     }
 }

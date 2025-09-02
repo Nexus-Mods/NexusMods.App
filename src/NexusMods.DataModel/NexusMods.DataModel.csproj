@@ -4,7 +4,6 @@
 
     <ItemGroup>
         <ProjectReference Include="..\NexusMods.Abstractions.Cli\NexusMods.Abstractions.Cli.csproj" />
-        <ProjectReference Include="..\NexusMods.Abstractions.FileStore.Nx\NexusMods.Abstractions.FileStore.Nx.csproj" />
         <ProjectReference Include="..\NexusMods.Abstractions.GC\NexusMods.Abstractions.GC.csproj" />
         <ProjectReference Include="..\NexusMods.Abstractions.Library\NexusMods.Abstractions.Library.csproj" />
         <ProjectReference Include="..\NexusMods.Abstractions.Settings\NexusMods.Abstractions.Settings.csproj" />

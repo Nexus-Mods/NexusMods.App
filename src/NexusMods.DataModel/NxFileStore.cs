@@ -1,8 +1,8 @@
 using System.Buffers;
 using System.Collections.Concurrent;
+using System.Collections.Frozen;
 using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.FileStore.Nx.Models;
 using NexusMods.Abstractions.Settings;
 using NexusMods.Archives.Nx.FileProviders;
 using NexusMods.Archives.Nx.Headers;
@@ -16,7 +16,6 @@ using NexusMods.Hashing.xxHash3;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using NexusMods.Paths.Utilities;
-using NexusMods.Sdk.Hashes;
 using NexusMods.Sdk.Threading;
 using System.Diagnostics;
 using NexusMods.Sdk.FileStore;
@@ -31,8 +30,17 @@ public class NxFileStore : IFileStore
 {
     private readonly AsyncFriendlyReaderWriterLock _lock = new(); // See details on struct.
     private readonly AbsolutePath[] _archiveLocations;
-    private readonly IConnection _conn;
     private readonly ILogger<NxFileStore> _logger;
+    private FrozenDictionary<Hash, ArchiveContents> _archivesByEntry = FrozenDictionary<Hash, ArchiveContents>.Empty;
+    private FrozenDictionary<AbsolutePath, ArchiveContents> _archives = FrozenDictionary<AbsolutePath, ArchiveContents>.Empty;
+
+    private record ArchiveContents(AbsolutePath ArchivePath, Size Size, DateTimeOffset LastModified, FrozenDictionary<Hash, FileEntry> Entries);
+    
+    /// <summary>
+    /// This is the hash of an empty byte sequence. Useful for determining if we're being asked
+    /// to read an empty file (which is never going to be archived). 
+    /// </summary>
+    private static readonly Hash EmptyFile = Array.Empty<byte>().xxHash3();
 
     /// <summary>
     /// Constructor
@@ -53,97 +61,158 @@ public class NxFileStore : IFileStore
         }
 
         _logger = logger;
-        _conn = conn;
+        ReloadCaches();
+    }
+    
+    /// <inheritdoc />
+    public void ReloadCaches()
+    {
+        var oldFrozenArchives = _archives;
+
+        var archives = _archiveLocations
+            .SelectMany(folder => folder.EnumerateFiles(KnownExtensions.Nx))
+            .AsParallel()
+            .Select(file =>
+                {
+                    var info = file.FileInfo;
+                    if (oldFrozenArchives.TryGetValue(file, out var oldArchive) && oldArchive.LastModified == info.LastWriteTimeUtc && oldArchive.Size == info.Size)
+                        return oldArchive;
+                
+                    using var stream = file.Read();
+                    var provider = new FromStreamProvider(stream);
+                    var header = HeaderParser.ParseHeader(provider);
+                    Dictionary<Hash, FileEntry> entries = new();
+                    foreach (var entry in header.Entries)
+                        entries[Hash.From(entry.Hash)] = entry;
+                    return new ArchiveContents(file, info.Size, info.LastWriteTimeUtc, entries.ToFrozenDictionary());
+                }
+            ).ToDictionary(static x => x.ArchivePath);
+        
+        var index = new Dictionary<Hash, ArchiveContents>();
+        
+        foreach (var archive in archives.Values)
+        {
+            // Using the indexer (instead of .Add) so we don't throw an error on duplicates. Duplicates may be removed later by the
+            // GC but are benign  
+            foreach (var entry in archive.Entries)
+                index[entry.Key] = archive;
+        }
+        _archivesByEntry = index.ToFrozenDictionary();
+        _archives = archives.ToFrozenDictionary();
+    }
+
+    /// <summary>
+    /// Adds a newly created archive to the caches
+    /// Accesses the new archive's header to get the list of files
+    /// Uses a lock-free compare-and-swap approach to handle concurrent updates to the caches
+    /// </summary>
+    private void AddArchiveToCache(AbsolutePath archivePath)
+    {
+        // Read the new archive's header
+        using var stream = archivePath.Read();
+        var provider = new FromStreamProvider(stream);
+        var header = HeaderParser.ParseHeader(provider);
+        
+        var entries = new Dictionary<Hash, FileEntry>();
+        foreach (var entry in header.Entries)
+            entries[Hash.From(entry.Hash)] = entry;
+        
+        var info = archivePath.FileInfo;
+        var newArchive = new ArchiveContents(archivePath, info.Size, info.LastWriteTimeUtc, entries.ToFrozenDictionary());
+        
+        // Use compare-and-swap with retry to handle concurrent updates
+        while (true)
+        {
+            // Capture current state
+            var currentArchives = _archives;
+            var currentIndex = _archivesByEntry;
+            
+            // Create new dictionaries with the additional archive
+            var newArchives = currentArchives.ToDictionary();
+            newArchives[archivePath] = newArchive;
+            
+            var newIndex = currentIndex.ToDictionary();
+            foreach (var entry in newArchive.Entries)
+                newIndex[entry.Key] = newArchive;
+            
+            var newArchivesFrozen = newArchives.ToFrozenDictionary();
+            var newIndexFrozen = newIndex.ToFrozenDictionary();
+            
+            // Atomic compare-and-swap: only update if the references haven't changed
+            // In case of a partial update succeeding, retrying should be fine as the operation is idempotent
+            if (ReferenceEquals(Interlocked.CompareExchange(ref _archives, newArchivesFrozen, currentArchives), currentArchives) &&
+                ReferenceEquals(Interlocked.CompareExchange(ref _archivesByEntry, newIndexFrozen, currentIndex), currentIndex))
+            {
+                // Both updates completed atomically
+                break;
+            }
+        }
     }
 
     /// <inheritdoc />
-    public ValueTask<bool> HaveFile(Hash hash)
-    {
-        using var lck = _lock.ReadLock();
-        var db = _conn.Db;
-        var archivedFiles = ArchivedFile.FindByHash(db, hash).Any(x => x.IsValid());
-        return ValueTask.FromResult(archivedFiles);
-    }
+    public ValueTask<bool> HaveFile(Hash hash) => ValueTask.FromResult(_archivesByEntry.ContainsKey(hash));
 
     /// <inheritdoc />
     public async Task BackupFiles(IEnumerable<ArchivedFileEntry> backups, bool deduplicate = true, CancellationToken token = default)
     {
-        var hasAnyFiles = backups.Any();
-        if (hasAnyFiles == false)
-            return;
-
         var builder = new NxPackerBuilder();
         var distinct = backups.DistinctBy(d => d.Hash).ToArray();
-        var streams = new List<Stream>();
-        foreach (var backup in distinct)
-        {
-            if (deduplicate && await HaveFile(backup.Hash))
-                continue;
 
-            var stream = await backup.StreamFactory.GetStreamAsync();
-            streams.Add(stream);
-            builder.AddFile(stream, new AddFileParams
+        if (distinct.Length == 0)
+            return;
+
+        // NOTE(AL12rs): We take a read lock here to prevent write access to the archives being read
+        // While this is also creating an archive, we don't take the write lock, as the archive new and thus not known yet
+        using (_lock.ReadLock())
+        {
+            var streams = new List<Stream>();
+            foreach (var backup in distinct)
             {
-                RelativePath = backup.Hash.ToHex(),
-            });
+                if (deduplicate && await HaveFile(backup.Hash))
+                    continue;
+
+                var stream = await backup.StreamFactory.GetStreamAsync();
+                streams.Add(stream);
+                builder.AddFile(stream, new AddFileParams
+                {
+                    RelativePath = backup.Hash.ToHex(),
+                });
+            }
+        
+            // If we already have all the files (HaveFile), there is nothing to back up.
+            if (streams.Count == 0)
+                return;
+
+            _logger.LogDebug("Backing up {Count} files of {Size} in size", distinct.Length, distinct.Sum(s => s.Size));
+            var guid = Guid.NewGuid();
+            var id = guid.ToString();
+            var outputPath = _archiveLocations.First().Combine(id).AppendExtension(KnownExtensions.Tmp);
+
+            await using (var outputStream = outputPath.Create())
+            {
+                builder.WithOutput(outputStream);
+                builder.Build();
+            }
+
+            foreach (var stream in streams)
+                await stream.DisposeAsync();
+
+            var finalPath = outputPath.ReplaceExtension(KnownExtensions.Nx);
+
+            await outputPath.MoveToAsync(finalPath, token: token);
+            
+            AddArchiveToCache(finalPath);
         }
-
-        _logger.LogDebug("Backing up {Count} files of {Size} in size", distinct.Length, distinct.Sum(s => s.Size));
-        var guid = Guid.NewGuid();
-        var id = guid.ToString();
-        var outputPath = _archiveLocations.First().Combine(id).AppendExtension(KnownExtensions.Tmp);
-
-        await using (var outputStream = outputPath.Create())
-        {
-            builder.WithOutput(outputStream);
-            builder.Build();
-        }
-
-        foreach (var stream in streams)
-            await stream.DisposeAsync();
-
-        var finalPath = outputPath.ReplaceExtension(KnownExtensions.Nx);
-
-        await outputPath.MoveToAsync(finalPath, token: token);
-        await using var os = finalPath.Read();
-        var unpacker = new NxUnpacker(new FromStreamProvider(os));
-        await UpdateIndexes(unpacker, finalPath);
     }
 
     /// <inheritdoc />
     public Task BackupFiles(string archiveName, IEnumerable<ArchivedFileEntry> files, CancellationToken cancellationToken = default)
     {
-        // TODO: implement with repacking
         return BackupFiles(files, deduplicate: true, cancellationToken);
     }
-
-    private async Task UpdateIndexes(NxUnpacker unpacker, AbsolutePath finalPath)
-    {
-        using var lck = _lock.ReadLock();
-        using var tx = _conn.BeginTransaction();
-
-        var container = new ArchivedFileContainer.New(tx)
-        {
-            Path = finalPath.Name,
-        };
-
-        var entries = unpacker.GetPathedFileEntries();
-
-        foreach (var entry in entries)
-        {
-            _ = new ArchivedFile.New(tx)
-            {
-                Hash = Hash.FromHex(entry.FilePath),
-                NxFileEntry = entry.Entry,
-                ContainerId = container,
-            };
-        }
-
-        await tx.Commit();
-    }
-
+    
     /// <inheritdoc />
-    public async Task ExtractFiles(IEnumerable<(Hash Hash, AbsolutePath Dest)> files, CancellationToken token = default)
+    public async Task ExtractFiles(IEnumerable<(Hash Hash, AbsolutePath Dest)> files, CancellationToken token = default, Action<(int Current, int Max)>? progressUpdater = null)
     {
         using var lck = _lock.ReadLock();
 
@@ -158,28 +227,34 @@ public class NxFileStore : IFileStore
 #endif
 
         // Capacity is set to 'expected archive count' + 1.
-        var fileExistsCache = new ConcurrentDictionary<AbsolutePath, bool>(Environment.ProcessorCount, 2);
         Parallel.ForEach(files, file =>
         {
-            if (TryGetLocation(_conn.Db, file.Hash, fileExistsCache,
-                    out var archivePath, out var fileEntry))
+            // Create the directory, this will speed up extraction in Nx
+            // down the road. Usually the difference is negligible, but in
+            // extra special with 100s of directories scenarios, it can
+            // save a second or two.
+            var containingDir = file.Dest.Parent;
+            if (createdDirectories.TryAdd(containingDir, 0))
+                containingDir.CreateDirectory();
+            
+#if DEBUG
+            Debug.Assert(destPaths.TryAdd(file.Dest, 0), $"Duplicate destination path: {file.Dest}. Should not happen.");
+#endif
+            
+            // Create empty files as empty
+            if (file.Hash == EmptyFile)
+            {
+                file.Dest.Create().Dispose();
+                return;
+            }
+
+            if (TryGetLocation(file.Hash, out var archivePath, out var fileEntry))
             {
                 var group = groupedFiles.GetOrAdd(archivePath, _ => new List<(Hash, FileEntry, AbsolutePath)>());
                 lock (group)
                 {
                     group.Add((file.Hash, fileEntry, file.Dest));
                 }
-
-                // Create the directory, this will speed up extraction in Nx
-                // down the road. Usually the difference is negligible, but in
-                // extra special with 100s of directories scenarios, it can
-                // save a second or two.
-                var containingDir = file.Dest.Parent;
-                if (createdDirectories.TryAdd(containingDir, 0))
-                    containingDir.CreateDirectory();
-#if DEBUG
-                Debug.Assert(destPaths.TryAdd(file.Dest, 0), $"Duplicate destination path: {file.Dest}. Should not happen.");
-#endif
             }
             else
             {
@@ -187,9 +262,12 @@ public class NxFileStore : IFileStore
             }
         });
 
+        var groupIdx = 0;
         // Extract from all source archives.
         foreach (var group in groupedFiles)
         {
+            groupIdx++;
+            progressUpdater?.Invoke((groupIdx, groupedFiles.Count));
             await using var file = group.Key.Read();
             var provider = new FromStreamProvider(file);
             var unpacker = new NxUnpacker(provider);
@@ -230,7 +308,6 @@ public class NxFileStore : IFileStore
         var filesArr = files.ToArray();
         var results = new ConcurrentDictionary<Hash, byte[]>(Environment.ProcessorCount, filesArr.Length);
         var groupedFiles = new ConcurrentDictionary<AbsolutePath, List<(Hash Hash, FileEntry FileEntry)>>(Environment.ProcessorCount, 1);
-        var fileExistsCache = new ConcurrentDictionary<AbsolutePath, bool>(Environment.ProcessorCount, filesArr.Length);
 
 #if DEBUG
         var processedHashes = new ConcurrentDictionary<Hash, byte>();
@@ -238,12 +315,17 @@ public class NxFileStore : IFileStore
 
         Parallel.ForEach(filesArr, hash =>
         {
+            if (hash == EmptyFile)
+            {
+                results.TryAdd(hash, []);
+                return;
+            }
 #if DEBUG
             if (!processedHashes.TryAdd(hash, 0))
                 throw new Exception($"Duplicate hash found: {hash.ToHex()}");
 #endif
 
-            if (TryGetLocation(_conn.Db, hash, fileExistsCache,
+            if (TryGetLocation(hash,
                     out var archivePath, out var fileEntry))
             {
                 var group = groupedFiles.GetOrAdd(archivePath, _ => new List<(Hash, FileEntry)>());
@@ -288,10 +370,12 @@ public class NxFileStore : IFileStore
     public Task<Stream> GetFileStream(Hash hash, CancellationToken token = default)
     {
         if (hash == Hash.Zero)
-            throw new ArgumentNullException(nameof(hash));
+        {
+            return Task.FromResult(Stream.Null);
+        }
 
         using var lck = _lock.ReadLock();
-        if (!TryGetLocation(_conn.Db, hash, null,
+        if (!TryGetLocation(hash,
                 out var archivePath, out var entry))
             throw new MissingArchiveException(hash);
 
@@ -310,7 +394,7 @@ public class NxFileStore : IFileStore
             throw new ArgumentNullException(nameof(hash));
 
         using var lck = _lock.ReadLock();
-        if (!TryGetLocation(_conn.Db, hash, null,
+        if (!TryGetLocation(hash,
                 out var archivePath, out var entry))
             throw new MissingArchiveException(hash);
 
@@ -328,23 +412,10 @@ public class NxFileStore : IFileStore
 
         return Task.FromResult(output.Data);
     }
-
+    
     /// <inheritdoc />
-    public HashSet<ulong> GetFileHashes()
-    {
-        using var lck = _lock.ReadLock();
-
-        // Build a Hash Table of all currently known files. We do this to deduplicate files between downloads.
-        var fileHashes = new HashSet<ulong>();
-
-        // Replace this once we redo the IFileStore. Instead that can likely query MneumonicDB directly.
-        fileHashes.AddRange(_conn.Db.Datoms(ArchivedFile.Hash).Resolved(_conn).OfType<HashAttribute.ReadDatom>().Select(d => d.V.Value));
-
-        return fileHashes;
-    }
-
-    /// <inheritdoc />
-    public AsyncFriendlyReaderWriterLock.WriteLockDisposable Lock() => _lock.WriteLock();
+    public AsyncFriendlyReaderWriterLock.WriteLockDisposable WriteLock() => _lock.WriteLock();
+    
 
     private class ChunkedArchiveStream : IChunkedStreamSource
     {
@@ -533,32 +604,17 @@ public class NxFileStore : IFileStore
         public required int DecompressSize { get; set; }
     }
 
-    internal bool TryGetLocation(IDb db, Hash hash, ConcurrentDictionary<AbsolutePath, bool>? existsCache, out AbsolutePath archivePath, out FileEntry fileEntry)
+    internal bool TryGetLocation(Hash hash, out AbsolutePath archivePath, out FileEntry fileEntry)
     {
         archivePath = default(AbsolutePath);
         fileEntry = default(FileEntry);
-        var result = false;
-
-        foreach (var entry in ArchivedFile.FindByHash(db, hash))
-        {
-            // Skip retracted entries.
-            if (!entry.IsValid())
-                continue;
-
-            foreach (var location in _archiveLocations)
-            {
-                var combined = location.Combine(entry.Container.Path);
-                var fileExists = existsCache?.GetOrAdd(combined, path => path.FileExists) ?? combined.FileExists;
-                if (!fileExists)
-                    continue;
-
-                archivePath = combined;
-                fileEntry = entry.NxFileEntry;
-                result = true;
-                return result;
-            }
-        }
-
-        return result;
+        
+        if (!_archivesByEntry.TryGetValue(hash, out var archive))
+            return false;
+        
+        archivePath = archive.ArchivePath;
+        if (!archive.Entries.TryGetValue(hash, out fileEntry))
+            throw new KeyNotFoundException("Missing file entry: " + hash.ToHex() + "this should never happen");
+        return true;
     }
 }

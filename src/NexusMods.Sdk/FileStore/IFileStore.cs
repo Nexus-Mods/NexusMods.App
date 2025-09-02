@@ -39,7 +39,7 @@ public interface IFileStore
     ///
     /// The <c>BackupFiles</c> itself is thread safe, but duplicates may be made
     /// if called from duplicate threads at once. This can prevent with taking a lock
-    /// via <see cref="Lock"/> (and `using` statement). That said, the probability of duplicates
+    /// via <see cref="WriteLock"/> (and `using` statement). That said, the probability of duplicates
     /// being made without a lock is so low that it is generally recommended not to lock
     /// to instead maximize performance. The Garbage Collector will remove any duplicates down the road.
     /// </remarks>
@@ -57,7 +57,7 @@ public interface IFileStore
     /// <param name="files"></param>
     /// <param name="token"></param>
     /// <returns></returns>
-    Task ExtractFiles(IEnumerable<(Hash Hash, AbsolutePath Dest)> files, CancellationToken token = default);
+    Task ExtractFiles(IEnumerable<(Hash Hash, AbsolutePath Dest)> files, CancellationToken token = default, Action<(int Current, int Max)>? progress = null);
 
     /// <summary>
     /// Extract the given files from archives.
@@ -81,15 +81,16 @@ public interface IFileStore
     Task<byte[]> Load(Hash hash, CancellationToken token = default);
 
     /// <summary>
-    /// Retrieves hashes of all files associated with this FileStore.
-    /// </summary>
-    HashSet<ulong> GetFileHashes();
-
-    /// <summary>
     /// Locks the file store, preventing it from being used until the returned
     /// <see cref="IDisposable"/> is disposed.
     /// </summary>
-    AsyncFriendlyReaderWriterLock.WriteLockDisposable Lock();
+    AsyncFriendlyReaderWriterLock.WriteLockDisposable WriteLock();
+
+    /// <summary>
+    /// Reload any caches that may be stale due to GC operations
+    /// <remarks>This should be run under the store write lock since it updates the caches</remarks>
+    /// </summary>
+    void ReloadCaches();
 }
 
 

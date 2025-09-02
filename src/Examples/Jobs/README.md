@@ -58,6 +58,58 @@ indeterminate progress, use `Size.One` as maximum to avoid division by zero.
 See [**DeterminateProgressExample.cs**](../../../tests/NexusMods.Jobs.Tests/Examples/BestPractices/DeterminateProgressExample.cs)
 and [**IndeterminateProgressExample.cs**](../../../tests/NexusMods.Jobs.Tests/Examples/BestPractices/IndeterminateProgressExample.cs).
 
+### Pausing and Resuming Jobs
+
+Pausing uses the same mechanism as cancellation (cancellation tokens), but paused jobs can be resumed while cancelled jobs cannot.
+
+Jobs must call `context.YieldAsync()` to respect pause requests.
+
+When resumed, jobs restart from their entry point.
+Therefore, to properly support resuming, you must persist some state inside a class field.
+
+See [**PauseResumeExample.cs**](../../../tests/NexusMods.Jobs.Tests/Examples/BestPractices/PauseResumeExample.cs).
+
+### Job State Management
+
+Jobs can expose internal state for external monitoring via `IPublicJobStateData`.
+
+```csharp
+// Public interface - subset of internal state
+public interface IHttpDownloadState : IPublicJobStateData
+{
+    Optional<Size> ContentLength { get; }
+    Size TotalBytesDownloaded { get; }
+}
+
+// Internal state - includes both public and private properties
+internal sealed class HttpDownloadState : IHttpDownloadState
+{
+    public Optional<Size> ContentLength { get; set; }          // ← Exposed
+    public Size TotalBytesDownloaded { get; set; }             // ← Exposed
+    
+    public Optional<EntityTagHeaderValue> ETag { get; set; }   // ← Internal only
+    public Optional<bool> AcceptRanges { get; set; }           // ← Internal only
+}
+```
+
+Implementation:
+
+```csharp
+public class HttpDownloadJob : IJobDefinition<AbsolutePath>
+{
+    private readonly HttpDownloadState _state = new();
+    public IPublicJobStateData? GetJobStateData() => _state;
+    // ...
+}
+
+// Usage
+var downloadState = job.GetJobStateData<IHttpDownloadState>();
+```
+
+Usually, the read-only interface is a subset of the full internal state; which is sometimes also used across suspend/resume cycles.
+
+See [**JobStateManagementExample.cs**](../../../tests/NexusMods.Jobs.Tests/Examples/BestPractices/JobStateManagementExample.cs).
+
 ### Factory Methods
 
 Often you want to fire a job right away after it is created. In this case,

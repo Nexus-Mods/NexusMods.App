@@ -1,4 +1,5 @@
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.ReactiveUI;
 using NexusMods.Abstractions.UI;
 using R3;
@@ -68,6 +69,24 @@ public static class TreeDataGridViewHelper
                             state.getAdapter(state.view.ViewModel!).OnRowDrop(eventArgs.sender, eventArgs.e))
                     .AddTo(disposables);
             }
+            
+            // CTRL + A support
+            Observable.FromEventHandler<KeyEventArgs>(
+                addHandler: handler => treeDataGrid.KeyDown += handler,
+                removeHandler: handler => treeDataGrid.KeyDown -= handler)
+                .Where(e => 
+                    e.e.Key == Key.A 
+                    && e.e.KeyModifiers.HasFlag(KeyModifiers.Control)
+                    )
+                .Subscribe((view, getAdapter), static (eventArgs, state) =>
+                {
+                    var adapter = state.getAdapter(state.view.ViewModel!);
+                    // Select all items
+                    adapter.SelectAll();
+                    
+                    eventArgs.e.Handled = true;
+                })
+                .AddTo(disposables);
         });
     }
 }

@@ -346,7 +346,7 @@ public abstract class AGameTest<TGame> where TGame : AGame
         if (FileStore is not NxFileStore store)
             throw new NotSupportedException("GetArchivePath is not currently supported in stubbed file stores.");
 
-        store.TryGetLocation(Connection.Db, hash, null, out var archivePath, out _).Should().BeTrue("Archive should exist");
+        store.TryGetLocation(hash, out var archivePath, out _).Should().BeTrue("Archive should exist");
         return archivePath;
     }
 }

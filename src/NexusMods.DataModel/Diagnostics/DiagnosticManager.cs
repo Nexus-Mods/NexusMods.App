@@ -86,9 +86,9 @@ internal sealed class DiagnosticManager : IDiagnosticManager
         var metaData = GameInstallMetadata.Load(db, loadout.InstallationInstance.GameMetadataId);
         var hasPreviousLoadout = GameInstallMetadata.LastSyncedLoadoutTransaction.TryGetValue(metaData, out var lastId);
 
-        var lastScannedDiskState = metaData.DiskStateEntries;
-        var previousDiskState = hasPreviousLoadout ? 
-            metaData.DiskStateAsOf(Transaction.Load(db, lastId)) : 
+        var lastScannedDiskState = synchronizer.GetLastScannedDiskState(metaData);
+        var previousDiskState = hasPreviousLoadout ?
+            synchronizer.GetPreviouslyAppliedDiskState(metaData) : 
             lastScannedDiskState;
         
         var baseSyncTree = synchronizer.BuildSyncTree(lastScannedDiskState, previousDiskState, loadout);

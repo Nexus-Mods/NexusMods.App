@@ -38,6 +38,9 @@ using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 using NexusMods.MnemonicDB.Abstractions.Query;
 using NexusMods.Networking.NexusWebApi;
+using NexusMods.UI.Sdk;
+using NexusMods.UI.Sdk.Dialog;
+using NexusMods.UI.Sdk.Dialog.Enums;
 using ObservableCollections;
 using R3;
 using ReactiveUI;
@@ -98,6 +101,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
     private readonly NexusModsLibrary _nexusModsLibrary;
     private readonly IConnection _connection;
     private readonly IAvaloniaInterop _avaloniaInterop;
+    private readonly IWindowNotificationService _notificationService;
 
     public LoadoutViewModel(
         IWindowManager windowManager,
@@ -111,6 +115,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
         _connection = serviceProvider.GetRequiredService<IConnection>();
         _nexusModsLibrary = serviceProvider.GetRequiredService<NexusModsLibrary>();
         _avaloniaInterop = serviceProvider.GetRequiredService<IAvaloniaInterop>();
+        _notificationService = serviceProvider.GetRequiredService<IWindowNotificationService>();
 
         var settingsManager = serviceProvider.GetRequiredService<ISettingsManager>();
         EnableCollectionSharing = settingsManager.Get<ExperimentalSettings>().EnableCollectionSharing;
@@ -247,13 +252,19 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
 
             CommandUploadDraftRevision = IsCollectionUploaded.ToReactiveCommand<Unit>(async (unit, cancellationToken) =>
                 {
+                    _notificationService.ShowToast(Language.ToastNotification_Uploading_draft_collection_revision___);
+                    
                     _ = await CollectionCreator.UploadDraftRevision(serviceProvider, collectionGroupId.Value.Value, cancellationToken);
                     HasOutstandingChanges.Value = false;
+                    
+                    _notificationService.ShowToast(Language.ToastNotification_Draft_revision_uploaded_successfully, ToastNotificationVariant.Success);
                 }, maxSequential: 1, configureAwait: false
             );
 
             CommandUploadAndPublishRevision = IsCollectionUploaded.ToReactiveCommand<Unit>(async (unit, cancellationToken) =>
                 {
+                    _notificationService.ShowToast(Language.ToastNotification_Uploading_new_collection_revision___);
+                    
                     _ = await CollectionCreator.UploadAndPublishRevision(serviceProvider, collectionGroupId.Value.Value, cancellationToken);
                     HasOutstandingChanges.Value = false;
 
@@ -333,9 +344,24 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                         ? Abstractions.NexusModsLibrary.Models.CollectionStatus.Listed
                         : Abstractions.NexusModsLibrary.Models.CollectionStatus.Unlisted;
 
-                    _ = await CollectionCreator.ChangeCollectionStatus(serviceProvider, collectionGroupId.Value.Value, CollectionStatus.Value,
+                    var result = await CollectionCreator.ChangeCollectionStatus(serviceProvider, collectionGroupId.Value.Value, CollectionStatus.Value,
                         cancellationToken
                     );
+                    
+                    if (result.TryGetData(out var data))
+                    {
+                        var newStatus = data switch
+                        {
+                            Abstractions.NexusModsLibrary.Models.CollectionStatus.Listed => Language.CollectionStatus_Listed,
+                            Abstractions.NexusModsLibrary.Models.CollectionStatus.Unlisted => Language.CollectionStatus_Unlisted,
+                            _ => throw new ArgumentOutOfRangeException(),
+                        };
+
+                        _notificationService.ShowToast(
+                            string.Format(Language.ToastNotification_Collection_status_changed_to__0__, newStatus),
+                            ToastNotificationVariant.Success
+                        );
+                    }
                 }, configureAwait: false
             );
 
@@ -398,6 +424,8 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
             {
                 await CollectionCreator.DeleteCollectionGroup(connection: _connection, managedCollectionGroup: collectionGroupId.Value, cancellationToken: cancellationToken);
                 CommandOpenLibraryPage?.Execute(NavigationInformation.From(OpenPageBehaviorType.ReplaceTab));
+                
+                _notificationService.ShowToast(Language.ToastNotification_Collection_removed);
             });
         }
         else
@@ -541,6 +569,8 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                     if (result.ButtonId != ButtonDefinitionId.Accept) return;
 
                     await libraryService.RemoveLinkedItemsFromLoadout(ids);
+                    
+                    _notificationService.ShowToast(Language.ToastNotification_Mods_removed);
                 },
                 awaitOperation: AwaitOperation.Sequential,
                 initialCanExecute: false,

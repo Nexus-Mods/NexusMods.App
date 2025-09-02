@@ -4,7 +4,6 @@ using System.Text.Json;
 using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.EpicGameStore.Models;
 using NexusMods.Abstractions.EpicGameStore.Values;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.FileHashes;
