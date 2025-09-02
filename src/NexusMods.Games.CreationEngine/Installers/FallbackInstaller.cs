@@ -19,6 +19,12 @@ public class FallbackInstaller : ALibraryArchiveInstaller
 {
     private static readonly Extension[] SupportedExtensions = [KnownCEExtensions.BSA, KnownCEExtensions.BA2, KnownCEExtensions.ESM, KnownCEExtensions.ESP, KnownCEExtensions.ESL];
     private static readonly Extension[] IgnoredExtensions = [KnownExtensions.Jpg, KnownExtensions.Txt];
+
+    private static readonly RelativePath[] IgnoredFiles =
+    [
+        "meta.ini", // MO2 Cruft some people accidentally put in the root of the archive
+        "readme.txt", // We won't let documentation stop us from installing a mod 
+    ];
     
     public FallbackInstaller(IServiceProvider serviceProvider) : base(serviceProvider, serviceProvider.GetRequiredService<ILogger<FallbackInstaller>>())
     {
@@ -35,6 +41,8 @@ public class FallbackInstaller : ALibraryArchiveInstaller
             if (SupportedExtensions.Contains(file.Path.Extension))
                 supported.Add(file);
             else if (IgnoredExtensions.Contains(file.Path.Extension))
+                ignored.Add(file);
+            else if (IgnoredFiles.Contains(file.Path.FileName))
                 ignored.Add(file);
             else
                 return ValueTask.FromResult<InstallerResult>(new NotSupported(Reason: $"Cannot handle {file.Path.Extension}"));
