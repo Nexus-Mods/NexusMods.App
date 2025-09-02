@@ -180,6 +180,7 @@ public sealed class DownloadsService : IDownloadsService, IDisposable
             GameId = nexusJob.FileMetadata.Uid.GameId,
             Name = ExtractName(nexusJob),
             DownloadPageUri = httpJobDefinition.DownloadPageUri,
+            FileMetadataId = nexusJob.FileMetadata.Id,
             // FileSize, Progress, DownloadedBytes, TransferRate, Status, CompletedAt are set by observable subscriptions
         };
         
@@ -268,16 +269,11 @@ public sealed class DownloadsService : IDownloadsService, IDisposable
         // Only resolve for completed downloads
         if (downloadInfo.Status != JobStatus.Completed)
             return Optional<LibraryFile.ReadOnly>.None;
-            
-        // Find the original job from the job monitor using the JobId
-        var job = _jobMonitor.Jobs.FirstOrDefault(j => j.Id == downloadInfo.Id);
-        if (job?.Definition is not NexusModsDownloadJob nexusJob)
-            return Optional<LibraryFile.ReadOnly>.None;
         
         try
         {
-            // Use the file metadata directly from the job
-            var fileMetadata = nexusJob.FileMetadata;
+            // Retrieve the FileMetadata from the database using the stored EntityId
+            var fileMetadata = new NexusModsFileMetadata.ReadOnly(_connection.Db, downloadInfo.FileMetadataId);
             
             // Find library items that match this file metadata
             var libraryItems = NexusModsLibraryItem.FindByFileMetadata(_connection.Db, fileMetadata);
