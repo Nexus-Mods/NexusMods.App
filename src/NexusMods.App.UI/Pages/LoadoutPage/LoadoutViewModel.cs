@@ -411,7 +411,8 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                 .FilterImmutable(group => group.AsLoadoutItemGroup().AsLoadoutItem().LoadoutId == loadoutId && !group.IsReadOnly)
                 .QueryWhenChanged(query => query.Count)
                 .ToObservable()
-                .Select(count => count > 1)
+                // NOTE(AL12rs): We need a better way to identify "My Mods" collection, if we localize the name this will break
+                .Select(count => count > 1 && collectionGroup.Name != "My Mods")
                 .ObserveOnUIThreadDispatcher();
 
             CommandDeleteGroup = canDelete.ToReactiveCommand<Unit>(async (_, cancellationToken) =>

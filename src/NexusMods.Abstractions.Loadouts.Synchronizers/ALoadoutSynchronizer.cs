@@ -1542,6 +1542,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                         IsGroup = true,
                         LoadoutItem = new LoadoutItem.New(tx, userCollectionId)
                         {
+                            // NOTE(AL12rs): If this name is localized, we need a different way to identify this collection for delete protection
                             Name = "My Mods",
                             LoadoutId = loadout,
                         },
