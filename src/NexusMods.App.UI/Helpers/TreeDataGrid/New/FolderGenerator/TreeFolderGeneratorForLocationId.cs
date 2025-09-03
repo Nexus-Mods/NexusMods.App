@@ -31,9 +31,9 @@ public class TreeFolderGeneratorForLocationId<TTreeItemWithPath, TFolderModelIni
     ///     Does not need to necessarily constitute a real path, can be just 'GAME' etc,
     ///     just make sure locationId matches.
     /// </param>
-    public TreeFolderGeneratorForLocationId(GamePath rootFolderName)
+    public TreeFolderGeneratorForLocationId(GamePath rootFolderName, string? displayName = null)
     {
-        _rootFolder = new GeneratedFolder<TTreeItemWithPath, TFolderModelInitializer>(rootFolderName);
+        _rootFolder = new GeneratedFolder<TTreeItemWithPath, TFolderModelInitializer>(rootFolderName, displayName);
     }
     
     /// <summary>
@@ -181,7 +181,9 @@ public class GeneratedFolder<TTreeItemWithPath, TFolderModelInitializer> : IDisp
     /// Name of this folder node.
     /// </summary>
     public RelativePath FolderName => FullPath.FileName;
-    
+
+    public string DisplayName { get; private set; }
+
     /// <summary>
     /// A source cache containing all files from this folder and all its subfolders recursively.
     /// </summary>
@@ -200,9 +202,10 @@ public class GeneratedFolder<TTreeItemWithPath, TFolderModelInitializer> : IDisp
 
     /// <summary/>
     /// <param name="fullPath">Full path on disk of this folder node.</param>
-    public GeneratedFolder(GamePath fullPath)
+    public GeneratedFolder(GamePath fullPath, string? displayName = null)
     {
         FullPath = fullPath;
+        DisplayName = displayName ?? fullPath.FileName.Path;
         
         // Create observables for the children and hasChildren status.
         var filesCount = Files.CountChanged.Select(count => count > 0);
