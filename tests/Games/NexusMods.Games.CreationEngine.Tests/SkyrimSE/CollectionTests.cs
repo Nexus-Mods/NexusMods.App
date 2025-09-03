@@ -57,16 +57,16 @@ public class CollectionTests(ITestOutputHelper outputHelper) : AIsolatedGameTest
         var items = CollectionDownloader.GetItems(revisionMetadata, CollectionDownloader.ItemType.Required);
         var installJob = await InstallCollectionJob.Create(ServiceProvider, loadout, collectionFile, revisionMetadata, items);
         
-        List<(string Mod, GamePath Path, Hash Hash, Size Size)> collectionFiles = new();
+        List<(string Mod, GamePath Path, Hash Hash, Size Size, int modCount)> collectionFiles = new();
 
         foreach (var mod in installJob.AsCollectionGroup().AsLoadoutItemGroup().Children.OfTypeLoadoutItemGroup())
         {
             foreach (var file in mod.Children.OfTypeLoadoutItemWithTargetPath().OfTypeLoadoutFile())
             {
-                collectionFiles.Add((mod.AsLoadoutItem().Name, file.AsLoadoutItemWithTargetPath().TargetPath, file.Hash, file.Size));
+                collectionFiles.Add((mod.AsLoadoutItem().Name, file.AsLoadoutItemWithTargetPath().TargetPath, file.Hash, file.Size, mod.Children.Count));
             }
         }
-
+        
         collectionFiles.Sort();
         await VerifyTable(collectionFiles);
     }
