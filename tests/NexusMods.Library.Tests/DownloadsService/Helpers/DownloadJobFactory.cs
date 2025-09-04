@@ -151,6 +151,9 @@ public class TestDownloadJobContext
         ProgressController.OnNext(1.0);
         CompletionSource.TrySetResult(NexusJob.Destination);
         HttpCompletionSource.TrySetResult(HttpJob.Destination);
+        
+        // Signal any waiting yield operations to ensure immediate completion
+        NexusYieldSignal?.Set();
     }
     
     /// <summary>

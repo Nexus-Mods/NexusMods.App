@@ -40,58 +40,16 @@ public record TestNexusModsDownloadJob : IJobDefinitionWithStart<TestNexusModsDo
     {
         // Signal that we're ready to start (for test synchronization)
         ReadySignal?.Set();
-        
+            
         // Wait for start signal if provided (allows tests to control timing)
         if (StartSignal != null)
         {
             if (!StartSignal.Wait(TimeSpan.FromSeconds(30), context.CancellationToken))
                 throw new TimeoutException("StartSignal was not set within timeout period");
         }
-        
-        // Subscribe to status changes
-        StatusController.Subscribe(status =>
-        {
-            // Update job status based on controller
-            if (status == JobStatus.Cancelled)
-                context.CancellationToken.Register(() => CompletionSource.TrySetCanceled());
-            // Note: Pausing is handled through YieldAsync() calls during execution
-        });
-        
-        // Subscribe to progress changes
-        ProgressController.Subscribe(progress =>
-        {
-            var totalSize = Size.From(100UL); // Fixed size for testing
-            var currentSize = Size.From((ulong)(progress * 100));
-            context.SetPercent(currentSize, totalSize);
             
-            if (progress > 0)
-            {
-                var rate = progress * 10; // Arbitrary rate calculation for testing
-                context.SetRateOfProgress(rate);
-            }
-        });
-        
-        // Wait for completion or cancellation with controlled yielding
-        try
-        {
-            while (!CompletionSource.Task.IsCompleted && !context.CancellationToken.IsCancellationRequested)
-            {
-                await context.YieldAsync();
-                
-                // Wait for yield signal if provided (allows tests to control execution flow)
-                if (YieldSignal != null)
-                {
-                    if (!YieldSignal.Wait(TimeSpan.FromSeconds(30), context.CancellationToken))
-                        break; // Continue if signal times out to prevent infinite waiting
-                }
-            }
-            
-            return await CompletionSource.Task;
-        }
-        catch (TaskCanceledException)
-        {
-            throw new OperationCanceledException("Job was cancelled");
-        }
+        // Simply await the completion source - matches original NexusModsDownloadJob pattern
+        return await CompletionSource.Task;
     }
     
     // <see cref="IDownloadJob"/> metadata implementation
