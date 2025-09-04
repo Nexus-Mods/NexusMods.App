@@ -80,6 +80,7 @@ public class DownloadJobFactory(IJobMonitor jobMonitor, IServiceProvider service
             HttpJob = testHttpJob,
             JobTask = jobTask,
             HttpJobTask = httpJobTask,
+            JobMonitor = jobMonitor,
             StatusController = statusController,
             ProgressController = progressController,
             CompletionSource = completionSource,
@@ -128,6 +129,7 @@ public class TestDownloadJobContext
     public required TestHttpDownloadJob HttpJob { get; init; }
     public required IJobTask<TestNexusModsDownloadJob, AbsolutePath> JobTask { get; init; }
     public required IJobTask<TestHttpDownloadJob, AbsolutePath> HttpJobTask { get; init; }
+    public required IJobMonitor JobMonitor { get; init; }
     public required BehaviorSubject<JobStatus> StatusController { get; init; }
     public required BehaviorSubject<double> ProgressController { get; init; }
     public required TaskCompletionSource<AbsolutePath> CompletionSource { get; init; }
@@ -158,9 +160,8 @@ public class TestDownloadJobContext
     /// </summary>
     public void CancelJob()
     {
-        StatusController.OnNext(JobStatus.Cancelled);
-        CompletionSource.TrySetCanceled();
-        HttpCompletionSource.TrySetCanceled();
+        JobMonitor.Cancel(JobTask);
+        JobMonitor.Cancel(HttpJobTask);
     }
 
     /// <summary>
