@@ -14,6 +14,8 @@ using DynamicData;
 using NexusMods.Abstractions.Collections;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.App.UI.Controls.Navigation;
+using NexusMods.App.UI.Dialog;
+using NexusMods.App.UI.Dialog.Enums;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Pages.CollectionDownload;
 using NexusMods.CrossPlatform.Process;
@@ -22,6 +24,8 @@ using NexusMods.MnemonicDB.Abstractions.Query;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Paths;
 using NexusMods.UI.Sdk;
+using NexusMods.UI.Sdk.Dialog;
+using NexusMods.UI.Sdk.Dialog.Enums;
 using R3;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -158,6 +162,51 @@ public class CollectionLoadoutViewModel : APageViewModel<ICollectionLoadoutViewM
             }
         );
 
+        CommandMakeLocalEditableCopy = new ReactiveCommand(
+            executeAsync: async (_, _) =>
+            {
+                var dialog = DialogFactory.CreateStandardDialog(
+                    "Collection Name",
+                    new StandardDialogParameters()
+                    {
+                        Text = "This is the name of the new cloned collection.",
+                        InputLabel = "Collection name",
+                        InputWatermark = "(Local) " + group.AsLoadoutItemGroup().AsLoadoutItem().Name,
+                        InputText = "(Local) " + group.AsLoadoutItemGroup().AsLoadoutItem().Name,
+                    },
+                    [
+                        DialogStandardButtons.Cancel,
+                        new DialogButtonDefinition(
+                            "Create",
+                            ButtonDefinitionId.Accept,
+                            ButtonAction.Accept,
+                            ButtonStyling.Primary
+                        ),
+                    ]
+                );
+                var result = await WindowManager.ShowDialog(dialog, DialogWindowType.Modal);
+                if (result.ButtonId != ButtonDefinitionId.Accept || string.IsNullOrWhiteSpace(result.InputText))
+                    return;
+                
+                var cloneId = await NexusCollectionLoadoutGroup.MakeEditableLocalCollection(group.Db.Connection, group.Id, result.InputText);
+                
+                var pageData = new PageData
+                {
+                    FactoryId = LoadoutPageFactory.StaticId,
+                    Context = new LoadoutPageContext()
+                    {
+                        LoadoutId = group.AsLoadoutItemGroup().AsLoadoutItem().LoadoutId, 
+                        GroupScope = CollectionGroupId.From(cloneId),
+                    },
+                };
+
+                var workspaceController = GetWorkspaceController();
+                var behavior = workspaceController.GetOpenPageBehavior(pageData, NavigationInformation.From(OpenPageBehaviorType.ReplaceTab));
+                workspaceController.OpenPage(WorkspaceId, pageData, behavior);
+            }
+        );
+
+
         this.WhenActivated(disposables =>
         {
             Adapter.Activate().AddTo(disposables);
@@ -245,5 +294,7 @@ public class CollectionLoadoutViewModel : APageViewModel<ICollectionLoadoutViewM
     
     public ReactiveCommand<Unit> CommandToggle { get; }
     public ReactiveCommand<Unit> CommandDeleteCollection { get; }
+    
+    public ReactiveCommand<Unit> CommandMakeLocalEditableCopy { get; }
     public ReactiveUI.ReactiveCommand<NavigationInformation, System.Reactive.Unit> CommandViewCollectionDownloadPage { get; }
 }

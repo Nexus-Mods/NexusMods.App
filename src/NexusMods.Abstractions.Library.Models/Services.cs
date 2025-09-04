@@ -20,6 +20,7 @@ public static class Services
             .AddDownloadedFileModel()
             .AddLocalFileModel()
             .AddLibraryArchiveModel()
-            .AddLibraryArchiveFileEntryModel();
+            .AddLibraryArchiveFileEntryModel()
+            .AddManuallyCreatedArchiveModel();
     }
 }
