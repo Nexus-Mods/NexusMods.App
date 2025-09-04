@@ -10,9 +10,9 @@ using NexusMods.Settings;
 
 namespace NexusMods.Library.Tests.DownloadsService;
 
-public class DIHelpers
+public static class DIHelpers
 {
-    public void ConfigureServices(IServiceCollection services)
+    public static void ConfigureServices(IServiceCollection services)
     {
         // Setup base path for test files
         const KnownPath baseKnownPath = KnownPath.EntryDirectory;
