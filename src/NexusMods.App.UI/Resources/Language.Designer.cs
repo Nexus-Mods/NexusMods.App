@@ -2059,6 +2059,15 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Uninstall read-only.
+        /// </summary>
+        public static string Loadout_UninstallItem_Menu_Text__Uninstall_read_only {
+            get {
+                return ResourceManager.GetString("Loadout_UninstallItem_Menu_Text__Uninstall_read_only", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Delete Loadout.
         /// </summary>
         public static string LoadoutCard_DeleteLoadoutToolTip {

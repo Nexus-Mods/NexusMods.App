@@ -1,4 +1,5 @@
 using NexusMods.Abstractions.UI;
+using NexusMods.App.UI.Resources;
 using R3;
 
 namespace NexusMods.App.UI.Controls;
@@ -46,6 +47,12 @@ public static class SharedComponents
         public ReactiveCommand<Unit> CommandUninstallItem { get; } = new();
         public IReadOnlyBindableReactiveProperty<bool> IsEnabled { get; }
 
+        public IReadOnlyBindableReactiveProperty<string> DisplayText { get;  }
+
+        private string EnabledText => Language.Loadout_UninstallItem_Menu_Text;
+
+        private string DisabledText => Language.Loadout_UninstallItem_Menu_Text__Uninstall_read_only;
+
         public int CompareTo(UninstallItemAction? other)
         {
             if (other is null) return 1;
@@ -55,6 +62,16 @@ public static class SharedComponents
         public UninstallItemAction(bool isEnabled = true)
         {
             IsEnabled = new BindableReactiveProperty<bool>(isEnabled);
+            DisplayText = new BindableReactiveProperty<string>(isEnabled ? EnabledText : DisabledText);
+        }
+        
+        public UninstallItemAction(Observable<bool> isEnabled)
+        {
+            IsEnabled = isEnabled.ToBindableReactiveProperty();
+            
+            DisplayText = isEnabled
+                .Select(enabled => enabled ? EnabledText : DisabledText)
+                .ToBindableReactiveProperty(EnabledText);
         }
 
         private bool _isDisposed;

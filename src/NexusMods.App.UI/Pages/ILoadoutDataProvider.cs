@@ -191,8 +191,20 @@ public static class LoadoutDataProviderHelper
     public static void AddUninstallItemComponent(CompositeItemModel<EntityId> itemModel, LoadoutItem.ReadOnly loadoutItem)
     {
         var canDelete = !IsLocked(loadoutItem);
-        if (canDelete)
-            itemModel.Add(LoadoutColumns.EnabledState.UninstallItemComponentKey, new SharedComponents.UninstallItemAction(isEnabled: canDelete));
+        itemModel.Add(LoadoutColumns.EnabledState.UninstallItemComponentKey, new SharedComponents.UninstallItemAction(isEnabled: canDelete));
+    }
+    
+    public static void AddUninstallItemComponent(CompositeItemModel<EntityId> itemModel, IObservable<IChangeSet<LoadoutItem.ReadOnly, EntityId>> linkedItemsObservable)
+    {
+       var canUninstallObservable = linkedItemsObservable
+           .TransformImmutable(static item => IsLocked(item))
+           // Show uninstall if at least one item is not locked
+           .QueryWhenChanged(static query => !query.Items.All(isLocked => isLocked))
+           .ToObservable();
+
+       itemModel.Add(LoadoutColumns.EnabledState.UninstallItemComponentKey,
+           new SharedComponents.UninstallItemAction(canUninstallObservable)
+       );
     }
 
     public static void AddCollections(
