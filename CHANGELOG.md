@@ -6,7 +6,7 @@ This update contains a selection of bug fixes and quality of life improvements.
 
 It's been the #1 most requested game to mod with the app (and rightfully so!), so we're pleased to announce that work on support for Skyrim Special Edition has begun. The road ahead is long and winding, but we've got the foundations in place now and will be building on them in future releases. 
 
-Right now, Skyrim SE will be appear in the My Games section when installed from Steam or GOG Galaxy, but no other features are currently implemented.
+Right now, Skyrim SE will appear in the My Games section when installed from Steam or GOG Galaxy, but no other features are currently implemented.
 
 ## Select All for Batch Actions
 You can now quickly select every item in the current view with `Ctrl + A`, alongside the existing `Ctrl + Click` and `Shift + Click` options. This makes batch installing, updating, or deleting mods faster and more convenient.
@@ -26,7 +26,7 @@ When you take actions within the app, you will start to see a subtle little "toa
 - Switched to a new query engine on the backend, which will increase app performance and unlock future feature work. 
 
 ## Bug Fixes
-- Implemented a fix to avoid further "Missing Archive" errors. Unfortunately, this fix isn't retrospective, but if the affected mods are re-downloaded it should no longer appear.
+- Implemented a fix to avoid further "Missing Archive" errors. Unfortunately, this fix isn't retrospective, but if the affected mods are re-downloaded, it should no longer appear.
 - Fixed an issue where an unintended dialog popped up for free users each time they updated a mod.
 - Fixed an exception when installing SMAPI if `Stardew Valley.deps.json` could not be located.
 - Fixed an "Object Disposed" error on the Loadouts page.
