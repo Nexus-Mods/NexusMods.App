@@ -166,11 +166,11 @@ public class DownloadsServiceTests(
         context.SignalJobsToStart();
         
         // Wait for job to appear in collections with proper timeout
-        SyncHelpers.WaitForCollectionCount(allDownloads, 1, TimeSpan.FromSeconds(30))
+        (await SyncHelpers.WaitForCollectionCount(allDownloads, 1, TimeSpan.FromSeconds(30)))
             .Should().BeTrue("job should be in AllDownloads when started");
-        SyncHelpers.WaitForCollectionCount(gameDownloads!, 1, TimeSpan.FromSeconds(30))
+        (await SyncHelpers.WaitForCollectionCount(gameDownloads!, 1, TimeSpan.FromSeconds(30)))
             .Should().BeTrue("job should be in game-specific downloads when started");
-        SyncHelpers.WaitForCollectionCount(activeDownloads, 1, TimeSpan.FromSeconds(30))
+        (await SyncHelpers.WaitForCollectionCount(activeDownloads, 1, TimeSpan.FromSeconds(30)))
             .Should().BeTrue("job should be in ActiveDownloads when started");
         completedDownloads.Should().BeEmpty("job should not be in CompletedDownloads when started");
         
@@ -179,9 +179,9 @@ public class DownloadsServiceTests(
         await context.JobTask.Job.WaitAsync();
         
         // Wait for completion to be processed by collections
-        SyncHelpers.WaitForCollectionCount(completedDownloads, 1, TimeSpan.FromSeconds(30))
+        (await SyncHelpers.WaitForCollectionCount(completedDownloads, 1, TimeSpan.FromSeconds(30)))
             .Should().BeTrue("completed job should be in CompletedDownloads");
-        SyncHelpers.WaitForCollectionCount(activeDownloads, 0, TimeSpan.FromSeconds(30))
+        (await SyncHelpers.WaitForCollectionCount(activeDownloads, 0, TimeSpan.FromSeconds(30)))
             .Should().BeTrue("completed job should not be in ActiveDownloads");
         
         // Verify final state

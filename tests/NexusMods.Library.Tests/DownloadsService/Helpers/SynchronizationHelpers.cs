@@ -5,34 +5,23 @@ public static class SynchronizationHelpers
     /// <summary>
     /// Waits for a download collection to contain the expected number of items
     /// </summary>
-    public static bool WaitForCollectionCount<T>(
+    public static async Task<bool> WaitForCollectionCount<T>(
         IList<T> collection, 
         int expectedCount, 
         TimeSpan timeout)
     {
-        var signal = new ManualResetEventSlim();
-        var collectionMonitor = new object();
+        var startTime = DateTime.UtcNow;
         
-        // Set up a monitoring task
-        var monitoringTask = Task.Run(() =>
+        while (DateTime.UtcNow - startTime < timeout)
         {
-            var startTime = DateTime.UtcNow;
-            while (DateTime.UtcNow - startTime < timeout)
+            if (collection.Count == expectedCount)
             {
-                lock (collectionMonitor)
-                {
-                    if (collection.Count == expectedCount)
-                    {
-                        signal.Set();
-                        return true;
-                    }
-                }
-                Thread.Sleep(10);
+                return true;
             }
-            return false;
-        });
+            
+            await Task.Delay(10);
+        }
         
-        // Wait for either the signal or timeout
-        return signal.Wait(timeout) && monitoringTask.Result;
+        return false;
     }
 }
