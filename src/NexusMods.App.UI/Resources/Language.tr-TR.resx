@@ -1,0 +1,1110 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+    <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral,
+            PublicKeyToken=b77a5c561934e089
+        </value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral,
+            PublicKeyToken=b77a5c561934e089
+        </value>
+    </resheader>
+    <data name="Newsfeed" xml:space="preserve">
+        <value>Haber Akışı</value>
+    </data>
+    <data name="MyGames" xml:space="preserve">
+        <value>Oyunlarım</value>
+    </data>
+    <data name="BrowseGames" xml:space="preserve">
+        <value>Oyunlara göz at</value>
+    </data>
+    <data name="MetricsOptIn_OverlayTitle" xml:space="preserve">
+        <value>Tanılama ve kullanım verileri</value>
+    </data>
+    <data name="MetricsOptIn_MainMessage" xml:space="preserve">
+        <value>Performansı iyileştirmek ve deneyiminizi geliştirmek için tanılama ve kullanım verileri toplamak istiyoruz. Bu veriler sorunları tespit etmemize, özellikleri optimize etmemize ve Nexus Mods uygulamasının herkes için daha iyi çalışmasını sağlamamıza yardımcı olur.&amp;#x0a;&amp;#x0a;Verileriniz Gizlilik Politikamız doğrultusunda işlenecektir. Tercihinizi istediğiniz zaman ayarlardan değiştirebilirsiniz.&amp;#x0a;&amp;#x0a;Veri toplamayı etkinleştirmek ister misiniz?</value>
+    </data>
+    <data name="MetricsOptIn_ALLOW" xml:space="preserve">
+        <value>İzin ver</value>
+    </data>
+    <data name="MetricsOptIn_DENY" xml:space="preserve">
+        <value>Reddet</value>
+    </data>
+    <data name="Updater_UPDATE" xml:space="preserve">
+        <value>Güncellemeyi görüntüle</value>
+    </data>
+    <data name="Updater_UpdateAvailable" xml:space="preserve">
+        <value>{0} güncellemesi mevcut</value>
+    </data>
+    <data name="Updater_GenericMessage" xml:space="preserve">
+        <value>Mevcut sürümünüz {0}, en son sürüm {1} ile güncellenebilir. Güncellemeden önce uygulamayı tamamen kapattığınızdan emin olun.</value>
+    </data>
+    <data name="Updater_UsePackageManager" xml:space="preserve">
+        <value>Uygulamayı, yüklerken kullandığınız paket yöneticisi ile güncelleyebilirsiniz.</value>
+    </data>
+    <data name="Updater_UseInnoSetup" xml:space="preserve">
+        <value>Uygulamayı kapattıktan sonra yükleyiciyi indirip çalıştırarak güncelleyebilirsiniz.</value>
+    </data>
+    <data name="Updater_UseFlatpak" xml:space="preserve">
+        <value>Uygulamayı Flatpak ile güncelleyebilirsiniz.</value>
+    </data>
+    <data name="LoadoutGridView_AddMod_FilePicker_Title" xml:space="preserve">
+        <value>Lütfen yüklemek için bir Mod dosyası seçin.</value>
+    </data>
+    <data name="LoadoutGridView_AddMod_FileType_Archive" xml:space="preserve">
+        <value>Arşiv</value>
+    </data>
+    <data name="DownloadTaskViewModel_Version_Unknown" xml:space="preserve">
+        <value>Bilinmiyor</value>
+    </data>
+    <data name="DownloadTaskViewModel_Field_Unknown" xml:space="preserve">
+        <value>Bilinmiyor</value>
+    </data>
+    <data name="MessageBox_Button_Yes" xml:space="preserve">
+        <value>Evet</value>
+    </data>
+    <data name="MessageBox_Button_No" xml:space="preserve">
+        <value>Hayır</value>
+    </data>
+    <data name="MessageBox_Button_Ok" xml:space="preserve">
+        <value>TAMAM</value>
+    </data>
+    <data name="CancelDownloadOverlayView_Description_download_will_be_cancelled" xml:space="preserve">
+        <value>{0} iptal edilecek ve dosyalar silinecek.</value>
+    </data>
+    <data name="CancelDownloadOverlayView_Title" xml:space="preserve">
+        <value>İndirmeler iptal edilsin ve silinsin mi?</value>
+    </data>
+    <data name="Helpers_GenerateHeader_NAME" xml:space="preserve">
+        <value>İsim</value>
+    </data>
+    <data name="Helpers_GenerateHeader_VERSION" xml:space="preserve">
+        <value>Sürüm</value>
+    </data>
+    <data name="Helpers_GenerateHeader_CATEGORY" xml:space="preserve">
+        <value>Kategori</value>
+    </data>
+    <data name="Helpers_GenerateHeader_INSTALLED" xml:space="preserve">
+        <value>Yüklü</value>
+    </data>
+    <data name="Helpers_GenerateHeader_MOD_NAME" xml:space="preserve">
+        <value>Mod adı</value>
+    </data>
+    <data name="Helpers_GenerateHeader_GAME" xml:space="preserve">
+        <value>Oyun</value>
+    </data>
+    <data name="Helpers_GenerateHeader_SIZE" xml:space="preserve">
+        <value>Boyut</value>
+    </data>
+    <data name="Helpers_GenerateHeader_STATUS" xml:space="preserve">
+        <value>Durum</value>
+    </data>
+    <data name="LaunchButtonViewModel_LaunchGame_RUNNING" xml:space="preserve">
+        <value>OYUN ÇALIŞIYOR...</value>
+    </data>
+    <data name="LaunchButtonViewModel_LaunchGame_LAUNCH" xml:space="preserve">
+        <value>OYNA</value>
+    </data>
+    <data name="LaunchButtonViewModel_LaunchGame_ToolTip" xml:space="preserve">
+        <value>Oyunu başlatmak için tıklayın</value>
+    </data>
+    <data name="StringFormatters__SecondsRemaining_secs" xml:space="preserve">
+        <value>{0} saniye</value>
+    </data>
+    <data name="StringFormatters__MinutesRemaining_mins" xml:space="preserve">
+        <value>{0} dakika</value>
+    </data>
+    <data name="StringFormatters__HoursRemaining__hours" xml:space="preserve">
+        <value>{0} saat</value>
+    </data>
+    <data name="StringFormatters__In_progress__numDownloads" xml:space="preserve">
+        <value>({0})</value>
+    </data>
+    <data name="DownloadStatus_Idle" xml:space="preserve">
+        <value>Beklemede</value>
+    </data>
+    <data name="DownloadStatus_Progress" xml:space="preserve">
+        <value>İlerleme</value>
+    </data>
+    <data name="Nexus_Premium_Status__Premium" xml:space="preserve">
+        <value>PREMIUM</value>
+    </data>
+    <data name="Nexus_Premium_Status__Free" xml:space="preserve">
+        <value>FREE</value>
+    </data>
+    <data name="Nexus_Premium_Status__Supporter" xml:space="preserve">
+        <value>SUPPORTER</value>
+    </data>
+    <data name="SearchBox__Search" xml:space="preserve">
+        <value>Ara</value>
+    </data>
+    <data name="SearchBox__Search_Watermark" xml:space="preserve">
+        <value>Ara...</value>
+    </data>
+    <data name="TopBarActions__LOG_IN" xml:space="preserve">
+        <value>Giriş Yap</value>
+    </data>
+    <data name="GameWidget__Add_game" xml:space="preserve">
+        <value>Oyun ekle</value>
+    </data>
+    <data name="DownloadsView__DOWNLOADS" xml:space="preserve">
+        <value>İndirmeler</value>
+    </data>
+    <data name="DownloadsView__In_Progress" xml:space="preserve">
+        <value>İndiriliyor</value>
+    </data>
+    <data name="DownloadsView__Completed" xml:space="preserve">
+        <value>Tamamlandı</value>
+    </data>
+    <data name="DownloadsView__Download_history" xml:space="preserve">
+        <value>İndirme geçmişi</value>
+    </data>
+    <data name="DownloadsView_UnderDevelopment" xml:space="preserve">
+        <value>İndirmeler sayfası şu anda yeniden düzenleniyor ve gelecekteki bir güncellemede değiştirilecektir. Verdiğimiz rahatsızlıktan dolayı özür dileriz.</value>
+    </data>
+    <data name="NexusLoginOverlayView__Please_Click_Authorize" xml:space="preserve">
+        <value>Lütfen web sitesinde "Authorise" düğmesine tıklayın</value>
+    </data>
+    <data name="NexusLoginOverlayView__BROWSER_DIDNT_OPEN" xml:space="preserve">
+        <value>Tarayıcı otomatik olarak açılmadı mı?</value>
+    </data>
+    <data name="NexusLoginOverlayView_Please_copy_url" xml:space="preserve">
+        <value>Lütfen aşağıdaki URL'yi tarayıcı pencerenize yapıştırın. Chrome, Safari, Firefox ve Edge desteklenir.</value>
+    </data>
+    <data name="DownloadCompleted_COMPLETED" xml:space="preserve">
+        <value>Tamamlandı</value>
+    </data>
+    <data name="DownloadCompleted_Clear_All" xml:space="preserve">
+        <value>Tümünü Temizle</value>
+    </data>
+    <data name="DownloadHistoryView__HISTORY" xml:space="preserve">
+        <value>Geçmiş</value>
+    </data>
+    <data name="DownloadInProgressView__IN_PROGRESS" xml:space="preserve">
+        <value>İndiriliyor</value>
+    </data>
+    <data name="DownloadInProgressView__Cancel" xml:space="preserve">
+        <value>İptal</value>
+    </data>
+    <data name="DownloadInProgressView__Pause" xml:space="preserve">
+        <value>Duraklat</value>
+    </data>
+    <data name="DownloadInProgressView__Pause_All" xml:space="preserve">
+        <value>Tümünü duraklat</value>
+    </data>
+    <data name="InProgressTitleTextBlock" xml:space="preserve">
+        <value>İndirmeler</value>
+    </data>
+    <data name="BoldMinutesRemainingTextBlock" xml:space="preserve">
+        <value>0 dakika</value>
+    </data>
+    <data name="MinutesRemainingTextBlock" xml:space="preserve">
+        <value>kaldı</value>
+    </data>
+    <data name="InProgressView_InProgressView_Remaining" xml:space="preserve">
+        <value>kaldı</value>
+    </data>
+    <data name="HomeView__We_found_games" xml:space="preserve">
+        <value>Modlamaya hazır oyunlar bulduk!</value>
+    </data>
+    <data name="HomeView__CANT_SEE_YOUR_GAME" xml:space="preserve">
+        <value>Oyununu göremiyor musun</value>
+    </data>
+    <data name="HomeView__BROWSE_ALL_GAMES" xml:space="preserve">
+        <value>Tüm oyunlara göz at</value>
+    </data>
+    <data name="FileOriginPage_DeleteMod" xml:space="preserve">
+        <value>Sil</value>
+    </data>
+    <data name="FileOriginPage_AddMod" xml:space="preserve">
+        <value>Yükle</value>
+    </data>
+    <data name="FileOriginPage_AddModAdvanced" xml:space="preserve">
+        <value>Gelişmiş Yükleme</value>
+    </data>
+    <data name="MyGamesView__Ready_to_mod" xml:space="preserve">
+        <value>Oyunlar eklendi</value>
+    </data>
+    <data name="MyGamesView__Detected_games" xml:space="preserve">
+        <value>Desteklenen Oyunlar</value>
+    </data>
+    <data name="MyGamesView__Page_Description" xml:space="preserve">
+        <value>Başlamak için oyun ekleyin</value>
+    </data>
+    <data name="Button_Manage" xml:space="preserve">
+        <value>Yönet</value>
+    </data>
+    <data name="ProgressBar_ProgressTextFormat__Total_1_0" xml:space="preserve">
+        <value>Toplam {1:0}%</value>
+    </data>
+    <data name="DownloadStatusDesignViewModel_FormatStatus_Queued" xml:space="preserve">
+        <value>Sırada</value>
+    </data>
+    <data name="DownloadStatusDesignViewModel_FormatStatus_Paused" xml:space="preserve">
+        <value>Duraklatıldı</value>
+    </data>
+    <data name="DownloadStatusDesignViewModel_FormatStatus_Downloading" xml:space="preserve">
+        <value>İndiriliyor</value>
+    </data>
+    <data name="DownloadStatusDesignViewModel_FormatStatus_Installing" xml:space="preserve">
+        <value>Yükleniyor</value>
+    </data>
+    <data name="DownloadStatusDesignViewModel_FormatStatus_Complete" xml:space="preserve">
+        <value>Tamamlandı</value>
+    </data>
+    <data name="DownloadStatusDesignViewModel_FormatStatus_Analyzing" xml:space="preserve">
+        <value>Analiz ediliyor</value>
+    </data>
+    <data name="DownloadStatusDesignViewModel_Text_Queued_0_" xml:space="preserve">
+        <value>Sırada 0%</value>
+    </data>
+    <data name="PanelTabHeaderViewModel_Title_New_Tab" xml:space="preserve">
+        <value>Yeni Sekme</value>
+    </data>
+    <data name="DownloadInProgressView__Resume" xml:space="preserve">
+        <value>Devam Et</value>
+    </data>
+    <data name="DownloadInProgressView__Resume_All" xml:space="preserve">
+        <value>Tümünü devam ettir</value>
+    </data>
+    <data name="CancelDownloadOverlayView_Description__Download" xml:space="preserve">
+        <value>indirme</value>
+    </data>
+    <data name="CancelDownloadOverlayView_Description_downloads" xml:space="preserve">
+        <value>indirmeler</value>
+    </data>
+    <data name="InProgress_NoDownloadsTextBlock" xml:space="preserve">
+        <value>İndirme yok</value>
+    </data>
+    <data name="SpineDownloadButton_ToolTip" xml:space="preserve">
+        <value>İndirmeler</value>
+    </data>
+    <data name="SpineHomeButton_ToolTip_Home" xml:space="preserve">
+        <value>Ana Sayfa</value>
+    </data>
+    <data name="LoadoutViewPageTitle" xml:space="preserve">
+        <value>Hepsi</value>
+    </data>
+    <data name="Downloads_WorkspaceTitle" xml:space="preserve">
+        <value>İndirmeler</value>
+    </data>
+    <data name="HomeWorkspace_Title" xml:space="preserve">
+        <value>Ana Sayfa</value>
+    </data>
+    <data name="InProgressDownloadsPage_Title" xml:space="preserve">
+        <value>İndirmeler</value>
+    </data>
+    <data name="LoadoutGridView__View_Files" xml:space="preserve">
+        <value>Mod dosyalarını görüntüle</value>
+    </data>
+    <data name="FileTreeNodeView__View" xml:space="preserve">
+        <value>Görüntüle</value>
+    </data>
+    <data name="ViewModInfoPage_Title" xml:space="preserve">
+        <value>Mod Bilgisi</value>
+    </data>
+    <data name="ViewModFilesView_Location" xml:space="preserve">
+        <value>Konum:</value>
+    </data>
+    <data name="ViewModFilesView_Locations" xml:space="preserve">
+        <value>Konum:</value>
+    </data>
+    <data name="ApplyControlViewModel__ACTIVATE_LOADOUT" xml:space="preserve">
+        <value>Profili Etkinleştir</value>
+    </data>
+    <data name="ApplyControlViewModel__ACTIVATE_AND_APPLY" xml:space="preserve">
+        <value>Etkinleştir &amp; Uygula</value>
+    </data>
+    <data name="ApplyControlViewModel__APPLY" xml:space="preserve">
+        <value>UYGULA</value>
+    </data>
+    <data name="ApplyingControlView__ApplyingText" xml:space="preserve">
+        <value>Uygulanıyor...</value>
+    </data>
+    <data name="Helpers_ERROR" xml:space="preserve">
+        <value>Hata</value>
+    </data>
+    <data name="ErrorView_Title" xml:space="preserve">
+        <value>Bir şeyler ters gitti</value>
+    </data>
+    <data name="ErrorView_MissingMod_Description" xml:space="preserve">
+        <value>Erişmeye çalıştığınız Mod silinmiş veya eksik.</value>
+    </data>
+    <data name="ViewModInfoPage_NotFound_Title" xml:space="preserve">
+        <value>Mod Bulunamadı</value>
+    </data>
+    <data name="ErrorView_MissingMod_Subheader" xml:space="preserve">
+        <value>Mod bulunamadı</value>
+    </data>
+    <data name="DiagnosticDetailsView_SeverityTitle_SUGGESTION" xml:space="preserve">
+        <value>Öneri</value>
+    </data>
+    <data name="DiagnosticDetailsView_SeverityTitle_WARNING" xml:space="preserve">
+        <value>Uyarı</value>
+    </data>
+    <data name="DiagnosticDetailsView_SeverityTitle_CRITICAL_ERROR" xml:space="preserve">
+        <value>Kritik Hata</value>
+    </data>
+    <data name="DiagnosticDetailsView_SeverityTitle_HIDDEN" xml:space="preserve">
+        <value>Gizli</value>
+    </data>
+    <data name="LoadoutLeftMenuViewModel_LoadoutLeftMenuViewModel_Diagnostics" xml:space="preserve">
+        <value>Sağlık Kontrolü</value>
+    </data>
+    <data name="LoadoutLeftMenuViewModel_Diagnostics_ToolTip" xml:space="preserve">
+        <value>Profilinizi olası sorunlar için gözden geçirin ve gerekirse nasıl çözeceğinizi öğrenin</value>
+    </data>
+    <data name="DiagnosticListView_DiagnosticListView_All" xml:space="preserve">
+        <value>Tümü ({0})</value>
+        <comment>0 is placeholder for a number</comment>
+    </data>
+    <data name="DiagnosticListView_DiagnosticListView_Critical" xml:space="preserve">
+        <value>Kritik ({0})</value>
+        <comment>0 is placeholder for a number</comment>
+    </data>
+    <data name="DiagnosticListView_DiagnosticListView_Warnings" xml:space="preserve">
+        <value>Uyarılar ({0})</value>
+        <comment>0 is placeholder for a number</comment>
+    </data>
+    <data name="DiagnosticListView_DiagnosticListView_Suggestions" xml:space="preserve">
+        <value>Öneriler ({0})</value>
+        <comment>0 is placeholder for a number</comment>
+    </data>
+    <data name="DiagnosticListView_DiagnosticListView_There_are_no_diagnostics" xml:space="preserve">
+        <value>Tanılama yok</value>
+    </data>
+    <data name="IngestButtonTextBlock_Text" xml:space="preserve">
+        <value>İçe aktar</value>
+    </data>
+    <data name="ModFileTreeViewModel_StatusBar_Files__0__1" xml:space="preserve">
+        <value>Dosyalar: {0} ({1})</value>
+        <comment>{0} Represents a number, {1} represents a formatted size (e.g. 12GB)</comment>
+    </data>
+    <data name="Helpers_GenerateHeader_File_Count" xml:space="preserve">
+        <value>Dosya sayısı</value>
+    </data>
+    <data name="MyGamesView__NoGamesDetectedText" xml:space="preserve">
+        <value>Tüm desteklenen oyunlar eklendi. Yeni oyun algılanmadı.</value>
+    </data>
+    <data name="MyGamesView__NoGamesManagedText" xml:space="preserve">
+        <value>Modlamaya başlamak için oyun ekleyin</value>
+    </data>
+    <data name="GameWidget__Adding_game" xml:space="preserve">
+        <value>Ekleniyor...</value>
+    </data>
+    <data name="GameWidget__View" xml:space="preserve">
+        <value>Görüntüle</value>
+    </data>
+    <data name="GameWidget__RemoveGame_ToolTip" xml:space="preserve">
+        <value>Oyunu ve uygulama tarafından yüklenen tüm modları kaldırır</value>
+    </data>
+    <data name="GameWidget__Removing_game" xml:space="preserve">
+        <value>Kaldırılıyor...</value>
+    </data>
+    <data name="ApplyDiff_Refresh" xml:space="preserve">
+        <value>Yenile</value>
+    </data>
+    <data name="Helpers_GenerateHeader_State" xml:space="preserve">
+        <value>DURUM</value>
+    </data>
+    <data name="IFileTreeNodeViewModel_ToFormattedChangeState_Added" xml:space="preserve">
+        <value>Eklendi</value>
+    </data>
+    <data name="IFileTreeNodeViewModel_ToFormattedChangeState_Modified" xml:space="preserve">
+        <value>Değiştirildi</value>
+    </data>
+    <data name="IFileTreeNodeViewModel_ToFormattedChangeState_Contents_modified" xml:space="preserve">
+        <value>İçerik değiştirildi</value>
+    </data>
+    <data name="IFileTreeNodeViewModel_ToFormattedChangeState_Removed" xml:space="preserve">
+        <value>Kaldırıldı</value>
+    </data>
+    <data name="DiffTreeViewModel_StatusBar__File_Loadout_Disk" xml:space="preserve">
+        <value>Dosyalar: Profil {0} ({1})  Disk {2} ({3})</value>
+        <comment>{0} and {2} are file counts, {1} and {3} are formatted file sizes</comment>
+    </data>
+    <data name="DiffTreeViewModel_StatusBar__Apply_changes" xml:space="preserve">
+        <value>Değişiklikleri uygula: Eklenecek {0} Değiştirilecek {1} Kaldırılacak {2}</value>
+        <comment>{0}, {1} and {2} are integer representing the file counts</comment>
+    </data>
+    <data name="DiffTreeViewModel_StatusBar__Data_to_process___0_" xml:space="preserve">
+        <value>İşlenecek veri: {0}</value>
+        <comment>{0} is a formatted file size, representing the data to be processed</comment>
+    </data>
+    <data name="ApplyControlView_ViewApplyChanges" xml:space="preserve">
+        <value>Değişiklikleri önizle</value>
+    </data>
+    <data name="ApplyDiffViewModel_PageTitle" xml:space="preserve">
+        <value>Değişiklikleri önizle</value>
+    </data>
+    <data name="SettingsView_Title" xml:space="preserve">
+        <value>Ayarlar</value>
+    </data>
+    <data name="DialogButton_CANCEL" xml:space="preserve">
+        <value>İptal</value>
+    </data>
+    <data name="DialogButton_SAVE" xml:space="preserve">
+        <value>Kaydet</value>
+    </data>
+    <data name="DialogButton_DELETE_MODS" xml:space="preserve">
+        <value>Mod(ları) Sil</value>
+    </data>
+    <data name="SettingEntryView_NeedRestartMessage" xml:space="preserve">
+        <value>Bu ayarı uygulamak için uygulamanın yeniden başlatılması gerekecek</value>
+    </data>
+    <data name="FileOriginsPage_AddButtonText" xml:space="preserve">
+        <value>Ekle</value>
+    </data>
+    <data name="DialogButton_Discard" xml:space="preserve">
+        <value>Vazgeç</value>
+    </data>
+    <data name="ChangelogPageViewModel_ChangelogPageViewModel_Changelog" xml:space="preserve">
+        <value>Sürüm Notları</value>
+    </data>
+    <data name="DiagnosticListViewModel_DiagnosticListViewModel_Diagnostics" xml:space="preserve">
+        <value>Sağlık Kontrolü</value>
+    </data>
+    <data name="LibraryPageTitle" xml:space="preserve">
+        <value>Kütüphane</value>
+    </data>
+    <data name="LibraryPageTitleToolTip" xml:space="preserve">
+        <value>İndirilen modları ve koleksiyonlarınızı yönetin</value>
+    </data>
+    <data name="LibraryPageDescription" xml:space="preserve">
+        <value>İndirilen modları ve koleksiyonlarınızı yönetin. Yükleyin, güncelleyin veya daha fazlasını ekleyin.</value>
+    </data>
+    <data name="FileOriginsPageView_NameHeader" xml:space="preserve">
+        <value>Mod adı</value>
+    </data>
+    <data name="FileOriginsPageView_VersionHeader" xml:space="preserve">
+        <value>Sürüm</value>
+    </data>
+    <data name="FileOriginsPageView_SizeHeader" xml:space="preserve">
+        <value>Boyut</value>
+    </data>
+    <data name="FileOriginsPageView_DownloadedHeader" xml:space="preserve">
+        <value>İndirildi</value>
+    </data>
+    <data name="FileOriginsPageView_InstalledHeader" xml:space="preserve">
+        <value>Yüklü</value>
+    </data>
+    <data name="FileOriginsPageView_ActionHeader" xml:space="preserve">
+        <value>Eylem</value>
+    </data>
+    <data name="DownloadStatusDesignViewModel_FormatStatus_Cancelled" xml:space="preserve">
+        <value>İptal edildi</value>
+    </data>
+    <data name="DownloadInProgressView__Clear" xml:space="preserve">
+        <value>Temizle</value>
+    </data>
+    <data name="DownloadInProgressView__Clear_completed" xml:space="preserve">
+        <value>Tamamlananları temizle</value>
+    </data>
+    <data name="DownloadInProgressView__View_in_library" xml:space="preserve">
+        <value>Kütüphanede görüntüle</value>
+    </data>
+    <data name="LoadoutGridView__Remove" xml:space="preserve">
+        <value>Kaldır</value>
+    </data>
+    <data name="LoginMessageView_BodyTextBlock" xml:space="preserve">
+        <value>Nexus Mods'dan modları kolayca indirmek için Nexus Mods hesabınızla giriş yapmanız gerekecek.  Modları sürücünüzden manuel olarak eklemek için giriş yapmanız gerekmez.</value>
+    </data>
+    <data name="LoginMessageView_Title" xml:space="preserve">
+        <value>Başlamak için giriş yapın</value>
+    </data>
+    <data name="FileOriginsPage_GetMods" xml:space="preserve">
+        <value>Modları al:</value>
+    </data>
+    <data name="FileOriginsPage_FromDrive" xml:space="preserve">
+        <value>Sürücüde gözat</value>
+    </data>
+    <data name="FileOriginsPage_FromNexusMods" xml:space="preserve">
+        <value>Nexus Mods'da gözat</value>
+    </data>
+    <data name="FileOriginsPage_BrowseCollectionsNexusMods" xml:space="preserve">
+        <value>Koleksiyonlara gözat</value>
+    </data>
+    <data name="FileOriginsPage_ViewButtonText" xml:space="preserve">
+        <value>Görüntüle</value>
+    </data>
+    <data name="AddPanelToolTip" xml:space="preserve">
+        <value>Bölünmüş ekran görüntüleme için bir panel ekle</value>
+    </data>
+    <data name="MaxPanelsAddedToolTip" xml:space="preserve">
+        <value>Maksimum panel sayısına ulaşıldı</value>
+    </data>
+    <data name="Panel_Add_tab_ToolTip" xml:space="preserve">
+        <value>Sekme ekle</value>
+    </data>
+    <data name="TopBar_MyProfile" xml:space="preserve">
+        <value>Profilim</value>
+    </data>
+    <data name="TopBar_SignOut" xml:space="preserve">
+        <value>Oturumu kapat</value>
+    </data>
+    <data name="TopBar_AccountSettings" xml:space="preserve">
+        <value>Hesap ayarları</value>
+    </data>
+    <data name="TopBar_GetPremiumMenuItem" xml:space="preserve">
+        <value>Premium'a yükselt</value>
+    </data>
+    <data name="ViewChangelogMenuItem.Header" xml:space="preserve">
+        <value>Sürüm notlarını görüntüle</value>
+    </data>
+    <data name="ViewAppLogsMenuItem.Header" xml:space="preserve">
+        <value>Uygulama günlüklerini görüntüle</value>
+    </data>
+    <data name="ShowWelcomeMessageMenuItem.Header" xml:space="preserve">
+        <value>Hakkında</value>
+    </data>
+    <data name="OpenDiscordMenuItem.Header" xml:space="preserve">
+        <value>Discord</value>
+    </data>
+    <data name="OpenGitHubMenuItem.Header" xml:space="preserve">
+        <value>GitHub</value>
+    </data>
+    <data name="OpenForumsMenuItem.Header" xml:space="preserve">
+        <value>Nexus Mods forumları</value>
+    </data>
+    <data name="OpenStatusPageMenuItem.Header" xml:space="preserve">
+        <value>Durum sayfası</value>
+    </data>
+    <data name="NavigationControl_NavigationControl_Open_in_new_tab" xml:space="preserve">
+        <value>Yeni sekmede aç</value>
+    </data>
+    <data name="NavigationControl_NavigationControl_Open_in_new_panel" xml:space="preserve">
+        <value>Yeni panelde aç</value>
+    </data>
+    <data name="TopBar_Help_ToolTip" xml:space="preserve">
+        <value>Yardım ve geri bildirim</value>
+    </data>
+    <data name="Library_DeselectItemsButton_Text" xml:space="preserve">
+        <value>{0} seçili</value>
+    </data>
+    <data name="Library_DeselectItemsButton_ToolTip" xml:space="preserve">
+        <value>Seçimi temizler. Ctrl+Click öğeleri seçer/ seçimini kaldırır. Shift+Click bir aralık seçer.</value>
+    </data>
+    <data name="Library_ViewChangelog_Text" xml:space="preserve">
+        <value>Sürüm geçmişini görüntüle</value>
+    </data>
+    <data name="Library_ViewModPage_Text" xml:space="preserve">
+        <value>Mod sayfasını görüntüle</value>
+    </data>
+    <data name="FileOriginPage_AddMod_ToolTip" xml:space="preserve">
+        <value>Seçili mod(ları) bu profile yükle</value>
+    </data>
+    <data name="FileOriginPage_DeleteMod_ToolTip" xml:space="preserve">
+        <value>Bu modu kalıcı olarak sil</value>
+    </data>
+    <data name="FileOriginPage_AddModAdvanced_ToolTip" xml:space="preserve">
+        <value>Bir moddan belirli dosyaları seçip profilinize ekleyin</value>
+    </data>
+    <data name="ApplyControlView_ViewApplyChanges_ToolTip" xml:space="preserve">
+        <value>Oyun klasörünüze uygulanacak değişiklikleri görüntüleyin</value>
+    </data>
+    <data name="ApplyControlView_Apply_ToolTip" xml:space="preserve">
+        <value>Değişikliklerinizi oyun klasörüne uygulayın</value>
+    </data>
+    <data name="IFileTreeNodeViewModel_FormattedChangeStateToolTip_Added" xml:space="preserve">
+        <value>Dosya eklenecek</value>
+    </data>
+    <data name="IFileTreeNodeViewModel_FormattedChangeStateToolTip_ModifiedFile" xml:space="preserve">
+        <value>Dosya değiştirilecek</value>
+    </data>
+    <data name="IFileTreeNodeViewModel_FormattedChangeStateToolTip_Removed" xml:space="preserve">
+        <value>Dosya kaldırılacak</value>
+    </data>
+    <data name="IFileTreeNodeViewModel_FormattedChangeStateToolTip_ModifiedFolder" xml:space="preserve">
+        <value>Klasörde değiştirilen dosyalar var</value>
+    </data>
+    <data name="InfoBanner_PrefixProperty_Did_you_know_" xml:space="preserve">
+        <value>Biliyor muydunuz?</value>
+    </data>
+    <data name="NewTabPageInfoBannerText1" xml:space="preserve">
+        <value>Araç çubuğundaki</value>
+    </data>
+    <data name="NewTabPageInfoBannerText2" xml:space="preserve">
+        <value>düğmeye tıklayarak panel ekleyebilirsiniz</value>
+    </data>
+    <data name="LoadoutGrid_EmptyModlistSubtitle_Add_from_library" xml:space="preserve">
+        <value>Modlarınızı Kütüphaneden Yükleyin</value>
+    </data>
+    <data name="LoadoutGridViewModel_EmptyModlistTitleString" xml:space="preserve">
+        <value>{0} için hiç mod eklenmedi</value>
+        <comment>{0} is the name of the currently managed game</comment>
+    </data>
+    <data name="EmptyLibraryTitleText" xml:space="preserve">
+        <value>Kütüphanenizde mod yok</value>
+    </data>
+    <data name="FileOriginsPageViewModel_EmptyLibrarySubtitleText" xml:space="preserve">
+        <value>Nexus Mods'dan {0} mod indir</value>
+        <comment>{0} is the name of the currently managed game</comment>
+    </data>
+    <data name="DiagnosticListView.Page_Title" xml:space="preserve">
+        <value>Sağlık Kontrolü</value>
+    </data>
+    <data name="DiagnosticListView.Page_Description" xml:space="preserve">
+        <value>Profilinizi olası sorunlar için gözden geçirin ve gerekirse nasıl çözeceğinizi öğrenin</value>
+    </data>
+    <data name="DiagnosticListView.EmptyState.Header" xml:space="preserve">
+        <value>Profiliniz sağlık kontrolünden sorunsuz geçti</value>
+    </data>
+    <data name="DiagnosticListView.EmptyState.Subtitle" xml:space="preserve">
+        <value>Oyun oynamaya hazır.</value>
+    </data>
+    <data name="LoadoutCardViewModel_CreationTimeConverter_Created__0_" xml:space="preserve">
+        <value>Oluşturuldu {0}</value>
+        <comment>Where {0} is a humanized time (e.g. "Created 2 hours ago")</comment>
+    </data>
+    <data name="LoadoutCardViewModel_FormatLastAppliedTime_Last_applied__0_" xml:space="preserve">
+        <value>Son uygulama: {0}</value>
+        <comment>Where {0} is a humanized time (e.g. "Last applied 2 hours ago")</comment>
+    </data>
+    <data name="LoadoutCardViewModel_FormatNumMods_Mods__0_" xml:space="preserve">
+        <value>Modlar {0}</value>
+        <comment>Where {0} is the number of mods in a loadout</comment>
+    </data>
+    <data name="MyLoadoutsPageTitle" xml:space="preserve">
+        <value>Profillerim</value>
+    </data>
+    <data name="MyLoadoutsPageDescriptionText" xml:space="preserve">
+        <value>Kendi mod tercihleri ve ayarlarına sahip oyun Profilleri oluşturun. Profiller arasında geçiş yapın ve oynamak istediğiniz Profili uygulayın.</value>
+    </data>
+    <data name="SettingsView_Description" xml:space="preserve">
+        <value>Tercihlerinizi yönetin.</value>
+    </data>
+    <data name="MyLoadoutsGameSectionHeading" xml:space="preserve">
+        <value>{0} Profil</value>
+        <comment>Where {0} is the name of the game</comment>
+    </data>
+    <data name="CreateNewLoadoutCarViewTexBlock" xml:space="preserve">
+        <value>Yeni oluştur</value>
+    </data>
+    <data name="LoadoutCardViewCurrentlyAppliedTextBlock" xml:space="preserve">
+        <value>Şu anda uygulanan</value>
+    </data>
+    <data name="LoadoutCardViewCreateCopyButton" xml:space="preserve">
+        <value>Kopya oluştur</value>
+    </data>
+    <data name="LoadoutCardViewDeletingText" xml:space="preserve">
+        <value>Siliniyor...</value>
+    </data>
+    <data name="LoadoutCardViewCreatingText" xml:space="preserve">
+        <value>Oluşturuluyor...</value>
+    </data>
+    <data name="MyLoadoutsEmptyState_Subtitle" xml:space="preserve">
+        <value>Profiller, her birini farklı modlar ve yapılandırmalarla özelleştirerek farklı oyun stilleri arasında geçiş yapmanızı sağlar.</value>
+    </data>
+    <data name="MyLoadoutsEmptyState_Header" xml:space="preserve">
+        <value>Profilinizi kullanmadan önce bir oyun eklemeniz gerekir</value>
+    </data>
+    <data name="LibraryItemDeleteConfirmation_Title" xml:space="preserve">
+        <value>Mod(ları) kalıcı olarak sil</value>
+    </data>
+    <data name="LibraryItemDeleteConfirmation_HeaderQuestion" xml:space="preserve">
+        <value>Bu modları kalıcı olarak silmek, uygulamadan tamamen kaldırır:</value>
+    </data>
+    <data name="LibraryItemDeleteConfirmation_UsedBy" xml:space="preserve">
+        <value>{0} tarafından kullanılıyor:</value>
+    </data>
+    <data name="LibraryItemDeleteConfirmation_UsedByWithLoadout" xml:space="preserve">
+        <value>{0} - {1} tarafından kullanılıyor:</value>
+    </data>
+    <data name="LibraryItemDeleteConfirmation_DeleteModsButton" xml:space="preserve">
+        <value>Mod(ları) Sil</value>
+    </data>
+    <data name="Updated_ViewUninstallDocs" xml:space="preserve">
+        <value>Nexus Mods uygulaması nasıl kaldırılır</value>
+    </data>
+    <data name="HumanizedDateTime_Never" xml:space="preserve">
+        <value>Asla</value>
+    </data>
+    <data name="ApplyControlView__ApplyingToolTip" xml:space="preserve">
+        <value>Oyuna değişiklikler uygulanıyor</value>
+    </data>
+    <data name="LoadoutCard_DeleteLoadoutToolTip" xml:space="preserve">
+        <value>Profili sil</value>
+    </data>
+    <data name="LoadoutView_Title_Installed_Mods" xml:space="preserve">
+        <value>Tümü ({0})</value>
+    </data>
+    <data name="LoadoutView_Title_Installed_Mods_ToolTip" xml:space="preserve">
+        <value>Yüklü modları görüntüle ve yönet</value>
+    </data>
+    <data name="ErrorGameAlreadyRunning_Title" xml:space="preserve">
+        <value>Oyun şu anda çalışıyor</value>
+    </data>
+    <data name="ErrorGameAlreadyRunning_Description" xml:space="preserve">
+        <value>Görünüşe göre {0} zaten çalışıyor. 
+Değişiklikleri uygulamak veya oyunu yeniden başlatmak için lütfen önce oyunu kapatın.</value>
+    </data>
+    <data name="FileOriginPage_SwitchView" xml:space="preserve">
+        <value>Görünümü Değiştir</value>
+    </data>
+    <data name="FileOriginPage_SwitchView_ToolTip" xml:space="preserve">
+        <value>Mod sayfası gruplarını göster veya gizle</value>
+    </data>
+    <data name="FileOriginsPage_FromDrive_ToolTip" xml:space="preserve">
+        <value>Bilgisayarınızdan bir mod içe aktar</value>
+    </data>
+    <data name="FileOriginsPage_FromNexus_ToolTip" xml:space="preserve">
+        <value>Nexus Mods'u aç</value>
+    </data>
+    <data name="FileOriginsPage_CheckForUpdates_ToolTip" xml:space="preserve">
+        <value>Nexus Mods'ta mevcut mod dosyası güncellemelerini kontrol et</value>
+    </data>
+    <data name="TopBar_Forward_ToolTip" xml:space="preserve">
+        <value>İleri</value>
+    </data>
+    <data name="TopBar_Back_ToolTip" xml:space="preserve">
+        <value>Geri</value>
+    </data>
+    <data name="TopBar_GiveFeedback_ToolTip" xml:space="preserve">
+        <value>Geri bildirim vermek ve geliştirmemize yardımcı olmak için tıklayın.</value>
+    </data>
+    <data name="TopBarActions__LOG_IN_ToolTip" xml:space="preserve">
+        <value>Nexus Mods hesabınızı bağlayın</value>
+    </data>
+    <data name="LoadoutGridView__Remove_ToolTip" xml:space="preserve">
+        <value>Bu profilden seçili mod(ları) kaldır</value>
+    </data>
+    <data name="LoadoutGridView__View_Files_ToolTip" xml:space="preserve">
+        <value>Bu modda bulunan dosyaları görüntüle</value>
+    </data>
+    <data name="CollectionDownloadViewModel_Ready_to_install" xml:space="preserve">
+        <value>Tüm gerekli modlar indirildi. Yüklemeye hazır.</value>
+    </data>
+    <data name="CollectionDownloadViewModel_Num_required_mods_downloaded" xml:space="preserve">
+        <value>{0} / {1} gerekli mod indirildi. Yüklemek için indirmeleri tamamlayın.</value>
+    </data>
+    <data name="FileOriginPage_UpdateAll" xml:space="preserve">
+        <value>Hepsini Güncelle</value>
+    </data>
+    <data name="LeftMenu_Label_Installed_Mods" xml:space="preserve">
+        <value>Yüklü</value>
+    </data>
+    <data name="LeftMenu_Label_Utilities" xml:space="preserve">
+        <value>Yardımcı Araçlar</value>
+    </data>
+    <data name="CollectionDownloadViewModel_CollectionDownloadViewModel_Ready_to_play___All_required_mods_installed" xml:space="preserve">
+        <value>Oynamaya hazır - Tüm gerekli modlar yüklendi</value>
+    </data>
+    <data name="LibraryItemButtonUpdate_Single" xml:space="preserve">
+        <value>Güncellemeyi indir</value>
+    </data>
+    <data name="LibraryItemButtonUpdate_CounterInBracket" xml:space="preserve">
+        <value>Güncellemeyi indir ({0})</value>
+    </data>
+    <data name="LibraryItemButtonUpdate_All" xml:space="preserve">
+        <value>Tümünü indir</value>
+    </data>
+    <data name="LoadoutView_Title_Installed_Mods_Default" xml:space="preserve">
+        <value>Tümü</value>
+    </data>
+    <data name="LoadoutLeftMenuViewModel_External_Changes" xml:space="preserve">
+        <value>Harici Değişiklikler</value>
+    </data>
+    <data name="LoadoutLeftMenuViewModel_External_Changes_ToolTip" xml:space="preserve">
+        <value>Uygulama dışından yapılan değişiklikleri gözden geçirin, kaldırın veya geri yükleyin.</value>
+    </data>
+    <data name="CollectionDownloadViewModel_DownloadRequired" xml:space="preserve">
+        <value>Tümünü otomatik indir</value>
+    </data>
+    <data name="CollectionDownloadViewModel_InstallCollection" xml:space="preserve">
+        <value>Koleksiyonu yükle</value>
+    </data>
+    <data name="CollectionDownloadViewModel_ViewCollection" xml:space="preserve">
+        <value>Yüklenmiş koleksiyonu görüntüle</value>
+    </data>
+    <data name="CollectionDownloadViewModel_UpdateCollection" xml:space="preserve">
+        <value>{0} sürümüne güncelle</value>
+    </data>
+    <data name="CollectionDownloadViewModel_DownloadOptional" xml:space="preserve">
+        <value>Tüm isteğe bağlı olanları otomatik indir</value>
+    </data>
+    <data name="CollectionDownloadViewModel_InstallOptional" xml:space="preserve">
+        <value>Tüm isteğe bağlı olanları yükle</value>
+    </data>
+    <data name="RemoveGameOverlayView_Title" xml:space="preserve">
+        <value>{0} Kaldırılıyor</value>
+    </data>
+    <data name="RemoveGameOverlayView_Description" xml:space="preserve">
+        <value>Kaldırma işlemi {0} için tüm modları ve koleksiyonları kaldıracaktır, ancak indirdiğiniz modlar kalacaktır. Oyunu yeniden eklerseniz, bu modlar kütüphanenizde kullanılmaya devam edecektir.</value>
+    </data>
+    <data name="RemoveGameOverlayView_ToggleDescription" xml:space="preserve">
+        <value>Ayrıca {2} için {0} indirilen modu ve {1} koleksiyonu sil.</value>
+    </data>
+    <data name="RemoveGameOverlayView_CancelButton" xml:space="preserve">
+        <value>İptal</value>
+    </data>
+    <data name="RemoveGameOverlayView_RemoveButton" xml:space="preserve">
+        <value>Oyunu ve modları kaldır</value>
+    </data>
+    <data name="RemoveGameOverlayView_RemoveButton_AlsoDelete" xml:space="preserve">
+        <value>Oyunu kaldır ve modları sil</value>
+    </data>
+    <data name="ManualDownloadRequiredOverlayView_InfoTitle" xml:space="preserve">
+        <value>Manuel İndirme Gerekli</value>
+    </data>
+    <data name="ManualDownloadRequiredOverlayView_InfoDescription" xml:space="preserve">
+        <value>Bu koleksiyonun tamamlanması için üçüncü taraf web sitelerinden belirli mod dosyalarına ihtiyaç vardır. Manuel indirmeye devam etmek için şu adımları izleyin:</value>
+    </data>
+    <data name="ManualDownloadRequiredOverlayView_InfoStep1" xml:space="preserve">
+        <value>Aşağıdaki 'Tarayıcıyı Aç' düğmesine tıklayarak gerekli web sitesine gidin.</value>
+    </data>
+    <data name="ManualDownloadRequiredOverlayView_InfoStep2" xml:space="preserve">
+        <value>'{0}' adlı mod dosyasını bulun ve indirin (Dosya boyutu: {1})</value>
+    </data>
+    <data name="ManualDownloadRequiredOverlayView_InfoStep3" xml:space="preserve">
+        <value>Bu pencereye geri dön ve indirdiğin dosya(ları) 'Dosya Ekle' butonunu kullanarak ekle.</value>
+    </data>
+    <data name="ManualDownloadRequiredOverlayView_InfoInstructionsDescription" xml:space="preserve">
+        <value>Koleksiyon sahibi tarafından sağlanan ek talimatlar:</value>
+    </data>
+    <data name="ManualDownloadRequiredOverlayView_CheckingTitle" xml:space="preserve">
+        <value>Eklenen Dosya(lar) Kontrol Ediliyor</value>
+    </data>
+    <data name="ManualDownloadRequiredOverlayView_CheckingText" xml:space="preserve">
+        <value>Eklenen dosya doğrulanırken lütfen bekleyin.</value>
+    </data>
+    <data name="ManualDownloadRequiredOverlayView_ErrorTitle" xml:space="preserve">
+        <value>Yanlış Mod Dosyası Eklendi</value>
+    </data>
+    <data name="ManualDownloadRequiredOverlayView_ErrorStep1" xml:space="preserve">
+        <value>Lütfen doğru dosya ve sürümü eklediğinizden emin olun.</value>
+    </data>
+    <data name="ManualDownloadRequiredOverlayView_ErrorStep2" xml:space="preserve">
+        <value>Yönergeler için, gerekli dosya ve sürümle ilgili daha fazla ayrıntı içerebilecek 'Ek Talimatlar' sekmesini kontrol edin.</value>
+    </data>
+    <data name="ManualDownloadRequiredOverlayView_ErrorStep3" xml:space="preserve">
+        <value>Doğru dosyayı bulamazsanız, sorunu potansiyel bir hata olarak koleksiyon sahibine bildirebilirsiniz.</value>
+    </data>
+    <data name="ManualDownloadRequiredOverlayView_ErrorReportBugText" xml:space="preserve">
+        <value>Hata bildir</value>
+    </data>
+    <data name="CollectionComponents_ExternalDownloadAction_ToolTip" xml:space="preserve">
+        <value>Üçüncü taraf mod otomatik indirilmeyi dener. Otomatik indirme mümkün değilse manuel bir seçenek sunulacaktır.</value>
+    </data>
+    <data name="CollectionComponents_ManualDownloadAction_ToolTip" xml:space="preserve">
+        <value>Otomatik indirme mevcut değil. Modu indirmek ve manuel eklemek için üçüncü taraf sitesini açmak üzere tıklayın.</value>
+    </data>
+    <data name="CollectionDownloadViewModel_Toggle_ToolTip" xml:space="preserve">
+        <value>Açık konumdayken bu koleksiyon oyuna eklenir ve yüklenir. Kapalı konumda ise dışarıda bırakılır.</value>
+    </data>
+    <data name="CollectionDownloadViewModel_StatsMods_ToolTip" xml:space="preserve">
+        <value>Modlar</value>
+    </data>
+    <data name="CollectionDownloadViewModel_StatsEndorsements_ToolTip" xml:space="preserve">
+        <value>Endorsements</value>
+    </data>
+    <data name="CollectionDownloadViewModel_StatsDownloads_ToolTip" xml:space="preserve">
+        <value>İndirmeler</value>
+    </data>
+    <data name="CollectionDownloadViewModel_StatsSize_ToolTip" xml:space="preserve">
+        <value>Boyut</value>
+    </data>
+    <data name="CollectionDownloadViewModel_StatsRating_ToolTip" xml:space="preserve">
+        <value>Başarı Puanı</value>
+    </data>
+    <data name="ManageGameWarning_Title" xml:space="preserve">
+        <value>Bu oyunu yönetmek mevcut modları etkileyecektir</value>
+    </data>
+    <data name="ManageGameWarning_Desc1" xml:space="preserve">
+        <value>Eğer mevcut modların varsa, bunlar algılanacak ve ‘Harici Değişiklikler’ sayfasında uygulamayla birlikte kullanılabilecektir. Ancak daha sonra bu oyunu yönetmeyi bırakırsan veya uygulamayı kaldırırsan, o modlar oyun klasöründen kalıcı olarak silinecektir.</value>
+    </data>
+    <data name="ManageGameWarning_Desc2" xml:space="preserve">
+        <value>Saklamak istediğin modları, lütfen devam etmeden önce yedekle.</value>
+    </data>
+    <data name="ManageGameWarning_Cancel" xml:space="preserve">
+        <value>İptal</value>
+    </data>
+    <data name="ManageGameWarning_Continue" xml:space="preserve">
+        <value>Devam et</value>
+    </data>
+    <data name="UpgradeToPremiumView_Title" xml:space="preserve">
+        <value>Tek tıkla koleksiyon indirmek için Premium'a geçin</value>
+    </data>
+    <data name="UpgradeToPremiumView_Desc1" xml:space="preserve">
+        <value>Uygulamadan çıkmadan tek tıkla tüm mod koleksiyonunu tam hızda indir. Ücretsiz kullanıcılar modları listeden tek tek kurabilir.</value>
+    </data>
+    <data name="UpgradeToPremiumView_Desc2" xml:space="preserve">
+        <value>Premium kullanıcılar ayrıca şunlara sahip olur:</value>
+    </data>
+    <data name="UpgradeToPremiumView_Bullet1" xml:space="preserve">
+        <value>Sınırsız indirme hızı</value>
+    </data>
+    <data name="UpgradeToPremiumView_Bullet2" xml:space="preserve">
+        <value>İptal etseniz bile, ömür boyu reklam yok!</value>
+    </data>
+    <data name="UpgradeToPremiumView_Bullet3" xml:space="preserve">
+        <value>Yapımcıları destekleyin - Premium mod yazarlarını ödüllendirmeye yardımcı olur</value>
+    </data>
+    <data name="UpgradeToPremiumView_CancelButton" xml:space="preserve">
+        <value>İptal</value>
+    </data>
+    <data name="UpgradeToPremiumView_LearnMoreButton" xml:space="preserve">
+        <value>Daha fazla bilgi</value>
+    </data>
+    <data name="UpgradeToPremiumView_UpgradeButton" xml:space="preserve">
+        <value>Premium'a Yükselt</value>
+    </data>
+    <data name="LibraryComponents_InstallAction_ButtonText_Installed" xml:space="preserve">
+        <value>Yüklendi</value>
+    </data>
+    <data name="LibraryComponents_InstallAction_ButtonText_Install" xml:space="preserve">
+        <value>Yükle</value>
+    </data>
+    <data name="CollectionComponents_DownloadAction_ButtonText_Downloaded" xml:space="preserve">
+        <value>İndirildi</value>
+    </data>
+    <data name="CollectionComponents_DownloadAction_ButtonText_Downloading" xml:space="preserve">
+        <value>İndiriliyor</value>
+    </data>
+    <data name="CollectionComponents_DownloadAction_ButtonText_Download" xml:space="preserve">
+        <value>İndir</value>
+    </data>
+    <data name="CollectionComponents_ExternalDownloadAction_ButtonText_ThirdPartyDownload" xml:space="preserve">
+        <value>Üçüncü taraf indirme</value>
+    </data>
+    <data name="CollectionComponents_ManualDownloadAction_ButtonText_ManualDownload" xml:space="preserve">
+        <value>Manuel indirme</value>
+    </data>
+    <data name="Library_HideUpdates" xml:space="preserve">
+        <value>Güncellemeleri gizle ({0})</value>
+    </data>
+    <data name="Library_ShowUpdates" xml:space="preserve">
+        <value>Güncellemeleri göster ({0})</value>
+    </data>
+    <data name="Library_Update" xml:space="preserve">
+        <value>Güncelle ({0})</value>
+    </data>
+    <data name="Library_UpdateAndKeepOldMod" xml:space="preserve">
+        <value>Güncelle ve eski modu koru ({0})</value>
+    </data>
+    <data name="Dialog_ReplaceNotSupported_Title" xml:space="preserve">
+        <value>Manuel Güncelleme Gerekli</value>
+    </data>
+    <data name="Dialog_ReplaceNotSupported_Text" xml:space="preserve">
+        <value>Güncelle ve Değiştir özelliği bu uygulama sürümünde ücretsiz kullanıcılar için henüz desteklenmiyor.
+
+Manuel güncelleme için mod sayfasını ziyaret etmek üzere **TAMAM**'a tıklayın.</value>
+    </data>
+    <data name="Library_Update_SomeInstallsFailed_Title" xml:space="preserve">
+        <value>Bazı Mod Güncellemelerinin Kurulması Başarısız Oldu</value>
+    </data>
+    <data name="Library_Update_SomeInstallsFailed_Description" xml:space="preserve">
+        <value>Aşağıdaki mod güncellemeleri kurulamadı:
+
+{0}
+
+Eğer daha sonra tekrar denemek isterseniz, indirilen dosyalar kütüphanenizde tutulsun ister misiniz?</value>
+    </data>
+    <data name="Library_Update_SomeInstallsFailed_DeleteFiles" xml:space="preserve">
+        <value>Başarısız güncellemeleri sil</value>
+    </data>
+    <data name="Library_Update_SomeInstallsFailed_KeepFiles" xml:space="preserve">
+        <value>Başarısız güncellemeleri tut</value>
+    </data>
+    <data name="Library_Update_InstalledInMultipleCollections_Title" xml:space="preserve">
+        <value>Birden çok koleksiyonda yüklü modlar güncelleniyor</value>
+    </data>
+    <data name="Library_Update_InstalledInMultipleCollections_Cancel" xml:space="preserve">
+        <value>İptal</value>
+    </data>
+    <data name="Library_Update_InstalledInMultipleCollections_Ok" xml:space="preserve">
+        <value>{0} koleksiyonda güncelle</value>
+    </data>
+    <data name="Library_Update_InstalledInMultipleCollections_Description1" xml:space="preserve">
+        <value>Güncelleme, modun yüklü olduğu tüm yerel koleksiyonlara uygulanacaktır:</value>
+    </data>
+    <data name="Library_Update_InstalledInMultipleCollections_Description2" xml:space="preserve">
+        <value>Abone olduğunuz Nexus Mods koleksiyonları etkilenmeyecektir.</value>
+    </data>
+    <data name="Library_UpdateMod_ToolTip" xml:space="preserve">
+        <value>Modu güncelle</value>
+    </data>
+    <data name="Library_MoreOptions_ToolTip" xml:space="preserve">
+        <value>Daha fazla seçenek</value>
+    </data>
+    <data name="Library_UpdateModAndReplace_ToolTip" xml:space="preserve">
+        <value>Modu güncelle ve eski sürümü değiştir</value>
+    </data>
+    <data name="PremiumDialog_UpdateTitle" xml:space="preserve">
+        <value>Tek tıkla mod güncellemeleri için Premium'a geçin</value>
+    </data>
+    <data name="PremiumDialog_UpdateDescription" xml:space="preserve">
+        <value>Tarayıcıya ihtiyaç yok, manuel indirmeye ihtiyaç yok. Premium kullanıcıları ayrıca şunları alır:
+
+• Koleksiyonları tek tıkla indirme
+• Sınırsız indirme hızı
+• İptal etseniz bile ömür boyu reklam yok!</value>
+    </data>
+    <data name="PremiumDialog_UpdateHeading" xml:space="preserve">
+        <value>Modları topluca veya ayrı ayrı tek tıkla güncelle.</value>
+    </data>
+    <data name="PremiumDialog_UpdateManuallyButton" xml:space="preserve">
+        <value>Modları manuel güncelle</value>
+    </data>
+    <data name="PremiumDialog_GoPremiumButton" xml:space="preserve">
+        <value>Premium'a Geç</value>
+    </data>
+    <data name="Library_Update_SomeDownloadsFailed_Title" xml:space="preserve">
+        <value>Bazı Mod Güncellemeleri İndirilemedi</value>
+    </data>
+    <data name="Library_Update_SomeDownloadsFailed_Description" xml:space="preserve">
+        <value>Aşağıdaki mod güncellemelerinin indirilmesi başarısız oldu:
+
+
+{0}</value>
+    </data>
+    <data name="Library_Update_SomeDownloadsFailed_Option_Cancel" xml:space="preserve">
+        <value>İptal</value>
+    </data>
+    <data name="Library_Update_SomeDownloadsFailed_Option_Retry" xml:space="preserve">
+        <value>Başarısız güncellemeleri yeniden dene</value>
+    </data>
+    <data name="Loadout_Dialog_CollectionPublished_FirstPublish_Listed" xml:space="preserve">
+        <value>"{0}" herkese açık olarak yayımlandı. Arama sonuçlarında görünecek ve öne çıkarılabilir.</value>
+    </data>
+    <data name="Loadout_Dialog_CollectionPublished_FirstPublish_Unlisted" xml:space="preserve">
+        <value>"{0}" liste dışı olarak yayımlandı. Sadece bağlantıya sahip kişiler görüntüleyebilir.</value>
+    </data>
+    <data name="Loadout_Dialog_CollectionPublished_FirstPublish_Help" xml:space="preserve">
+        <value>Koleksiyonunuzun görünürlüğünü koleksiyon ayarlarından istediğiniz zaman değiştirebilirsiniz.</value>
+    </data>
+    <data name="Loadout_Dialog_CollectionPublished_Revision" xml:space="preserve">
+        <value>"{0}" yayımlandı.</value>
+    </data>
+    <data name="Loadout_Dialog_CollectionPublished_Revision_Help" xml:space="preserve">
+        <value>Kullanıcıların yenilikleri öğrenebilmesi için bu sürümün değişiklik günlüğünü güncellemenizi öneriyoruz.</value>
+    </data>
+    <data name="Loadout_Dialog_ShareCollection_UnlistedTitle" xml:space="preserve">
+        <value>Liste dışı - Arkadaşlarla paylaşmak için önerilir</value>
+    </data>
+    <data name="Loadout_Dialog_ShareCollection_UnlistedExplanation" xml:space="preserve">
+        <value>Sadece bağlantıya sahip kişiler görüntüleyebilir. Aramalarda veya öne çıkarılanlarda gösterilmez.</value>
+    </data>
+    <data name="Loadout_Dialog_ShareCollection_ListedTitle" xml:space="preserve">
+        <value>Herkese Açık - Nexus Mods'ta herkes görülebilir</value>
+    </data>
+    <data name="Loadout_Dialog_ShareCollection_ListedExplanation" xml:space="preserve">
+        <value>Herkes bu koleksiyonu aramalarda bulabilir veya Nexus Mods'ta öne çıkarılanlarda görebilir.</value>
+    </data>
+    <data name="Loadout_Dialog_ShareCollection_ChangeVisibilityMessage" xml:space="preserve">
+        <value>Görünürlüğü koleksiyon ayarlarından istediğiniz zaman değiştirebilirsiniz.</value>
+    </data>
+</root>
