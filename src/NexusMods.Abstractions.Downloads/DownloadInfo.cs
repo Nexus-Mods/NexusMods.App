@@ -10,6 +10,7 @@ using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
 [assembly: InternalsVisibleTo("NexusMods.Library")]
+[assembly: InternalsVisibleTo("NexusMods.Library.Tests")]
 
 namespace NexusMods.Abstractions.Downloads;
 
@@ -20,9 +21,10 @@ namespace NexusMods.Abstractions.Downloads;
 [PublicAPI]
 public class DownloadInfo : ReactiveObject
 {
-    /// <summary>
-    /// Unique identifier for this download (DownloadId).
-    /// </summary>
+    /// <remarks>
+    ///     The value of this field is <see cref="IJob.Id"/> for the 'NexusModsDownloadJob'.
+    ///     We're trusting that GUIDs are unique enough to never (in practice) make a duplicate across multiple runs/reboots. 
+    /// </remarks>
     public required DownloadId Id { get; init; }
     
     /// <summary>
@@ -38,22 +40,22 @@ public class DownloadInfo : ReactiveObject
     /// <summary>
     /// Total file size.
     /// </summary>
-    [Reactive] public Size FileSize { get; set; }
+    [Reactive] public Size FileSize { get; set; } = Size.From(0);
     
     /// <summary>
     /// Download progress percentage.
     /// </summary>
-    [Reactive] public Percent Progress { get; set; }
+    [Reactive] public Percent Progress { get; set; } = Percent.Zero;
     
     /// <summary>
     /// Downloaded bytes so far.
     /// </summary>
-    [Reactive] public Size DownloadedBytes { get; set; }
+    [Reactive] public Size DownloadedBytes { get; set; } = Size.From(0);
     
     /// <summary>
     /// Current transfer rate.
     /// </summary>
-    [Reactive] public Size TransferRate { get; set; }
+    [Reactive] public Size TransferRate { get; set; } = Size.From(0);
     
     /// <summary>
     /// Current job status.

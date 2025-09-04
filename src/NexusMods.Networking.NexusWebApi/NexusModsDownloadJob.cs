@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Downloads;
+using NexusMods.Abstractions.HttpDownloads;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.NexusModsLibrary;
@@ -11,10 +12,10 @@ using NexusMods.Paths;
 
 namespace NexusMods.Networking.NexusWebApi;
 
-public class NexusModsDownloadJob : IDownloadJob, IJobDefinitionWithStart<NexusModsDownloadJob, AbsolutePath>
+public class NexusModsDownloadJob : INexusModsDownloadJob, IJobDefinitionWithStart<NexusModsDownloadJob, AbsolutePath>
 {
     public required ILogger Logger { private get; init; }
-    public required IJobTask<HttpDownloadJob, AbsolutePath> HttpDownloadJob { get; init; }
+    public required IJobTask<IHttpDownloadJob, AbsolutePath> HttpDownloadJob { get; init; }
     public required NexusModsFileMetadata.ReadOnly FileMetadata { get; init; }
 
     /// <inheritdoc/>
