@@ -1,9 +1,12 @@
+using System.Collections.Concurrent;
 using System.Reactive;
 using System.Text;
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Games.TestFramework;
+using NexusMods.Hashing.xxHash3;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 using NexusMods.Paths;
 using Xunit.Abstractions;
@@ -117,7 +120,53 @@ public class GeneralLoadoutManagementTests(ITestOutputHelper helper) : ACyberpun
             """,
         [loadoutA.Rebase(), loadoutB.Rebase()]);
         
+        // We unmanaged the game, so no access to DiskState
+        // Check the actual files on disk instead
+        await LogFolderState(sb,
+            "## 11 - Game Unmanaged",
+            originalFileFullPath.Parent.Parent,
+            """
+            The loadouts have been deleted and the game folder should be back to its initial state.
+            """
+        );
+        
         await Verify(sb.ToString(), extension: "md");
+    }
+
+    
+    /// <summary>
+    /// Log the state of the actual disk, not the DiskStateEntries
+    /// </summary>
+    private async Task LogFolderState(StringBuilder sb, string sectionName, AbsolutePath gameFolder, string comments = "")
+    {
+        Logger.LogInformation("Logging State {SectionName}", sectionName);
+        
+        sb.AppendLine($"{sectionName}:");
+        if (!string.IsNullOrEmpty(comments))
+            sb.AppendLine(comments);
+        
+        var entries = gameFolder.EnumerateFiles(recursive: true)
+            .ToArray();
+            
+        var hashedEntries = new ConcurrentBag<(RelativePath Path, Hash Hash, Size Size)>();
+
+        var parallelOptions = new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount };
+
+        await Parallel.ForEachAsync(entries, parallelOptions, async (entry, token) =>
+        {
+            await using var stream = entry.Read();
+            var hash = await stream.xxHash3Async(token);
+            
+            hashedEntries.Add((Path: entry.RelativeTo(gameFolder), Hash: hash, Size: Size.FromLong(stream.Length)));
+        });
+
+        sb.AppendLine($"### Current State - ({entries.Length})");
+        sb.AppendLine("| Path | Hash | Size |");
+        sb.AppendLine("| --- | --- | --- |");
+        foreach (var (path, hash, size) in hashedEntries.OrderBy(x => x.Path))
+        {
+            sb.AppendLine($"| `{path}` | {hash} | {size} |");
+        }
     }
 
     [Fact]

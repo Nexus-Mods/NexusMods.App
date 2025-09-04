@@ -10,6 +10,7 @@ public interface IDialogStandardContentViewModel : IViewModelInterface
     string Heading { get; }
     IconValue? Icon { get; }
     IMarkdownRendererViewModel? MarkdownRenderer { get; }
+    bool ShowMarkdownCopyButton { get; }
     string InputText { get; set; }
     string InputLabel { get; set; }
     string InputWatermark { get; set; }
