@@ -6,7 +6,6 @@ using NexusMods.Abstractions.Downloads;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Library.Tests.DownloadsService.Helpers;
-using NexusMods.Paths;
 using Xunit;
 using SyncHelpers = NexusMods.Library.Tests.DownloadsService.Helpers.SynchronizationHelpers;
 
@@ -20,12 +19,6 @@ public class DownloadsServiceTests(
     private readonly DownloadJobFactory _jobFactory = new(jobMonitor, serviceProvider);
 
     // Helper methods
-    private static AbsolutePath CreateTestPath(string path)
-    {
-        var relativePath = path.StartsWith('/') ? path.Substring(1) : path;
-        return FileSystem.Shared.GetKnownPath(KnownPath.CurrentDirectory).Combine(relativePath);
-    }
-    
     private CompositeDisposable SetupCollectionSubscriptions(
         out List<DownloadInfo> allDownloads,
         out List<DownloadInfo> completedDownloads,
