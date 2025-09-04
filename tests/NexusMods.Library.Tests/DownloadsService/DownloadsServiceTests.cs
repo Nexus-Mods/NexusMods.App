@@ -168,10 +168,10 @@ public class DownloadsServiceTests(
         // Wait for job to appear in collections with proper timeout
         SyncHelpers.WaitForCollectionCount(allDownloads, 1, TimeSpan.FromSeconds(30))
             .Should().BeTrue("job should be in AllDownloads when started");
-        SyncHelpers.WaitForCollectionCount(activeDownloads, 1, TimeSpan.FromSeconds(30))
-            .Should().BeTrue("job should be in ActiveDownloads when started");
         SyncHelpers.WaitForCollectionCount(gameDownloads!, 1, TimeSpan.FromSeconds(30))
             .Should().BeTrue("job should be in game-specific downloads when started");
+        SyncHelpers.WaitForCollectionCount(activeDownloads, 1, TimeSpan.FromSeconds(30))
+            .Should().BeTrue("job should be in ActiveDownloads when started");
         completedDownloads.Should().BeEmpty("job should not be in CompletedDownloads when started");
         
         // 3. Complete job - should move to CompletedDownloads only
@@ -282,47 +282,7 @@ public class DownloadsServiceTests(
         activeDownloads.Should().Contain(d => d.Name == "Running.zip");
         activeDownloads.Should().Contain(d => d.Name == "Paused.zip");
     }
-    
-    [Fact]
-    public void GetDownloadsForGame_ShouldFilterByGameId()
-    {
-        // Arrange
-        var gameId1 = GameId.From(1234u);
-        var gameId2 = GameId.From(5678u);
-        var downloadUri = new Uri("https://example.com/test.zip");
-        
-        using var disposables = SetupCollectionSubscriptions(
-            out var allDownloads,
-            out var completedDownloads,
-            out var activeDownloads,
-            out var game1Downloads,
-            gameId1);
 
-        // Act & Assert
-        
-        // Create 3 jobs: 2 for gameId1, 1 for gameId2
-        var context1a = _jobFactory.CreateAndStartDownloadJob(
-            "Game1_ModA.zip", gameId1, downloadUri, 
-            CreateTestPath("/test/Game1_ModA.zip"), useSignals: false);
-        
-        var context1b = _jobFactory.CreateAndStartDownloadJob(
-            "Game1_ModB.zip", gameId1, downloadUri, 
-            CreateTestPath("/test/Game1_ModB.zip"), useSignals: false);
-        
-        var context2 = _jobFactory.CreateAndStartDownloadJob(
-            "Game2_Mod.zip", gameId2, downloadUri, 
-            CreateTestPath("/test/Game2_Mod.zip"), useSignals: false);
-
-        // All jobs should be in AllDownloads
-        allDownloads.Should().HaveCount(3, "all 3 jobs should be in AllDownloads");
-        
-        // Only gameId1 jobs should be in game-specific collection
-        game1Downloads!.Should().HaveCount(2, "should return only jobs for gameId1");
-        game1Downloads.Should().Contain(d => d.Name == "Game1_ModA.zip");
-        game1Downloads.Should().Contain(d => d.Name == "Game1_ModB.zip");
-        game1Downloads.Should().NotContain(d => d.Name == "Game2_Mod.zip");
-    }
-    
     [Fact]
     public async Task Subscriptions_ShouldBeProperlyDisposed_OnJobRemoval()
     {

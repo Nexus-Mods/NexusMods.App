@@ -112,7 +112,7 @@ public class DownloadJobFactory(IJobMonitor jobMonitor, IServiceProvider service
             Version = "1.0.0-test",
             Size = Size.FromLong(1024 * 1024), // 1MB test file
             UploadedAt = DateTimeOffset.UtcNow.AddDays(-1), // Uploaded yesterday
-            Uid = UidForFile.FromUlong(uniqueId),
+            Uid = new UidForFile(FileId.From(0), gameId),
             ModPageId = NexusModsModPageMetadataId.From(uniqueId + 1000) // Related mod page ID
         };
         
@@ -162,15 +162,7 @@ public class TestDownloadJobContext
         CompletionSource.TrySetCanceled();
         HttpCompletionSource.TrySetCanceled();
     }
-    
-    /// <summary>
-    /// Updates job progress
-    /// </summary>
-    public void SetProgress(double progress)
-    {
-        ProgressController.OnNext(progress);
-    }
-    
+
     /// <summary>
     /// Waits for jobs to signal they are ready
     /// </summary>
@@ -191,13 +183,5 @@ public class TestDownloadJobContext
     {
         HttpStartSignal?.Set();
         NexusStartSignal?.Set();
-    }
-    
-    /// <summary>
-    /// Signals the Nexus job to continue yielding
-    /// </summary>
-    public void SignalNexusYield()
-    {
-        NexusYieldSignal?.Set();
     }
 }
