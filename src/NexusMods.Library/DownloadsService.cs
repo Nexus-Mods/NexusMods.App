@@ -77,7 +77,7 @@ public sealed class DownloadsService : IDownloadsService, IDisposable
                                 // Note(sewer): JobMonitor removes all jobs after completion, but we want to keep the completed jobs
                                 //              to show in the 'Completed' tab.
                                 //              Cancelled jobs can also yield a ChangeReason.Remove, so we need to make a distinction here. 
-                                if (change.Previous.Value.Status == JobStatus.Completed)
+                                if (change.Previous != null && change.Previous.Value.Status == JobStatus.Completed)
                                 {
                                     // Keep completed downloads but mark them as completed
                                     var existingItem = updater.Lookup(change.Key);
