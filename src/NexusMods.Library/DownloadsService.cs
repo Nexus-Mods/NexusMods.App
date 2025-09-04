@@ -49,6 +49,8 @@ public sealed class DownloadsService : IDownloadsService, IDisposable
 
         // Monitor Nexus Mods download jobs and transform them into DownloadInfo
         // Handle completed downloads by keeping them in cache when removed from JobMonitor
+        
+        // Note(sewer): 
         _jobMonitor.GetObservableChangeSet<INexusModsDownloadJob>()
             .Subscribe(changes =>
             {
@@ -63,7 +65,7 @@ public sealed class DownloadsService : IDownloadsService, IDisposable
                             case ChangeReason.Refresh:
                                 var nexusJob = (INexusModsDownloadJob)change.Current.Definition;
                                 var httpDownloadJob = nexusJob.HttpDownloadJob.Job;
-                                var downloadInfo = CreateDownloadInfo(nexusJob, httpDownloadJob);
+                                var downloadInfo = CreateDownloadInfo(nexusJob, change.Current.Id);
                                 updater.AddOrUpdate(downloadInfo, change.Current.Id);
                                 
                                 // Subscribe to job observables for reactive updates
@@ -168,13 +170,13 @@ public sealed class DownloadsService : IDownloadsService, IDisposable
         }
     }
     
-    private DownloadInfo CreateDownloadInfo(INexusModsDownloadJob nexusJob, IJob httpDownloadJob)
+    private DownloadInfo CreateDownloadInfo(INexusModsDownloadJob nexusJob, JobId currentId)
     {
         var httpJobDefinition = nexusJob.HttpDownloadJob.JobDefinition;
         
         var info = new DownloadInfo 
         { 
-            Id = httpDownloadJob.Id,
+            Id = currentId,
             GameId = nexusJob.FileMetadata.Uid.GameId,
             Name = ExtractName(nexusJob),
             DownloadPageUri = httpJobDefinition.DownloadPageUri,
