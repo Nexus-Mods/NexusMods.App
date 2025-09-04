@@ -14,7 +14,7 @@ namespace NexusMods.Library.Tests.DownloadsService;
 public class DownloadsServiceTests(
     IJobMonitor jobMonitor,
     Library.DownloadsService service,
-    IServiceProvider serviceProvider) : IDisposable
+    IServiceProvider serviceProvider)
 {
     private readonly DownloadJobFactory _jobFactory = new(jobMonitor, serviceProvider);
 
@@ -221,8 +221,6 @@ public class DownloadsServiceTests(
         (await SyncHelpers.WaitForCollectionCount(activeDownloads, 0, TimeSpan.FromSeconds(30)))
             .Should().BeTrue("cancelled jobs should not be in ActiveDownloads");
     }
-    
-    public void Dispose() => service.Dispose();
 
     // Nested Startup class for Xunit.DependencyInjection
     public class Startup
