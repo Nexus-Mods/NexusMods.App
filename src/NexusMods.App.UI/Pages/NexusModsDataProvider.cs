@@ -323,7 +323,7 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
                 .RefCount();
 
             var hasChildrenObservable = linkedItemsObservable.IsNotEmpty();
-            var childrenObservable = linkedItemsObservable.Transform(loadoutItem => LoadoutDataProviderHelper.ToChildItemModel(_connection, loadoutItem));
+            var childrenObservable = linkedItemsObservable.Transform(loadoutItem => ToNexusChildLoadoutItemModel(_connection, loadoutItem));
 
             var parentItemModel = new CompositeItemModel<EntityId>(modPage.Id)
             {
@@ -341,9 +341,17 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
             LoadoutDataProviderHelper.AddLockedEnabledStates(parentItemModel, linkedItemsObservable);
             LoadoutDataProviderHelper.AddEnabledStateToggle(_connection, parentItemModel, linkedItemsObservable);
             LoadoutDataProviderHelper.AddLoadoutItemIds(parentItemModel, linkedItemsObservable);
+            LoadoutDataProviderHelper.AddViewModPageActionComponent(parentItemModel, isEnabled: true);
 
             return parentItemModel;
         });
+    }
+    
+    private static CompositeItemModel<EntityId> ToNexusChildLoadoutItemModel(IConnection connection, LoadoutItem.ReadOnly loadoutItem)
+    {
+        var childModel = LoadoutDataProviderHelper.ToChildItemModel(connection, loadoutItem);
+        LoadoutDataProviderHelper.AddViewModPageActionComponent(childModel, isEnabled: true);
+        return childModel;
     }
 
     public IObservable<int> CountLoadoutItems(LoadoutFilter loadoutFilter)
