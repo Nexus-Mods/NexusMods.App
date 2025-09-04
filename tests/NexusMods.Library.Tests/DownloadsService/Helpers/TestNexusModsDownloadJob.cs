@@ -27,7 +27,6 @@ public record TestNexusModsDownloadJob : IJobDefinitionWithStart<TestNexusModsDo
     // Synchronization signals for deterministic testing
     public ManualResetEventSlim? StartSignal { get; init; }
     public ManualResetEventSlim? ReadySignal { get; init; }
-    public ManualResetEventSlim? YieldSignal { get; init; }
     
     // <see cref="IDownloadJob"/> implementation
     public AbsolutePath Destination => HttpDownloadJob.JobDefinition.Destination;

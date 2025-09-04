@@ -206,7 +206,8 @@ public class DownloadsServiceTests(
         allDownloads.Should().HaveCount(1, "job should be in AllDownloads when started");
         activeDownloads.Should().HaveCount(1, "job should be in ActiveDownloads when started");
         
-        // Cancel the job
+        // Start and Cancel the job
+        context.SignalJobsToStart();
         context.CancelJob();
         
         try

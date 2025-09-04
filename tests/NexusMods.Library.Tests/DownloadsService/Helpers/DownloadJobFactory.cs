@@ -29,11 +29,10 @@ public class DownloadJobFactory(IJobMonitor jobMonitor, IServiceProvider service
         var httpCompletionSource = new TaskCompletionSource<AbsolutePath>();
         
         // Create synchronization signals if requested
-        var startSignal = useSignals ? new ManualResetEventSlim() : null;
-        var httpReadySignal = useSignals ? new ManualResetEventSlim() : null;
-        var nexusReadySignal = useSignals ? new ManualResetEventSlim() : null;
-        var nexusYieldSignal = useSignals ? new ManualResetEventSlim() : null;
-        
+        // These are to prevent race conditions, and allow testing things like cancellation
+        var startSignal = useSignals ? new ManualResetEventSlim() : null; // Job should be started
+        var readySignal = useSignals ? new ManualResetEventSlim() : null; // Job is ready to start.
+
         // Get required services
         var httpClient = serviceProvider.GetRequiredService<HttpClient>();
         var logger = serviceProvider.GetRequiredService<ILogger<TestHttpDownloadJob>>();
@@ -48,7 +47,7 @@ public class DownloadJobFactory(IJobMonitor jobMonitor, IServiceProvider service
             Destination = FileSystem.Shared.GetKnownPath(KnownPath.CurrentDirectory).Combine("test/downloads/TestFile.zip"),
             CompletionSource = httpCompletionSource,
             StartSignal = startSignal,
-            ReadySignal = httpReadySignal
+            ReadySignal = readySignal
         };
         
         // Create test Nexus Mods download job
@@ -59,8 +58,7 @@ public class DownloadJobFactory(IJobMonitor jobMonitor, IServiceProvider service
             ProgressController = progressController,
             CompletionSource = completionSource,
             StartSignal = startSignal,
-            ReadySignal = nexusReadySignal,
-            YieldSignal = nexusYieldSignal
+            ReadySignal = readySignal,
         };
         
         // Start the HTTP job first
@@ -82,9 +80,7 @@ public class DownloadJobFactory(IJobMonitor jobMonitor, IServiceProvider service
             CompletionSource = completionSource,
             HttpCompletionSource = httpCompletionSource,
             StartSignal = startSignal,
-            HttpReadySignal = httpReadySignal,
-            NexusReadySignal = nexusReadySignal,
-            NexusYieldSignal = nexusYieldSignal
+            ReadySignal = readySignal,
         };
     }
     
@@ -132,11 +128,9 @@ public class TestDownloadJobContext
     public required TaskCompletionSource<AbsolutePath> HttpCompletionSource { get; init; }
     
     // Synchronization signals for deterministic testing
+    public ManualResetEventSlim? ReadySignal { get; init; }
     public ManualResetEventSlim? StartSignal { get; init; }
-    public ManualResetEventSlim? HttpReadySignal { get; init; }
-    public ManualResetEventSlim? NexusReadySignal { get; init; }
-    public ManualResetEventSlim? NexusYieldSignal { get; init; }
-    
+
     /// <summary>
     /// Simulates job completion
     /// </summary>
@@ -146,9 +140,6 @@ public class TestDownloadJobContext
         ProgressController.OnNext(1.0);
         CompletionSource.TrySetResult(NexusJob.Destination);
         HttpCompletionSource.TrySetResult(HttpJob.Destination);
-        
-        // Signal any waiting yield operations to ensure immediate completion
-        NexusYieldSignal?.Set();
     }
     
     /// <summary>
@@ -166,18 +157,13 @@ public class TestDownloadJobContext
     public bool WaitForJobsReady(TimeSpan timeout)
     {
         var allReady = true;
-        if (HttpReadySignal != null)
-            allReady &= HttpReadySignal.Wait(timeout);
-        if (NexusReadySignal != null)
-            allReady &= NexusReadySignal.Wait(timeout);
+        if (ReadySignal != null)
+            allReady &= ReadySignal.Wait(timeout);
         return allReady;
     }
     
     /// <summary>
     /// Signals jobs to start
     /// </summary>
-    public void SignalJobsToStart()
-    {
-        StartSignal?.Set();
-    }
+    public void SignalJobsToStart() => StartSignal?.Set();
 }
