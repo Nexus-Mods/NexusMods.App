@@ -169,19 +169,39 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
     /// <summary>
     /// Adds an empty mod to the loadout in the given transaction.
     /// </summary>
-    protected LoadoutItemGroupId AddEmptyGroup(ITransaction tx, LoadoutId loadoutId, string name)
+    protected LoadoutItemGroupId AddEmptyGroup(
+        ITransaction tx, 
+        LoadoutId loadoutId, 
+        string name, 
+        LoadoutItemGroupId? parentGroup = null)
     {
-        var mod = new LoadoutItemGroup.New(tx, out var id)
+        if (parentGroup is not null)
         {
-            IsGroup = true,
-            LoadoutItem = new LoadoutItem.New(tx, id)
+            var mod = new LoadoutItemGroup.New(tx, out var id)
             {
-                LoadoutId = loadoutId,
-                Name = name,
-                
-            },
-        };
-        return mod.Id;
+                IsGroup = true,
+                LoadoutItem = new LoadoutItem.New(tx, id)
+                {
+                    LoadoutId = loadoutId,
+                    Name = name,
+                    ParentId = parentGroup.Value,
+                },
+            };
+            return mod.Id;
+        }
+        {
+            var mod = new LoadoutItemGroup.New(tx, out var id)
+            {
+                IsGroup = true,
+                LoadoutItem = new LoadoutItem.New(tx, id)
+                {
+                    LoadoutId = loadoutId,
+                    Name = name,
+                    
+                },
+            };
+            return mod.Id;
+        }
     }
     
     /// <summary>
@@ -261,11 +281,17 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
     ///     Specifying this parameter will add DB entries to simulate this being the original archive which
     ///     the files have come from.
     /// </param>
-    public async Task<(AbsolutePath archivePath, List<Hash> hashes)> AddModAsync(ITransaction tx, IEnumerable<RelativePath> paths, LoadoutId loadoutId, string modName, LibraryArchive.ReadOnly? libraryArchive = null)
+    public async Task<(AbsolutePath archivePath, List<Hash> hashes)> AddModAsync(
+        ITransaction tx,
+        IEnumerable<RelativePath> paths, 
+        LoadoutId loadoutId,
+        string modName, 
+        LibraryArchive.ReadOnly? libraryArchive = null, 
+        LoadoutItemGroupId? parentGroup = null)
     {
         var records = new List<ArchivedFileEntry>();
         var hashes = new List<Hash>();
-        var modGroup = AddEmptyGroup(tx, loadoutId, modName);
+        var modGroup = AddEmptyGroup(tx, loadoutId, modName, parentGroup);
         foreach (var path in paths)
         {
             var data = Encoding.UTF8.GetBytes(path);
@@ -477,10 +503,12 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
         if (!string.IsNullOrEmpty(comments))
             sb.AppendLine(comments);
         
-        Section("### Initial State", metadata.InitialDiskStateTransaction);
+        if (metadata.Contains(GameInstallMetadata.InitialDiskStateTransaction))
+            Section("### Initial State", metadata.InitialDiskStateTransaction);
         if (metadata.Contains(GameInstallMetadata.LastSyncedLoadoutTransaction)) 
             Section("### Last Synced State", metadata.LastSyncedLoadoutTransaction);
-        Section("### Current State", metadata.LastScannedDiskStateTransaction);
+        if (metadata.Contains(GameInstallMetadata.LastScannedDiskStateTransaction))
+            Section("### Current State", metadata.LastScannedDiskStateTransaction);
         if (loadouts is not null)
         {
             foreach (var loadout in loadouts)
@@ -517,17 +545,17 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
         
         void Section(string sectionName, Transaction.ReadOnly asOf)
         {
-            var entries = metadata.DiskStateAsOf(asOf);
+            var entries = Synchronizer.GetDiskStateForGameAsOf(metadata, TxId.From(asOf.Id.Value));;
             sb.AppendLine($"{sectionName} - ({entries.Count})");
             sb.AppendLine("| Path | Hash | Size |");
             sb.AppendLine("| --- | --- | --- |");
-            foreach (var entry in entries.OrderBy(e=> e.Path)) 
-                sb.AppendLine($"| {FmtPath(entry.Path)} | {entry.Hash} | {entry.Size} |");
+            foreach (var pair in entries.OrderBy(e=> e.Path)) 
+                sb.AppendLine($"| {FmtPath(pair.Path)} | {pair.Part.Hash} | {pair.Part.Size} |");
         }
         
-        static string FmtPath((EntityId entityId, LocationId locationId, RelativePath relativePath) targetPath)
+        static string FmtPath(GamePath targetPath)
         {
-            return $"{{{targetPath.locationId}, {targetPath.relativePath}}}";
+            return $"{{{targetPath.LocationId}, {targetPath.Path}}}";
         }
     }
 

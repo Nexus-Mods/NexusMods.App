@@ -1,7 +1,7 @@
 using NexusMods.App.UI.Controls.MarkdownRenderer;
 using NexusMods.App.UI.Dialog.Enums;
-using NexusMods.App.UI.Pages.Settings;
-using NexusMods.UI.Sdk.Icons;
+using NexusMods.UI.Sdk.Dialog;
+using NexusMods.UI.Sdk.Dialog.Enums;
 
 namespace NexusMods.App.UI.Dialog;
 
@@ -36,6 +36,12 @@ internal static class DesignDataContexts
         [
             DialogStandardButtons.Ok,
             DialogStandardButtons.Cancel,
+            new DialogButtonDefinition(
+                "Go Premium",
+                ButtonDefinitionId.From("go-premium"),
+                ButtonAction.None,
+                ButtonStyling.Premium
+            ),
         ],
         new DialogStandardContentViewModel(
             new StandardDialogParameters()

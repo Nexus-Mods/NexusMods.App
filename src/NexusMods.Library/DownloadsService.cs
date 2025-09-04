@@ -1,4 +1,3 @@
-using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Reactive.Disposables;
 using DynamicData;
@@ -10,7 +9,6 @@ using NexusMods.Abstractions.Library.Models;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using NexusMods.Networking.HttpDownloader;
-using NexusMods.Networking.NexusWebApi;
 using NexusMods.Abstractions.NexusModsLibrary;
 using ReactiveUI;
 
@@ -49,7 +47,6 @@ public sealed class DownloadsService : IDownloadsService, IDisposable
 
         // Monitor Nexus Mods download jobs and transform them into DownloadInfo
         // Handle completed downloads by keeping them in cache when removed from JobMonitor
-        
         // Note(sewer): 
         _jobMonitor.GetObservableChangeSet<INexusModsDownloadJob>()
             .Subscribe(changes =>
@@ -91,7 +88,7 @@ public sealed class DownloadsService : IDownloadsService, IDisposable
                                 }
                                 else
                                 {
-                                    // Remove non-completed downloads normally  
+                                    // Remove non-completed downloads normally
                                     var existingItem = updater.Lookup(change.Key);
                                     if (existingItem.HasValue)
                                         existingItem.Value.Subscriptions?.Dispose();
@@ -239,7 +236,6 @@ public sealed class DownloadsService : IDownloadsService, IDisposable
     }
 
     // Helper methods
-
     private string ExtractName(INexusModsDownloadJob nexusJob)
     {
         // Direct access to file name from FileMetadata

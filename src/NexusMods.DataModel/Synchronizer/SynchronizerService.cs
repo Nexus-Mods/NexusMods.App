@@ -53,8 +53,8 @@ public class SynchronizerService : ISynchronizerService
         var metaData = GameInstallMetadata.Load(db, loadout.InstallationInstance.GameMetadataId);
         var hasPreviousLoadout = GameInstallMetadata.LastSyncedLoadoutTransaction.TryGetValue(metaData, out var lastId);
 
-        var lastScannedDiskState = metaData.DiskStateAsOf(metaData.LastScannedDiskStateTransaction);
-        var previousDiskState = hasPreviousLoadout ? metaData.DiskStateAsOf(Transaction.Load(db, lastId)) : lastScannedDiskState;
+        var lastScannedDiskState = synchronizer.GetLastScannedDiskState(metaData);
+        var previousDiskState = hasPreviousLoadout ? synchronizer.GetPreviouslyAppliedDiskState(metaData) : lastScannedDiskState;
         
         return synchronizer.LoadoutToDiskDiff(loadout, previousDiskState, lastScannedDiskState);
     }
@@ -67,12 +67,14 @@ public class SynchronizerService : ISynchronizerService
             {
                 var db = _conn.Db;
                 var loadout = Loadout.Load(db, loadoutId);
+                if (!loadout.IsValid())
+                    return ValueTask.FromResult(false);
                 var synchronizer = loadout.InstallationInstance.GetGame().Synchronizer;
                 var metaData = GameInstallMetadata.Load(db, loadout.InstallationInstance.GameMetadataId);
                 var hasPreviousLoadout = GameInstallMetadata.LastSyncedLoadoutTransaction.TryGetValue(metaData, out var lastId);
 
-                var lastScannedDiskState = metaData.DiskStateEntries;
-                var previousDiskState = hasPreviousLoadout ? metaData.DiskStateAsOf(Transaction.Load(db, lastId)) : lastScannedDiskState;
+                var lastScannedDiskState = synchronizer.GetDiskStateForGame(metaData);
+                var previousDiskState = hasPreviousLoadout ? synchronizer.GetLastScannedDiskState(metaData) : lastScannedDiskState;
         
                 return ValueTask.FromResult(synchronizer.ShouldSynchronize(loadout, previousDiskState, lastScannedDiskState));
             });
@@ -84,6 +86,7 @@ public class SynchronizerService : ISynchronizerService
         await _jobMonitor.Begin(new SynchronizeLoadoutJob(loadoutId),
             async ctx =>
             {
+                var job = ctx.Definition;
                 await _semaphore.WaitAsync();
                 try
                 {
@@ -96,7 +99,7 @@ public class SynchronizerService : ISynchronizerService
                     var gameState = GetOrAddGameState(loadout.InstallationInstance.GameMetadataId);
                     using var _2 = gameState.WithLock();
 
-                    await loadout.InstallationInstance.GetGame().Synchronizer.Synchronize(loadout);
+                    await loadout.InstallationInstance.GetGame().Synchronizer.Synchronize(loadout, job);
                 }
                 finally
                 {

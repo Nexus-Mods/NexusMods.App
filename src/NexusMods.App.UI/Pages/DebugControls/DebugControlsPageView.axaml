@@ -6,11 +6,8 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactive="http://reactiveui.net"
     xmlns:local="clr-namespace:NexusMods.App.UI.Pages.DebugControls"
-    xmlns:r3="clr-namespace:R3;assembly=R3"
     xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
     xmlns:icons="clr-namespace:NexusMods.UI.Sdk.Icons;assembly=NexusMods.UI.Sdk"
-    xmlns:markdownRenderer="clr-namespace:NexusMods.App.UI.Controls.MarkdownRenderer"
-    xmlns:mdxaml="https://github.com/whistyun/Markdown.Avalonia.Tight"
     mc:Ignorable="d" d:DesignHeight="700"
     x:Class="NexusMods.App.UI.Pages.DebugControls.DebugControlsPageView">
 
@@ -336,7 +333,7 @@
                 <Border Margin="24,12" VerticalAlignment="Top" Padding="0">
                     <StackPanel Spacing="16" Orientation="Vertical">
                         <StackPanel Spacing="8">
-                            <Grid RowDefinitions="Auto,40,40,40,40,40,40,40,40,40,40"
+                            <Grid RowDefinitions="Auto,40,40,40,40,40"
                                   ColumnDefinitions="160,60,60">
 
                                 <TextBlock Grid.Column="1" Grid.Row="0" Text="Modal" />
@@ -361,6 +358,12 @@
                                 <controls:StandardButton x:Name="ShowModalPremium" Click="ShowModalPremium_OnClick"
                                                          Text="Open" Grid.Column="1" Grid.Row="4" />
                             </Grid>
+                        </StackPanel>
+                        <StackPanel Spacing="8">
+                            <TextBlock Text="Toast Notifications" />
+                            <controls:StandardButton x:Name="InfoNotificationButton" 
+                                                     Command="{Binding ShowInfoNotificationCommand}"
+                                                     Text="Show information toast" />
                         </StackPanel>
                     </StackPanel>
                 </Border>

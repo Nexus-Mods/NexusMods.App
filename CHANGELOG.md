@@ -1,3 +1,49 @@
+# v0.16.3 2025-09-04
+This update contains a selection of bug fixes and quality of life improvements.
+
+## Skyrim Support Work Begins!
+**⚠️ Warning: Do not enable Skyrim SE support in the app unless you are prepared to rebuild your mod setup from scratch. This is an early developer preview only - it’s not ready for normal use or testing.**
+
+It's been the #1 most requested game to mod with the app (and rightfully so!), so we're pleased to announce that work on support for Skyrim Special Edition has begun. The road ahead is long and winding, but we've got the foundations in place now and will be building on them in future releases. 
+
+Right now, Skyrim SE will appear in the My Games section when installed from Steam or GOG Galaxy, but no other features are currently implemented.
+
+## Select All for Batch Actions
+You can now quickly select every item in the current view with `Ctrl + A`, alongside the existing `Ctrl + Click` and `Shift + Click` options. This makes batch installing, updating, or deleting mods faster and more convenient.
+
+## Toast Notifications
+When you take actions within the app, you will start to see a subtle little "toast" message at the bottom of the screen to confirm what has just happened. Toast will fade out automatically after a few seconds to avoid cluttering the screen. 
+
+## More Features
+- Added a "Delete" option to the menu in the Library. 
+- Updated the "Apply" button to show a progress indicator rather than simply pulsing. 
+- Added a new dialog to better explain the benefits of downloading a collection with a Premium membership. 
+
+## Technical Changes
+- Improved detection of WINE games on Linux. 
+- Made some progress towards better support for Linux-native games from GOG.com.
+- Added support for pausing and resuming jobs (e.g. downloads) on the backend. This isn't available in the UI yet. 
+- Switched to a new query engine on the backend, which will increase app performance and unlock future feature work. 
+
+## Bug Fixes
+- Implemented a fix to avoid further "Missing Archive" errors. Unfortunately, this fix isn't retrospective, but if the affected mods are re-downloaded, it should no longer appear.
+- Fixed an issue where an unintended dialog popped up for free users each time they updated a mod.
+- Fixed an exception when installing SMAPI if `Stardew Valley.deps.json` could not be located.
+- Fixed an "Object Disposed" error on the Loadouts page.
+- Fixed an exception in the Library caused by the background mod update check.
+
+## Known Issues
+The following are issues that we are already aware of in this build and will address in a future release:
+### Stardew Valley (GOG via Heroic on Linux)
+* Native version cannot be managed by the app.
+### Cyberpunk 2077
+* Epic Games version cannot be managed due to metadata issues in v2.3.
+### General 
+* Once a collection created by the user is removed from the app, it can no longer be edited, even if it was exported to the website.
+* The game version is not checked when adding a collection, meaning you can install outdated mods without being warned. 
+* The table header sorting and active tab states are not saved and are reset each time the view is loaded.
+* Some toast messages incorrectly appear more than once.
+
 # v0.15.2 2025-08-12
 This update expands search to more screens, streamlines the mod update process, and includes several bug fixes for a smoother experience.
 

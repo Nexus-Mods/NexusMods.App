@@ -21,9 +21,6 @@ namespace NexusMods.Abstractions.Downloads;
 [PublicAPI]
 public class DownloadInfo : ReactiveObject
 {
-    /// <summary>
-    /// Unique identifier for this download (DownloadId).
-    /// </summary>
     /// <remarks>
     ///     The value of this field is <see cref="IJob.Id"/> for the 'NexusModsDownloadJob'.
     ///     We're trusting that GUIDs are unique enough to never (in practice) make a duplicate across multiple runs/reboots. 

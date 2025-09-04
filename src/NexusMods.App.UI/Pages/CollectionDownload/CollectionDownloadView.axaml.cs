@@ -1,18 +1,14 @@
-using System.Diagnostics;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia.Media;
 using Avalonia.ReactiveUI;
 using NexusMods.App.UI.Controls;
-using NexusMods.App.UI.Pages.LibraryPage;
 using NexusMods.App.UI.Resources;
 using NexusMods.UI.Sdk.Icons;
 using NexusMods.MnemonicDB.Abstractions;
 using R3;
 using ReactiveUI;
 using Humanizer;
-using Microsoft.CodeAnalysis;
-using NexusMods.App.UI.Converters;
 using ReactiveCommand = R3.ReactiveCommand;
 
 namespace NexusMods.App.UI.Pages.CollectionDownload;
@@ -75,7 +71,7 @@ public partial class CollectionDownloadView : ReactiveUserControl<ICollectionDow
                         static (isDownloading, isInstalling) => isDownloading || isInstalling
                     )
                     .Subscribe(isActive => Spinner.IsVisible = isActive);
-
+                
                 this.OneWayBind(ViewModel, vm => vm.Name, view => view.CollectionName.Text)
                     .DisposeWith(d);
 
@@ -164,7 +160,8 @@ public partial class CollectionDownloadView : ReactiveUserControl<ICollectionDow
                     view => view.ViewModel!.CountDownloadedRequiredItems,
                     view => view.ViewModel!.CountDownloadedOptionalItems,
                     view => view.ViewModel!.IsInstalled.Value,
-                    view => view.ViewModel!.HasInstalledAllOptionalItems.Value)
+                    view => view.ViewModel!.HasInstalledAllOptionalItems.Value
+                    )
                     .CombineLatest(ViewModel!.TreeDataGridAdapter.Filter.AsSystemObservable(), (a, b) => (a.Item1, a.Item2, a.Item3, a.Item4, b))
                     .Subscribe(tuple =>
                     {
@@ -218,8 +215,9 @@ public partial class CollectionDownloadView : ReactiveUserControl<ICollectionDow
                 this.WhenAnyValue(view => view.ViewModel!.CanDownloadAutomatically)
                     .Subscribe(canDownloadAutomatically =>
                     {
-                        ButtonDownloadRequiredItems.LeftIcon = canDownloadAutomatically ? null : IconValues.Lock;
-                        ButtonDownloadOptionalItems.LeftIcon = canDownloadAutomatically ? null : IconValues.Lock;
+                        ButtonDownloadRequiredItems.RequiresPremium = !canDownloadAutomatically;
+                        ButtonDownloadOptionalItems.RequiresPremium = !canDownloadAutomatically;
+                        
                     }).DisposeWith(d);
                 
                 

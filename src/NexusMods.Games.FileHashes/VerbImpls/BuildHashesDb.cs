@@ -3,7 +3,6 @@ using System.Text.Json;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Cli;
-using NexusMods.Abstractions.EpicGameStore.Models;
 using NexusMods.Abstractions.EpicGameStore.Values;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.GameLocators.Stores.GOG;

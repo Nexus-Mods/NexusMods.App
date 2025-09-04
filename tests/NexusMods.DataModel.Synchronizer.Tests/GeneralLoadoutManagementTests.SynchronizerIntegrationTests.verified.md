@@ -282,17 +282,15 @@ Loadout A has been copied to Loadout C, and the contents should match.
 
 ## 11 - Game Unmanaged:
 The loadouts have been deleted and the game folder should be back to its initial state.
-### Initial State - (1)
-| Path | Hash | Size |
-| --- | --- | --- |
-| {Game, bin/originalGameFile.txt} | 0x673E3C493921A2D5 | 12 B |
+
+
+
+## 11 - Game Unmanaged:
+The loadouts have been deleted and the game folder should be back to its initial state.
 ### Current State - (4)
 | Path | Hash | Size |
 | --- | --- | --- |
-| {Game, config.ini} | 0xB4108DF91E677789 | 33 B |
-| {Game, Data/image.dds} | 0x9829BF9CBC5991D2 | 85.484 KB |
-| {Game, README.txt} | 0x284B31336E242FFA | 26 B |
-| {Game, StubbedGame.exe} | 0xAD76A8A9233B7238 | 209 KB |
-
-
-
+| `config.ini` | 0xB4108DF91E677789 | 33 B |
+| `Data/image.dds` | 0x9829BF9CBC5991D2 | 85.484 KB |
+| `README.txt` | 0x284B31336E242FFA | 26 B |
+| `StubbedGame.exe` | 0xAD76A8A9233B7238 | 209 KB |

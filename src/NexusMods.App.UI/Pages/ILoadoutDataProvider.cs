@@ -105,14 +105,6 @@ public static class LoadoutDataProviderHelper
         if (!loadoutItem.Parent.TryGetAsCollectionGroup(out var collectionGroup)) return;
 
         itemModel.Add(LoadoutColumns.Collections.ComponentKey, new StringComponent(value: collectionGroup.AsLoadoutItemGroup().AsLoadoutItem().Name));
-        
-        var isParentCollectionDisabledObservable = LoadoutItem.Observe(connection, collectionGroup.Id).Select(static item => item.IsDisabled).ToObservable();
-
-        itemModel.AddObservable(
-            key: LoadoutColumns.EnabledState.ParentCollectionDisabledComponentKey,
-            shouldAddObservable: isParentCollectionDisabledObservable,
-            componentFactory: () => new LoadoutComponents.ParentCollectionDisabled()
-        );
     }
 
     public static void AddParentCollectionDisabled(IConnection connection, CompositeItemModel<EntityId> itemModel, LoadoutItem.ReadOnly loadoutItem)
@@ -169,7 +161,14 @@ public static class LoadoutDataProviderHelper
                     valueObservable: isEnabledObservable
         )));
     }
-
+    
+    public static void AddViewModPageActionComponent(
+        CompositeItemModel<EntityId> itemModel,
+        bool isEnabled = true)
+    {
+        itemModel.Add(LoadoutColumns.EnabledState.ViewModPageComponentKey, new SharedComponents.ViewModPageAction(isEnabled));
+    }
+    
     public static void AddDateComponent(
         CompositeItemModel<EntityId> parentItemModel,
         DateTimeOffset initialValue,

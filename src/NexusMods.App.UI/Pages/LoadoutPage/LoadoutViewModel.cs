@@ -12,6 +12,7 @@ using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Extensions;
+using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.Types;
@@ -38,6 +39,9 @@ using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 using NexusMods.MnemonicDB.Abstractions.Query;
 using NexusMods.Networking.NexusWebApi;
+using NexusMods.UI.Sdk;
+using NexusMods.UI.Sdk.Dialog;
+using NexusMods.UI.Sdk.Dialog.Enums;
 using ObservableCollections;
 using R3;
 using ReactiveUI;
@@ -98,6 +102,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
     private readonly NexusModsLibrary _nexusModsLibrary;
     private readonly IConnection _connection;
     private readonly IAvaloniaInterop _avaloniaInterop;
+    private readonly IWindowNotificationService _notificationService;
 
     public LoadoutViewModel(
         IWindowManager windowManager,
@@ -111,6 +116,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
         _connection = serviceProvider.GetRequiredService<IConnection>();
         _nexusModsLibrary = serviceProvider.GetRequiredService<NexusModsLibrary>();
         _avaloniaInterop = serviceProvider.GetRequiredService<IAvaloniaInterop>();
+        _notificationService = serviceProvider.GetRequiredService<IWindowNotificationService>();
 
         var settingsManager = serviceProvider.GetRequiredService<ISettingsManager>();
         EnableCollectionSharing = settingsManager.Get<ExperimentalSettings>().EnableCollectionSharing;
@@ -247,13 +253,19 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
 
             CommandUploadDraftRevision = IsCollectionUploaded.ToReactiveCommand<Unit>(async (unit, cancellationToken) =>
                 {
+                    _notificationService.ShowToast(Language.ToastNotification_Uploading_draft_collection_revision___);
+                    
                     _ = await CollectionCreator.UploadDraftRevision(serviceProvider, collectionGroupId.Value.Value, cancellationToken);
                     HasOutstandingChanges.Value = false;
+                    
+                    _notificationService.ShowToast(Language.ToastNotification_Draft_revision_uploaded_successfully, ToastNotificationVariant.Success);
                 }, maxSequential: 1, configureAwait: false
             );
 
             CommandUploadAndPublishRevision = IsCollectionUploaded.ToReactiveCommand<Unit>(async (unit, cancellationToken) =>
                 {
+                    _notificationService.ShowToast(Language.ToastNotification_Uploading_new_collection_revision___);
+                    
                     _ = await CollectionCreator.UploadAndPublishRevision(serviceProvider, collectionGroupId.Value.Value, cancellationToken);
                     HasOutstandingChanges.Value = false;
 
@@ -333,9 +345,24 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                         ? Abstractions.NexusModsLibrary.Models.CollectionStatus.Listed
                         : Abstractions.NexusModsLibrary.Models.CollectionStatus.Unlisted;
 
-                    _ = await CollectionCreator.ChangeCollectionStatus(serviceProvider, collectionGroupId.Value.Value, CollectionStatus.Value,
+                    var result = await CollectionCreator.ChangeCollectionStatus(serviceProvider, collectionGroupId.Value.Value, CollectionStatus.Value,
                         cancellationToken
                     );
+                    
+                    if (result.TryGetData(out var data))
+                    {
+                        var newStatus = data switch
+                        {
+                            Abstractions.NexusModsLibrary.Models.CollectionStatus.Listed => Language.CollectionStatus_Listed,
+                            Abstractions.NexusModsLibrary.Models.CollectionStatus.Unlisted => Language.CollectionStatus_Unlisted,
+                            _ => throw new ArgumentOutOfRangeException(),
+                        };
+
+                        _notificationService.ShowToast(
+                            string.Format(Language.ToastNotification_Collection_status_changed_to__0__, newStatus),
+                            ToastNotificationVariant.Success
+                        );
+                    }
                 }, configureAwait: false
             );
 
@@ -398,6 +425,8 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
             {
                 await CollectionCreator.DeleteCollectionGroup(connection: _connection, managedCollectionGroup: collectionGroupId.Value, cancellationToken: cancellationToken);
                 CommandOpenLibraryPage?.Execute(NavigationInformation.From(OpenPageBehaviorType.ReplaceTab));
+                
+                _notificationService.ShowToast(Language.ToastNotification_Collection_removed);
             });
         }
         else
@@ -541,6 +570,8 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                     if (result.ButtonId != ButtonDefinitionId.Accept) return;
 
                     await libraryService.RemoveLinkedItemsFromLoadout(ids);
+                    
+                    _notificationService.ShowToast(Language.ToastNotification_Mods_removed);
                 },
                 awaitOperation: AwaitOperation.Sequential,
                 initialCanExecute: false,
@@ -551,23 +582,26 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
             {
                 Adapter.Activate().AddTo(disposables);
 
-                Adapter.MessageSubject.SubscribeAwait(async (message, _) =>
+                Adapter.MessageSubject.SubscribeAwait(async (message, cancellationToken) =>
                     {
-                        // Toggle item state
-                        if (message.IsT0)
-                        {
-                            await ToggleItemEnabledState(message.AsT0.Ids, _connection);
-                            return;
-                        }
-
-                        // Open collection
-                        if (message.IsT1)
-                        {
-                            var data = message.AsT1;
-                            OpenItemCollectionPage(data.Ids, data.NavigationInformation, loadoutId,
-                                GetWorkspaceController(), _connection
-                            );
-                        }
+                        await message.Match<Task>(
+                            toggleEnableStateMessage => 
+                                ToggleItemEnabledState(toggleEnableStateMessage.Ids, _connection),
+                            openCollectionMessage =>
+                            {
+                                OpenItemCollectionPage(openCollectionMessage.Ids, 
+                                    openCollectionMessage.NavigationInformation, 
+                                    loadoutId, GetWorkspaceController(), _connection);
+                                return Task.CompletedTask;
+                            },
+                            viewModPageMessage =>
+                            {
+                                OpenModPageFor(viewModPageMessage.Ids, _connection, 
+                                    _serviceProvider.GetRequiredService<IOSInterop>(), 
+                                    cancellationToken);
+                                return Task.CompletedTask;
+                            }
+                        );
                     }, awaitOperation: AwaitOperation.Parallel, configureAwait: false
                 ).AddTo(disposables);
 
@@ -637,6 +671,23 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                     .DisposeWith(disposables);
             }
         );
+    }
+
+    internal static void OpenModPageFor(LoadoutItemId[] ids, IConnection connection, IOSInterop os, CancellationToken cancellationToken)
+    {
+        if (ids.Length == 0) return;
+        var loadoutItemId = ids.First();
+        
+        LibraryLinkedLoadoutItem.TryGet(connection.Db, loadoutItemId.Value, out var linkedItem);
+        if (linkedItem is null) return;
+        var libraryItem = linkedItem.Value.LibraryItemId;
+        NexusModsLibraryItem.TryGet(connection.Db, libraryItem.Value, out var nexusModsLibraryItem);
+        if (nexusModsLibraryItem is null) return;
+        var modPage = nexusModsLibraryItem.Value.ModPageMetadata;
+        
+        var url = NexusModsUrlBuilder.GetModUri(modPage.GameDomain, modPage.Uid.ModId);
+        
+        os.OpenUrl(url, cancellationToken: cancellationToken);
     }
 
     private Uri GetCollectionChangelogUri(CollectionMetadata.ReadOnly collection)

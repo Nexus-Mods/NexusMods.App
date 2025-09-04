@@ -134,7 +134,7 @@ public static class Services
         Games.RedEngine.Services.AddRedEngineGames(services);
         Games.StardewValley.Services.AddStardewValley(services);
         Games.Larian.BaldursGate3.Services.AddBaldursGate3(services);
-        Games.CreationEngine.SkyrimSE.Services.AddCreationEngine(services);
+        Games.CreationEngine.Services.AddCreationEngine(services);
         Games.MountAndBlade2Bannerlord.Services.AddMountAndBlade2Bannerlord(services);
         return services;
     }
