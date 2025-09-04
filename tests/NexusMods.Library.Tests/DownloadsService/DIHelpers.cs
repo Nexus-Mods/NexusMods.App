@@ -10,7 +10,7 @@ using NexusMods.Settings;
 
 namespace NexusMods.Library.Tests.DownloadsService;
 
-public class Startup
+public class DIHelpers
 {
     public void ConfigureServices(IServiceCollection services)
     {

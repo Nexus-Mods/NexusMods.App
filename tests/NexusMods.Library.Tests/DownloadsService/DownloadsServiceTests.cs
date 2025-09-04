@@ -237,7 +237,7 @@ public class DownloadsServiceTests(
         public void ConfigureServices(IServiceCollection services)
         {
             // Reuse the main Startup configuration
-            var mainStartup = new DownloadsService.Startup();
+            var mainStartup = new DIHelpers();
             mainStartup.ConfigureServices(services);
         }
     }
