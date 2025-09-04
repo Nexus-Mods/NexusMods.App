@@ -248,11 +248,7 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable
         {
             var streamFactory = new EmbeddedResourceStreamFactory<FileHashesService>(resourceName: "games_hashes_db.zip");
             await using var archiveStream = await streamFactory.GetStreamAsync();
-            // If the app was built a long time ago, the embedded database will appear to be much newer than it actually is
-            // in which case we'd need a new release build after the current date in order to trigger properly 
-            var creationTime = DateTimeOffset.UtcNow;
-            if (ApplicationConstants.IsDebug)
-                creationTime -= TimeSpan.FromDays(1000);
+            var creationTime = var creationTime = ApplicationConstants.IsDebug ? DateTimeOffset.UnixEpoch : ApplicationConstants.BuildDate;
 
             var path = await AddDatabase(archiveStream, creationTime, cancellationToken);
             return new DatabaseInfo(path, creationTime);
