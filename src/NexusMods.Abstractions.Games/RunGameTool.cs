@@ -106,25 +106,29 @@ public class RunGameTool<T> : IRunGameTool
             _ = await RunCommand(cancellationToken, commandLineArgs, program);
         }
 
-        // Check if the process has spawned any new processes that we need to wait for (e.g. Launcher -> Game)
-        var newProcesses = FindMatchingProcesses(names)
-            .Where(p => !existing.Contains(p.Id))
-            .ToHashSet();
 
-        if (newProcesses.Count > 0)
+        var maxProcessCount = 0;
+        _logger.LogInformation("Waiting for processes to exit");
+        while (true)
         {
-            _logger.LogInformation("Waiting for {Count} processes to exit", newProcesses.Count);
-            while (true)
-            {
-                await Task.Delay(500, cancellationToken);
-                if (newProcesses.All(p => p.HasExited))
-                    break;
-            }
-            _logger.LogInformation("All {Count} processes have exited", newProcesses.Count);
+            var newProcesses = CheckForNewProcesses();
+            if (newProcesses.Count == 0)
+                break;
+            maxProcessCount = Math.Max(maxProcessCount, newProcesses.Count);
+            await Task.Delay(2000, cancellationToken);
         }
+        _logger.LogInformation("All {Count} processes have exited", maxProcessCount);
 
         _logger.LogInformation("Finished running {Program}", program);
-        
+
+        HashSet<Process> CheckForNewProcesses()
+        {
+            // Check if the process has spawned any new processes that we need to wait for (e.g. Launcher -> Game)
+            var hashSet = FindMatchingProcesses(names)
+                .Where(p => !existing.Contains(p.Id))
+                .ToHashSet();
+            return hashSet;
+        }
     }
 
     private async Task<CommandResult> RunCommand(CancellationToken cancellationToken, string[] arguments, AbsolutePath program)
