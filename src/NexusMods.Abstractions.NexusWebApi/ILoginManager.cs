@@ -77,4 +77,11 @@ public interface ILoginManager
     ///  Log out of Nexus Mods
     /// </summary>
     Task Logout();
+
+    /// <summary>
+    /// Enables automatic refresh of user info based on an observable boolean trigger.
+    /// </summary>
+    /// <param name="triggerObservable">Observable that triggers refresh when true</param>
+    /// <returns>IDisposable to stop the refresh subscription</returns>
+    IDisposable RefreshOnObservable(Observable<bool> triggerObservable);
 }
