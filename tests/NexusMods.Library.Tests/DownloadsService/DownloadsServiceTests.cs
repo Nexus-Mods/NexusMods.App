@@ -126,7 +126,7 @@ public class DownloadsServiceTests(
         out List<DownloadInfo> completedDownloads,
         out List<DownloadInfo> activeDownloads)
     {
-        return SetupCollectionSubscriptions(out allDownloads, out completedDownloads, out activeDownloads, out _, null);
+        return SetupCollectionSubscriptions(out allDownloads, out completedDownloads, out activeDownloads, out _);
     }
     
     [Fact]
@@ -150,7 +150,7 @@ public class DownloadsServiceTests(
         gameDownloads!.Should().BeEmpty("no game-specific jobs should exist initially");
         
         // 2. Start job with signals for proper synchronization
-        var context = _jobFactory.CreateAndStartDownloadJob(gameId, useSignals: true);
+        var context = _jobFactory.CreateAndStartDownloadJob(gameId);
         
         // Wait for jobs to signal they're ready before checking state
         context.WaitForJobsReady(TimeSpan.FromSeconds(30))
@@ -200,15 +200,15 @@ public class DownloadsServiceTests(
         allDownloads.Should().BeEmpty("no jobs should exist initially");
         
         // Create and start job
-        var context = _jobFactory.CreateAndStartDownloadJob(gameId, useSignals: false);
+        var context = _jobFactory.CreateAndStartDownloadJob(gameId);
         
         // Job should appear in collections
         allDownloads.Should().HaveCount(1, "job should be in AllDownloads when started");
         activeDownloads.Should().HaveCount(1, "job should be in ActiveDownloads when started");
         
-        // Start and Cancel the job
-        context.SignalJobsToStart();
+        // Start a pre-Cancelled the job
         context.CancelJob();
+        context.SignalJobsToStart();
         
         try
         {

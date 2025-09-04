@@ -46,6 +46,9 @@ public record TestNexusModsDownloadJob : IJobDefinitionWithStart<TestNexusModsDo
             if (!StartSignal.Wait(TimeSpan.FromSeconds(30), context.CancellationToken))
                 throw new TimeoutException("StartSignal was not set within timeout period");
         }
+        
+        // Yield to allow other operations
+        await context.YieldAsync();
             
         // Simply await the completion source - matches original NexusModsDownloadJob pattern
         return await CompletionSource.Task;

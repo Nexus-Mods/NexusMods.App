@@ -18,9 +18,7 @@ public class DownloadJobFactory(IJobMonitor jobMonitor, IServiceProvider service
     /// <summary>
     /// Creates a controllable NexusMods download job and starts it in the <see cref="IJobMonitor"/>
     /// </summary>
-    public TestDownloadJobContext CreateAndStartDownloadJob(
-        GameId gameId,
-        bool useSignals = true)
+    public TestDownloadJobContext CreateAndStartDownloadJob(GameId gameId)
     {
         // Create control subjects
         var statusController = new BehaviorSubject<JobStatus>(JobStatus.Running);
@@ -28,10 +26,9 @@ public class DownloadJobFactory(IJobMonitor jobMonitor, IServiceProvider service
         var completionSource = new TaskCompletionSource<AbsolutePath>();
         var httpCompletionSource = new TaskCompletionSource<AbsolutePath>();
         
-        // Create synchronization signals if requested
-        // These are to prevent race conditions, and allow testing things like cancellation
-        var startSignal = useSignals ? new ManualResetEventSlim() : null; // Job should be started
-        var readySignal = useSignals ? new ManualResetEventSlim() : null; // Job is ready to start.
+        // Create synchronization signals to prevent race conditions and allow testing things like cancellation
+        var startSignal = new ManualResetEventSlim(); // Job should be started
+        var readySignal = new ManualResetEventSlim(); // Job is ready to start.
 
         // Get required services
         var httpClient = serviceProvider.GetRequiredService<HttpClient>();
