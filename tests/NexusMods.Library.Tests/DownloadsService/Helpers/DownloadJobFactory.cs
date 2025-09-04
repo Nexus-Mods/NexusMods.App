@@ -19,15 +19,11 @@ public class DownloadJobFactory(IJobMonitor jobMonitor, IServiceProvider service
     /// Creates a controllable NexusMods download job and starts it in the <see cref="IJobMonitor"/>
     /// </summary>
     public TestDownloadJobContext CreateAndStartDownloadJob(
-        string fileName,
         GameId gameId,
-        Uri downloadUri,
-        AbsolutePath destination,
-        JobStatus initialStatus = JobStatus.Running,
         bool useSignals = true)
     {
         // Create control subjects
-        var statusController = new BehaviorSubject<JobStatus>(initialStatus);
+        var statusController = new BehaviorSubject<JobStatus>(JobStatus.Running);
         var progressController = new BehaviorSubject<double>(0.0);
         var completionSource = new TaskCompletionSource<AbsolutePath>();
         var httpCompletionSource = new TaskCompletionSource<AbsolutePath>();
@@ -47,9 +43,9 @@ public class DownloadJobFactory(IJobMonitor jobMonitor, IServiceProvider service
         {
             Client = httpClient,
             Logger = logger,
-            Uri = downloadUri,
-            DownloadPageUri = downloadUri,
-            Destination = destination,
+            Uri = new Uri("https://test.example/file.zip"),
+            DownloadPageUri = new Uri("https://test.example/file.zip"),
+            Destination = FileSystem.Shared.GetKnownPath(KnownPath.CurrentDirectory).Combine("test/downloads/TestFile.zip"),
             CompletionSource = httpCompletionSource,
             StartSignal = startSignal,
             ReadySignal = httpReadySignal
@@ -58,7 +54,7 @@ public class DownloadJobFactory(IJobMonitor jobMonitor, IServiceProvider service
         // Create test Nexus Mods download job
         var testNexusJob = new TestNexusModsDownloadJob
         {
-            FileMetadata = CreateTestFileMetadata(fileName, gameId),
+            FileMetadata = CreateTestFileMetadata("TestFile.zip", gameId),
             StatusController = statusController,
             ProgressController = progressController,
             CompletionSource = completionSource,

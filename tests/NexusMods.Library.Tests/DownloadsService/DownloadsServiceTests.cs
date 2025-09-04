@@ -134,9 +134,6 @@ public class DownloadsServiceTests(
     {
         // Arrange
         var gameId = GameId.From(1234u);
-        var fileName = "TestMod.zip";
-        var downloadUri = new Uri("https://example.com/test.zip");
-        var destination = CreateTestPath("/test/downloads/TestMod.zip");
         
         // Subscribe to collections - SourceCache publishes immediately on subscribe
         using var disposables = SetupCollectionSubscriptions(
@@ -146,8 +143,6 @@ public class DownloadsServiceTests(
             out var gameDownloads,
             gameId);
 
-        // Act & Assert
-        
         // 1. No jobs initially
         allDownloads.Should().BeEmpty("no jobs should exist initially");
         completedDownloads.Should().BeEmpty("no completed jobs should exist initially");
@@ -155,8 +150,7 @@ public class DownloadsServiceTests(
         gameDownloads!.Should().BeEmpty("no game-specific jobs should exist initially");
         
         // 2. Start job with signals for proper synchronization
-        var context = _jobFactory.CreateAndStartDownloadJob(
-            fileName, gameId, downloadUri, destination, useSignals: true);
+        var context = _jobFactory.CreateAndStartDownloadJob(gameId, useSignals: true);
         
         // Wait for jobs to signal they're ready before checking state
         context.WaitForJobsReady(TimeSpan.FromSeconds(30))
@@ -196,23 +190,17 @@ public class DownloadsServiceTests(
     {
         // Arrange
         var gameId = GameId.From(1234u);
-        var fileName = "TestMod.zip";
-        var downloadUri = new Uri("https://example.com/test.zip");
-        var destination = CreateTestPath("/test/downloads/TestMod.zip");
         
         using var disposables = SetupCollectionSubscriptions(
             out var allDownloads,
             out var completedDownloads,
             out var activeDownloads);
-
-        // Act & Assert
         
         // Initially empty
         allDownloads.Should().BeEmpty("no jobs should exist initially");
         
         // Create and start job
-        var context = _jobFactory.CreateAndStartDownloadJob(
-            fileName, gameId, downloadUri, destination, useSignals: false);
+        var context = _jobFactory.CreateAndStartDownloadJob(gameId, useSignals: false);
         
         // Job should appear in collections
         allDownloads.Should().HaveCount(1, "job should be in AllDownloads when started");
