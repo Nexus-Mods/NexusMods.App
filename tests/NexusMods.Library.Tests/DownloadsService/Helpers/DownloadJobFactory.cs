@@ -33,9 +33,8 @@ public class DownloadJobFactory(IJobMonitor jobMonitor, IServiceProvider service
         var httpCompletionSource = new TaskCompletionSource<AbsolutePath>();
         
         // Create synchronization signals if requested
-        var httpStartSignal = useSignals ? new ManualResetEventSlim() : null;
+        var startSignal = useSignals ? new ManualResetEventSlim() : null;
         var httpReadySignal = useSignals ? new ManualResetEventSlim() : null;
-        var nexusStartSignal = useSignals ? new ManualResetEventSlim() : null;
         var nexusReadySignal = useSignals ? new ManualResetEventSlim() : null;
         var nexusYieldSignal = useSignals ? new ManualResetEventSlim() : null;
         
@@ -52,7 +51,7 @@ public class DownloadJobFactory(IJobMonitor jobMonitor, IServiceProvider service
             DownloadPageUri = downloadUri,
             Destination = destination,
             CompletionSource = httpCompletionSource,
-            StartSignal = httpStartSignal,
+            StartSignal = startSignal,
             ReadySignal = httpReadySignal
         };
         
@@ -63,7 +62,7 @@ public class DownloadJobFactory(IJobMonitor jobMonitor, IServiceProvider service
             StatusController = statusController,
             ProgressController = progressController,
             CompletionSource = completionSource,
-            StartSignal = nexusStartSignal,
+            StartSignal = startSignal,
             ReadySignal = nexusReadySignal,
             YieldSignal = nexusYieldSignal
         };
@@ -85,9 +84,8 @@ public class DownloadJobFactory(IJobMonitor jobMonitor, IServiceProvider service
             ProgressController = progressController,
             CompletionSource = completionSource,
             HttpCompletionSource = httpCompletionSource,
-            HttpStartSignal = httpStartSignal,
+            StartSignal = startSignal,
             HttpReadySignal = httpReadySignal,
-            NexusStartSignal = nexusStartSignal,
             NexusReadySignal = nexusReadySignal,
             NexusYieldSignal = nexusYieldSignal
         };
@@ -136,9 +134,8 @@ public class TestDownloadJobContext
     public required TaskCompletionSource<AbsolutePath> HttpCompletionSource { get; init; }
     
     // Synchronization signals for deterministic testing
-    public ManualResetEventSlim? HttpStartSignal { get; init; }
+    public ManualResetEventSlim? StartSignal { get; init; }
     public ManualResetEventSlim? HttpReadySignal { get; init; }
-    public ManualResetEventSlim? NexusStartSignal { get; init; }
     public ManualResetEventSlim? NexusReadySignal { get; init; }
     public ManualResetEventSlim? NexusYieldSignal { get; init; }
     
@@ -184,7 +181,6 @@ public class TestDownloadJobContext
     /// </summary>
     public void SignalJobsToStart()
     {
-        HttpStartSignal?.Set();
-        NexusStartSignal?.Set();
+        StartSignal?.Set();
     }
 }
