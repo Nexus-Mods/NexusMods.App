@@ -1,4 +1,4 @@
-# v0.16.2 2025-09-04
+# v0.16.3 2025-09-04
 This update contains a selection of bug fixes and quality of life improvements.
 
 ## Skyrim Support Work Begins!
