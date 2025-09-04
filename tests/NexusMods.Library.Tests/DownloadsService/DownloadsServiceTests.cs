@@ -220,9 +220,13 @@ public class DownloadsServiceTests(
         }
 
         // Cancelled jobs should be completely removed
-        allDownloads.Should().BeEmpty("cancelled jobs should be removed from AllDownloads");
-        completedDownloads.Should().BeEmpty("cancelled jobs should not be in CompletedDownloads");
-        activeDownloads.Should().BeEmpty("cancelled jobs should not be in ActiveDownloads");
+        // Note: The change isn't instant so we must wait for the collections to update
+        (await SyncHelpers.WaitForCollectionCount(allDownloads, 0, TimeSpan.FromSeconds(30)))
+            .Should().BeTrue("cancelled jobs should be removed from AllDownloads");
+        (await SyncHelpers.WaitForCollectionCount(completedDownloads, 0, TimeSpan.FromSeconds(30)))
+            .Should().BeTrue("cancelled jobs should not be in CompletedDownloads");
+        (await SyncHelpers.WaitForCollectionCount(activeDownloads, 0, TimeSpan.FromSeconds(30)))
+            .Should().BeTrue("cancelled jobs should not be in ActiveDownloads");
     }
     
     public void Dispose() => service.Dispose();
