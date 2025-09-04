@@ -32,6 +32,13 @@
 
                     <controls:StandardButton.Flyout>
                         <MenuFlyout>
+                            <navigation:NavigationMenuItem Header="Make an editable local copy"
+                                                           x:Name="MakeEditableLocalCopy">
+                                <MenuItem.Icon>
+                                    <icons:UnifiedIcon Size="16"
+                                                       Value="{x:Static icons:IconValues.Copy}" />
+                                </MenuItem.Icon>
+                            </navigation:NavigationMenuItem>
                             <navigation:NavigationMenuItem Header="View collection download page"
                                                            x:Name="ViewCollectionDownloadMenuItem">
                                 <MenuItem.Icon>
