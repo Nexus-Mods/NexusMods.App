@@ -248,7 +248,7 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable
         {
             var streamFactory = new EmbeddedResourceStreamFactory<FileHashesService>(resourceName: "games_hashes_db.zip");
             await using var archiveStream = await streamFactory.GetStreamAsync();
-            var creationTime = var creationTime = ApplicationConstants.IsDebug ? DateTimeOffset.UnixEpoch : ApplicationConstants.BuildDate;
+            var creationTime = ApplicationConstants.IsDebug ? DateTimeOffset.UnixEpoch : ApplicationConstants.BuildDate;
 
             var path = await AddDatabase(archiveStream, creationTime, cancellationToken);
             return new DatabaseInfo(path, creationTime);
