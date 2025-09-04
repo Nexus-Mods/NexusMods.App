@@ -2050,6 +2050,15 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Uninstall.
+        /// </summary>
+        public static string Loadout_UninstallItem_Menu_Text {
+            get {
+                return ResourceManager.GetString("Loadout_UninstallItem_Menu_Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Delete Loadout.
         /// </summary>
         public static string LoadoutCard_DeleteLoadoutToolTip {

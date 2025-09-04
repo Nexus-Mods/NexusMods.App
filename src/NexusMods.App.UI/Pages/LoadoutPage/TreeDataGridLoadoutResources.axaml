@@ -156,6 +156,26 @@
                             </controls:ComponentControl.ComponentTemplate>
                         </controls:ComponentControl>
                         
+                        <!-- Uninstall item action -->
+                        <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
+                            <controls:ComponentControl.ComponentTemplate>
+                                <controls:ComponentTemplate x:TypeArguments="controls:SharedComponents+UninstallItemAction"
+                                                            ComponentKey="{x:Static local:LoadoutColumns+EnabledState.UninstallItemComponentKey}">
+                                    <controls:ComponentTemplate.DataTemplate>
+                                        <DataTemplate DataType="{x:Type controls:SharedComponents+UninstallItemAction}">
+                                            <MenuItem Header="{x:Static resources:Language.Loadout_UninstallItem_Menu_Text}"
+                                                      Command="{CompiledBinding CommandUninstallItem}"
+                                                      IsEnabled="{CompiledBinding IsEnabled.Value}">
+                                                <MenuItem.Icon>
+                                                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.DeleteOutline}" Classes="Critical" />
+                                                </MenuItem.Icon>
+                                            </MenuItem>
+                                        </DataTemplate>
+                                    </controls:ComponentTemplate.DataTemplate>
+                                </controls:ComponentTemplate>
+                            </controls:ComponentControl.ComponentTemplate>
+                        </controls:ComponentControl>
+                        
                     </MenuFlyout>
                     
                 </controls:StandardButton.Flyout>

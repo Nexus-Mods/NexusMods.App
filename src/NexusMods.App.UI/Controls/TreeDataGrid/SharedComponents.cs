@@ -40,4 +40,37 @@ public static class SharedComponents
             base.Dispose(disposing);
         }
     }
+    
+    public sealed class UninstallItemAction : ReactiveR3Object, IItemModelComponent<UninstallItemAction>, IComparable<UninstallItemAction>
+    {
+        public ReactiveCommand<Unit> CommandUninstallItem { get; } = new();
+        public IReadOnlyBindableReactiveProperty<bool> IsEnabled { get; }
+
+        public int CompareTo(UninstallItemAction? other)
+        {
+            if (other is null) return 1;
+            return 0; // All uninstall item actions are considered equal for sorting
+        }
+
+        public UninstallItemAction(bool isEnabled = true)
+        {
+            IsEnabled = new BindableReactiveProperty<bool>(isEnabled);
+        }
+
+        private bool _isDisposed;
+        protected override void Dispose(bool disposing)
+        {
+            if (!_isDisposed)
+            {
+                if (disposing)
+                {
+                    Disposable.Dispose(CommandUninstallItem, IsEnabled);
+                }
+
+                _isDisposed = true;
+            }
+
+            base.Dispose(disposing);
+        }
+    }
 }

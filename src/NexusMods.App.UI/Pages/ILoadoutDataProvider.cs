@@ -96,6 +96,7 @@ public static class LoadoutDataProviderHelper
         AddParentCollectionDisabled(connection, itemModel, loadoutItem);
         AddLockedEnabledState(itemModel, loadoutItem);
         AddEnabledStateToggle(connection, itemModel, loadoutItem);
+        AddUninstallItemComponent(itemModel, loadoutItem);
 
         return itemModel;
     }
@@ -185,6 +186,13 @@ public static class LoadoutDataProviderHelper
             initialValue: initialValue,
             valueObservable: dateObservable
         ));
+    }
+
+    public static void AddUninstallItemComponent(CompositeItemModel<EntityId> itemModel, LoadoutItem.ReadOnly loadoutItem)
+    {
+        var canDelete = !IsLocked(loadoutItem);
+        if (canDelete)
+            itemModel.Add(LoadoutColumns.EnabledState.UninstallItemComponentKey, new SharedComponents.UninstallItemAction(isEnabled: canDelete));
     }
 
     public static void AddCollections(
