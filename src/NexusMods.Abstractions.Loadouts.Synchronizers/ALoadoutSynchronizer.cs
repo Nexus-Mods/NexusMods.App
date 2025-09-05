@@ -225,30 +225,30 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             };
         }
         
-        foreach (var loadoutItem in Loadout.EnabledLoadoutItemWithTargetPathInLoadoutQuery(Connection, loadout.Db, loadout.Id))
+        foreach (var loadoutItem in Loadout.EnabledLoadoutItemWithTargetPathInLoadoutQuery(loadout.Db, loadout.Id))
         {
             var targetPath = loadoutItem.TargetPath;
 
             SyncNodePart sourceItem;
             LoadoutSourceItemType sourceItemType;
-            if (loadoutItem.TryGetAsLoadoutFile(out var loadutFile))
+            if (!loadoutItem.IsDeleted)
             {
                 sourceItem = new SyncNodePart
                 {
-                    Size = loadutFile.Size,
-                    Hash = loadutFile.Hash,
-                    EntityId = loadutFile.Id,
+                    Size = loadoutItem.Size,
+                    Hash = loadoutItem.Hash,
+                    EntityId = loadoutItem.Id,
                     LastModifiedTicks = 0,
                 };
                 sourceItemType = LoadoutSourceItemType.Loadout;
             }
-            else if (loadoutItem.TryGetAsDeletedFile(out var deletedFile))
+            else if (loadoutItem.IsDeleted)
             {
                 sourceItem = new SyncNodePart
                 {
                     Size = Size.Zero,
                     Hash = Hash.Zero,
-                    EntityId = deletedFile.Id,
+                    EntityId = loadoutItem.Id,
                     LastModifiedTicks = 0,
                 };
                 sourceItemType = LoadoutSourceItemType.Deleted;

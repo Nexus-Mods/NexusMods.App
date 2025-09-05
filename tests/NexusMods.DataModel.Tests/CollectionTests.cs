@@ -15,7 +15,7 @@ public class CollectionTests(ITestOutputHelper helper) : AArchivedDatabaseTest(h
         await using var tmpConn = await ConnectionFor("two_sdv_collections_added_removed.zip");
         var conn = tmpConn.Connection;
         
-        var collId = tmpConn.Connection.Query<EntityId>("SELECT Id FROM mdb_NexusCollectionLoadoutGroup(Db => $db) ORDER BY Name DESC", tmpConn.Connection.Db).First();
+        var collId = tmpConn.Connection.Query<EntityId>($"SELECT Id FROM mdb_NexusCollectionLoadoutGroup(Db => {tmpConn.Connection.Db}) ORDER BY Name DESC").First();
         var coll = NexusCollectionLoadoutGroup.Load(tmpConn.Connection.Db, collId);
         
         coll.AsCollectionGroup().AsLoadoutItemGroup().AsLoadoutItem().Name.Should().BeEquivalentTo("Aesthetic Valley | Witchcore");
@@ -35,11 +35,11 @@ public class CollectionTests(ITestOutputHelper helper) : AArchivedDatabaseTest(h
         NexusCollectionLoadoutGroup.LibraryFile.Contains(newColl).Should().BeFalse();
         NexusCollectionLoadoutGroup.LibraryFile.Contains(coll).Should().BeTrue();
 
-        conn.Query<EntityId>("SELECT Id FROM mdb_NexusCollectionItemLoadoutGroup(Db => $Db) WHERE Parent = $Collection", new { Db = conn, Collection = newColl.Id })
+        conn.Query<EntityId>($"SELECT Id FROM mdb_NexusCollectionItemLoadoutGroup(Db => {conn}) WHERE Parent = {newColl}")
             .Should()
             .HaveCount(0);
 
-        conn.Query<EntityId>("SELECT Id FROM mdb_LoadoutItemGroup(Db => $Db) WHERE Parent = $Collection", new { Db = conn, Collection = newColl.Id })
+        conn.Query<EntityId>($"SELECT Id FROM mdb_LoadoutItemGroup(Db => {conn}) WHERE Parent = {newColl}")
             .Should()
             .HaveCountGreaterThan(0);
     }

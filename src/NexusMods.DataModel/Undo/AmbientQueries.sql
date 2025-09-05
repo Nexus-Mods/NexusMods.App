@@ -1,0 +1,20 @@
+-- namespace NexusMods.DataModel.Undo
+
+CREATE SCHEMA undo IF NOT EXISTS;
+
+-- Snapshots based on the last applied revision
+CREATE MACRO undo.LastAppliedRevisions(Db, EntityId) AS TABLE
+SELECT T FROM mdb_Datoms(Db=>db, History=>true, A=>'Loadout/LastAppliedDateTime') WHERE E = EntityId AND IsRetract = false
+
+-- Snapshots based on explicit snapshot datoms
+CREATE MACRO undo.LoadoutSnapshots(Db, LoadoutId) AS TABLE
+SELECT E FROM mdb_Datoms(Db=>Db, A=>'LoadoutSnapshot/Snapshot') WHERE V = LoadoutId       
+
+-- Find all revisions of a given loadout
+CREATE MACRO undo.LoadoutRevisionsWithMetadata(Db, LoadoutId) AS TABLE
+SELECT DISTINCT Id, Timestamp
+FROM mdb_Transaction(Db=>db)
+WHERE Id IN (undo.LastAppliedRevisions(db, LoadoutId)
+    UNION ALL
+    undo.LoadoutSnapshots(db, LoadoutId))
+ORDER BY Timestamp DESC       
