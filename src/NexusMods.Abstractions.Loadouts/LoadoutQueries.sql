@@ -1,6 +1,6 @@
 -- namespace: NexusMods.Abstractions.Loadouts
 
-CREATE SCHEMA loadouts IF NOT EXISTS;
+CREATE SCHEMA IF NOT EXISTS loadouts;
 
 -- Returns all the entity IDs that should be tracked for a given loadout Id
 CREATE MACRO loadouts.TrackedEntitiesForLoadout(db, loadoutId) AS TABLE
@@ -62,12 +62,12 @@ LEFT JOIN mdb_CollectionGroup(Db=>db) coll_table
     ON group_table.Parent = coll_table.Id
     AND coll_table.Loadout = loadoutId
 WHERE item_table.Loadout = loadoutId
-    AND (coll_table.Disabled IS NULL OR coll_table.Disabled = FALSE)
+    AND (coll_table.Disabled IS NULL OR coll_table.Disabled = FALSE);
 
 -- Returns all the enabled targeted files, returning their id, path, hash, size and a flag
 -- if the file is deleted or not
 CREATE MACRO loadouts.EnabledFilesWithMetadata(db, loadoutId) AS TABLE
-SELECT Id, file.TargetPath, file.Hash, file.Size, deleted.Id is NOT NULL as IsDeleted 
+SELECT items.Id, file.TargetPath, file.Hash, file.Size, deleted.Id is NOT NULL as IsDeleted 
 FROM loadouts.EnabledLoadoutItemWithTargetPathInLoadout(db, loadoutId) items
-LEFT JOIN mdb_LoadoutFile(Db=>db) file ON file.Id = items.Id;
+LEFT JOIN mdb_LoadoutFile(Db=>db) file ON file.Id = items.Id
 LEFT JOIN mdb_DeletedFile(Db=>db) deleted ON deleted.Id = items.Id;

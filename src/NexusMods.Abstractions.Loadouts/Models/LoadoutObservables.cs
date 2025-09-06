@@ -51,6 +51,6 @@ public partial class Loadout
     
     public static Query<(EntityId Id, GamePath TargetPath, Hash Hash, Size Size, bool IsDeleted)> EnabledLoadoutItemWithTargetPathInLoadoutQuery(IDb db, LoadoutId loadoutId)
     {
-        return db.Connection.Query<(EntityId, GamePath, Hash, Size, bool)>($"SELECT * FROM loadouts.EnabledFilesWithMetadata({db}, {loadoutId}");
+        return db.Connection.Query<(EntityId, GamePath, Hash, Size, bool)>($"SELECT * FROM loadouts.EnabledFilesWithMetadata({db}, {loadoutId})");
     }
 }

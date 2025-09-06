@@ -37,7 +37,7 @@ public static class Services
     {
         coll.AddMnemonicDB();
         coll.AddMigrations();
-
+        
         // Settings
         coll.AddSettings<DataModelSettings>();
         coll.AddSettingsStorageBackend<MnemonicDBSettingsBackend>(isDefault: true);
