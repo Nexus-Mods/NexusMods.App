@@ -49,8 +49,9 @@ public partial class Loadout
         return connection.Query<(EntityId ItemId, bool IsEnabled)>($"SELECT Id, IsEnabled FROM loadouts.LoadoutItemEnabledState({connection}, {loadoutId})");
     }
     
-    public static Query<(EntityId Id, GamePath TargetPath, Hash Hash, Size Size, bool IsDeleted)> EnabledLoadoutItemWithTargetPathInLoadoutQuery(IDb db, LoadoutId loadoutId)
+    public static Query<(EntityId Id, LocationId Location, RelativePath Path, Hash Hash, Size Size, bool IsDeleted)> EnabledLoadoutItemWithTargetPathInLoadoutQuery(IDb db, LoadoutId loadoutId)
     {
-        return db.Connection.Query<(EntityId, GamePath, Hash, Size, bool)>($"SELECT * FROM loadouts.EnabledFilesWithMetadata({db}, {loadoutId})");
+        return db.Connection.Query<(EntityId, LocationId, RelativePath, Hash, Size, bool)>(
+            $"SELECT Id, TargetPath.Item2, TargetPath.Item3, Hash, Size, IsDeleted FROM loadouts.EnabledFilesWithMetadata({db}, {loadoutId})");
     }
 }

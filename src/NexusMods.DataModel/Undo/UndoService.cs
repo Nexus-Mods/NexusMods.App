@@ -33,11 +33,9 @@ public class UndoService
     /// </summary>
     public List<LoadoutRevisionWithStats> RevisionsFor(EntityId loadout)
     {
-        var sw = Stopwatch.StartNew();
         var revisions = _conn.Query<(EntityId TxId, DateTimeOffset Timestamp)>($"SELECT Id, Timestamp FROM undo.LoadoutRevisionsWithMetadata({_conn}, {loadout})")
             .Select(row => LoadoutStats(_conn, new LoadoutRevision(loadout, row.TxId, row.Timestamp)))
             .ToList();
-        var elapsed = sw.ElapsedMilliseconds;
         return revisions;
     }
     
@@ -47,7 +45,7 @@ public class UndoService
     private static LoadoutRevisionWithStats LoadoutStats(IConnection conn, LoadoutRevision revision)
     {
         var newDb = conn.AsOf(TxId.From(revision.TxEntity.Value));
-        var result = newDb.Connection.Query<long>($"SELECT COUNT(*) FROM mdb_LibraryLinkedLoadoutItem(Db=>{newDb}) WHERE Loadout = {revision}").First();
+        var result = newDb.Connection.Query<long>($"SELECT COUNT(*) FROM mdb_LibraryLinkedLoadoutItem(Db=>{newDb}) WHERE Loadout = {revision.EntityId}").First();
         return new LoadoutRevisionWithStats(revision, (int)result); 
     }
     

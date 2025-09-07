@@ -37,7 +37,7 @@ AND group_table.Loadout = loadoutId;
 -- does not include the collection groups or item groups
 CREATE MACRO loadouts.LoadoutItemEnabledState(db, loadoutId) AS TABLE
 SELECT
-    item_table.Id AS ItemId,
+    item_table.Id AS Id,
     item_table.Disabled = FALSE 
         AND group_table.Disabled = FALSE
         AND COALESCE(coll_table.Disabled, FALSE) = FALSE AS IsEnabled
@@ -52,7 +52,7 @@ AND item_table.Loadout = loadoutId;
 
 --- Finds all the loadout items that have a target path that are enabled
 CREATE MACRO loadouts.EnabledLoadoutItemWithTargetPathInLoadout(db, loadoutId) AS TABLE
-SELECT item_table.Id
+SELECT item_table.Id, item_table.TargetPath
 FROM mdb_LoadoutItemWithTargetPath(Db=>db) item_table
 JOIN mdb_LoadoutItemGroup(Db=>db) group_table 
     ON item_table.Parent = group_table.Id
@@ -67,7 +67,7 @@ WHERE item_table.Loadout = loadoutId
 -- Returns all the enabled targeted files, returning their id, path, hash, size and a flag
 -- if the file is deleted or not
 CREATE MACRO loadouts.EnabledFilesWithMetadata(db, loadoutId) AS TABLE
-SELECT items.Id, file.TargetPath, file.Hash, file.Size, deleted.Id is NOT NULL as IsDeleted 
+SELECT items.Id, items.TargetPath, file.Hash, file.Size, deleted.Id is NOT NULL as IsDeleted 
 FROM loadouts.EnabledLoadoutItemWithTargetPathInLoadout(db, loadoutId) items
 LEFT JOIN mdb_LoadoutFile(Db=>db) file ON file.Id = items.Id
 LEFT JOIN mdb_DeletedFile(Db=>db) deleted ON deleted.Id = items.Id;

@@ -35,11 +35,11 @@ public class CollectionTests(ITestOutputHelper helper) : AArchivedDatabaseTest(h
         NexusCollectionLoadoutGroup.LibraryFile.Contains(newColl).Should().BeFalse();
         NexusCollectionLoadoutGroup.LibraryFile.Contains(coll).Should().BeTrue();
 
-        conn.Query<EntityId>($"SELECT Id FROM mdb_NexusCollectionItemLoadoutGroup(Db => {conn}) WHERE Parent = {newColl}")
+        conn.Query<EntityId>($"SELECT Id FROM mdb_NexusCollectionItemLoadoutGroup(Db => {conn}) WHERE Parent = {newColl.Id}")
             .Should()
             .HaveCount(0);
 
-        conn.Query<EntityId>($"SELECT Id FROM mdb_LoadoutItemGroup(Db => {conn}) WHERE Parent = {newColl}")
+        conn.Query<EntityId>($"SELECT Id FROM mdb_LoadoutItemGroup(Db => {conn}) WHERE Parent = {newColl.Id}")
             .Should()
             .HaveCountGreaterThan(0);
     }

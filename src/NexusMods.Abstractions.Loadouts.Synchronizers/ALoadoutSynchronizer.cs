@@ -227,7 +227,9 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         
         foreach (var loadoutItem in Loadout.EnabledLoadoutItemWithTargetPathInLoadoutQuery(loadout.Db, loadout.Id))
         {
-            var targetPath = loadoutItem.TargetPath;
+            if (loadoutItem.Path.Path == null)
+                throw new InvalidOperationException("Path is null");
+            var targetPath = new GamePath(loadoutItem.Location, loadoutItem.Path);
 
             SyncNodePart sourceItem;
             LoadoutSourceItemType sourceItemType;
@@ -258,7 +260,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 throw new NotSupportedException("Only files and deleted files are supported");
             }
             
-            ref var existing = ref CollectionsMarshal.GetValueRefOrAddDefault(syncTree, loadoutItem.TargetPath, out var exists);
+            ref var existing = ref CollectionsMarshal.GetValueRefOrAddDefault(syncTree, targetPath, out var exists);
             if (!exists)
             {
                 existing = new SyncNode

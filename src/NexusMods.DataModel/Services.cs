@@ -15,6 +15,7 @@ using NexusMods.DataModel.Settings;
 using NexusMods.DataModel.Sorting;
 using NexusMods.DataModel.Synchronizer;
 using NexusMods.DataModel.Undo;
+using NexusMods.HyperDuck.Adaptor.Impls.ValueAdaptor;
 using NexusMods.MnemonicDB;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Storage.Abstractions;
@@ -37,7 +38,10 @@ public static class Services
     {
         coll.AddMnemonicDB();
         coll.AddMigrations();
-        
+
+        coll.AddAmbientQueriesSql();
+        coll.AddValueAdaptor<ushort, LocationId>(LocationId.From);
+
         // Settings
         coll.AddSettings<DataModelSettings>();
         coll.AddSettingsStorageBackend<MnemonicDBSettingsBackend>(isDefault: true);
