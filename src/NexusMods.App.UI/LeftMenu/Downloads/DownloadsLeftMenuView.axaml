@@ -12,31 +12,27 @@
         <downloads:DownloadsLeftMenuDesignViewModel />
     </Design.DataContext>
 
-    <Grid RowDefinitions="*, Auto" Margin="12 0 12 12">
+    <ScrollViewer>
+        <StackPanel Margin="12,0,12,12" x:Name="LeftMenuStack">
+            <items:LeftMenuItemView x:Name="AllDownloadsItem" />
 
-        <ScrollViewer Grid.Row="0">
-            <StackPanel x:Name="LeftMenuStack">
-                <items:LeftMenuItemView x:Name="AllDownloadsItem" />
-
-                <!-- per-game downloads section -->
-                <StackPanel>
-                    <Separator />
-                    <ItemsControl x:Name="PerGameDownloadsItemsControl">
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <StackPanel Spacing="{StaticResource Spacing-0.5}" />
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                    </ItemsControl>
-                </StackPanel>
-
-                <!-- completed downloads -->
+            <!-- per-game downloads section -->
+            <StackPanel>
                 <Separator />
-                <items:LeftMenuItemView x:Name="AllCompletedItem" />
-
+                <ItemsControl x:Name="PerGameDownloadsItemsControl">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Spacing="{StaticResource Spacing-0.5}" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>
             </StackPanel>
-        </ScrollViewer>
 
-    </Grid>
+            <!-- completed downloads -->
+            <Separator />
+            <items:LeftMenuItemView x:Name="AllCompletedItem" />
+
+        </StackPanel>
+    </ScrollViewer>
 
 </reactiveUi:ReactiveUserControl>

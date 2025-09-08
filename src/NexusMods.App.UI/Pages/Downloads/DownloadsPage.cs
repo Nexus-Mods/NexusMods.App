@@ -1,6 +1,8 @@
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Downloads;
+using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Abstractions.Serialization.Attributes;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
@@ -9,6 +11,15 @@ namespace NexusMods.App.UI.Pages.Downloads;
 
 [JsonName("NexusMods.App.UI.Pages.Downloads.DownloadsPageContext")]
 public record DownloadsPageContext : IPageFactoryContext;
+
+[JsonName("NexusMods.App.UI.Pages.Downloads.AllDownloadsPageContext")]
+public record AllDownloadsPageContext : DownloadsPageContext;
+
+[JsonName("NexusMods.App.UI.Pages.Downloads.CompletedDownloadsPageContext")]
+public record CompletedDownloadsPageContext : DownloadsPageContext;
+
+[JsonName("NexusMods.App.UI.Pages.Downloads.GameSpecificDownloadsPageContext")]
+public record GameSpecificDownloadsPageContext(GameId GameId) : DownloadsPageContext;
 
 [UsedImplicitly]
 public class DownloadsPageFactory : APageFactory<IDownloadsPageViewModel, DownloadsPageContext>

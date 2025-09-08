@@ -44,7 +44,7 @@ public class DownloadsLeftMenuViewModel : AViewModel<IDownloadsLeftMenuViewModel
             new PageData
             {
                 FactoryId = DownloadsPageFactory.StaticId,
-                Context = new DownloadsPageContext(),
+                Context = new AllDownloadsPageContext(),
             }
         )
         {
@@ -59,7 +59,7 @@ public class DownloadsLeftMenuViewModel : AViewModel<IDownloadsLeftMenuViewModel
             new PageData
             {
                 FactoryId = DownloadsPageFactory.StaticId,
-                Context = new DownloadsPageContext(), // TODO: Add completed filter context when implemented
+                Context = new CompletedDownloadsPageContext(), // TODO: Add completed filter context when implemented
             }
         )
         {
@@ -93,7 +93,7 @@ public class DownloadsLeftMenuViewModel : AViewModel<IDownloadsLeftMenuViewModel
             new PageData
             {
                 FactoryId = DownloadsPageFactory.StaticId,
-                Context = new DownloadsPageContext(), // TODO: Add game filter context
+                Context = new GameSpecificDownloadsPageContext(gameInstallation.Game.GameId), // TODO: Add game filter context
             }
         )
         {
