@@ -18,6 +18,7 @@ using NexusMods.App.UI.Controls.Spine.Buttons.Download;
 using NexusMods.App.UI.Controls.Spine.Buttons.Icon;
 using NexusMods.App.UI.Controls.Spine.Buttons.Image;
 using NexusMods.App.UI.LeftMenu;
+using NexusMods.App.UI.Pages.Downloads;
 using NexusMods.App.UI.Pages.LoadoutPage;
 using NexusMods.App.UI.Pages.MyGames;
 using NexusMods.App.UI.Resources;
@@ -84,6 +85,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
         Downloads = spineDownloadsButtonViewModel;
         Downloads.WorkspaceContext = new DownloadsContext();
         _specialSpineItems.Add(Downloads);
+        Downloads.Click = ReactiveCommand.Create(NavigateToDownloads);
 
         var workspaceController = windowManager.ActiveWorkspaceController;
 
@@ -279,6 +281,18 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
         var ws = workspaceController.ChangeOrCreateWorkspaceByContext<HomeContext>(() => pageData);
         var behavior = workspaceController.GetOpenPageBehavior(pageData, NavigationInformation.From(NavigationInput.Default));
         workspaceController.OpenPage(ws.Id, pageData, behavior);
+    }
+
+    private void NavigateToDownloads()
+    {
+        var workspaceController = _windowManager.ActiveWorkspaceController;
+
+        workspaceController.ChangeOrCreateWorkspaceByContext<DownloadsContext>(() => new PageData
+            {
+                FactoryId = DownloadsPageFactory.StaticId,
+                Context = new DownloadsPageContext()
+            }
+        );
     }
 
     private class LoadoutSpineEntriesComparer : IComparer<IImageButtonViewModel>
