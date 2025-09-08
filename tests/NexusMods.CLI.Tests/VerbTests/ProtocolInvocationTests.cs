@@ -13,7 +13,7 @@ public class ProtocolInvocationTests(IServiceProvider provider) : AVerbTest(prov
     [Theory]
     [InlineData("first://path", 1, 0)]
     [InlineData("second://path", 0, 1)]
-    public async void WillForwardToRightHandler(string url, int firstTimes, int secondTimes)
+    public async Task WillForwardToRightHandler(string url, int firstTimes, int secondTimes)
     {
         var firstHandler = Substitute.For<IIpcProtocolHandler>();
         firstHandler.Protocol.Returns("first");
@@ -32,7 +32,7 @@ public class ProtocolInvocationTests(IServiceProvider provider) : AVerbTest(prov
     }
 
     [Fact]
-    public async void WillThrowOnUnsupportedProtocol()
+    public async Task WillThrowOnUnsupportedProtocol()
     {
         var loggingRenderer = new LoggingRenderer();
         var parsed = new Uri("test://foobar");

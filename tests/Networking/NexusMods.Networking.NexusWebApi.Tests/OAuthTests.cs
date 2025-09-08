@@ -26,7 +26,7 @@ public class OAuthTests
     }
 
     [Fact]
-    public async void AuthorizeRequestTest()
+    public async Task AuthorizeRequestTest()
     {
         #region Setup
         var stateId = "00000000-0000-0000-0000-000000000000";
@@ -64,7 +64,7 @@ public class OAuthTests
     }
 
     [Fact]
-    public async void RefreshTokenTest()
+    public async Task RefreshTokenTest()
     {
         #region Setup
         var stateId = "00000000-0000-0000-0000-000000000000";
@@ -101,7 +101,7 @@ public class OAuthTests
     }
 
     [Fact]
-    public async void ThrowsOnInvalidResponse()
+    public async Task ThrowsOnInvalidResponse()
     {
         #region Setup
         var stateId = "00000000-0000-0000-0000-000000000000";
@@ -134,7 +134,7 @@ public class OAuthTests
 
     // TODO: requires jobs to be cancellable
     // [Fact]
-    // public async void AuthorizationCanBeCanceled()
+    // public async Task AuthorizationCanBeCanceled()
     // {
     //     #region Setup
     //     var stateId = "00000000-0000-0000-0000-000000000000";
