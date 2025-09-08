@@ -70,7 +70,7 @@ public class Session : ISteamSession
         var steamConfiguration = SteamConfiguration.Create(configurator =>
         {
             // The client will dispose of these on its own
-            configurator.WithHttpClientFactory(() => new HttpClient());
+            configurator.WithHttpClientFactory(_ => new HttpClient());
         });
         _steamClient = new SteamClient(steamConfiguration);
         _steamUser = _steamClient.GetHandler<SteamUser>()!;
