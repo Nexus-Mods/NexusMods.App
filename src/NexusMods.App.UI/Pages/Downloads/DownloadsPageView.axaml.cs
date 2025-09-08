@@ -1,7 +1,7 @@
 using Avalonia.ReactiveUI;
 using JetBrains.Annotations;
 
-namespace NexusMods.App.UI.Pages.DownloadsPage;
+namespace NexusMods.App.UI.Pages.Downloads;
 
 [UsedImplicitly]
 public partial class DownloadsPageView : ReactiveUserControl<IDownloadsPageViewModel>

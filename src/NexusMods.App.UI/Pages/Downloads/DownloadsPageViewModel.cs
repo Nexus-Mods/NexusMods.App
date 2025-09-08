@@ -7,7 +7,7 @@ using R3;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
-namespace NexusMods.App.UI.Pages.DownloadsPage;
+namespace NexusMods.App.UI.Pages.Downloads;
 
 public class DownloadsPageViewModel : APageViewModel<IDownloadsPageViewModel>, IDownloadsPageViewModel
 {

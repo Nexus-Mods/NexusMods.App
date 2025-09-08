@@ -5,13 +5,13 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactive="http://reactiveui.net"
-    xmlns:local="clr-namespace:NexusMods.App.UI.Pages.DownloadsPage"
+    xmlns:local="clr-namespace:NexusMods.App.UI.Pages.Downloads"
     xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
     xmlns:icons="clr-namespace:NexusMods.UI.Sdk.Icons;assembly=NexusMods.UI.Sdk"
     xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
     xmlns:pageHeader="clr-namespace:NexusMods.App.UI.Controls.PageHeader"
     mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="450"
-    x:Class="NexusMods.App.UI.Pages.DownloadsPage.DownloadsPageView"
+    x:Class="NexusMods.App.UI.Pages.Downloads.DownloadsPageView"
     Background="{StaticResource SurfaceTransparentBrush}">
     <!-- Background set to ensure that clicks anywhere on the page are correctly registered and bring focus to it -->
 

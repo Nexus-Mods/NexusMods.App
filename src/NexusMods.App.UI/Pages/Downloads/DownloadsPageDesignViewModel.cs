@@ -4,7 +4,7 @@ using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.UI.Sdk.Icons;
 using R3;
 
-namespace NexusMods.App.UI.Pages.DownloadsPage;
+namespace NexusMods.App.UI.Pages.Downloads;
 
 public class DownloadsPageDesignViewModel : APageViewModel<IDownloadsPageViewModel>, IDownloadsPageViewModel
 {

@@ -1,7 +1,7 @@
 using NexusMods.App.UI.WorkspaceSystem;
 using R3;
 
-namespace NexusMods.App.UI.Pages.DownloadsPage;
+namespace NexusMods.App.UI.Pages.Downloads;
 
 public interface IDownloadsPageViewModel : IPageViewModelInterface
 {

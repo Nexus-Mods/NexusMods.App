@@ -5,7 +5,7 @@ using NexusMods.Abstractions.Serialization.Attributes;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 
-namespace NexusMods.App.UI.Pages.DownloadsPage;
+namespace NexusMods.App.UI.Pages.Downloads;
 
 [JsonName("NexusMods.App.UI.Pages.Downloads.DownloadsPageContext")]
 public record DownloadsPageContext : IPageFactoryContext;
