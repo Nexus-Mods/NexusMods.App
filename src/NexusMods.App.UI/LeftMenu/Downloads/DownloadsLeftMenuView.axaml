@@ -17,19 +17,15 @@
             <items:LeftMenuItemView x:Name="AllDownloadsItem" />
 
             <!-- per-game downloads section -->
-            <StackPanel>
-                <Separator />
-                <ItemsControl x:Name="PerGameDownloadsItemsControl">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <StackPanel Spacing="{StaticResource Spacing-0.5}" />
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                </ItemsControl>
-            </StackPanel>
+            <ItemsControl x:Name="PerGameDownloadsItemsControl">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Spacing="{StaticResource Spacing-0.5}" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
 
             <!-- completed downloads -->
-            <Separator />
             <items:LeftMenuItemView x:Name="AllCompletedItem" />
 
         </StackPanel>
