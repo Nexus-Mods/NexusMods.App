@@ -195,6 +195,10 @@ public class DownloadsServiceTests(
         // Create and start job
         var context = _jobFactory.CreateAndStartDownloadJob(gameId);
         
+        // Wait for jobs to signal they're ready before checking state
+        context.WaitForJobsReady(TimeSpan.FromSeconds(30))
+            .Should().BeTrue("jobs should signal ready within timeout");
+        
         // Job should appear in collections
         allDownloads.Should().HaveCount(1, "job should be in AllDownloads when started");
         activeDownloads.Should().HaveCount(1, "job should be in ActiveDownloads when started");
