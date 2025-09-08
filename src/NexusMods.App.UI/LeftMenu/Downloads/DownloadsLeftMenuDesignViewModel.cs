@@ -32,17 +32,17 @@ public class DownloadsLeftMenuDesignViewModel : AViewModel<IDownloadsLeftMenuVie
         {
             new LeftMenuItemDesignViewModel
             {
-                Text = new StringComponent("Stardew Valley Downloads"),
+                Text = new StringComponent(string.Format(Language.DownloadsLeftMenu_GameSpecificDownloads, "Stardew Valley")),
                 Icon = IconValues.FolderEditOutline,
             },
             new LeftMenuItemDesignViewModel
             {
-                Text = new StringComponent("Cyberpunk 2077 Downloads"),
+                Text = new StringComponent(string.Format(Language.DownloadsLeftMenu_GameSpecificDownloads, "Cyberpunk 2077")),
                 Icon = IconValues.FolderEditOutline,
             },
             new LeftMenuItemDesignViewModel
             {
-                Text = new StringComponent("Skyrim Downloads"),
+                Text = new StringComponent(string.Format(Language.DownloadsLeftMenu_GameSpecificDownloads, "Skyrim")),
                 Icon = IconValues.FolderEditOutline,
             },
         };

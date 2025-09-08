@@ -369,6 +369,12 @@ namespace NexusMods.App.UI.Resources {
             }
         }
         
+        public static string DownloadsLeftMenu_GameSpecificDownloads {
+            get {
+                return ResourceManager.GetString("DownloadsLeftMenu_GameSpecificDownloads", resourceCulture);
+            }
+        }
+        
         public static string NexusLoginOverlayView__Please_Click_Authorize {
             get {
                 return ResourceManager.GetString("NexusLoginOverlayView__Please_Click_Authorize", resourceCulture);

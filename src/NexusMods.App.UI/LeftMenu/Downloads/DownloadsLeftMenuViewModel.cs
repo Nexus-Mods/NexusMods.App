@@ -97,7 +97,7 @@ public class DownloadsLeftMenuViewModel : AViewModel<IDownloadsLeftMenuViewModel
             }
         )
         {
-            Text = new StringComponent($"{gameInstallation.Game.Name} Downloads"),
+            Text = new StringComponent(string.Format(Language.DownloadsLeftMenu_GameSpecificDownloads, gameInstallation.Game.Name)),
             Icon = IconValues.FolderEditOutline,
         };
     }
