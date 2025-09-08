@@ -61,74 +61,24 @@ public partial class SkyrimSE : AGame, ISteamGame, IGogGame
     [
         FomodXmlInstaller.Create(_serviceProvider, new GamePath(LocationId.Game, "Data")),
         // Files in a Data folder
-        new PredicateBasedInstaller(_serviceProvider)
+        new StopPatternInstaller(_serviceProvider)
         {
-            Root = static n => n.ThisNameIs("Data"),
-            Destination = new GamePath(LocationId.Game, "Data"),
-            IgnoreFiles = ["fomod/info.xml", KnownExtensions.Txt],
-        },
-        // 
-        new PredicateBasedInstaller(_serviceProvider)
-        {
-            Root = static n => n.HasDirectChild("d3dx9_42.dll"),
-            Destination = KnownPaths.Game,
-        },
-        // SKSE wraps its files in a folder named after the skse version
-        new PredicateBasedInstaller(_serviceProvider)
-        {
-            Root = static n => n.ThisNameLike(SkseRegex()),
-            Destination = new GamePath(LocationId.Game, ""),
-        },
-        new PredicateBasedInstaller(_serviceProvider)
-        {
-            Root = static n => n.HasDirectChildrenWith(KnownCEExtensions.BSA, KnownCEExtensions.ESM, KnownCEExtensions.ESL, KnownCEExtensions.ESP),
-            Destination = new GamePath(LocationId.Game, "Data"),
-        },
-        new PredicateBasedInstaller(_serviceProvider)
-        {
-            Root = static n => n.ThisNameIs("SKSE"),
-            Destination = new GamePath(LocationId.Game, "Data/SKSE"),
-        },
-        new PredicateBasedInstaller(_serviceProvider) 
-        { 
-            Root = static n => n.HasAnyDirectChildFolder("meshes", "textures", "Interface", "SKSE", "sound", "scripts", "Shaders", "Nemesis_Engine", "Grass"), 
-            Destination = new GamePath(LocationId.Game, "Data"), 
-        },
-        new PredicateBasedInstaller(_serviceProvider)
-        {
-            Root = static n => n.HasDirectChildEndingIn("_SWAP.ini"),
-            Destination = new GamePath(LocationId.Game, "Data"),
-        },
-        new PredicateBasedInstaller(_serviceProvider)
-        {
-            Root = static n => n.HasDirectChildEndingIn("_DESC.ini"),
-            Destination = new GamePath(LocationId.Game, "Data"),
-        },
-        new PredicateBasedInstaller(_serviceProvider)
-        {
-            Root = static n => n.HasDirectChildEndingIn("_FLM.ini"),
-            Destination = new GamePath(LocationId.Game, "Data"),
-        },
-        new PredicateBasedInstaller(_serviceProvider)
-        {
-            Root = static n => n.HasDirectChildEndingIn("_DISTR.ini"),
-            Destination = new GamePath(LocationId.Game, "Data"),
-        },
-        new PredicateBasedInstaller(_serviceProvider)
-        {
-            Root = static n => n.HasDirectChildEndingIn("_KID.ini"),
-            Destination = new GamePath(LocationId.Game, "Data"),
-        },
-        new PredicateBasedInstaller(_serviceProvider)
-        {
-            Root = static n => n.HasDirectChildEndingIn("_ANIO.ini"),
-            Destination = new GamePath(LocationId.Game, "Data"),
-        },
-        new PredicateBasedInstaller(_serviceProvider)
-        {
-            Root = static n => n.HasDirectChildEndingIn("_WIN.ini"),
-            Destination = new GamePath(LocationId.Game, "Data"),
-        },
+            GameId = GameId,
+            GameFolders = ["Skyrim Special Edition", "SkyrimSE", "SSE"],
+            
+            TopLevelDirs = [
+                "distantlod",
+                "textures",
+                "meshes",
+                "music","shaders","video","interface",
+                "fonts","scripts","facegen","menus","lodsettings","lsdata","sound",
+                "strings","trees","asi","tools","calientetools"],
+            
+            StopPatterns = ["(^|/)skse(/|$)"],
+            
+            EngineFiles = [@"skse64_loader\.exe", @"skse64_.*\.dll"],
+            
+        }.Build(),
         new FallbackInstaller(_serviceProvider)
     ];
 }
