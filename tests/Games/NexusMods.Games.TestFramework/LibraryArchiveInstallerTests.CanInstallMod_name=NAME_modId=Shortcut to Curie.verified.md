@@ -1,4 +1,5 @@
-﻿| {Game}/Data/Mors Shortcut to Curie.esp                                               | 0x7CF70FD9412E7ACC | 39.996 KB | 
+﻿| {Game}/Data/fomod/info.xml                                                           | 0xE50BDF27A085C26E | 2.607 KB  | 
+| {Game}/Data/Mors Shortcut to Curie.esp                                               | 0x7CF70FD9412E7ACC | 39.996 KB | 
 | {Game}/Data/Scripts/Fragments/Quests/QF_MorsSTC_MS19_01000F9A.pex                    | 0x2748E467092A913B | 2.506 KB  | 
 | {Game}/Data/Scripts/Fragments/Quests/QF_MS19_00022A0A.pex                            | 0x3803F21D9B8EF6C1 | 8.65 KB   | 
 | {Game}/Data/Scripts/Fragments/Scenes/SF_MS19BobbyRevealDoor_00215081.pex             | 0xBA6568183610750C | 1.053 KB  | 

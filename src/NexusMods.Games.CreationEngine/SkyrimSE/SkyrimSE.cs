@@ -64,35 +64,11 @@ public partial class SkyrimSE : AGame, ISteamGame, IGogGame
         new StopPatternInstaller(_serviceProvider)
         {
             GameId = GameId,
-            GameFolders = ["Skyrim Special Edition", "SkyrimSE", "SSE"],
-            
-            TopLevelDirs = [
-                "asi",
-                "calientetools",
-                "distantlod",
-                "facegen",
-                "fonts",
-                "interface",
-                "lodsettings",
-                "lsdata",
-                "menus",
-                "meshes",
-                "music",
-                "scripts",
-                "shaders",
-                "sound",
-                "strings",
-                "textures",
-                "tools",
-                "trees",
-                "video",
-            ],
-            
+            GameAliases = ["Skyrim Special Edition", "SkyrimSE", "SSE"],
+            TopLevelDirs = KnownPaths.CommonTopLevelFolders,
             StopPatterns = ["(^|/)skse(/|$)"],
-            
             EngineFiles = [@"skse64_loader\.exe", @"skse64_.*\.dll"],
             
         }.Build(),
-        new FallbackInstaller(_serviceProvider)
     ];
 }

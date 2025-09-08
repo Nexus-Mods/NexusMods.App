@@ -16,7 +16,7 @@ namespace NexusMods.Games.CreationEngine.Installers;
 /// This is mostly a reimplementation of the Vortex Stop Pattern Installer, once this code has enough unit tests, the code
 /// can be cleaned up and improved 
 /// </summary>
-public class StopPatternInstaller(IServiceProvider serviceProvider) : ALibraryArchiveInstaller(serviceProvider, serviceProvider.GetRequiredService<ILogger<FallbackInstaller>>())
+public class StopPatternInstaller(IServiceProvider serviceProvider) : ALibraryArchiveInstaller(serviceProvider, serviceProvider.GetRequiredService<ILogger<StopPatternInstaller>>())
 {
 #region Customizable Properties
 
@@ -49,7 +49,7 @@ public class StopPatternInstaller(IServiceProvider serviceProvider) : ALibraryAr
     /// Required property listing known alternative names for the game folder (e.g. ["Skyrim Special Edition", "SkyrimSE"]).
     /// Used to properly handle mods packaged with different game folder names.
     /// </summary>
-    public required string[] GameFolders { get; init; }
+    public required string[] GameAliases { get; init; }
     
     /// <summary>
     /// Array of folder names that should be installed directly in the game's data folder.
@@ -104,7 +104,7 @@ public class StopPatternInstaller(IServiceProvider serviceProvider) : ALibraryAr
     public StopPatternInstaller Build()
     {
         _dataPrefix = RelativePath.FromUnsanitizedInput(DataFolderName);
-        _gameFolders = GameFolders.Select(g => RelativePath.FromUnsanitizedInput(g)).ToArray();
+        _gameFolders = GameAliases.Select(g => RelativePath.FromUnsanitizedInput(g)).ToArray();
         _engineFiles = CombineRegexes(EngineFiles);
         _topLevelPaths = TopLevelDirs.Select(t => RelativePath.FromUnsanitizedInput(t)).ToArray();
         _isBuilt = true;
