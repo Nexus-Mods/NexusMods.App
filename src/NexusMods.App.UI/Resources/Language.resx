@@ -182,6 +182,15 @@
     <data name="DownloadsView_UnderDevelopment" xml:space="preserve">
         <value>The Downloads page is currently being reworked and will be replaced in a future update. We apologise for the inconvenience.</value>
     </data>
+    <data name="DownloadsLeftMenu_AllDownloads" xml:space="preserve">
+        <value>All Downloads</value>
+    </data>
+    <data name="DownloadsLeftMenu_GameDownloads" xml:space="preserve">
+        <value>Game Downloads</value>
+    </data>
+    <data name="DownloadsLeftMenu_AllCompleted" xml:space="preserve">
+        <value>All Completed</value>
+    </data>
     <data name="NexusLoginOverlayView__Please_Click_Authorize" xml:space="preserve">
         <value>Please click "Authorise" on the website</value>
     </data>

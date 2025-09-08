@@ -27,6 +27,7 @@ using NexusMods.App.UI.Controls.Trees.Files;
 using NexusMods.App.UI.DiagnosticSystem;
 using NexusMods.App.UI.Dialog;
 using NexusMods.App.UI.LeftMenu;
+using NexusMods.App.UI.LeftMenu.Downloads;
 using NexusMods.App.UI.LeftMenu.Home;
 using NexusMods.App.UI.LeftMenu.Items;
 using NexusMods.App.UI.LeftMenu.Loadout;
@@ -274,6 +275,7 @@ public static class Services
             // LeftMenu factories
             .AddSingleton<ILeftMenuFactory, HomeLeftMenuFactory>()
             .AddSingleton<ILeftMenuFactory, LoadoutLeftMenuFactory>()
+            .AddSingleton<ILeftMenuFactory, DownloadsLeftMenuFactory>()
 
             // Workspace Attachments
             .AddSingleton<IWorkspaceAttachmentsFactoryManager, WorkspaceAttachmentsFactoryManager>()

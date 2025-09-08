@@ -1,0 +1,51 @@
+<reactiveUi:ReactiveUserControl x:TypeArguments="downloads:IDownloadsLeftMenuViewModel"
+                                xmlns="https://github.com/avaloniaui"
+                                xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                                xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                                xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                                xmlns:reactiveUi="http://reactiveui.net"
+                                xmlns:downloads="clr-namespace:NexusMods.App.UI.LeftMenu.Downloads"
+                                xmlns:items="clr-namespace:NexusMods.App.UI.LeftMenu.Items"
+                                mc:Ignorable="d" d:DesignWidth="200" d:DesignHeight="550"
+                                x:Class="NexusMods.App.UI.LeftMenu.Downloads.DownloadsLeftMenuView">
+    <Design.DataContext>
+        <downloads:DownloadsLeftMenuDesignViewModel />
+    </Design.DataContext>
+
+    <Grid RowDefinitions="*, Auto" Margin="12 0 12 12">
+
+        <ScrollViewer Grid.Row="0">
+            <StackPanel x:Name="LeftMenuStack">
+                <items:LeftMenuItemView x:Name="AllDownloadsItem" />
+
+                <!-- per-game downloads section -->
+                <StackPanel>
+                    <Separator />
+                    <Expander HorizontalAlignment="Stretch" IsExpanded="True">
+                        <Expander.Header>
+                            <TextBlock x:Name="PerGameDownloadsSectionText"
+                                       Text="Game Downloads"
+                                       Theme="{StaticResource BodySMSemiTheme}" />
+                        </Expander.Header>
+                        <StackPanel Spacing="{StaticResource Spacing-0.5}">
+                            <ItemsControl x:Name="PerGameDownloadsItemsControl">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel Spacing="{StaticResource Spacing-0.5}" />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                            </ItemsControl>
+                        </StackPanel>
+                    </Expander>
+                </StackPanel>
+
+                <!-- completed downloads -->
+                <Separator />
+                <items:LeftMenuItemView x:Name="AllCompletedItem" />
+
+            </StackPanel>
+        </ScrollViewer>
+
+    </Grid>
+
+</reactiveUi:ReactiveUserControl>
