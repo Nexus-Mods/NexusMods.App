@@ -127,6 +127,11 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
                 .BindTo(_windowManager, manager => manager.ActiveWindow)
                 .DisposeWith(d);
             
+            // Enable automatic UserInfo refresh when window gains focus
+            loginManager.RefreshOnObservable(
+                this.WhenAnyValue(vm => vm.IsActive).ToObservable()
+            ).DisposeWith(d);
+            
             overlayController.WhenAnyValue(oc => oc.CurrentOverlay)
                 .BindTo(this, vm => vm.CurrentOverlay)
                 .DisposeWith(d);

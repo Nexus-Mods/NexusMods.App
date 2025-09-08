@@ -1,3 +1,6 @@
+# v0.16.4 2025-09-04
+HOTFIX : reworked the Nexus Mods login code. Caches are invalidated sooner and in a more predictable manner. This fixes an issue where users would not see their new premium status appear after subscribing. Also fixes an issue where users would appear to lose their premium status after the app was active for a few hours. 
+
 # v0.16.3 2025-09-04
 This update contains a selection of bug fixes and quality of life improvements.
 
