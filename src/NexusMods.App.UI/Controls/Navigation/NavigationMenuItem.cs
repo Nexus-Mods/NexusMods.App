@@ -1,4 +1,5 @@
 using System.Reactive;
+using System.Windows.Input;
 using Avalonia;
 using Avalonia.Controls;
 using DynamicData.Kernel;
@@ -13,12 +14,12 @@ public class NavigationMenuItem : MenuItem
     public static readonly StyledProperty<ReactiveCommand<NavigationInput, Unit>?> NavigateCommandProperty =
         AvaloniaProperty.Register<NavigationControl, ReactiveCommand<NavigationInput, Unit>?>(nameof(NavigationCommand));
 
-    public ReactiveCommand<NavigationInformation, Unit>? NavigationCommand
+    public ICommand? NavigationCommand
     {
         get
         {
             var value = GetValue(CommandProperty);
-            return value as ReactiveCommand<NavigationInformation, Unit>;
+            return value;
         }
         set => SetValue(CommandProperty, value);
     }
@@ -41,7 +42,7 @@ public class NavigationMenuItem : MenuItem
         _contextMenuCommand = ReactiveCommand.Create<OpenPageBehaviorType>(openPageBehaviorType =>
         {
             var navigationInformation = NavigationInformation.From(openPageBehaviorType);
-            NavigationCommand?.Execute(navigationInformation).Subscribe();
+            NavigationCommand?.Execute(navigationInformation);
         });
 
         var contextMenu = new ContextMenu
