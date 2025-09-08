@@ -13,8 +13,25 @@ using NexusMods.Sdk;
 namespace NexusMods.Games.CreationEngine.Installers;
 
 /// <summary>
-/// This is mostly a reimplementation of the Vortex Stop Pattern Installer, once this code has enough unit tests, the code
-/// can be cleaned up and improved 
+/// Installer class for Creation Engine games (Skyrim, Fallout, etc.) that handles mod installation based on file/folder patterns.
+/// 
+/// This installer analyzes mod archives and installs files to appropriate locations based on configured patterns:
+/// - Most mod files are installed to the game's Data folder
+/// - Engine files (like script extenders) are installed to the game's root folder
+/// - Handles common mod packaging variations like nested Data folders or game folder aliases
+/// 
+/// Key features:
+/// - Detects and properly handles various mod archive structures
+/// - Supports game-specific file extensions (.esp, .esm, etc.)
+/// - Handles script extender and engine file installations
+/// - Configurable patterns for determining file destinations
+/// - Supports multiple game folder name aliases
+/// - Handles common mod folder structures (meshes, textures, etc.)
+/// 
+/// Usage:
+/// 1. Configure the installer with game-specific settings (file patterns, folders, etc.)
+/// 2. Call Build() to optimize the installer
+/// 3. The installer will automatically handle mod installations based on the configured patterns
 /// </summary>
 public class StopPatternInstaller(IServiceProvider serviceProvider) : ALibraryArchiveInstaller(serviceProvider, serviceProvider.GetRequiredService<ILogger<StopPatternInstaller>>())
 {
