@@ -413,15 +413,13 @@ public class NxFileStore : IFileStore
 
     public Task<byte[]> Load(Hash hash, CancellationToken token = default)
     {
-        if (hash == Hash.Zero)
-            throw new ArgumentNullException(nameof(hash));
+        if (hash == Hash.Zero) throw new ArgumentNullException(nameof(hash));
 
         using var lck = _lock.ReadLock();
-        if (!TryGetLocation(hash,
-                out var archivePath, out var entry))
+        if (!TryGetLocation(hash, out var archivePath, out var entry))
             throw new MissingArchiveException(hash);
 
-        var file = archivePath.Read();
+        using var file = archivePath.Read();
 
         var provider = new FromStreamProvider(file);
         var unpacker = new NxUnpacker(provider);

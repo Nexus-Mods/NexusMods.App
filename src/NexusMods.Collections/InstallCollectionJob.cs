@@ -178,6 +178,7 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
 
         var job = new InstallCollectionDownloadJob
         {
+            Logger = ServiceProvider.GetRequiredService<ILogger<InstallCollectionJob>>(),
             Item = modAndDownload.Download,
             CollectionMod = modAndDownload.Mod,
             Group = collectionGroup.AsCollectionGroup(),
