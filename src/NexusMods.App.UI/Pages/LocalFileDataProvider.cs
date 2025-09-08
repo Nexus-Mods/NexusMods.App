@@ -143,7 +143,7 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
         LoadoutDataProviderHelper.AddEnabledStateToggle(_connection, parentItemModel, linkedItemsObservable);
         LoadoutDataProviderHelper.AddLoadoutItemIds(parentItemModel, linkedItemsObservable);
         LoadoutDataProviderHelper.AddViewModPageActionComponent(parentItemModel, isEnabled: false);
-        
+        LoadoutDataProviderHelper.AddUninstallItemComponent(parentItemModel, linkedItemsObservable);
 
         return parentItemModel;
     }

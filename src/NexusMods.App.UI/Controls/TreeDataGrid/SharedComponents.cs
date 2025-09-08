@@ -1,4 +1,5 @@
 using NexusMods.Abstractions.UI;
+using NexusMods.App.UI.Resources;
 using R3;
 
 namespace NexusMods.App.UI.Controls;
@@ -32,6 +33,55 @@ public static class SharedComponents
                 if (disposing)
                 {
                     Disposable.Dispose(CommandViewModPage, IsEnabled);
+                }
+
+                _isDisposed = true;
+            }
+
+            base.Dispose(disposing);
+        }
+    }
+    
+    public sealed class UninstallItemAction : ReactiveR3Object, IItemModelComponent<UninstallItemAction>, IComparable<UninstallItemAction>
+    {
+        public ReactiveCommand<Unit> CommandUninstallItem { get; } = new();
+        public IReadOnlyBindableReactiveProperty<bool> IsEnabled { get; }
+
+        public IReadOnlyBindableReactiveProperty<string> DisplayText { get;  }
+
+        private string EnabledText => Language.Loadout_UninstallItem_Menu_Text;
+
+        private string DisabledText => Language.Loadout_UninstallItem_Menu_Text__Uninstall_read_only;
+
+        public int CompareTo(UninstallItemAction? other)
+        {
+            if (other is null) return 1;
+            return 0; // All uninstall item actions are considered equal for sorting
+        }
+
+        public UninstallItemAction(bool isEnabled = true)
+        {
+            IsEnabled = new BindableReactiveProperty<bool>(isEnabled);
+            DisplayText = new BindableReactiveProperty<string>(isEnabled ? EnabledText : DisabledText);
+        }
+        
+        public UninstallItemAction(Observable<bool> isEnabled)
+        {
+            IsEnabled = isEnabled.ToBindableReactiveProperty();
+            
+            DisplayText = isEnabled
+                .Select(enabled => enabled ? EnabledText : DisabledText)
+                .ToBindableReactiveProperty(EnabledText);
+        }
+
+        private bool _isDisposed;
+        protected override void Dispose(bool disposing)
+        {
+            if (!_isDisposed)
+            {
+                if (disposing)
+                {
+                    Disposable.Dispose(CommandUninstallItem, IsEnabled);
                 }
 
                 _isDisposed = true;

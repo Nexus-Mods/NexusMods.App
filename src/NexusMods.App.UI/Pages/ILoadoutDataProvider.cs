@@ -96,6 +96,7 @@ public static class LoadoutDataProviderHelper
         AddParentCollectionDisabled(connection, itemModel, loadoutItem);
         AddLockedEnabledState(itemModel, loadoutItem);
         AddEnabledStateToggle(connection, itemModel, loadoutItem);
+        AddUninstallItemComponent(itemModel, loadoutItem);
 
         return itemModel;
     }
@@ -185,6 +186,25 @@ public static class LoadoutDataProviderHelper
             initialValue: initialValue,
             valueObservable: dateObservable
         ));
+    }
+
+    public static void AddUninstallItemComponent(CompositeItemModel<EntityId> itemModel, LoadoutItem.ReadOnly loadoutItem)
+    {
+        var canDelete = !IsLocked(loadoutItem);
+        itemModel.Add(LoadoutColumns.EnabledState.UninstallItemComponentKey, new SharedComponents.UninstallItemAction(isEnabled: canDelete));
+    }
+    
+    public static void AddUninstallItemComponent(CompositeItemModel<EntityId> itemModel, IObservable<IChangeSet<LoadoutItem.ReadOnly, EntityId>> linkedItemsObservable)
+    {
+       var canUninstallObservable = linkedItemsObservable
+           .TransformImmutable(static item => IsLocked(item))
+           // Show uninstall if at least one item is not locked
+           .QueryWhenChanged(static query => !query.Items.All(isLocked => isLocked))
+           .ToObservable();
+
+       itemModel.Add(LoadoutColumns.EnabledState.UninstallItemComponentKey,
+           new SharedComponents.UninstallItemAction(canUninstallObservable)
+       );
     }
 
     public static void AddCollections(

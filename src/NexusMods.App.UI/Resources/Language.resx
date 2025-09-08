@@ -1238,4 +1238,10 @@ Keep the downloaded files in your library in case you want to retry the installa
     <data name="ToastNotification_Uploading_draft_collection_revision___" xml:space="preserve">
         <value>Uploading draft Collection Revision...</value>
     </data>
+    <data name="Loadout_UninstallItem_Menu_Text" xml:space="preserve">
+        <value>Uninstall</value>
+    </data>
+    <data name="Loadout_UninstallItem_Menu_Text__Uninstall_read_only" xml:space="preserve">
+        <value>Uninstall read-only</value>
+    </data>
 </root>

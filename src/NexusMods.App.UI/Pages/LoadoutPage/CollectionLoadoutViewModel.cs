@@ -249,21 +249,22 @@ public class CollectionLoadoutViewModel : APageViewModel<ICollectionLoadoutViewM
             {
                 await message.Match<Task>(
                     toggleEnableStateMessage => 
-                        LoadoutViewModel.ToggleItemEnabledState(toggleEnableStateMessage.Ids, connection),
+                        LoadoutViewModel.HandleToggleItemEnabledState(toggleEnableStateMessage.Ids, connection),
                     openCollectionMessage =>
                     {
-                        LoadoutViewModel.OpenItemCollectionPage(openCollectionMessage.Ids, 
+                        LoadoutViewModel.HandleOpenItemCollectionPage(openCollectionMessage.Ids, 
                             openCollectionMessage.NavigationInformation, 
                             pageContext.LoadoutId, GetWorkspaceController(), connection);
                         return Task.CompletedTask;
                     },
                     viewModPageMessage =>
                     {
-                        LoadoutViewModel.OpenModPageFor(viewModPageMessage.Ids, connection,  
+                        LoadoutViewModel.HandleOpenModPageFor(viewModPageMessage.Ids, connection,  
                             serviceProvider.GetRequiredService<IOSInterop>(),
                             cancellationToken);
                         return Task.CompletedTask;
-                    }
+                    },
+                    uninstallItemMessage => LoadoutViewModel.HandleUninstallItem(uninstallItemMessage.Ids, windowManager, connection)
                 );
             }, awaitOperation: AwaitOperation.Parallel, configureAwait: false).AddTo(disposables);
         });
