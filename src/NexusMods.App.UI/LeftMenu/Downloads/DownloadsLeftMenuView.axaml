@@ -21,22 +21,13 @@
                 <!-- per-game downloads section -->
                 <StackPanel>
                     <Separator />
-                    <Expander HorizontalAlignment="Stretch" IsExpanded="True">
-                        <Expander.Header>
-                            <TextBlock x:Name="PerGameDownloadsSectionText"
-                                       Text="Game Downloads"
-                                       Theme="{StaticResource BodySMSemiTheme}" />
-                        </Expander.Header>
-                        <StackPanel Spacing="{StaticResource Spacing-0.5}">
-                            <ItemsControl x:Name="PerGameDownloadsItemsControl">
-                                <ItemsControl.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <StackPanel Spacing="{StaticResource Spacing-0.5}" />
-                                    </ItemsPanelTemplate>
-                                </ItemsControl.ItemsPanel>
-                            </ItemsControl>
-                        </StackPanel>
-                    </Expander>
+                    <ItemsControl x:Name="PerGameDownloadsItemsControl">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Spacing="{StaticResource Spacing-0.5}" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                    </ItemsControl>
                 </StackPanel>
 
                 <!-- completed downloads -->

@@ -23,8 +23,6 @@ public partial class DownloadsLeftMenuView : ReactiveUserControl<IDownloadsLeftM
             
             this.OneWayBind(ViewModel, vm => vm.LeftMenuItemAllCompleted, view => view.AllCompletedItem.ViewModel)
                 .DisposeWith(d);
-                
-            PerGameDownloadsSectionText.Text = Language.DownloadsLeftMenu_GameDownloads;
         });
     }
 }

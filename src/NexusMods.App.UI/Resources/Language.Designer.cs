@@ -357,12 +357,6 @@ namespace NexusMods.App.UI.Resources {
             }
         }
         
-        public static string DownloadsLeftMenu_GameDownloads {
-            get {
-                return ResourceManager.GetString("DownloadsLeftMenu_GameDownloads", resourceCulture);
-            }
-        }
-        
         public static string DownloadsLeftMenu_AllCompleted {
             get {
                 return ResourceManager.GetString("DownloadsLeftMenu_AllCompleted", resourceCulture);

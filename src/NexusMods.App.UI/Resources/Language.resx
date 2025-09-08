@@ -185,14 +185,8 @@
     <data name="DownloadsLeftMenu_AllDownloads" xml:space="preserve">
         <value>All Downloads</value>
     </data>
-    <data name="DownloadsLeftMenu_GameDownloads" xml:space="preserve">
-        <value>Game Downloads</value>
-    </data>
     <data name="DownloadsLeftMenu_AllCompleted" xml:space="preserve">
         <value>All Completed</value>
-    </data>
-    <data name="DownloadsLeftMenu_GameDownloads" xml:space="preserve">
-        <value>Game Downloads</value>
     </data>
     <data name="DownloadsLeftMenu_GameSpecificDownloads" xml:space="preserve">
         <value>{0} Downloads</value>
