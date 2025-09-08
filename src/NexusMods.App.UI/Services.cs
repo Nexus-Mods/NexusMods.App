@@ -44,6 +44,7 @@ using NexusMods.App.UI.Pages.CollectionDownload.Dialogs.PremiumDownloads;
 using NexusMods.App.UI.Pages.DebugControls;
 using NexusMods.App.UI.Pages.Diagnostics;
 using NexusMods.App.UI.Pages.Diff.ApplyDiff;
+using NexusMods.App.UI.Pages.DownloadsPage;
 using NexusMods.App.UI.Pages.LibraryPage;
 using NexusMods.App.UI.Pages.LibraryPage.Collections;
 using NexusMods.App.UI.Pages.LoadoutGroupFilesPage;
@@ -186,6 +187,7 @@ public static class Services
             .AddViewModel<LibraryItemDeleteConfirmationViewModel, ILibraryItemDeleteConfirmationViewModel>()
 
             .AddView<LibraryView, ILibraryViewModel>()
+            .AddView<DownloadsPageView, IDownloadsPageViewModel>()
             .AddView<LoadoutView, ILoadoutViewModel>()
 
             .AddView<CollectionDownloadView, ICollectionDownloadViewModel>()
@@ -260,6 +262,7 @@ public static class Services
             .AddSingleton<IPageFactory, TextEditorPageFactory>()
             .AddSingleton<IPageFactory, MyLoadoutsPageFactory>()
             .AddSingleton<IPageFactory, LibraryPageFactory>()
+            .AddSingleton<IPageFactory, DownloadsPageFactory>()
             .AddSingleton<IPageFactory, LoadoutPageFactory>()
             .AddSingleton<IPageFactory, CollectionDownloadPageFactory>()
             .AddSingleton<IPageFactory, CollectionLoadoutPageFactory>()

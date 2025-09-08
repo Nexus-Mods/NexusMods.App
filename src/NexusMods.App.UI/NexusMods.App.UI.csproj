@@ -778,7 +778,17 @@
           <SubType>Code</SubType>
         </Compile>
         <Compile Update="Pages\CollectionDownload\Dialogs\PremiumDownloads\DialogPremiumCollectionDownloadsView.axaml.cs">
-          <DependentUpon>DialogCollectionPublishedView.axaml</DependentUpon>
+           <DependentUpon>DialogCollectionPublishedView.axaml</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\DownloadsPage\DownloadsPageViewModel.cs">
+           <DependentUpon>IDownloadsPageViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\DownloadsPage\DownloadsPageDesignViewModel.cs">
+           <DependentUpon>IDownloadsPageViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\DownloadsPage\DownloadsPageView.axaml.cs">
+           <DependentUpon>DownloadsPageView.axaml</DependentUpon>
+           <SubType>Code</SubType>
         </Compile>
     </ItemGroup>
 
