@@ -119,6 +119,7 @@ public static class Services
             .AddViewModel<MessageBoxOkCancelViewModel, IMessageBoxOkCancelViewModel>()
             .AddViewModel<UpdaterViewModel, IUpdaterViewModel>()
             .AddViewModel<LoadoutLeftMenuViewModel, ILoadoutLeftMenuViewModel>()
+            .AddViewModel<DownloadsLeftMenuViewModel, IDownloadsLeftMenuViewModel>()
             .AddViewModel<FileTreeNodeViewModel, IFileTreeNodeViewModel>()
             .AddViewModel<ApplyDiffViewModel, IApplyDiffViewModel>()
 
@@ -142,6 +143,7 @@ public static class Services
             .AddView<MessageBoxOkCancelView, IMessageBoxOkCancelViewModel>()
             .AddView<UpdaterView, IUpdaterViewModel>()
             .AddView<LoadoutLeftMenuView, ILoadoutLeftMenuViewModel>()
+            .AddView<DownloadsLeftMenuView, IDownloadsLeftMenuViewModel>()
             .AddView<ApplyControlView, IApplyControlViewModel>()
             .AddView<FileTreeNodeView, IFileTreeNodeViewModel>()
             .AddView<ApplyDiffView, IApplyDiffViewModel>()
