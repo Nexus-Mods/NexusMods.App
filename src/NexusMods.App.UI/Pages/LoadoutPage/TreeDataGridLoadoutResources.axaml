@@ -156,6 +156,27 @@
                             </controls:ComponentControl.ComponentTemplate>
                         </controls:ComponentControl>
                         
+                        <!-- View mod files action -->
+                        <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
+                            <controls:ComponentControl.ComponentTemplate>
+                                <controls:ComponentTemplate x:TypeArguments="controls:SharedComponents+ViewModFilesAction"
+                                                            ComponentKey="{x:Static local:LoadoutColumns+EnabledState.ViewModFilesComponentKey}">
+                                    <controls:ComponentTemplate.DataTemplate>
+                                        <DataTemplate DataType="{x:Type controls:SharedComponents+ViewModFilesAction}">
+                                            <navigation:NavigationMenuItem Header="{x:Static resources:Language.LoadoutGridView__View_Files}" 
+                                                      Command="{CompiledBinding Command}"
+                                                      IsEnabled="{CompiledBinding IsEnabled.Value}"
+                                                      ToolTip.Tip="{x:Static resources:Language.LoadoutGridView__View_Files_ToolTip}">
+                                                <MenuItem.Icon>
+                                                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.Folder}" />
+                                                </MenuItem.Icon>
+                                            </navigation:NavigationMenuItem>
+                                        </DataTemplate>
+                                    </controls:ComponentTemplate.DataTemplate>
+                                </controls:ComponentTemplate>
+                            </controls:ComponentControl.ComponentTemplate>
+                        </controls:ComponentControl>
+                        
                         <!-- Uninstall item action -->
                         <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
                             <controls:ComponentControl.ComponentTemplate>

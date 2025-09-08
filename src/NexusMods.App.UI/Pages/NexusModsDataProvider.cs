@@ -342,6 +342,7 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
             LoadoutDataProviderHelper.AddEnabledStateToggle(_connection, parentItemModel, linkedItemsObservable);
             LoadoutDataProviderHelper.AddLoadoutItemIds(parentItemModel, linkedItemsObservable);
             LoadoutDataProviderHelper.AddViewModPageActionComponent(parentItemModel, isEnabled: true);
+            LoadoutDataProviderHelper.AddViewModFilesActionComponent(parentItemModel, linkedItemsObservable);
             LoadoutDataProviderHelper.AddUninstallItemComponent(parentItemModel, linkedItemsObservable);
 
             return parentItemModel;
