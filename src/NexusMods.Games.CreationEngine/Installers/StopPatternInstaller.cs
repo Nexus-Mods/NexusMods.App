@@ -16,60 +16,73 @@ namespace NexusMods.Games.CreationEngine.Installers;
 /// This is mostly a reimplementation of the Vortex Stop Pattern Installer, once this code has enough unit tests, the code
 /// can be cleaned up and improved 
 /// </summary>
-public class StopPatternInstaller : ALibraryArchiveInstaller
+public class StopPatternInstaller(IServiceProvider serviceProvider) : ALibraryArchiveInstaller(serviceProvider, serviceProvider.GetRequiredService<ILogger<FallbackInstaller>>())
 {
 #region Customizable Properties
 
     /// <summary>
-    /// The gameId this installer is for.
+    /// Unique identifier for the game this installer handles (e.g. Skyrim SE = 1704).
+    /// Required property that must be set when configuring the installer.
     /// </summary>
     public required GameId GameId { get; init; }
     
     /// <summary>
-    /// The default installation folder for the game (often {Game}/Data)
+    /// Defines where mod data files should be installed, typically in the game's "Data" folder.
+    /// Defaults to {Game}/Data directory. Used as the base installation path for most mod files.
     /// </summary>
-    public GamePath PluginPath { get; init; } = new(LocationId.Game, "Data");
+    public GamePath DataPath { get; init; } = new(LocationId.Game, "Data");
     
     /// <summary>
-    /// The root folder for the game's engine files.'
+    /// Defines the root game folder path where engine-related files (like script extenders) should be installed.
+    /// Defaults to the base game folder. Used for files that need to be installed alongside the game executable.
     /// </summary>
     public GamePath EnginePath { get; init; } = new(LocationId.Game, RelativePath.Empty);
 
     /// <summary>
-    /// The name of the folder that will contain the plugin files, used to detect data/data patterns in
-    /// mods.
+    /// The name of the data folder used for plugin/mod files, defaults to "Data".
+    /// Used to detect and handle mods that may have nested "Data/Data" folder structures.
     /// </summary>
-    public string PluginFolderName { get; init; } = "Data";
+    public string DataFolderName { get; init; } = "Data";
     
     /// <summary>
-    /// Known aliases for the game folder
+    /// Array of common folder names used for the game installation.
+    /// Required property listing known alternative names for the game folder (e.g. ["Skyrim Special Edition", "SkyrimSE"]).
+    /// Used to properly handle mods packaged with different game folder names.
     /// </summary>
     public required string[] GameFolders { get; init; }
     
     /// <summary>
-    /// The folder names that are considered "top level", and trigger the installer to put these folders in the plugin folder.
+    /// Array of folder names that should be installed directly in the game's data folder.
+    /// Required property listing directories like "meshes", "textures", etc.
+    /// When these folders are found at the root of a mod, their contents are installed to Data/.
     /// </summary>
     public required string[] TopLevelDirs { get; init; }
     
     /// <summary>
-    /// Regex patterns that match the folder names that are considered "top level". Files matching these patterns
-    /// will be moved into the plugin folder and everything else under that folder will be copied as-is
+    /// Array of regex patterns identifying folders that should be installed to the data directory.
+    /// Required property used to match folder names that should trigger installation to the Data folder.
+    /// Supplements TopLevelDirs with more complex pattern matching.
     /// </summary>
     public required string[] StopPatterns { get; init; }
     
     /// <summary>
-    /// Files that match these patterns will be copied into the game's root folder and the mod will be assumed to be
-    /// an "engine" extension/hook library
+    /// Array of regex patterns identifying files that should be installed to the game's root folder.
+    /// Required property used to match engine files like script extenders.
+    /// Files matching these patterns are installed to the base game folder instead of the Data folder.
     /// </summary>
     public required string[] EngineFiles { get; init; }
     
     /// <summary>
-    /// Files with these extensions can ever go into `Data`, so we'll assume they are plugins.
+    /// Array of file extensions that indicate plugin files.
+    /// Defaults to [.esm, .esp, .esl] for Creation Engine games.
+    /// Used to identify and properly handle plugin files during installation.
     /// </summary>
     public Extension[] PluginLikeExtensions { get; init; } = [KnownCEExtensions.ESM, KnownCEExtensions.ESP, KnownCEExtensions.ESL];
     
     /// <summary>
-    /// Files with these extensions can ever go into `Data`, so we'll assume they are archives.' 
+    /// Array of file extensions that indicate archive files.
+    /// Defaults to [.bsa, .ba2] for Creation Engine games.
+    /// Used to identify and properly handle archive files during installation.
     /// </summary>
     public Extension[] ArchiveLikeExtensions { get; init; } = [KnownCEExtensions.BSA, KnownCEExtensions.BA2];
 
@@ -85,16 +98,12 @@ public class StopPatternInstaller : ALibraryArchiveInstaller
     private RelativePath[] _topLevelPaths = null!;
 
 
-    public StopPatternInstaller(IServiceProvider serviceProvider) : base(serviceProvider, serviceProvider.GetRequiredService<ILogger<FallbackInstaller>>())
-    {
-    }
-
     /// <summary>
-    /// Optimizes the installer given the settings. 
+    /// Optimizes the installer given the settings, must be called before the installer can be used.
     /// </summary>
     public StopPatternInstaller Build()
     {
-        _dataPrefix = RelativePath.FromUnsanitizedInput(PluginFolderName);
+        _dataPrefix = RelativePath.FromUnsanitizedInput(DataFolderName);
         _gameFolders = GameFolders.Select(g => RelativePath.FromUnsanitizedInput(g)).ToArray();
         _engineFiles = CombineRegexes(EngineFiles);
         _topLevelPaths = TopLevelDirs.Select(t => RelativePath.FromUnsanitizedInput(t)).ToArray();
@@ -154,7 +163,7 @@ public class StopPatternInstaller : ALibraryArchiveInstaller
             
             var rel = StripLeadingData(file.Path.RelativeTo(rootPrefix));
 
-            var targetBase = _engineFiles.IsMatch(rel.ToString()) ? EnginePath : PluginPath;
+            var targetBase = _engineFiles.IsMatch(rel.ToString()) ? EnginePath : DataPath;
 
             var target = new GamePath(targetBase.LocationId, targetBase.Path / rel);
             
