@@ -68,33 +68,35 @@ public abstract class AGameLocator<TGameType, TId, TGame, TParent> : IGameLocato
                     Logger.LogError("While looking for games: {Error}", error);
             }
 
-#if DEBUG
-            // Temporary hack to make it easy for contributors. To be removed in the future..
             foreach (var cachedGame in _cachedGames)
             {
                 switch (cachedGame.Value)
                 {
                     case XboxGame xb:
-                        Logger.LogDebug($"Found Xbox Game: {xb.Id}, {xb.DisplayName}");
+                        Logger.LogInformation($"Found Xbox Game: {xb.Id}, {xb.DisplayName}");
                         break;
                     case SteamGame st:
-                        Logger.LogDebug($"Found Steam Game: {st.AppId}, {st.Name}");
+                        Logger.LogInformation($"Found Steam Game: {st.AppId}, {st.Name}");
                         break;
                     case EGSGame eg:
                         Logger.LogDebug($"Found Epic Game: {eg.CatalogItemId}, {eg.DisplayName}");
                         break;
                     case GOGGame gog:
-                        Logger.LogDebug($"Found GOG Galaxy Game: {gog.Id}, {gog.Name}");
+                        Logger.LogInformation($"Found GOG Galaxy Game: {gog.Id}, {gog.Name}");
                         break;
                     case OriginGame og:
-                        Logger.LogDebug($"Found Origin Game: {og.Id}, {og.InstallPath}");
+                        Logger.LogInformation($"Found Origin Game: {og.Id}, {og.InstallPath}");
                         break;
                     case EADesktopGame ea:
-                        Logger.LogDebug($"Found EA Desktop Game: {ea.EADesktopGameId}, {ea.BaseInstallPath}");
+                        Logger.LogInformation($"Found EA Desktop Game: {ea.EADesktopGameId}, {ea.BaseInstallPath}");
                         break;
                 }
+                var metadata = CreateMetadata(cachedGame.Value, _cachedGames.Values);
+                foreach (var id in metadata.ToLocatorIds())
+                {
+                    Logger.LogInformation($" - ID: {id}");
+                }
             }
-#endif
         }
 
         foreach (var id in Ids(tg))
