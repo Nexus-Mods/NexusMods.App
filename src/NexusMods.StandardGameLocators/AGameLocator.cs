@@ -79,7 +79,7 @@ public abstract class AGameLocator<TGameType, TId, TGame, TParent> : IGameLocato
                         Logger.LogInformation($"Found Steam Game: {st.AppId}, {st.Name}");
                         break;
                     case EGSGame eg:
-                        Logger.LogDebug($"Found Epic Game: {eg.CatalogItemId}, {eg.DisplayName}");
+                        Logger.LogInformation($"Found Epic Game: {eg.CatalogItemId}, {eg.DisplayName}");
                         break;
                     case GOGGame gog:
                         Logger.LogInformation($"Found GOG Galaxy Game: {gog.Id}, {gog.Name}");
