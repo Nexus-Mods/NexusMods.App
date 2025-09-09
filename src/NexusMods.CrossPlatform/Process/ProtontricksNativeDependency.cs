@@ -82,7 +82,7 @@ public class ProtontricksNativeDependency : ExecutableRuntimeDependency, IProton
     {
         var args = $"--appid {appId} \"{command.TargetFilePath}\" {command.Arguments}";
         return ValueTask.FromResult(new Command("protontricks-launch", args, 
-            command.WorkingDirPath, command.Credentials, command.EnvironmentVariables, 
+            command.WorkingDirPath, command.ResourcePolicy, command.Credentials, command.EnvironmentVariables, 
             command.Validation, command.StandardInputPipe, command.StandardOutputPipe, command.StandardErrorPipe));
     }
 }
