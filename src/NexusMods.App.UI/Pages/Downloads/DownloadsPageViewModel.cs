@@ -14,6 +14,8 @@ public class DownloadsPageViewModel : APageViewModel<IDownloadsPageViewModel>, I
     private readonly IDownloadsService _downloadsService;
 
     [Reactive] public int SelectionCount { get; private set; } = 0;
+    
+    [Reactive] public bool IsEmptyStateActive { get; set; } = true;
 
     public ReactiveCommand<Unit> PauseAllCommand { get; }
     public ReactiveCommand<Unit> ResumeAllCommand { get; }

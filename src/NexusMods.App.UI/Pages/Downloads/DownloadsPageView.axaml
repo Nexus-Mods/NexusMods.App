@@ -35,6 +35,7 @@
 
             <!-- Main content with empty state -->
             <controls:EmptyState Grid.Row="1"
+                                 IsActive="{Binding IsEmptyStateActive}"
                                  Header="{x:Static resources:Language.InProgress_NoDownloadsTextBlock}">
                 <controls:EmptyState.Subtitle>
                     <StackPanel Orientation="Vertical" Spacing="16">

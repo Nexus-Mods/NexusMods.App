@@ -9,4 +9,5 @@ public interface IDownloadsPageViewModel : IPageViewModelInterface
     public ReactiveCommand<Unit> PauseAllCommand { get; }
     public ReactiveCommand<Unit> ResumeAllCommand { get; }
     public ReactiveCommand<Unit> CancelSelectedCommand { get; }
+    public bool IsEmptyStateActive { get; set; }
 }

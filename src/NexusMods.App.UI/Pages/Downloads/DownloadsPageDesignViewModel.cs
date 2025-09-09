@@ -9,6 +9,8 @@ namespace NexusMods.App.UI.Pages.Downloads;
 public class DownloadsPageDesignViewModel : APageViewModel<IDownloadsPageViewModel>, IDownloadsPageViewModel
 {
     public int SelectionCount => 5;
+    
+    public bool IsEmptyStateActive { get; set; } = true;
 
     public ReactiveCommand<Unit> PauseAllCommand { get; } = new ReactiveCommand();
     public ReactiveCommand<Unit> ResumeAllCommand { get; } = new ReactiveCommand();
