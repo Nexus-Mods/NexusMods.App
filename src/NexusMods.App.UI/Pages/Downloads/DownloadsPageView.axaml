@@ -39,7 +39,7 @@
                                  Header="{x:Static resources:Language.InProgress_NoDownloadsTextBlock}">
                 <controls:EmptyState.Subtitle>
                     <StackPanel Orientation="Vertical" Spacing="16">
-                        <TextBlock Text="Download management will be available in future updates." />
+                        <TextBlock Text="Download management will be available in the next update." />
                     </StackPanel>
                 </controls:EmptyState.Subtitle>
             </controls:EmptyState>
