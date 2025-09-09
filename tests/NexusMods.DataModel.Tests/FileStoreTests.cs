@@ -1,3 +1,4 @@
+using System.Text;
 using DynamicData.Kernel;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,6 +10,7 @@ using NexusMods.Hashing.xxHash3;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using NexusMods.Sdk.FileStore;
+using NexusMods.Sdk.IO;
 using Xunit.Abstractions;
 
 namespace NexusMods.DataModel.Tests;
@@ -67,5 +69,16 @@ public class FileStoreTests : ACyberpunkIsolatedGameTest<FileStoreTests>
             var dataFileBCheckedHashAfter = await dataFileBStreamAfter.xxHash3Async();
             dataFileBCheckedHashAfter.Should().Be(dataFileBHashBefore, "Hash should be the same after changing A");
         }
+    }
+
+    [Fact]
+    public async Task Test_ArchiveValidation()
+    {
+        var bytes = "Hello World"u8.ToArray();
+        var ms = new MemoryStream(buffer: bytes);
+        var entry = new ArchivedFileEntry(new MemoryStreamFactory("", ms), Hash: Hash.Zero, Size.FromLong(ms.Length));
+
+        var act = async () => await _fileStore.BackupFiles([entry], deduplicate: false);
+        await act.Should().ThrowAsync<KeyNotFoundException>(because: "file requested to be backed up doesn't exist in the archive due to bad hash");
     }
 }
