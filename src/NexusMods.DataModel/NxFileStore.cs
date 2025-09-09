@@ -229,12 +229,6 @@ public class NxFileStore : IFileStore
     }
 
     /// <inheritdoc />
-    public Task BackupFiles(string archiveName, IEnumerable<ArchivedFileEntry> files, CancellationToken cancellationToken = default)
-    {
-        return BackupFiles(files, deduplicate: true, cancellationToken);
-    }
-    
-    /// <inheritdoc />
     public async Task ExtractFiles(IEnumerable<(Hash Hash, AbsolutePath Dest)> files, CancellationToken token = default, Action<(int Current, int Max)>? progressUpdater = null)
     {
         using var lck = _lock.ReadLock();

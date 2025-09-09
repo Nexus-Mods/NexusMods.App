@@ -2,6 +2,7 @@ using System.Collections.Concurrent;
 using System.Collections.Frozen;
 using System.Diagnostics;
 using System.Security.Cryptography;
+using Avalonia.Controls.Primitives;
 using DynamicData.Kernel;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
@@ -378,6 +379,17 @@ public class InstallCollectionDownloadJob : IJobDefinitionWithStart<InstallColle
         )).ToArray();
 
         await FileStore.BackupFiles(archivedFileEntries, deduplicate: true, token: cancellationToken);
+
+        if (ApplicationConstants.IsDebug)
+        {
+            foreach (var result in results)
+            {
+                var (patchedFile, _) = result;
+                var hash = patchedFile.PatchedFileHashes.XxHash3;
+                var hasFile = await FileStore.HaveFile(hash);
+                Debug.Assert(hasFile, "expected the file store to have the file it just backed up...");
+            }
+        }
 
         return results.Select(static x => x.Item1).ToArray();
     }
