@@ -45,7 +45,7 @@ using DiskState = Entities<DiskStateEntry.ReadOnly>;
 public class ALoadoutSynchronizer : ILoadoutSynchronizer
 {
     private readonly ScopedAsyncLock _lock = new();
-    private readonly IFileStore _fileStore;
+    protected readonly IFileStore FileStore;
 
     protected readonly ILogger Logger;
     private readonly IOSInformation _os;
@@ -85,7 +85,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         _fileHashService = fileHashService;
 
         Logger = logger;
-        _fileStore = fileStore;
+        FileStore = fileStore;
         _sorter = sorter;
         Connection = conn;
         _os = os;
@@ -823,7 +823,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         
         if (toExtract.Count > 0)
         {
-            await _fileStore.ExtractFiles(toExtract, CancellationToken.None, UpdateStatus);
+            await FileStore.ExtractFiles(toExtract, CancellationToken.None, UpdateStatus);
 
             var isUnix = _os.IsUnix();
             foreach (var (gamePath, node) in groupings)
@@ -1034,7 +1034,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     /// </summary>
     protected bool HaveArchive(Hash hash)
     {
-        return _fileStore.HaveFile(hash).Result;
+        return FileStore.HaveFile(hash).Result;
     }
     
     /// <summary>
@@ -1285,7 +1285,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 var path = installation.LocationsRegister.GetResolvedPath(gamePath);
                 Debug.Assert(node.HaveDisk, "Node must have a disk entry to backup");
                 
-                if (await _fileStore.HaveFile(node.Disk.Hash))
+                if (await FileStore.HaveFile(node.Disk.Hash))
                     return;
                 
                 var archivedFile = new ArchivedFileEntry
@@ -1302,7 +1302,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         );
 
         // PERFORMANCE: We deduplicate above with the HaveFile call.
-        await _fileStore.BackupFiles(archivedFiles, deduplicate: false);
+        await FileStore.BackupFiles(archivedFiles, deduplicate: false);
 
         // Pin the files to avoid garbage collection.
         using var tx = Connection.BeginTransaction();
