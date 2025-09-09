@@ -2,6 +2,7 @@ using System.Collections.Concurrent;
 using System.Text.Json;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Cli;
+using NexusMods.Abstractions.Jobs;
 using NexusMods.Sdk.Hashes;
 using NexusMods.Abstractions.Steam;
 using NexusMods.Abstractions.Steam.DTOs;
@@ -147,10 +148,15 @@ public static class Verbs
                 if (existingHashes.Contains(file.Hash))
                     return;
                 
+                await using var progressTask = await renderer.StartProgressTask($"Hashing {file.Path}", maxValue: file.Size.Value);
                 await using var stream = session.GetFileStream(appId, manifest, file.Path);
-                MultiHasher hasher = new();
-                await using var task = await renderer.StartProgressTask($"Hashing {file.Path}", maxValue: file.Size.Value);
-                var multiHash = await hasher.HashStream(stream, token, async size => await task.Increment(size.Value));
+                await using var progressWrapper = new StreamProgressWrapper<ProgressTask>(stream, state: progressTask, notifyWritten: static (progressTask, values) =>
+                {
+                    var (current, _) = values;
+                    var task = progressTask.Increment(current.Value);
+                });
+
+                var multiHash = await MultiHasher.HashStream(stream, cancellationToken: token);
 
                 var fileName = multiHash.XxHash3 + ".json";
                 var path = output / "hashes" / fileName[2..4] / fileName[2..];

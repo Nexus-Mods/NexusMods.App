@@ -6,6 +6,7 @@ using NexusMods.Abstractions.Cli;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.GameLocators.Stores.EGS;
 using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
@@ -65,10 +66,16 @@ public static class IndexEpicGame
             await Parallel.ForEachAsync(location.EnumerateFiles(), token, async (file, token) =>
                 {
                     var relPath = file.RelativeTo(location);
-                    await using var tsk = await renderer.StartProgressTask(relPath.ToString(), maxValue: file.FileInfo.Size.Value);
-                    var multiHasher = new MultiHasher();
+
+                    await using var progressTask = await renderer.StartProgressTask(relPath.ToString(), maxValue: file.FileInfo.Size.Value);
                     await using var stream = file.Read();
-                    var result = await multiHasher.HashStream(stream, token, async s => await tsk.Increment(s.Value));
+                    await using var progressWrapper = new StreamProgressWrapper<ProgressTask>(stream, state: progressTask, notifyWritten: static (progressTask, values) =>
+                    {
+                        var (current, _) = values;
+                        var task = progressTask.Increment(current.Value);
+                    });
+
+                    var result = await MultiHasher.HashStream(stream, cancellationToken: token);
                     hashes[relPath] = result;
                 }
             );
