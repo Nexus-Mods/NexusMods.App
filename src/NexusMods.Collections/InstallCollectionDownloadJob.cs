@@ -428,8 +428,7 @@ public class InstallCollectionDownloadJob : IJobDefinitionWithStart<InstallColle
     {
         await using var inputStream = await FileStore.GetFileStream(fileToPatch.Hash, token: cancellationToken);
 
-        var hasher = new MultiHasher();
-        var originalFileHashes = await hasher.HashStream(inputStream, token: cancellationToken);
+        var originalFileHashes = await (new MultiHasher()).HashStream(inputStream, token: cancellationToken);
         if (originalFileHashes.Crc32 != expectedHash.Value) throw new InvalidOperationException("The source file's CRC32 hash does not match the expected hash.");
 
         inputStream.Position = 0;
@@ -438,7 +437,7 @@ public class InstallCollectionDownloadJob : IJobDefinitionWithStart<InstallColle
         PatchFile(inputStream, patchData, outputStream);
 
         outputStream.Position = 0;
-        var patchedFileHashes = await hasher.HashStream(outputStream, token: cancellationToken);
+        var patchedFileHashes = await (new MultiHasher()).HashStream(outputStream, token: cancellationToken);
 
         return (originalFileHashes, patchedFileHashes);
     }
