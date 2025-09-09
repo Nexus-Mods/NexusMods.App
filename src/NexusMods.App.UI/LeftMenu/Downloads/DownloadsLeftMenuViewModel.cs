@@ -108,7 +108,7 @@ public class DownloadsLeftMenuViewModel : AViewModel<IDownloadsLeftMenuViewModel
         };
 
         // Load game icon asynchronously
-        Observable.FromAsync(() => ImageHelper.LoadGameIconAsync((IGame)gameInstallation.Game, logger))
+        Observable.FromAsync(() => ImageHelper.LoadGameIconAsync((IGame)gameInstallation.Game, (int)ImageSizes.LeftMenuIcon.Width, logger))
             .ObserveOn(RxApp.MainThreadScheduler)
             .Subscribe(bitmap => viewModel.Icon = ImageHelper.CreateIconValueFromBitmap(bitmap, IconValues.FolderEditOutline));
 

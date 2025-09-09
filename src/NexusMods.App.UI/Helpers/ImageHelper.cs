@@ -14,9 +14,10 @@ public static class ImageHelper
     /// Loads a game icon as a Bitmap from the game's icon stream.
     /// </summary>
     /// <param name="game">The game to load the icon for.</param>
+    /// <param name="width">The width to decode the image to.</param>
     /// <param name="logger">Logger for error handling.</param>
     /// <returns>A Bitmap if successful, null otherwise.</returns>
-    public static async Task<Bitmap?> LoadGameIconAsync(IGame? game, ILogger logger)
+    public static async Task<Bitmap?> LoadGameIconAsync(IGame? game, int width, ILogger logger)
     {
         if (game is null)
             return null;
@@ -24,7 +25,7 @@ public static class ImageHelper
         try
         {
             await using var iconStream = await game.Icon.GetStreamAsync();
-            return Bitmap.DecodeToWidth(iconStream, (int)ImageSizes.GameThumbnail.Width);
+            return Bitmap.DecodeToWidth(iconStream, width);
         }
         catch (Exception ex)
         {

@@ -30,7 +30,7 @@ public class MiniGameWidgetViewModel : AViewModel<IMiniGameWidgetViewModel>, IMi
             .WhenAnyValue(vm => vm.Game)
             .Where(game => game is not null)
             .OffUi()
-            .SelectMany(game => ImageHelper.LoadGameIconAsync(game, _logger))
+            .SelectMany(game => ImageHelper.LoadGameIconAsync(game, (int)ImageSizes.GameThumbnail.Width, _logger))
             .WhereNotNull()
             .ToProperty(this, vm => vm.Image, scheduler: RxApp.MainThreadScheduler);
 
