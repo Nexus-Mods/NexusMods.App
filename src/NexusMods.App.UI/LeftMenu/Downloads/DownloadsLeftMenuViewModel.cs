@@ -5,13 +5,15 @@ using DynamicData;
 using DynamicData.Binding;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls;
+using NexusMods.App.UI.Helpers;
 using NexusMods.App.UI.LeftMenu.Items;
 using NexusMods.App.UI.Pages.Downloads;
 using NexusMods.App.UI.Resources;
-
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.UI.Sdk.Icons;
 using ReactiveUI;
@@ -28,12 +30,15 @@ public class DownloadsLeftMenuViewModel : AViewModel<IDownloadsLeftMenuViewModel
     private ReadOnlyObservableCollection<ILeftMenuItemViewModel> _leftMenuItemsPerGameDownloads = new([]);
     public ReadOnlyObservableCollection<ILeftMenuItemViewModel> LeftMenuItemsPerGameDownloads => _leftMenuItemsPerGameDownloads;
 
+    private readonly ILogger<DownloadsLeftMenuViewModel> _logger;
+
     public DownloadsLeftMenuViewModel(
         WorkspaceId workspaceId,
         IWorkspaceController workspaceController,
         IServiceProvider serviceProvider)
     {
         WorkspaceId = workspaceId;
+        _logger = serviceProvider.GetRequiredService<ILogger<DownloadsLeftMenuViewModel>>();
 
         var gameRegistry = serviceProvider.GetRequiredService<IGameRegistry>();
 
@@ -72,7 +77,7 @@ public class DownloadsLeftMenuViewModel : AViewModel<IDownloadsLeftMenuViewModel
         {
             gameRegistry.InstalledGames
                 .ToObservableChangeSet()
-                .Transform(gameInstallation => CreatePerGameDownloadItem(gameInstallation, workspaceController, workspaceId))
+                .Transform(gameInstallation => CreatePerGameDownloadItem(gameInstallation, workspaceController, workspaceId, _logger))
                 .DisposeMany()
                 .OnUI()
                 .Bind(out _leftMenuItemsPerGameDownloads)
@@ -84,10 +89,11 @@ public class DownloadsLeftMenuViewModel : AViewModel<IDownloadsLeftMenuViewModel
     private static ILeftMenuItemViewModel CreatePerGameDownloadItem(
         GameInstallation gameInstallation,
         IWorkspaceController workspaceController,
-        WorkspaceId workspaceId)
+        WorkspaceId workspaceId,
+        ILogger<DownloadsLeftMenuViewModel> logger)
     {
         // TODO: Replace with proper game-specific context when per-game filtering is implemented
-        return new LeftMenuItemViewModel(
+        var viewModel = new LeftMenuItemViewModel(
             workspaceController,
             workspaceId,
             new PageData
@@ -98,7 +104,14 @@ public class DownloadsLeftMenuViewModel : AViewModel<IDownloadsLeftMenuViewModel
         )
         {
             Text = new StringComponent(string.Format(Language.DownloadsLeftMenu_GameSpecificDownloads, gameInstallation.Game.Name)),
-            Icon = IconValues.FolderEditOutline,
+            Icon = IconValues.FolderEditOutline, // Initial fallback icon
         };
+
+        // Load game icon asynchronously
+        Observable.FromAsync(() => ImageHelper.LoadGameIconAsync((IGame)gameInstallation.Game, logger))
+            .ObserveOn(RxApp.MainThreadScheduler)
+            .Subscribe(bitmap => viewModel.Icon = ImageHelper.CreateIconValueFromBitmap(bitmap, IconValues.FolderEditOutline));
+
+        return viewModel;
     }
 }
