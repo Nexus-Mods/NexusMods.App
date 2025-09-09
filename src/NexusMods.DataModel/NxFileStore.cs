@@ -106,19 +106,18 @@ public class NxFileStore : IFileStore
     /// Accesses the new archive's header to get the list of files
     /// Uses a lock-free compare-and-swap approach to handle concurrent updates to the caches
     /// </summary>
-    private void AddArchiveToCache(AbsolutePath archivePath)
+    private void AddArchiveToCache(AbsolutePath archivePath, Dictionary<Hash, (ArchivedFileEntry, Stream)> filesToBackup)
     {
         // Read the new archive's header
         using var stream = archivePath.Read();
         var provider = new FromStreamProvider(stream);
         var header = HeaderParser.ParseHeader(provider);
-        
-        var entries = new Dictionary<Hash, FileEntry>();
-        foreach (var entry in header.Entries)
-            entries[Hash.From(entry.Hash)] = entry;
-        
+
+        var entries = header.Entries.ToFrozenDictionary(x => Hash.From(x.Hash), x => x);
+        ArchiveValidation(entries, filesToBackup);
+
         var info = archivePath.FileInfo;
-        var newArchive = new ArchiveContents(archivePath, info.Size, info.LastWriteTimeUtc, entries.ToFrozenDictionary());
+        var newArchive = new ArchiveContents(archivePath, info.Size, info.LastWriteTimeUtc, entries);
         
         // Use compare-and-swap with retry to handle concurrent updates
         while (true)
@@ -149,60 +148,84 @@ public class NxFileStore : IFileStore
         }
     }
 
+    private static void ArchiveValidation(FrozenDictionary<Hash, FileEntry> actualFiles, Dictionary<Hash, (ArchivedFileEntry, Stream)> expectedFiles)
+    {
+        // NOTE(erri120): If you land here, congratulation you just made an invalid archive. Reasons why this might happen:
+        // - Hashes don't match, the hash for a file was calculated wrong
+        if (actualFiles.Count != expectedFiles.Count) throw new InvalidOperationException($"Expected created archive to contain {expectedFiles.Count} files but found {actualFiles.Count}");
+
+        foreach (var kv in expectedFiles)
+        {
+            if (!actualFiles.ContainsKey(kv.Key)) throw new KeyNotFoundException($"Expected created archive to contain file {kv.Key}");
+        }
+
+        foreach (var kv in actualFiles)
+        {
+            if (!expectedFiles.ContainsKey(kv.Key)) throw new InvalidOperationException($"Unknown file found in created archive, files wasn't requested to be backed up: {kv.Key}");
+        }
+    }
+
     /// <inheritdoc />
     public ValueTask<bool> HaveFile(Hash hash) => ValueTask.FromResult(_archivesByEntry.ContainsKey(hash));
 
     /// <inheritdoc />
-    public async Task BackupFiles(IEnumerable<ArchivedFileEntry> backups, bool deduplicate = true, CancellationToken token = default)
+    public async Task BackupFiles(IEnumerable<ArchivedFileEntry> enumerable, bool deduplicate = true, CancellationToken token = default)
     {
-        var builder = new NxPackerBuilder();
-        var distinct = backups.DistinctBy(d => d.Hash).ToArray();
-
-        if (distinct.Length == 0)
-            return;
-
         // NOTE(AL12rs): We take a read lock here to prevent write access to the archives being read
         // While this is also creating an archive, we don't take the write lock, as the archive new and thus not known yet
-        using (_lock.ReadLock())
+        using var _ = _lock.ReadLock();
+
+        var builder = new NxPackerBuilder();
+        Dictionary<Hash, (ArchivedFileEntry, Stream)> filesToBackup;
+
+        enumerable = enumerable.DistinctBy(x => x.Hash);
+        if (deduplicate)
         {
-            var streams = new List<Stream>();
-            foreach (var backup in distinct)
-            {
-                if (deduplicate && await HaveFile(backup.Hash))
-                    continue;
-
-                var stream = await backup.StreamFactory.GetStreamAsync();
-                streams.Add(stream);
-                builder.AddFile(stream, new AddFileParams
-                {
-                    RelativePath = backup.Hash.ToHex(),
-                });
-            }
-        
-            // If we already have all the files (HaveFile), there is nothing to back up.
-            if (streams.Count == 0)
-                return;
-
-            _logger.LogDebug("Backing up {Count} files of {Size} in size", distinct.Length, distinct.Sum(s => s.Size));
-            var guid = Guid.NewGuid();
-            var id = guid.ToString();
-            var outputPath = _archiveLocations.First().Combine(id).AppendExtension(KnownExtensions.Tmp);
-
-            await using (var outputStream = outputPath.Create())
-            {
-                builder.WithOutput(outputStream);
-                builder.Build();
-            }
-
-            foreach (var stream in streams)
-                await stream.DisposeAsync();
-
-            var finalPath = outputPath.ReplaceExtension(KnownExtensions.Nx);
-
-            await outputPath.MoveToAsync(finalPath, token: token);
-            
-            AddArchiveToCache(finalPath);
+            filesToBackup = await enumerable
+                .ToAsyncEnumerable()
+                .WhereAwait(async x => !(await HaveFile(x.Hash)))
+                .ToDictionaryAsync(fileToBackUp => fileToBackUp.Hash, fileToBackUp => (fileToBackUp, Stream.Null), cancellationToken: token);
         }
+        else
+        {
+            filesToBackup = enumerable.ToDictionary(fileToBackUp => fileToBackUp.Hash, fileToBackUp => (fileToBackUp, Stream.Null));
+        }
+
+        if (filesToBackup.Count == 0) return;
+
+        foreach (var kv in filesToBackup)
+        {
+            var (hash, (fileToBackup, _)) = kv;
+
+            var stream = await fileToBackup.StreamFactory.GetStreamAsync();
+            filesToBackup[hash] = (fileToBackup, stream);
+
+            builder.AddFile(stream, new AddFileParams
+            {
+                RelativePath = fileToBackup.Hash.ToHex(),
+            });
+        }
+
+        _logger.LogDebug("Backing up {Count} files of {Size} in size", filesToBackup.Count, filesToBackup.Sum(kv => kv.Value.Item1.Size));
+        var guid = Guid.NewGuid();
+        var id = guid.ToString();
+        var outputPath = _archiveLocations.First().Combine(id).AppendExtension(KnownExtensions.Tmp);
+
+        await using (var outputStream = outputPath.Create())
+        {
+            builder.WithOutput(outputStream);
+            builder.Build();
+        }
+
+        foreach (var kv in filesToBackup)
+        {
+            await kv.Value.Item2.DisposeAsync();
+        }
+
+        var finalPath = outputPath.ReplaceExtension(KnownExtensions.Nx);
+        await outputPath.MoveToAsync(finalPath, token: token);
+
+        AddArchiveToCache(finalPath, filesToBackup);
     }
 
     /// <inheritdoc />
@@ -244,6 +267,10 @@ public class NxFileStore : IFileStore
             // Create empty files as empty
             if (file.Hash == EmptyFile)
             {
+                var parent = file.Dest.Parent;
+                if (!parent.DirectoryExists())
+                    parent.CreateDirectory();
+                
                 file.Dest.Create().Dispose();
                 return;
             }
@@ -312,7 +339,7 @@ public class NxFileStore : IFileStore
 #if DEBUG
         var processedHashes = new ConcurrentDictionary<Hash, byte>();
 #endif
-
+        
         Parallel.ForEach(filesArr, hash =>
         {
             if (hash == EmptyFile)

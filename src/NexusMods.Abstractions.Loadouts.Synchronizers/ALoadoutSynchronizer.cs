@@ -1469,7 +1469,10 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 continue;
             
             // If the minimal hash matches, then we can use the xxHash3 hash
-            diskMinimalHash ??= await MultiHasher.MinimalHash(file, token);
+            await using (var fileStream = file.Read())
+            {
+                diskMinimalHash ??= await MultiHasher.MinimalHash(fileStream, cancellationToken: token);
+            }
 
             if (hash.MinimalHash == diskMinimalHash)
             {

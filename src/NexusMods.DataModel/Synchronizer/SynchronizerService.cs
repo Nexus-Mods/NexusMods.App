@@ -173,7 +173,7 @@ public class SynchronizerService : ISynchronizerService
     public IObservable<GameSynchronizerState> StatusForGame(GameInstallMetadataId gameInstallId)
     {
         var gameState = GetOrAddGameState(gameInstallId);
-        return gameState.ObservableForProperty(s => s.Busy, skipInitial: false)
+        return gameState.ObservableForProperty(s => s.Busy, beforeChange: false, skipInitial: false)
             .Select(e => e.Value ? GameSynchronizerState.Busy : GameSynchronizerState.Idle);
     } 
     
