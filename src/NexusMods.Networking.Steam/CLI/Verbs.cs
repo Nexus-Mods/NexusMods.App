@@ -7,6 +7,7 @@ using NexusMods.Sdk.Hashes;
 using NexusMods.Abstractions.Steam;
 using NexusMods.Abstractions.Steam.DTOs;
 using NexusMods.Abstractions.Steam.Values;
+using NexusMods.Networking.Steam.Exceptions;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
 using NexusMods.Sdk.ProxyConsole;
@@ -82,31 +83,42 @@ public static class Verbs
                 {
                     await Parallel.ForEachAsync(depot.Manifests, options, async (manifestInfo, token) =>
                     {
-                        var manifest = await steamSession.GetManifestContents(steamAppId, depot.DepotId, manifestInfo.Value.ManifestId,
-                            manifestInfo.Key, token
-                        );
-
-                        var manifestPath = output / "stores" / "steam" / "manifests" / (manifest.ManifestId + ".json").ToRelativePath();
+                        try
                         {
-                            manifestPath.Parent.CreateDirectory();
-                            while (true)
+                            var manifest = await steamSession.GetManifestContents(steamAppId, depot.DepotId, manifestInfo.Value.ManifestId,
+                                manifestInfo.Key, token
+                            );
+
+                            var manifestPath = output / "stores" / "steam" / "manifests" / (manifest.ManifestId + ".json").ToRelativePath();
                             {
-                                try
+                                manifestPath.Parent.CreateDirectory();
+                                while (true)
                                 {
-                                    await using var outputStream = manifestPath.Create();
-                                    await JsonSerializer.SerializeAsync(outputStream, manifest, indentedOptions, token);
-                                    break;
-                                }
-                                catch (IOException)
-                                {
-                                    await Task.Delay(1000, token);
+                                    try
+                                    {
+                                        await using var outputStream = manifestPath.Create();
+                                        await JsonSerializer.SerializeAsync(outputStream, manifest, indentedOptions,
+                                            token
+                                        );
+                                        break;
+                                    }
+                                    catch (IOException)
+                                    {
+                                        await Task.Delay(1000, token);
+                                    }
                                 }
                             }
-                        }
 
-                        await IndexManifest(steamSession, renderer, steamAppId,
-                            output, manifest, indentedOptions,
-                            existingHashes, options);
+                            await IndexManifest(steamSession, renderer, steamAppId,
+                                output, manifest, indentedOptions,
+                                existingHashes, options
+                            );
+                        }
+                        catch (FailedToGetRequestCode ex)
+                        {
+                            await renderer.Text($"Skipping because of: {ex.Message}");
+                            return;
+                        }
                     });
                 });
             }

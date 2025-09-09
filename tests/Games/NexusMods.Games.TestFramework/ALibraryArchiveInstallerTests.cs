@@ -1,5 +1,6 @@
 using System.IO.Compression;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 using FluentAssertions;
 using NexusMods.Abstractions.GameLocators;
@@ -42,8 +43,7 @@ public abstract class ALibraryArchiveInstallerTests<TTest, TGame>(ITestOutputHel
         return await RegisterLocalArchive(file);
     }
 
-
-
+    
     protected Task<LoadoutItemGroup.ReadOnly> Install<TInstaller>(Loadout.ReadOnly loadout, LibraryArchive.ReadOnly archive)
         where TInstaller : ILibraryArchiveInstaller
     {

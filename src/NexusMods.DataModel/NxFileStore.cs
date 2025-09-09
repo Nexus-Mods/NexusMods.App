@@ -267,6 +267,10 @@ public class NxFileStore : IFileStore
             // Create empty files as empty
             if (file.Hash == EmptyFile)
             {
+                var parent = file.Dest.Parent;
+                if (!parent.DirectoryExists())
+                    parent.CreateDirectory();
+                
                 file.Dest.Create().Dispose();
                 return;
             }
@@ -335,7 +339,7 @@ public class NxFileStore : IFileStore
 #if DEBUG
         var processedHashes = new ConcurrentDictionary<Hash, byte>();
 #endif
-
+        
         Parallel.ForEach(filesArr, hash =>
         {
             if (hash == EmptyFile)
