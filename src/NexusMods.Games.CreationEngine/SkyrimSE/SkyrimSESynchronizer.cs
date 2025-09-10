@@ -22,7 +22,7 @@ public class SkyrimSESynchronizer : ACreationEngineSynchronizer
     /// (thanks to Mutagen's internal startup routines), but subsequent invocations will be fast. The routine
     /// only loads header of the file into memory.
     /// </summary>
-    public async ValueTask<ISkyrimModHeaderGetter> HeaderForPlugin(Hash hash, RelativePath? path = null)
+    public async ValueTask<(ModKey, ISkyrimModHeaderGetter)> HeaderForPlugin(Hash hash, RelativePath? path = null)
     {
         var fileName = path?.FileName.ToString() ?? "unknown.esm";
         var key = ModKey.FromFileName(fileName);
@@ -31,6 +31,6 @@ public class SkyrimSESynchronizer : ACreationEngineSynchronizer
         await using var mutagenStream = new MutagenBinaryReadStream(stream, meta);
         using var frame = new MutagenFrame(mutagenStream);
         var mod = SkyrimMod.CreateFromBinary(frame, SkyrimRelease.SkyrimSE, _headerGroupMask);
-        return mod.ModHeader;
+        return (mod.ModKey, mod.ModHeader);
     }
 }

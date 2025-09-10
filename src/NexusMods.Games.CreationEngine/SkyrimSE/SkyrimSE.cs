@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.GameLocators.GameCapabilities;
 using NexusMods.Abstractions.GameLocators.Stores.GOG;
@@ -8,6 +9,7 @@ using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Games.CreationEngine.Installers;
+using NexusMods.Games.CreationEngine.SkyrimSE.Emitters;
 using NexusMods.Games.FOMOD;
 using NexusMods.Games.Generic.Installers;
 using NexusMods.Paths;
@@ -19,10 +21,16 @@ namespace NexusMods.Games.CreationEngine.SkyrimSE;
 public partial class SkyrimSE : AGame, ISteamGame, IGogGame
 {
     private readonly IServiceProvider _serviceProvider;
+    private readonly IDiagnosticEmitter[] _emitters;
 
     public SkyrimSE(IServiceProvider provider) : base(provider)
     {
         _serviceProvider = provider;
+
+        _emitters =
+        [
+            new MissingMasterEmitter(this),
+        ];
     }
 
     public override string Name => "Skyrim Special Edition";
@@ -41,13 +49,13 @@ public partial class SkyrimSE : AGame, ISteamGame, IGogGame
     {
         return [];
     }
-    
+
     protected override ILoadoutSynchronizer MakeSynchronizer(IServiceProvider provider) => new SkyrimSESynchronizer(provider);
 
     public override SupportType SupportType => SupportType.Unsupported;
     public IEnumerable<uint> SteamIds => [489830];
-    public IEnumerable<long> GogIds => [ 1711230643 ];
-    
+    public IEnumerable<long> GogIds => [1711230643];
+
     public override IStreamFactory Icon =>
         new EmbeddedResourceStreamFactory<SkyrimSE>("NexusMods.Games.CreationEngine.Resources.SkyrimSE.thumbnail.webp");
 
@@ -56,7 +64,10 @@ public partial class SkyrimSE : AGame, ISteamGame, IGogGame
 
     [GeneratedRegex("skse64_\\d+_\\d+_\\d+", RegexOptions.IgnoreCase)]
     private static partial Regex SkseRegex();
-    
+
+
+    public override IDiagnosticEmitter[] DiagnosticEmitters => _emitters;
+
     public override ILibraryItemInstaller[] LibraryItemInstallers =>
     [
         FomodXmlInstaller.Create(_serviceProvider, new GamePath(LocationId.Game, "Data")),

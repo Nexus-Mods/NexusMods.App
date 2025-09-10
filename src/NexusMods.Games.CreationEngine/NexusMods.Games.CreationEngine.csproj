@@ -21,5 +21,8 @@
       <PackageReference Include="Mutagen.Bethesda.Fallout4" />
       <PackageReference Include="Mutagen.Bethesda.Skyrim" />
     </ItemGroup>
+    <ItemGroup>
+      <Folder Include="Emitters\" />
+    </ItemGroup>
 
 </Project>
