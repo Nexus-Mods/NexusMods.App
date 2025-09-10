@@ -43,4 +43,4 @@ public interface IInstallLoadoutItemJob : IJobDefinition<InstallLoadoutItemJobRe
 /// This is because the value is not yet available; as the transaction
 /// needs to be externally committed by the caller.
 /// </summary>
-public record struct InstallLoadoutItemJobResult(LoadoutItemGroup.ReadOnly? LoadoutItemGroup);
+public record struct InstallLoadoutItemJobResult(LoadoutItemGroup.ReadOnly? LoadoutItemGroup, LoadoutItemGroupId GroupTxId);
