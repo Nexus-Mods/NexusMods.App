@@ -153,7 +153,7 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
         ));
         
         // Collections column
-        AddRelatedCollectionsComponent(libraryItems, linkedLoadoutItemsObservable, parentItemModel);
+        AddRelatedCollectionsComponentToParent(libraryItems, linkedLoadoutItemsObservable, parentItemModel);
         
         // Update available
         var newestModPageObservable = _modUpdateService.GetNewestModPageVersionObservable(modPage);
@@ -252,7 +252,7 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
         LibraryDataProviderHelper.AddViewModPageActionComponent(itemModel);
         
         // Collections column
-        AddRelatedCollectionsComponent(libraryItem, linkedLoadoutItemsObservable, itemModel);
+        AddRelatedCollectionsComponentToChild(libraryItem, linkedLoadoutItemsObservable, itemModel);
 
         // Update available
         var newestVersionObservable = _modUpdateService
@@ -301,7 +301,7 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
         return itemModel;
     }
 
-    private void AddRelatedCollectionsComponent(
+    private void AddRelatedCollectionsComponentToChild(
         NexusModsLibraryItem.ReadOnly libraryItem,
         IObservable<IChangeSet<LoadoutItem.ReadOnly, EntityId>> linkedLoadoutItemsObservable,
         CompositeItemModel<EntityId> itemModel)
@@ -318,10 +318,10 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
             .RemoveKey()
             .StartWithEmpty();
 
-        AddRelatedCollectionsComponentCore(linkedLoadoutItemsObservable, relatedDownloadedCollectionsObservable, itemModel);
+        LibraryDataProviderHelper.AddRelatedCollectionsComponent(itemModel, linkedLoadoutItemsObservable, relatedDownloadedCollectionsObservable);
     }
 
-    private void AddRelatedCollectionsComponent(
+    private void AddRelatedCollectionsComponentToParent(
         IObservable<IChangeSet<NexusModsLibraryItem.ReadOnly, EntityId>> libraryItems,
         IObservable<IChangeSet<LoadoutItem.ReadOnly, EntityId>> linkedLoadoutItemsObservable,
         CompositeItemModel<EntityId> itemModel)
@@ -344,39 +344,7 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
             .RemoveKey()
             .StartWithEmpty();
 
-        AddRelatedCollectionsComponentCore(linkedLoadoutItemsObservable, relatedDownloadedCollectionsObservable, itemModel);
-    }
-
-    private void AddRelatedCollectionsComponentCore(
-        IObservable<IChangeSet<LoadoutItem.ReadOnly, EntityId>> linkedLoadoutItemsObservable,
-        IObservable<IChangeSet<string>> relatedDownloadedCollectionsObservable,
-        CompositeItemModel<EntityId> itemModel)
-    {
-        var installedCollectionsObservable = linkedLoadoutItemsObservable
-            .Transform(item => item.Parent.AsLoadoutItem())
-            .ChangeKey(coll => coll.Id)
-            .Distinct()
-            .Transform(collection => collection.Name)
-            .SortBy(static name => name)
-            .RemoveKey()
-            .StartWithEmpty();
-
-        // Only take downloaded entries that are not already installed
-        var filteredDownloadedCollectionsObservable = relatedDownloadedCollectionsObservable.Except(installedCollectionsObservable);
-
-        var hasCollectionsObservable = installedCollectionsObservable.IsEmpty()
-            .CombineLatest(filteredDownloadedCollectionsObservable.IsEmpty(), 
-                (installedIsEmpty, relatedIsEmpty) => !installedIsEmpty || !relatedIsEmpty)
-            .DistinctUntilChanged()
-            .ToObservable();
-
-        itemModel.AddObservable(LibraryColumns.Collections.RelatedCollectionsComponentKey,
-            hasCollectionsObservable,
-            componentFactory: () => new LibraryComponents.RelatedCollectionsComponent(
-                installedCollectionsObservable,
-                filteredDownloadedCollectionsObservable
-            )
-        );
+        LibraryDataProviderHelper.AddRelatedCollectionsComponent(itemModel, linkedLoadoutItemsObservable, relatedDownloadedCollectionsObservable);
     }
 
     private IObservable<IChangeSet<NexusModsModPageMetadata.ReadOnly, EntityId>> FilterLoadoutItems(LoadoutFilter loadoutFilter)

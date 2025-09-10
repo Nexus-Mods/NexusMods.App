@@ -90,6 +90,45 @@ public static class LibraryDataProviderHelper
         );
     }
 
+    public static void AddRelatedCollectionsComponent(
+        CompositeItemModel<EntityId> itemModel,
+        IObservable<IChangeSet<LoadoutItem.ReadOnly, EntityId>> linkedLoadoutItemsObservable)
+    {
+        AddRelatedCollectionsComponent(itemModel, linkedLoadoutItemsObservable, System.Reactive.Linq.Observable.Return(ChangeSet<string>.Empty));
+    }
+    
+    public static void AddRelatedCollectionsComponent(
+        CompositeItemModel<EntityId> itemModel,
+        IObservable<IChangeSet<LoadoutItem.ReadOnly, EntityId>> linkedLoadoutItemsObservable,
+        IObservable<IChangeSet<string>> relatedDownloadedCollectionsObservable)
+    {
+        var installedCollectionsObservable = linkedLoadoutItemsObservable
+            .Transform(item => item.Parent.AsLoadoutItem())
+            .ChangeKey(coll => coll.Id)
+            .Distinct()
+            .Transform(collection => collection.Name)
+            .SortBy(static name => name)
+            .RemoveKey()
+            .StartWithEmpty();
+
+        // Only take downloaded entries that are not already installed
+        var filteredDownloadedCollectionsObservable = relatedDownloadedCollectionsObservable.Except(installedCollectionsObservable);
+
+        var hasCollectionsObservable = installedCollectionsObservable.IsEmpty()
+            .CombineLatest(filteredDownloadedCollectionsObservable.IsEmpty(), 
+                (installedIsEmpty, relatedIsEmpty) => !installedIsEmpty || !relatedIsEmpty)
+            .DistinctUntilChanged()
+            .ToObservable();
+
+        itemModel.AddObservable(LibraryColumns.Collections.RelatedCollectionsComponentKey,
+            hasCollectionsObservable,
+            componentFactory: () => new LibraryComponents.RelatedCollectionsComponent(
+                installedCollectionsObservable,
+                filteredDownloadedCollectionsObservable
+            )
+        );
+    }
+
     public static void AddInstallActionComponent(
         CompositeItemModel<EntityId> itemModel,
         IObservable<IChangeSet<LoadoutItem.ReadOnly, EntityId>> linkedItemsObservable)
