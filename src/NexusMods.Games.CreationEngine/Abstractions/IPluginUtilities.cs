@@ -3,6 +3,9 @@ using NexusMods.Paths;
 
 namespace NexusMods.Games.CreationEngine.Abstractions;
 
+/// <summary>
+/// Utilities for CE plugin files, such as parsing headers
+/// </summary>
 public interface IPluginUtilities
 {
     /// <summary>
