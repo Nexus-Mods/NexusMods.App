@@ -312,7 +312,7 @@ public class InstallCollectionDownloadJob : IJobDefinitionWithStart<InstallColle
                 Size = patchedFile.PatchedFileHashes.Size,
             };
 
-            hashes[patchedFile.OriginalFileHashes.Md5] = hashMapping;
+            hashes[patchedFile.PatchedFileHashes.Md5] = hashMapping;
         }
 
         using var tx = Connection.BeginTransaction();
