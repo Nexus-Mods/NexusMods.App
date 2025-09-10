@@ -72,6 +72,7 @@ public class LibraryArchiveInstallerTests(ITestOutputHelper outputHelper) : AIso
     [Theory]
     [InlineData("Honeystrand Grove is an Actual Grove", 158433, 662320)]
     [InlineData("JK's Interiors Patch Collection", 35910, 549166)]
+    [Trait("RequiresNetworking", "True")]
     public async Task CanReadPluginData(string name, uint modId, uint fileId)
     {
         var extensions = new[] { KnownCEExtensions.ESM, KnownCEExtensions.ESP, KnownCEExtensions.ESL };
