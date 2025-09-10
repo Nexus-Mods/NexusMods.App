@@ -8,7 +8,7 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Games.CreationEngine.Abstractions;
 
-namespace NexusMods.Games.CreationEngine;
+namespace NexusMods.Games.CreationEngine.Emitters;
 
 public class MissingMasterEmitter : ILoadoutDiagnosticEmitter
 {
