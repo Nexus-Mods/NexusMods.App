@@ -105,9 +105,13 @@
                                             ComponentKey="{x:Static local:LibraryColumns+Collections.RelatedCollectionsComponentKey}">
                     <controls:ComponentTemplate.DataTemplate>
                         <DataTemplate DataType="{x:Type local:LibraryComponents+RelatedCollectionsComponent}">
-                                <StackPanel x:Name="CollectionsStackPanel" Orientation="Horizontal">
+                                <StackPanel x:Name="CollectionsStack" Orientation="Horizontal">
+                                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.CollectionsOutline}" 
+                                                       IsVisible="{CompiledBinding HasInstalledCollections.Value.Value}"/>
                                     <TextBlock Text="{CompiledBinding InstalledCollections.Value.Value}" />
-                                    <TextBlock Text=", " IsVisible="{CompiledBinding ShowSeparator.Value.Value}"/>
+                                    <TextBlock Text="" IsVisible="{CompiledBinding ShowSeparator.Value.Value}"/>
+                                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.Downloading}"
+                                                       IsVisible="{CompiledBinding HasDownloadedCollections.Value.Value}"/>
                                     <TextBlock Text="{CompiledBinding DownloadedCollections.Value.Value}" />
                                 </StackPanel>
                         </DataTemplate>

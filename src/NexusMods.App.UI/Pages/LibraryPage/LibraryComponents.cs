@@ -1,5 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
+using System.Reactive.Linq;
 using DynamicData;
+using DynamicData.Aggregation;
 using DynamicData.Kernel;
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Library.Models;
@@ -272,21 +274,27 @@ public static class LibraryComponents
         public StringComponent InstalledCollections { get; }
         public StringComponent DownloadedCollections { get; }
 
-        public ValueComponent<bool> ShowSeparator { get;  }
+        public ValueComponent<bool> ShowSeparator { get; }
+        public ValueComponent<bool> HasInstalledCollections { get; }
+        public ValueComponent<bool> HasDownloadedCollections { get; }
 
         public RelatedCollectionsComponent(IObservable<IChangeSet<string>> installedCollections, IObservable<IChangeSet<string>> downloadedCollections)
         {
             InstalledCollections = new StringComponent("", installedCollections.QueryWhenChanged(items => string.Join(", ", items)));
             DownloadedCollections = new StringComponent("", downloadedCollections.QueryWhenChanged(items => string.Join(", ", items)));
             
-            ShowSeparator = new ValueComponent<bool>(false, InstalledCollections.Value.AsObservable().CombineLatest(DownloadedCollections.Value.AsObservable(),
-                (installed, downloaded) => !string.IsNullOrEmpty(installed) && !string.IsNullOrEmpty(downloaded)));
+            ShowSeparator = new ValueComponent<bool>(false, installedCollections.IsNotEmpty().CombineLatest(downloadedCollections.IsNotEmpty(),
+                (hasInstalled, hasDownloaded) => hasDownloaded && hasInstalled));
+            HasInstalledCollections = new ValueComponent<bool>(false, installedCollections.IsNotEmpty());
+            HasDownloadedCollections = new ValueComponent<bool>(false, downloadedCollections.IsNotEmpty());
             
             _activationDisposable = this.WhenActivated(static (self, disposables) =>
             {
                 self.InstalledCollections.Activate().AddTo(disposables);
                 self.DownloadedCollections.Activate().AddTo(disposables);
                 self.ShowSeparator.Activate().AddTo(disposables);
+                self.HasInstalledCollections.Activate().AddTo(disposables);
+                self.HasDownloadedCollections.Activate().AddTo(disposables);
             });
         }
         
@@ -318,7 +326,7 @@ public static class LibraryComponents
             {
                 if (disposing)
                 {
-                    Disposable.Dispose(_activationDisposable, ShowSeparator, InstalledCollections);
+                    Disposable.Dispose(_activationDisposable, ShowSeparator, InstalledCollections, HasInstalledCollections, HasDownloadedCollections);
                 }
 
                 _isDisposed = true;
