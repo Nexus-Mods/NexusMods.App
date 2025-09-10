@@ -39,4 +39,9 @@
         <InternalsVisibleTo Include="NexusMods.App.GarbageCollection.DataModel.Tests"/>
         <InternalsVisibleTo Include="NexusMods.Games.TestFramework"/>
     </ItemGroup>
+
+    <ItemGroup>
+        <AdditionalFiles Include="**\*.sql" />
+        <UpToDateCheckInput Include="**\*.sql"/>
+    </ItemGroup>
 </Project>

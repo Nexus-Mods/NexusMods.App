@@ -1,107 +1,23 @@
-using System.Data.Common;
+
 using DynamicData;
 using DynamicData.Kernel;
+using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts.Rows;
+using NexusMods.Hashing.xxHash3;
 using NexusMods.HyperDuck;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.Paths;
 
 namespace NexusMods.Abstractions.Loadouts;
 
 public partial class Loadout
 {
-
-    private const string TrackedEntitiesForLoadout =
-        """
-        SELECT Id FROM mdb_LoadoutItem(Db=>$1) WHERE Loadout = $2
-        UNION ALL
-        SELECT Id FROM mdb_Loadout(Db=>$1) WHERE Id = $2
-        UNION ALL
-        SELECT sortItem.Id FROM mdb_SortOrder(Db=>$1) sortOrder
-           LEFT JOIN mdb_SortOrderItem(Db=>$1) sortItem ON sortOrder.Id = sortItem.ParentSortOrder
-           WHERE sortOrder.Loadout = $2
-        """;
-
-    private const string Revisions =
-        $"""
-        SELECT $2, MAX(d.T), COUNT(d.E) FROM 
-        ({TrackedEntitiesForLoadout}) ents
-        LEFT JOIN mdb_Datoms() d ON d.E = ents.Id
-        """;
-    
-    
-#region Enabled State Queries
-    
-    
-    private const string CollectionEnabledStateInLoadoutSql =
-        """
-        SELECT 
-            coll_table.Id AS Id, 
-            coll_table.Disabled = FALSE AS IsEnabled 
-        FROM mdb_CollectionGroup(Db=>$1) coll_table
-        
-        WHERE coll_table.Loadout = $2
-        """;
-    
-    /// <summary>
-    /// This excludes groups that are collections
-    /// </summary>
-    private const string LoadoutItemGroupEnabledStateInLoadoutSql =
-        """
-        SELECT 
-            group_table.Id AS Id, 
-            group_table.Disabled = FALSE AND COALESCE(coll_table.Disabled, FALSE) = FALSE AS IsEnabled
-        FROM mdb_LoadoutItemGroup(Db=>$1) group_table
-        LEFT JOIN mdb_CollectionGroup(Db=>$1) coll_table ON group_table.Parent = coll_table.Id
-        -- Exclude groups that are collections
-        LEFT JOIN mdb_CollectionGroup(Db=>$1) isColl_table ON group_table.Id = isColl_table.Id
-        WHERE isColl_table.Id IS NULL
-        
-        AND group_table.Loadout = $2
-        """;
-    
-    /// <summary>
-    /// This excludes items that are groups themselves.
-    /// </summary>
-    private const string LoadoutItemEnabledStateInLoadoutSql =
-        """
-        SELECT 
-            item_table.Id AS ItemId, 
-            item_table.Disabled = FALSE 
-                AND group_table.Disabled = FALSE
-                AND COALESCE(coll_table.Disabled, FALSE) = FALSE AS IsEnabled
-        FROM mdb_LoadoutItem(Db=>$1) item_table
-        JOIN mdb_LoadoutItemGroup(Db=>$1) group_table ON item_table.Parent = group_table.Id
-        LEFT JOIN mdb_CollectionGroup(Db=>$1) coll_table ON group_table.Parent = coll_table.Id
-        -- Exclude items that are groups themselves
-        LEFT JOIN mdb_LoadoutItemGroup(Db=>$1) isGroup_table ON item_table.Id = isGroup_table.Id
-        WHERE isGroup_table.Id IS NULL 
-            
-        AND item_table.Loadout = $2
-        """;
-    
-    
-#endregion Enabled State Queries
-    
-    private const string EnabledLoadoutItemWithTargetPathInLoadoutSql =
-        """
-        SELECT item_table.Id
-        FROM mdb_LoadoutItemWithTargetPath(Db=>$1) item_table
-        JOIN mdb_LoadoutItemGroup(Db=>$1) group_table 
-            ON item_table.Parent = group_table.Id
-            AND group_table.Loadout = $2
-            AND group_table.Disabled = FALSE
-        LEFT JOIN mdb_CollectionGroup(Db=>$1) coll_table 
-            ON group_table.Parent = coll_table.Id
-            AND coll_table.Loadout = $2
-        WHERE item_table.Loadout = $2
-            AND (coll_table.Disabled IS NULL OR coll_table.Disabled = FALSE)
-        """;
     
     /// <summary>
     /// Returns all mutable collection groups in a loadout.
     /// </summary>
     public static Query<(EntityId GroupId, string Name)> MutableCollections(IConnection connection, LoadoutId id) =>
-        connection.Query<(EntityId, string)>("SELECT Id, Name FROM mdb_CollectionGroup(Db=>$1) WHERE IsReadOnly = false AND Loadout = $2 ORDER BY Id", connection, id.Value);
+        connection.Query<(EntityId, string)>($"SELECT Id, Name FROM mdb_CollectionGroup(Db=>{connection}) WHERE IsReadOnly = false AND Loadout = {id} ORDER BY Id");
 
 
     /// <summary>
@@ -109,31 +25,33 @@ public partial class Loadout
     /// </summary>
     public static IObservable<Loadout.ReadOnly> RevisionsWithChildUpdates(IConnection connection, LoadoutId id)
     {
-        return connection.Query<(EntityId LoadoutID, ulong Max, long Count)>(Revisions, connection, id.Value)
-            .Observe(x => x.LoadoutID)
+        return connection.Query<(EntityId LoadoutId, ulong Max, long Count)>($"""
+                SELECT {id}, MAX(d.T), COUNT(d.E) FROM 
+                loadouts.TrackedEntitiesForLoadout({connection}, {id}) ents
+                LEFT JOIN mdb_Datoms() d ON d.E = ents.Id
+                """)
+            .Observe(x => x.LoadoutId)
             .QueryWhenChanged(_ => Loadout.Load(connection.Db, id));
     }
 
     public static Query<(EntityId CollectionId, bool IsEnabled)> CollectionEnabledStateInLoadoutQuery(IConnection connection, LoadoutId loadoutId)
     {
-        return connection.Query<(EntityId CollectionId, bool IsEnabled)>(CollectionEnabledStateInLoadoutSql, connection, loadoutId.Value);
+        return connection.Query<(EntityId CollectionId, bool IsEnabled)>($"SELECT Id, IsEnabled FROM loadouts.CollectionEnabledState({connection}, {loadoutId})");
     }
     
     public static Query<(EntityId GroupId, bool IsEnabled)> LoadoutItemGroupEnabledStateInLoadoutQuery(IConnection connection, LoadoutId loadoutId)
     {
-        return connection.Query<(EntityId GroupId, bool IsEnabled)>(LoadoutItemGroupEnabledStateInLoadoutSql, connection, loadoutId.Value);
+        return connection.Query<(EntityId GroupId, bool IsEnabled)>($"SELECT Id, IsEnabled FROM loadouts.ItemGroupEnabledState({connection}, {loadoutId})");
     }
     
     public static Query<(EntityId ItemId, bool IsEnabled)> LoadoutItemEnabledStateInLoadoutQuery(IConnection connection, LoadoutId loadoutId)
     {
-        return connection.Query<(EntityId ItemId, bool IsEnabled)>(LoadoutItemEnabledStateInLoadoutSql, connection, loadoutId.Value);
+        return connection.Query<(EntityId ItemId, bool IsEnabled)>($"SELECT Id, IsEnabled FROM loadouts.LoadoutItemEnabledState({connection}, {loadoutId})");
     }
     
-    public static IEnumerable<LoadoutItemWithTargetPath.ReadOnly> EnabledLoadoutItemWithTargetPathInLoadoutQuery(IConnection connection, IDb db, LoadoutId loadoutId)
+    public static Query<(EntityId Id, LocationId Location, RelativePath Path, Hash Hash, Size Size, bool IsDeleted)> EnabledLoadoutItemWithTargetPathInLoadoutQuery(IDb db, LoadoutId loadoutId)
     {
-        return LoadoutItemWithTargetPath.Load(
-            db,
-            connection.Query<EntityId>(EnabledLoadoutItemWithTargetPathInLoadoutSql, db, loadoutId.Value)
-        );
+        return db.Connection.Query<(EntityId, LocationId, RelativePath, Hash, Size, bool)>(
+            $"SELECT Id, TargetPath.Item2, TargetPath.Item3, Hash, Size, IsDeleted FROM loadouts.EnabledFilesWithMetadata({db}, {loadoutId})");
     }
 }

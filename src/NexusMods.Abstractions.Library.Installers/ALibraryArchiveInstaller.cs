@@ -27,6 +27,12 @@ public abstract class ALibraryArchiveInstaller : ALibraryFileInstaller, ILibrary
     /// <inheritdoc/>
     public virtual bool IsSupportedLibraryArchive(LibraryArchive.ReadOnly libraryArchive) => true;
 
+
+    /// <summary>
+    /// Returns a failure result with the provided reason.
+    /// </summary>
+    public InstallerResult FailWithReason(string reason) => new NotSupported(Reason: reason);
+
     /// <inheritdoc/>
     public override ValueTask<InstallerResult> ExecuteAsync(
         LibraryFile.ReadOnly libraryFile,

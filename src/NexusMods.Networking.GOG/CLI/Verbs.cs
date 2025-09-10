@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Cli;
 using NexusMods.Abstractions.GOG;
 using NexusMods.Abstractions.GOG.Values;
+using NexusMods.Abstractions.Jobs;
 using NexusMods.Sdk.Hashes;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.Networking.GOG.DTOs;
@@ -101,18 +102,20 @@ public static class Verbs
                             {
                                 var fullSize = item.Chunks.Sum(s => (double)s.Size.Value);
                                 {
-                                    await using var task = await renderer.StartProgressTask($"Hashing {item.Path}", maxValue: fullSize);
-                                    await using var stream = await client.GetFileStream(build, depot, item.Path,
-                                        token
-                                    );
-                                    var multiHasher = new MultiHasher();
-                                    var multiHash = await multiHasher.HashStream(stream, token, async size => await task.Increment(size.Value));
+                                    await using var progressTask = await renderer.StartProgressTask($"Hashing {item.Path}", maxValue: fullSize);
+                                    await using var stream = await client.GetFileStream(build, depot, item.Path, token);
+                                    await using var progressWrapper = new StreamProgressWrapper<ProgressTask>(stream, state: progressTask, notifyWritten: static (progressTask, values) =>
+                                    {
+                                        var (current, _) = values;
+                                        var task = progressTask.Increment(current.Value);
+                                    });
 
+                                    var multiHash = await MultiHasher.HashStream(stream, cancellationToken: token);
                                     var hashStr = multiHash.XxHash3.ToString()[2..];
 
                                     foundHashes.TryAdd(item.Path, multiHash.XxHash3);
 
-                                    var path = hashPathRoot / $"{hashStr[..2]}" / (hashStr.ToRelativePath() + ".json");
+                                    var path = hashPathRoot / $"{hashStr[..2]}" / (hashStr + ".json");
                                     path.Parent.CreateDirectory();
 
                                     if (!path.FileExists)

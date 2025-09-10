@@ -44,8 +44,16 @@ public class ProtontricksFlatpakDependency : ExecutableRuntimeDependency, IProto
     public ValueTask<Command> MakeLaunchCommand(Command command, long appId)
     {
         var args = $"run --command=protontricks-launch {FlatpakPackageId} --appid {appId} \"{command.TargetFilePath}\" {command.Arguments}";
-        return ValueTask.FromResult(new Command("flatpak", args,
-            command.WorkingDirPath, command.Credentials, command.EnvironmentVariables,
-            command.Validation, command.StandardInputPipe, command.StandardOutputPipe, command.StandardErrorPipe));
+        return ValueTask.FromResult(new Command(
+            "flatpak", 
+            args,
+            command.WorkingDirPath, 
+            command.ResourcePolicy,
+            command.Credentials, 
+            command.EnvironmentVariables,
+            command.Validation, 
+            command.StandardInputPipe, 
+            command.StandardOutputPipe, 
+            command.StandardErrorPipe));
     }
 }

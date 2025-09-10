@@ -1,18 +1,28 @@
+using System.Text.RegularExpressions;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.GameLocators.GameCapabilities;
 using NexusMods.Abstractions.GameLocators.Stores.GOG;
 using NexusMods.Abstractions.GameLocators.Stores.Steam;
 using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.Library.Installers;
+using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
+using NexusMods.Games.CreationEngine.Installers;
+using NexusMods.Games.FOMOD;
+using NexusMods.Games.Generic.Installers;
 using NexusMods.Paths;
+using NexusMods.Paths.Utilities;
 using NexusMods.Sdk.IO;
 
 namespace NexusMods.Games.CreationEngine.SkyrimSE;
 
-public class SkyrimSE : AGame, ISteamGame, IGogGame
+public partial class SkyrimSE : AGame, ISteamGame, IGogGame
 {
+    private readonly IServiceProvider _serviceProvider;
+
     public SkyrimSE(IServiceProvider provider) : base(provider)
     {
+        _serviceProvider = provider;
     }
 
     public override string Name => "Skyrim Special Edition";
@@ -31,6 +41,8 @@ public class SkyrimSE : AGame, ISteamGame, IGogGame
     {
         return [];
     }
+    
+    protected override ILoadoutSynchronizer MakeSynchronizer(IServiceProvider provider) => new SkyrimSESynchronizer(provider);
 
     public override SupportType SupportType => SupportType.Unsupported;
     public IEnumerable<uint> SteamIds => [489830];
@@ -41,4 +53,22 @@ public class SkyrimSE : AGame, ISteamGame, IGogGame
 
     public override IStreamFactory GameImage =>
         new EmbeddedResourceStreamFactory<SkyrimSE>("NexusMods.Games.CreationEngine.Resources.SkyrimSE.tile.webp");
+
+    [GeneratedRegex("skse64_\\d+_\\d+_\\d+", RegexOptions.IgnoreCase)]
+    private static partial Regex SkseRegex();
+    
+    public override ILibraryItemInstaller[] LibraryItemInstallers =>
+    [
+        FomodXmlInstaller.Create(_serviceProvider, new GamePath(LocationId.Game, "Data")),
+        // Files in a Data folder
+        new StopPatternInstaller(_serviceProvider)
+        {
+            GameId = GameId,
+            GameAliases = ["Skyrim Special Edition", "SkyrimSE", "SSE"],
+            TopLevelDirs = KnownPaths.CommonTopLevelFolders,
+            StopPatterns = ["(^|/)skse(/|$)"],
+            EngineFiles = [@"skse64_loader\.exe", @"skse64_.*\.dll"],
+            
+        }.Build(),
+    ];
 }
