@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary;
+using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Sdk.Resources;
 using NexusMods.App.UI.Controls;
@@ -14,13 +15,13 @@ using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Pages.LibraryPage;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.DatomIterators;
-using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 using NexusMods.MnemonicDB.Abstractions.Query;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Networking.NexusWebApi.UpdateFilters;
 using NuGet.Versioning;
 using NexusMods.Paths;
 using R3;
+using Observable = System.Reactive.Linq.Observable;
 
 namespace NexusMods.App.UI.Pages;
 
@@ -150,7 +151,10 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
             initialValue: string.Empty,
             valueObservable: currentVersionObservable
         ));
-
+        
+        // Collections column
+        AddRelatedCollectionsComponent(libraryItems, linkedLoadoutItemsObservable, parentItemModel);
+        
         // Update available
         var newestModPageObservable = _modUpdateService.GetNewestModPageVersionObservable(modPage);
         var currentUpdateVersionObservable = newestModPageObservable
@@ -246,6 +250,9 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
         LibraryDataProviderHelper.AddInstallActionComponent(itemModel, linkedLoadoutItemsObservable);
         LibraryDataProviderHelper.AddViewChangelogActionComponent(itemModel);
         LibraryDataProviderHelper.AddViewModPageActionComponent(itemModel);
+        
+        // Collections column
+        AddRelatedCollectionsComponent(libraryItem, linkedLoadoutItemsObservable, itemModel);
 
         // Update available
         var newestVersionObservable = _modUpdateService
@@ -292,6 +299,84 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
         LibraryDataProviderHelper.AddDeleteItemActionComponent(itemModel);
 
         return itemModel;
+    }
+
+    private void AddRelatedCollectionsComponent(
+        NexusModsLibraryItem.ReadOnly libraryItem,
+        IObservable<IChangeSet<LoadoutItem.ReadOnly, EntityId>> linkedLoadoutItemsObservable,
+        CompositeItemModel<EntityId> itemModel)
+    {
+        var relatedDownloadedCollectionsObservable = _connection
+            .ObserveDatoms(CollectionDownloadNexusMods.FileMetadataId, libraryItem.FileMetadataId)
+            .AsEntityIds()
+            .Distinct()
+            .Transform(datom => NexusMods.Abstractions.NexusModsLibrary.Models.CollectionDownload.Load(_connection.Db, datom.E).CollectionRevision.Collection)
+            .ChangeKey(collection => collection.Id)
+            .Distinct()
+            .Transform(collection => collection.Name)
+            .SortBy(static name => name)
+            .RemoveKey()
+            .StartWithEmpty();
+
+        AddRelatedCollectionsComponentCore(linkedLoadoutItemsObservable, relatedDownloadedCollectionsObservable, itemModel);
+    }
+
+    private void AddRelatedCollectionsComponent(
+        IObservable<IChangeSet<NexusModsLibraryItem.ReadOnly, EntityId>> libraryItems,
+        IObservable<IChangeSet<LoadoutItem.ReadOnly, EntityId>> linkedLoadoutItemsObservable,
+        CompositeItemModel<EntityId> itemModel)
+    {
+        var relatedDownloadedCollectionsObservable = libraryItems
+            .MergeManyChangeSets(libraryItem =>
+                _connection.ObserveDatoms(CollectionDownloadNexusMods.FileMetadataId, libraryItem.FileMetadataId)
+                    .AsEntityIds()
+                    .Distinct()
+                    .Transform(datom => NexusMods.Abstractions.NexusModsLibrary.Models.CollectionDownload
+                        .Load(_connection.Db, datom.E)
+                        .CollectionRevision.Collection
+                    )
+                    .ChangeKey(collection => collection.Id)
+                    .Distinct()
+            )
+            .Distinct()
+            .Transform(collection => collection.Name)
+            .SortBy(static name => name)
+            .RemoveKey()
+            .StartWithEmpty();
+
+        AddRelatedCollectionsComponentCore(linkedLoadoutItemsObservable, relatedDownloadedCollectionsObservable, itemModel);
+    }
+
+    private void AddRelatedCollectionsComponentCore(
+        IObservable<IChangeSet<LoadoutItem.ReadOnly, EntityId>> linkedLoadoutItemsObservable,
+        IObservable<IChangeSet<string>> relatedDownloadedCollectionsObservable,
+        CompositeItemModel<EntityId> itemModel)
+    {
+        var installedCollectionsObservable = linkedLoadoutItemsObservable
+            .Transform(item => item.Parent.AsLoadoutItem())
+            .ChangeKey(coll => coll.Id)
+            .Distinct()
+            .Transform(collection => collection.Name)
+            .SortBy(static name => name)
+            .RemoveKey()
+            .StartWithEmpty();
+
+        // Only take downloaded entries that are not already installed
+        var filteredDownloadedCollectionsObservable = relatedDownloadedCollectionsObservable.Except(installedCollectionsObservable);
+
+        var hasCollectionsObservable = installedCollectionsObservable.IsEmpty()
+            .CombineLatest(filteredDownloadedCollectionsObservable.IsEmpty(), 
+                (installedIsEmpty, relatedIsEmpty) => !installedIsEmpty || !relatedIsEmpty)
+            .DistinctUntilChanged()
+            .ToObservable();
+
+        itemModel.AddObservable(LibraryColumns.Collections.RelatedCollectionsComponentKey,
+            hasCollectionsObservable,
+            componentFactory: () => new LibraryComponents.RelatedCollectionsComponent(
+                installedCollectionsObservable,
+                filteredDownloadedCollectionsObservable
+            )
+        );
     }
 
     private IObservable<IChangeSet<NexusModsModPageMetadata.ReadOnly, EntityId>> FilterLoadoutItems(LoadoutFilter loadoutFilter)

@@ -1212,6 +1212,7 @@ public class LibraryTreeDataGridAdapter :
             ColumnCreator.Create<EntityId, SharedColumns.ItemSize>(),
             ColumnCreator.Create<EntityId, LibraryColumns.DownloadedDate>(sortDirection: ListSortDirection.Descending),
             ColumnCreator.Create<EntityId, SharedColumns.InstalledDate>(),
+            ColumnCreator.Create<EntityId, LibraryColumns.Collections>(),
             ColumnCreator.Create<EntityId, LibraryColumns.Actions>(),
         ];
     }
