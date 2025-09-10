@@ -5,6 +5,7 @@ using Mutagen.Bethesda.Plugins;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
+using NexusMods.Games.CreationEngine.Abstractions;
 using NexusMods.Games.CreationEngine.SkyrimSE;
 using NexusMods.Games.TestFramework;
 using NexusMods.Hashing.xxHash3;
@@ -92,11 +93,11 @@ public class LibraryArchiveInstallerTests(ITestOutputHelper outputHelper) : AIso
         foreach (var plugin in plugins)
         {
             var fileName = plugin.AsLoadoutItemWithTargetPath().TargetPath.Item3.FileName;
-            var header = await ((SkyrimSESynchronizer)Game.Synchronizer).HeaderForPlugin(plugin.Hash, fileName);
+            var header = await ((ICreationEngineGame) Game).PluginUtilities.ParsePluginHeader(plugin.Hash, fileName);
             var index = 0;
-            foreach (var masterRef in header.MasterReferences)
+            foreach (var masterRef in header!.Value.Masters)
             {
-                data.Add((fileName, index, masterRef.Master.FileName.ToString(), masterRef.Master.Type));
+                data.Add((fileName, index, masterRef.FileName.ToString(), masterRef.Type));
                 index++;
             }
         }

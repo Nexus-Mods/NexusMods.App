@@ -23,6 +23,7 @@
     </ItemGroup>
     <ItemGroup>
       <Folder Include="Emitters\" />
+      <Folder Include="SkyrimSE\Emitters\" />
     </ItemGroup>
 
 </Project>

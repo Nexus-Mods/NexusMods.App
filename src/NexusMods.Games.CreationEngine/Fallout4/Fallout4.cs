@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.GameLocators.GameCapabilities;
 using NexusMods.Abstractions.GameLocators.Stores.GOG;
@@ -7,6 +8,7 @@ using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
+using NexusMods.Games.CreationEngine.Abstractions;
 using NexusMods.Games.CreationEngine.Installers;
 using NexusMods.Games.FOMOD;
 using NexusMods.Games.Generic.Installers;
@@ -16,13 +18,21 @@ using NexusMods.Sdk.IO;
 
 namespace NexusMods.Games.CreationEngine.Fallout4;
 
-public partial class Fallout4 : AGame, ISteamGame, IGogGame
+public partial class Fallout4 : AGame, ISteamGame, IGogGame, ICreationEngineGame
 {
     private readonly IServiceProvider _serviceProvider;
+    private readonly PluginUtilities<Fallout4> _utilities;
+    private readonly IDiagnosticEmitter[] _emitters;
 
     public Fallout4(IServiceProvider provider) : base(provider)
     {
         _serviceProvider = provider;
+        _utilities = new PluginUtilities<Fallout4>(provider);
+        
+        _emitters =
+        [
+            new MissingMasterEmitter(this),
+        ];
     }
 
     public override string Name => "Fallout 4";
@@ -53,10 +63,7 @@ public partial class Fallout4 : AGame, ISteamGame, IGogGame
 
     public override IStreamFactory GameImage =>
         new EmbeddedResourceStreamFactory<Fallout4>("NexusMods.Games.CreationEngine.Resources.Fallout4.tile.webp");
-    
-    [GeneratedRegex("f4se_\\d+_\\d+_\\d+", RegexOptions.IgnoreCase)]
-    private static partial Regex F4seRegex();
-    
+
     
     public override ILibraryItemInstaller[] LibraryItemInstallers =>
     [
@@ -79,4 +86,8 @@ public partial class Fallout4 : AGame, ISteamGame, IGogGame
             ],
         }.Build(),
     ];
+    
+    public override IDiagnosticEmitter[] DiagnosticEmitters => _emitters;
+
+    public IPluginUtilities PluginUtilities => _utilities;
 }

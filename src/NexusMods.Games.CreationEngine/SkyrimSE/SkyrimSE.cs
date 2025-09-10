@@ -8,8 +8,8 @@ using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
+using NexusMods.Games.CreationEngine.Abstractions;
 using NexusMods.Games.CreationEngine.Installers;
-using NexusMods.Games.CreationEngine.SkyrimSE.Emitters;
 using NexusMods.Games.FOMOD;
 using NexusMods.Games.Generic.Installers;
 using NexusMods.Paths;
@@ -18,14 +18,16 @@ using NexusMods.Sdk.IO;
 
 namespace NexusMods.Games.CreationEngine.SkyrimSE;
 
-public partial class SkyrimSE : AGame, ISteamGame, IGogGame
+public partial class SkyrimSE : AGame, ISteamGame, IGogGame, ICreationEngineGame
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly IDiagnosticEmitter[] _emitters;
+    private readonly PluginUtilities<SkyrimSE> _utilities;
 
     public SkyrimSE(IServiceProvider provider) : base(provider)
     {
         _serviceProvider = provider;
+        _utilities = new PluginUtilities<SkyrimSE>(provider);
 
         _emitters =
         [
@@ -62,10 +64,7 @@ public partial class SkyrimSE : AGame, ISteamGame, IGogGame
     public override IStreamFactory GameImage =>
         new EmbeddedResourceStreamFactory<SkyrimSE>("NexusMods.Games.CreationEngine.Resources.SkyrimSE.tile.webp");
 
-    [GeneratedRegex("skse64_\\d+_\\d+_\\d+", RegexOptions.IgnoreCase)]
-    private static partial Regex SkseRegex();
-
-
+    
     public override IDiagnosticEmitter[] DiagnosticEmitters => _emitters;
 
     public override ILibraryItemInstaller[] LibraryItemInstallers =>
@@ -82,4 +81,6 @@ public partial class SkyrimSE : AGame, ISteamGame, IGogGame
             
         }.Build(),
     ];
+
+    public IPluginUtilities PluginUtilities => _utilities;
 }
