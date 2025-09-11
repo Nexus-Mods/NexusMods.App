@@ -75,8 +75,8 @@ public static class LibraryColumns
     {
         public static int Compare<TKey>(CompositeItemModel<TKey> a, CompositeItemModel<TKey> b) where TKey : notnull
         {
-            var aValue = a.GetOptional<StringComponent>(key: RelatedCollectionsComponentKey);
-            var bValue = b.GetOptional<StringComponent>(key: RelatedCollectionsComponentKey);
+            var aValue = a.GetOptional<LibraryComponents.RelatedCollectionsComponent>(key: RelatedCollectionsComponentKey);
+            var bValue = b.GetOptional<LibraryComponents.RelatedCollectionsComponent>(key: RelatedCollectionsComponentKey);
             return aValue.Compare(bValue);
         }
 
