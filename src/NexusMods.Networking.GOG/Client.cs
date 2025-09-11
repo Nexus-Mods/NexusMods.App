@@ -84,7 +84,7 @@ internal class Client : IClient
         
         _pipeline = new ResiliencePipelineBuilder()
             .AddRetry(new RetryStrategyOptions())
-            .AddTimeout(TimeSpan.FromSeconds(10))
+            .AddTimeout(TimeSpan.FromSeconds(60))
             .Build();
     }
     
