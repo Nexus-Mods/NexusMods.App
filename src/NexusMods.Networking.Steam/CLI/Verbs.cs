@@ -81,6 +81,9 @@ public static class Verbs
                 // For each depot and each manifest, download the manifest and index the files
                 await Parallel.ForEachAsync(productInfo.Depots, options, async (depot, token) =>
                 {
+                    if (depot.OsList.Length > 0 && !depot.OsList.Contains("windows"))
+                        return;
+                    
                     await Parallel.ForEachAsync(depot.Manifests, options, async (manifestInfo, token) =>
                     {
                         try
