@@ -225,30 +225,32 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             };
         }
         
-        foreach (var loadoutItem in Loadout.EnabledLoadoutItemWithTargetPathInLoadoutQuery(Connection, loadout.Db, loadout.Id))
+        foreach (var loadoutItem in Loadout.EnabledLoadoutItemWithTargetPathInLoadoutQuery(loadout.Db, loadout.Id))
         {
-            var targetPath = loadoutItem.TargetPath;
+            if (loadoutItem.Path.Path == null)
+                throw new InvalidOperationException("Path is null");
+            var targetPath = new GamePath(loadoutItem.Location, loadoutItem.Path);
 
             SyncNodePart sourceItem;
             LoadoutSourceItemType sourceItemType;
-            if (loadoutItem.TryGetAsLoadoutFile(out var loadutFile))
+            if (!loadoutItem.IsDeleted)
             {
                 sourceItem = new SyncNodePart
                 {
-                    Size = loadutFile.Size,
-                    Hash = loadutFile.Hash,
-                    EntityId = loadutFile.Id,
+                    Size = loadoutItem.Size,
+                    Hash = loadoutItem.Hash,
+                    EntityId = loadoutItem.Id,
                     LastModifiedTicks = 0,
                 };
                 sourceItemType = LoadoutSourceItemType.Loadout;
             }
-            else if (loadoutItem.TryGetAsDeletedFile(out var deletedFile))
+            else if (loadoutItem.IsDeleted)
             {
                 sourceItem = new SyncNodePart
                 {
                     Size = Size.Zero,
                     Hash = Hash.Zero,
-                    EntityId = deletedFile.Id,
+                    EntityId = loadoutItem.Id,
                     LastModifiedTicks = 0,
                 };
                 sourceItemType = LoadoutSourceItemType.Deleted;
@@ -258,7 +260,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 throw new NotSupportedException("Only files and deleted files are supported");
             }
             
-            ref var existing = ref CollectionsMarshal.GetValueRefOrAddDefault(syncTree, loadoutItem.TargetPath, out var exists);
+            ref var existing = ref CollectionsMarshal.GetValueRefOrAddDefault(syncTree, targetPath, out var exists);
             if (!exists)
             {
                 existing = new SyncNode
@@ -1467,7 +1469,10 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 continue;
             
             // If the minimal hash matches, then we can use the xxHash3 hash
-            diskMinimalHash ??= await MultiHasher.MinimalHash(file, token);
+            await using (var fileStream = file.Read())
+            {
+                diskMinimalHash ??= await MultiHasher.MinimalHash(fileStream, cancellationToken: token);
+            }
 
             if (hash.MinimalHash == diskMinimalHash)
             {

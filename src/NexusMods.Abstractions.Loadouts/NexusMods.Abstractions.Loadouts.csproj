@@ -42,5 +42,11 @@
         <DependentUpon>LoadoutItemGroup.cs</DependentUpon>
       </Compile>
     </ItemGroup>
+    
+    <ItemGroup>
+        <AdditionalFiles Include="**\*.sql" />
+        <UpToDateCheckInput Include="**\*.sql"/>
+    </ItemGroup>
+
 
 </Project>

@@ -26,16 +26,7 @@ public partial class CollectionGroup : IModelDefinition
     
 
     private const string CollectionEntities = """
-                                              WITH RECURSIVE ChildLoadoutItems (Id) AS
-                                              (SELECT $Id
-                                               UNION
-                                               SELECT Id FROM (SELECT Id, Parent FROM mdb_LoadoutItem(Db=>$Db)
-                                                               UNION ALL
-                                                               SELECT Id, ParentEntity FROM mdb_SortOrder(Db=>$Db)
-                                                               UNION ALL
-                                                               SELECT Id, ParentSortOrder FROM mdb_SortOrderItem(Db=>$Db))
-                                               WHERE Parent in (SELECT Id FROM ChildLoadoutItems))
-                                              SELECT DISTINCT Id FROM ChildLoadoutItems
+
                                               """;
     
     /// <summary>
@@ -49,7 +40,18 @@ public partial class CollectionGroup : IModelDefinition
         var basisDb = conn.Db;
 
         Dictionary<EntityId, EntityId> remappedIds = new();
-        var query = conn.Query<EntityId>(CollectionEntities, new { Db = basisDb, Id = id});
+        var query = conn.Query<EntityId>($"""
+                                          WITH RECURSIVE ChildLoadoutItems (Id) AS 
+                                          (SELECT {id} 
+                                          UNION
+                                          SELECT Id FROM (SELECT Id, Parent FROM mdb_LoadoutItem(Db=>{basisDb})
+                                          UNION ALL
+                                          SELECT Id, ParentEntity FROM mdb_SortOrder(Db=>{basisDb})
+                                          UNION ALL
+                                          SELECT Id, ParentSortOrder FROM mdb_SortOrderItem(Db=>{basisDb}))
+                                          WHERE Parent in (SELECT Id FROM ChildLoadoutItems))
+                                          SELECT DISTINCT Id FROM ChildLoadoutItems
+                                          """);
         using var tx = conn.BeginTransaction();
         foreach (var itemId in query)
         {

@@ -6,12 +6,8 @@
     <br/>
     The <i>future</i> of modding with <i>Nexus Mods</i>.
     <br/><br/>
-    <a href="https://github.com/Nexus-Mods/NexusMods.App/actions/workflows/clean_environment_tests.yaml" target="_blank">
-        <img src="https://github.com/Nexus-Mods/NexusMods.App/actions/workflows/clean_environment_tests.yaml/badge.svg" alt="CI Tests">
-    </a>
-    <a href="https://discord.gg/ReWTxb93jS" target="_blank">
-        <img src="https://img.shields.io/discord/1134149061080002713?logo=discord&logoColor=white&color=7289da" alt="Discord">
-    </a>
+    <a href="https://github.com/Nexus-Mods/NexusMods.App/actions/workflows/clean_environment_tests.yaml" target="_blank"><img src="https://github.com/Nexus-Mods/NexusMods.App/actions/workflows/clean_environment_tests.yaml/badge.svg" alt="CI Tests"></a>
+    <a href="https://discord.gg/ReWTxb93jS" target="_blank"><img src="https://img.shields.io/discord/1134149061080002713?logo=discord&logoColor=white&color=7289da" alt="Discord"></a>
 </div>
 
 Nexus Mods app is a mod installer, creator and manager for all your popular games.

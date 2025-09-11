@@ -66,6 +66,7 @@ public class BundledDataProvider : ILoadoutDataProvider
         parentItemModel.Add(SharedColumns.Name.ImageComponentKey, new ImageComponent(value: ImagePipelines.ModPageThumbnailFallback));
         parentItemModel.Add(SharedColumns.InstalledDate.ComponentKey, new DateComponent(value: item.GetCreatedAt()));
         parentItemModel.Add(LoadoutColumns.EnabledState.LoadoutItemIdsComponentKey, new LoadoutComponents.LoadoutItemIds(loadoutItem));
+        parentItemModel.Add(LoadoutColumns.EnabledState.ViewModFilesComponentKey, new SharedComponents.ViewModFilesAction(isEnabled: true));
 
         
         LoadoutDataProviderHelper.AddCollection(_connection, parentItemModel, loadoutItem);
@@ -73,6 +74,7 @@ public class BundledDataProvider : ILoadoutDataProvider
         LoadoutDataProviderHelper.AddLockedEnabledState(parentItemModel, loadoutItem);
         LoadoutDataProviderHelper.AddEnabledStateToggle(_connection, parentItemModel, loadoutItem);
         LoadoutDataProviderHelper.AddViewModPageActionComponent(parentItemModel, isEnabled: false);
+        LoadoutDataProviderHelper.AddUninstallItemComponent(parentItemModel, loadoutItem);
 
         return parentItemModel;
     }

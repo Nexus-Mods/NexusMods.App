@@ -5,11 +5,14 @@ using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Pages.LibraryPage;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Query;
+using NexusMods.MnemonicDB.Abstractions.ValueSerializers;
+using NexusMods.Sdk.Hashes;
 using UIObservableExtensions = NexusMods.App.UI.Extensions.ObservableExtensions;
 
 namespace NexusMods.App.UI.Pages;
@@ -91,6 +94,28 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
         LibraryDataProviderHelper.AddViewChangelogActionComponent(itemModel, isEnabled: false);
         LibraryDataProviderHelper.AddViewModPageActionComponent(itemModel, isEnabled: false);
         LibraryDataProviderHelper.AddHideUpdatesActionComponent(itemModel, isEnabled: false, isVisible: false);
+        
+        // Get related collections
+        var md5 = localFile.AsLibraryFile().Md5;
+        if (!md5.HasValue)
+        {
+            LibraryDataProviderHelper.AddRelatedCollectionsComponent(itemModel, linkedLoadoutItemsObservable);
+        }
+        else
+        {
+            var conn = localFile.Db.Connection;
+
+            var relatedDownloadedCollectionsObservable = conn
+                .ObserveDatoms(CollectionDownloadExternal.Md5)
+                .FilterImmutable(datom => Md5Value.From(UInt128Serializer.Read(datom.ValueSpan)) == md5.Value)
+                .AsEntityIds()
+                .Distinct()
+                .Transform(datom => NexusMods.Abstractions.NexusModsLibrary.Models.CollectionDownload.Load(conn.Db, datom.E).CollectionRevision.Collection)
+                .ChangeKey(collection => collection.Id);
+            
+            LibraryDataProviderHelper.AddRelatedCollectionsComponent(itemModel, linkedLoadoutItemsObservable, relatedDownloadedCollectionsObservable );
+        }
+        
     }
 
     private IObservable<IChangeSet<LocalFile.ReadOnly, EntityId>> FilterLoadoutItems(LoadoutFilter loadoutFilter)
@@ -143,7 +168,8 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
         LoadoutDataProviderHelper.AddEnabledStateToggle(_connection, parentItemModel, linkedItemsObservable);
         LoadoutDataProviderHelper.AddLoadoutItemIds(parentItemModel, linkedItemsObservable);
         LoadoutDataProviderHelper.AddViewModPageActionComponent(parentItemModel, isEnabled: false);
-        
+        LoadoutDataProviderHelper.AddViewModFilesActionComponent(parentItemModel, linkedItemsObservable);
+        LoadoutDataProviderHelper.AddUninstallItemComponent(parentItemModel, linkedItemsObservable);
 
         return parentItemModel;
     }

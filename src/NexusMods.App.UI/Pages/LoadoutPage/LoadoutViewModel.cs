@@ -38,6 +38,7 @@ using NexusMods.UI.Sdk.Icons;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 using NexusMods.MnemonicDB.Abstractions.Query;
+using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.UI.Sdk;
 using NexusMods.UI.Sdk.Dialog;
@@ -494,23 +495,8 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                 {
                     var group = viewModFilesArgumentsSubject.Value;
                     if (!group.HasValue) return;
-
-                    var isReadonly = group.Value.AsLoadoutItem()
-                        .GetThisAndParents()
-                        .Any(item => IsRequired(item.LoadoutItemId, _connection));
-
-                    var pageData = new PageData
-                    {
-                        FactoryId = LoadoutGroupFilesPageFactory.StaticId,
-                        Context = new LoadoutGroupFilesPageContext
-                        {
-                            GroupIds = [group.Value.Id],
-                            IsReadOnly = isReadonly,
-                        },
-                    };
-                    var workspaceController = GetWorkspaceController();
-                    var behavior = workspaceController.GetOpenPageBehavior(pageData, info);
-                    workspaceController.OpenPage(workspaceController.ActiveWorkspaceId, pageData, behavior);
+                    
+                    OpenViewModFilesPage(group.Value, info, GetWorkspaceController(), _connection);
                 },
                 false
             );
@@ -536,40 +522,21 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                         .SelectMany(static itemModel => GetLoadoutItemIds(itemModel))
                         .ToHashSet()
                         .Where(id => !IsRequired(id, _connection))
-                        .Select(x => (LibraryLinkedLoadoutItemId)x.Value)
+                        .Select(x => (LoadoutItemGroupId)x.Value)
                         .ToArray();
 
                     if (ids.Length == 0) return;
-
-                    var dialog = DialogFactory.CreateStandardDialog(
-                        title: "Uninstall mod(s)",
-                        new StandardDialogParameters()
-                        {
-                            Text = $"""
-                         This will remove the selected mod(s) from:
-                         
-                         {CollectionName}
-                         
-                         ✓ The mod(s) will stay in your Library
-                         ✓ You can reinstall anytime
-                         """,
-                        },
-                        buttonDefinitions:
-                        [
-                            DialogStandardButtons.Cancel,
-                            new DialogButtonDefinition("Uninstall",
-                                ButtonDefinitionId.Accept,
-                                ButtonAction.Accept,
-                                ButtonStyling.Default
-                            )
-                        ]
-                    );
-
-                    var result = await windowManager.ShowDialog(dialog, DialogWindowType.Modal);
+                    
+                    var result = await ShowUninstallModsConformationDialog(ids, windowManager, _connection);
 
                     if (result.ButtonId != ButtonDefinitionId.Accept) return;
-
-                    await libraryService.RemoveLinkedItemsFromLoadout(ids);
+                    
+                    using var tx = _connection.BeginTransaction();
+                    
+                    foreach (var itemId in ids)
+                        tx.Delete(itemId, recursive: true);
+                    
+                    await tx.Commit();
                     
                     _notificationService.ShowToast(Language.ToastNotification_Mods_removed);
                 },
@@ -586,21 +553,29 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                     {
                         await message.Match<Task>(
                             toggleEnableStateMessage => 
-                                ToggleItemEnabledState(toggleEnableStateMessage.Ids, _connection),
+                                HandleToggleItemEnabledState(toggleEnableStateMessage.Ids, _connection),
                             openCollectionMessage =>
                             {
-                                OpenItemCollectionPage(openCollectionMessage.Ids, 
+                                HandleOpenItemCollectionPage(openCollectionMessage.Ids, 
                                     openCollectionMessage.NavigationInformation, 
                                     loadoutId, GetWorkspaceController(), _connection);
                                 return Task.CompletedTask;
                             },
                             viewModPageMessage =>
                             {
-                                OpenModPageFor(viewModPageMessage.Ids, _connection, 
+                                HandleOpenModPageFor(viewModPageMessage.Ids, _connection, 
                                     _serviceProvider.GetRequiredService<IOSInterop>(), 
                                     cancellationToken);
                                 return Task.CompletedTask;
-                            }
+                            },
+                            viewModFilesMessage =>
+                            {
+                                HandleViewModFiles(viewModFilesMessage.Ids, 
+                                    viewModFilesMessage.NavigationInformation, 
+                                    _connection, GetWorkspaceController());
+                                return Task.CompletedTask;
+                            },
+                            uninstallItemMessage => HandleUninstallItem(uninstallItemMessage.Ids, windowManager, _connection)
                         );
                     }, awaitOperation: AwaitOperation.Parallel, configureAwait: false
                 ).AddTo(disposables);
@@ -673,7 +648,47 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
         );
     }
 
-    internal static void OpenModPageFor(LoadoutItemId[] ids, IConnection connection, IOSInterop os, CancellationToken cancellationToken)
+    private static async Task<StandardDialogResult> ShowUninstallModsConformationDialog(LoadoutItemGroupId[] ids, IWindowManager windowManager, IConnection connection)
+    {
+        // Comma-separated list of parent collection names
+        var parentCollectionNames = string.Join(",\n",
+            ids
+                .Select(id => LoadoutItem.Load(connection.Db, id))
+                .Where(item => item.IsValid() && item.HasParent())
+                .Select(item => item.Parent.AsLoadoutItem().Name)
+                .Distinct()
+                .OrderBy(name => name, StringComparer.CurrentCultureIgnoreCase)
+        );
+
+        var dialog = DialogFactory.CreateStandardDialog(
+            title: "Uninstall mod(s)",
+            new StandardDialogParameters()
+            {
+                Text = $"""
+                         This will remove the selected mod(s) from:
+                         
+                         {parentCollectionNames}
+                         
+                         ✓ The mod(s) will stay in your Library
+                         ✓ You can reinstall anytime
+                         """,
+            },
+            buttonDefinitions:
+            [
+                DialogStandardButtons.Cancel,
+                new DialogButtonDefinition("Uninstall",
+                    ButtonDefinitionId.Accept,
+                    ButtonAction.Accept,
+                    ButtonStyling.Default
+                )
+            ]
+        );
+
+        var result = await windowManager.ShowDialog(dialog, DialogWindowType.Modal);
+        return result;
+    }
+
+    internal static void HandleOpenModPageFor(LoadoutItemId[] ids, IConnection connection, IOSInterop os, CancellationToken cancellationToken)
     {
         if (ids.Length == 0) return;
         var loadoutItemId = ids.First();
@@ -706,7 +721,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
         return uri;
     }
 
-    internal static async Task ToggleItemEnabledState(LoadoutItemId[] ids, IConnection connection)
+    internal static async Task HandleToggleItemEnabledState(LoadoutItemId[] ids, IConnection connection)
     {
         var toggleableItems = ids
             .Select(loadoutItemId => LoadoutItem.Load(connection.Db, loadoutItemId))
@@ -740,7 +755,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
         await tx.Commit();
     }
 
-    internal static void OpenItemCollectionPage(
+    internal static void HandleOpenItemCollectionPage(
         LoadoutItemId[] ids,
         NavigationInformation navInfo,
         LoadoutId loadoutId,
@@ -784,6 +799,61 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
 
         var behavior = workspaceController.GetOpenPageBehavior(pageData, navInfo);
         workspaceController.OpenPage(workspaceController.ActiveWorkspaceId, pageData, behavior);
+    }
+    
+    public static void HandleViewModFiles(LoadoutItemId[] ids, NavigationInformation navInfo, IConnection connection, IWorkspaceController workspaceController)
+    {
+        if (ids.Length == 0) return;
+        var loadoutItemId = ids.First();
+        
+        var group = LoadoutItemGroup.Load(connection.Db, loadoutItemId);
+
+        OpenViewModFilesPage(group, navInfo, workspaceController, connection);
+    }
+
+    private static void OpenViewModFilesPage(LoadoutItemGroup.ReadOnly group, NavigationInformation navInfo, IWorkspaceController workspaceController, IConnection connection)
+    {
+        var isReadonly = group.AsLoadoutItem()
+            .GetThisAndParents()
+            .Any(item => IsRequired(item.LoadoutItemId, connection));
+
+        var pageData = new PageData
+        {
+            FactoryId = LoadoutGroupFilesPageFactory.StaticId,
+            Context = new LoadoutGroupFilesPageContext
+            {
+                GroupIds = [group.Id],
+                IsReadOnly = isReadonly,
+            },
+        };
+       
+        var behavior = workspaceController.GetOpenPageBehavior(pageData, navInfo);
+        workspaceController.OpenPage(workspaceController.ActiveWorkspaceId, pageData, behavior);
+    }
+
+    public static async Task HandleUninstallItem(LoadoutItemId[] ids, IWindowManager windowManager, IConnection connection)
+    {
+        if (ids.Length == 0) return;
+        
+        var removableIds = ids
+            .ToHashSet()
+            .Where(id => !IsRequired(id, connection))
+            .Select(x => (LoadoutItemGroupId)x.Value)
+            .ToArray();
+        
+        if (removableIds.Length == 0) return;
+        
+        var result = await ShowUninstallModsConformationDialog(removableIds, windowManager, connection);
+
+        if (result.ButtonId != ButtonDefinitionId.Accept) return;
+        
+
+        using var tx = connection.BeginTransaction();
+        
+        foreach (var itemId in removableIds)
+            tx.Delete(itemId, recursive: true);
+        
+        await tx.Commit();
     }
 
     private async ValueTask UpdateCollectionInfo(ManagedCollectionLoadoutGroup.ReadOnly managedCollectionLoadoutGroup, CancellationToken cancellationToken)

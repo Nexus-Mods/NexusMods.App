@@ -13,15 +13,16 @@ using R3;
 namespace NexusMods.App.UI.Pages.LoadoutPage;
 
 public readonly record struct ToggleEnableStateMessage(LoadoutItemId[] Ids);
-
 public readonly record struct OpenCollectionMessage(LoadoutItemId[] Ids, NavigationInformation NavigationInformation);
 public readonly record struct ViewModPageMessage(LoadoutItemId[] Ids);
+public readonly record struct ViewModFilesMessage(LoadoutItemId[] Ids, NavigationInformation NavigationInformation);
+public readonly record struct UninstallItemMessage(LoadoutItemId[] Ids);
 
 public class LoadoutTreeDataGridAdapter :
     TreeDataGridAdapter<CompositeItemModel<EntityId>, EntityId>,
-    ITreeDataGirdMessageAdapter<OneOf<ToggleEnableStateMessage, OpenCollectionMessage, ViewModPageMessage>>
+    ITreeDataGirdMessageAdapter<OneOf<ToggleEnableStateMessage, OpenCollectionMessage, ViewModPageMessage, ViewModFilesMessage, UninstallItemMessage>>
 {
-    public Subject<OneOf<ToggleEnableStateMessage, OpenCollectionMessage, ViewModPageMessage>> MessageSubject { get; } = new();
+    public Subject<OneOf<ToggleEnableStateMessage, OpenCollectionMessage, ViewModPageMessage, ViewModFilesMessage, UninstallItemMessage>> MessageSubject { get; } = new();
 
     private readonly ILoadoutDataProvider[] _loadoutDataProviders;
     private readonly LoadoutFilter _loadoutFilter;
@@ -104,6 +105,30 @@ public class LoadoutTreeDataGridAdapter :
                 var ids = GetLoadoutItemIds(model).ToArray();
 
                 self.MessageSubject.OnNext(new ViewModPageMessage(ids));
+            })
+        );
+        
+        model.SubscribeToComponentAndTrack<SharedComponents.ViewModFilesAction, LoadoutTreeDataGridAdapter>(
+            key: LoadoutColumns.EnabledState.ViewModFilesComponentKey,
+            state: this,
+            factory: static (self, itemModel, component) => component.Command.Subscribe((self, itemModel, component), static (navInfo, tuple) =>
+            {
+                var (self, model, _) = tuple;
+                var ids = GetLoadoutItemIds(model).ToArray();
+
+                self.MessageSubject.OnNext(new ViewModFilesMessage(ids, navInfo));
+            })
+        );
+        
+        model.SubscribeToComponentAndTrack<SharedComponents.UninstallItemAction, LoadoutTreeDataGridAdapter>(
+            key: LoadoutColumns.EnabledState.UninstallItemComponentKey,
+            state: this,
+            factory: static (self, itemModel, component) => component.CommandUninstallItem.Subscribe((self, itemModel, component), static (_, state) =>
+            {
+                var (self, model, _) = state;
+                var ids = GetLoadoutItemIds(model).ToArray();
+
+                self.MessageSubject.OnNext(new UninstallItemMessage(ids));
             })
         );
     }

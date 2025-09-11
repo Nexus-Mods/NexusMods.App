@@ -1,12 +1,17 @@
 using System.Collections.Concurrent;
+using System.Collections.Frozen;
+using System.Diagnostics;
 using System.Security.Cryptography;
+using Avalonia.Controls.Primitives;
 using DynamicData.Kernel;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Collections;
 using NexusMods.Abstractions.Collections.Types;
 using NexusMods.Abstractions.Collections.Json;
 using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Library.Installers;
@@ -15,15 +20,13 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Games.FOMOD;
-using NexusMods.Hashing.xxHash3;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Paths;
-using NexusMods.Paths.Extensions;
+using NexusMods.Sdk;
 using NexusMods.Sdk.FileStore;
 using NexusMods.Sdk.Hashes;
 using NexusMods.Sdk.IO;
-using Crc32 = System.IO.Hashing.Crc32;
 
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 
@@ -33,6 +36,7 @@ using CollectionMod = Mod;
 [PublicAPI]
 public class InstallCollectionDownloadJob : IJobDefinitionWithStart<InstallCollectionDownloadJob, LoadoutItemGroup.ReadOnly>
 {
+    public required ILogger Logger { get; init; }
     public required CollectionDownload.ReadOnly Item { get; init; }
     public required CollectionGroup.ReadOnly Group { get; init; }
     public required LoadoutId TargetLoadout { get; init; }
@@ -68,6 +72,7 @@ public class InstallCollectionDownloadJob : IJobDefinitionWithStart<InstallColle
 
         return new InstallCollectionDownloadJob
         {
+            Logger = serviceProvider.GetRequiredService<ILogger<InstallCollectionDownloadJob>>(),
             Item = download,
             CollectionMod = collectionMod,
             Group = collectionGroup,
@@ -84,36 +89,58 @@ public class InstallCollectionDownloadJob : IJobDefinitionWithStart<InstallColle
     /// <inheritdoc/>
     public async ValueTask<LoadoutItemGroup.ReadOnly> StartAsync(IJobContext<InstallCollectionDownloadJob> context)
     {
-        var group = await Install(context);
+        var (group, patchedFiles) = await Install(context);
+
+        using var tx = Connection.BeginTransaction();
+
+        // Patch files
+        foreach (var patchedFile in patchedFiles)
+        {
+            if (!group.Children.TryGetFirst(x => LoadoutFile.Hash.TryGetValue(x, out var hash) && hash == patchedFile.OriginalFileHashes.XxHash3, out var fileToPatch))
+            {
+                Logger.LogWarning("Unable to find original file of patched file `{Path}` by hash `{OriginalHash}` in loadout group", patchedFile.FileName, patchedFile.OriginalFileHashes);
+                continue;
+            }
+
+            tx.Add(fileToPatch.Id, LoadoutFile.Hash, patchedFile.PatchedFileHashes.XxHash3);
+            tx.Add(fileToPatch.Id, LoadoutFile.Size, patchedFile.PatchedFileHashes.Size);
+        }
 
         // Add missing data from the collection to the item
-        using var tx = Connection.BeginTransaction();
         tx.Add(group.Id, LoadoutItem.Name, CollectionMod.Source.LogicalFilename ?? CollectionMod.Name);
         tx.Add(group.Id, NexusCollectionItemLoadoutGroup.Download, Item);
         tx.Add(group.Id, NexusCollectionItemLoadoutGroup.IsRequired, Item.IsRequired);
-        var result = await tx.Commit();
 
+        var result = await tx.Commit();
         return new LoadoutItemGroup.ReadOnly(result.Db, group.Id);
     }
 
-    private async ValueTask<LoadoutItemGroup.ReadOnly> Install(IJobContext<InstallCollectionDownloadJob> context)
+    private async ValueTask<(LoadoutItemGroup.ReadOnly, PatchedFile[])> Install(IJobContext<InstallCollectionDownloadJob> context)
     {
         if (Item.TryGetAsCollectionDownloadBundled(out var bundledDownload))
         {
-            return await InstallBundledMod(bundledDownload);
+            return (await InstallBundledMod(bundledDownload), []);
+        }
+
+        PatchedFile[] patchedFiles = [];
+
+        var libraryFile = GetLibraryFile(Item, Connection.Db);
+        if (CollectionMod.Patches.Count > 0)
+        {
+            if (!libraryFile.TryGetAsLibraryArchive(out var libraryArchive)) throw new NotSupportedException("Expected library file to be an archive");
+            patchedFiles = await PatchFiles(libraryArchive, cancellationToken: context.CancellationToken);
         }
 
         if (CollectionMod.Hashes.Length > 0)
         {
-            return await InstallReplicatedMod();
+            return (await InstallReplicatedMod(patchedFiles), []);
         }
 
         if (CollectionMod.Choices is { Type: ChoicesType.fomod })
         {
-            return await InstallFomodWithPredefinedChoices(context.CancellationToken);
+            return (await InstallFomodWithPredefinedChoices(context.CancellationToken), patchedFiles);
         }
 
-        var libraryFile = GetLibraryFile(Item, Connection.Db);
         var result = await LibraryService.InstallItem(
             libraryFile.AsLibraryItem(),
             TargetLoadout,
@@ -124,7 +151,9 @@ public class InstallCollectionDownloadJob : IJobDefinitionWithStart<InstallColle
             // which installs unknown stuff into a "default folder"
             fallbackInstaller: FallbackInstaller
         );
-        return result.LoadoutItemGroup!.Value; // You can't attach external transaction in this context, so this is always valid.
+
+        Debug.Assert(result.LoadoutItemGroup.HasValue);
+        return (result.LoadoutItemGroup!.Value, patchedFiles);
     }
 
     private async Task<LoadoutItemGroup.ReadOnly> InstallBundledMod(CollectionDownloadBundled.ReadOnly download)
@@ -187,6 +216,20 @@ public class InstallCollectionDownloadJob : IJobDefinitionWithStart<InstallColle
     }
 
     /// <summary>
+    /// This is how we should get a fomod installer. We don't want to get it from DI or new it up, because
+    /// the game may set custom target folders or other settings. So we'll have to get the game instance
+    /// and find the installer that matches the type 
+    /// </summary>
+    private FomodXmlInstaller GetFomodXmlInstaller(CancellationToken cancellationToken)
+    {
+        var loadout = Loadout.Load(Connection.Db, TargetLoadout);
+        var game = loadout.InstallationInstance.GetGame();
+        var installer = game.LibraryItemInstallers.OfType<FomodXmlInstaller>().FirstOrDefault();
+        
+        return installer ?? throw new InvalidOperationException("FomodXmlInstaller not found");
+    }
+
+    /// <summary>
     /// Install a fomod with predefined choices.
     /// </summary>
     private async Task<LoadoutItemGroup.ReadOnly> InstallFomodWithPredefinedChoices(CancellationToken cancellationToken)
@@ -195,7 +238,7 @@ public class InstallCollectionDownloadJob : IJobDefinitionWithStart<InstallColle
         if (!libraryFile.TryGetAsLibraryArchive(out var libraryArchive))
             throw new NotImplementedException();
 
-        var fomodInstaller = FomodXmlInstaller.Create(ServiceProvider, new GamePath(LocationId.Game, ""));
+        var fomodInstaller = GetFomodXmlInstaller(cancellationToken);
 
         using var tx = Connection.BeginTransaction();
         var group = new LoadoutItemGroup.New(tx, out var id)
@@ -229,7 +272,8 @@ public class InstallCollectionDownloadJob : IJobDefinitionWithStart<InstallColle
     /// the target locations of the mod files. The MD5 hashes are the hashes of the files. So it's a fromHash->toPath
     /// situation. We don't store the MD5 hashes in the database, so we'll have to calculate them on the fly.
     /// </summary>
-    private async Task<LoadoutItemGroup.ReadOnly> InstallReplicatedMod()
+    /// <param name="patchedFiles"></param>
+    private async Task<LoadoutItemGroup.ReadOnly> InstallReplicatedMod(PatchedFile[] patchedFiles)
     {
         // So collections hash everything by MD5, so we'll have to collect MD5 information for the files in the archive.
         // We don't do this during indexing into the library because this is the only case where we need MD5 hashes.
@@ -254,8 +298,22 @@ public class InstallCollectionDownloadJob : IJobDefinitionWithStart<InstallColle
             };
         });
 
-        // If we have any binary patching to do, then we'll do that now.
-        if (CollectionMod.Patches.Count > 0) await PatchFiles(libraryArchive, hashes);
+        foreach (var patchedFile in patchedFiles)
+        {
+            if (!hashes.ContainsKey(patchedFile.OriginalFileHashes.Md5))
+            {
+                Logger.LogWarning("Archive doesn't contain a file matching the MD5 hash {MD5Hash} of a file to patch", patchedFile.OriginalFileHashes.Md5);
+                continue;
+            }
+
+            var hashMapping = new HashMapping
+            {
+                Hash = patchedFile.PatchedFileHashes.XxHash3,
+                Size = patchedFile.PatchedFileHashes.Size,
+            };
+
+            hashes[patchedFile.PatchedFileHashes.Md5] = hashMapping;
+        }
 
         using var tx = Connection.BeginTransaction();
 
@@ -314,74 +372,96 @@ public class InstallCollectionDownloadJob : IJobDefinitionWithStart<InstallColle
         return new LoadoutItemGroup.ReadOnly(result.Db, result[group.Id]);
     }
 
-    /// <summary>
-    /// This will go through and generate all the patch files for the given archive based on the mod's patches.
-    /// </summary>
-    private async Task PatchFiles(
-        LibraryArchive.ReadOnly modArchive,
-        ConcurrentDictionary<Md5Value, HashMapping> hashes)
+    private async ValueTask<PatchedFile[]> PatchFiles(LibraryArchive.ReadOnly srcArchive, CancellationToken cancellationToken)
     {
-        // Index all the files in the collection zip file and the mod archive by their paths so we can find them easily.
-        var modChildren = IndexChildren(modArchive);
-        var collectionChildren = IndexChildren(SourceCollectionArchive);
+        var srcFiles = srcArchive.Children.ToFrozenDictionary(static x => x.Path, static x => x.AsLibraryFile());
+        var collectionFiles = SourceCollectionArchive.Children.ToFrozenDictionary(static x => x.Path, static x => x.AsLibraryFile());
 
-        // These are the generated patch files that we'll need to add to the file store.
-        ConcurrentBag<ArchivedFileEntry> patchedFiles = [];
+        var patches = CollectionMod.Patches.ToArray();
+        var results = new ValueTuple<PatchedFile, MemoryStream>[patches.Length];
 
-        await Parallel.ForEachAsync(CollectionMod.Patches, async (patch, token) =>
+        await Parallel.ForAsync(fromInclusive: 0, toExclusive: patches.Length, cancellationToken: cancellationToken, async (i, innerCancellationToken) =>
         {
-            var (pathString, srcCrc) = patch;
-            var srcPath = RelativePath.FromUnsanitizedInput(pathString);
-
-            if (!modChildren.TryGetValue(srcPath, out var file))
-                throw new InvalidOperationException("The file to patch was not found in the archive.");
-
-            // Load the source file and check the CRC32 hash
-            var srcData = (await FileStore.Load(file.Hash, token)).ToArray();
-
-            // Calculate the CRC32 hash of the source file
-            var srcCrc32 = Crc32.HashToUInt32(srcData.AsSpan());
-            if (srcCrc32 != srcCrc)
-                throw new InvalidOperationException("The source file's CRC32 hash does not match the expected hash.");
-
-            // Load the patch file
-            var patchName = RelativePath.FromUnsanitizedInput("patches/" + CollectionMod.Name + "/" + pathString + ".diff");
-            if (!collectionChildren.TryGetValue(patchName, out var patchFile))
-                throw new InvalidOperationException("The patch file was not found in the archive.");
-
-            var patchedFile = new MemoryStream();
-            var patchData = (await FileStore.Load(patchFile.Hash, token)).ToArray();
-
-            // Generate the patched file
-            BsDiff.BinaryPatch.Apply(new MemoryStream(srcData), () => new MemoryStream(patchData), patchedFile);
-
-            var patchedArray = patchedFile.ToArray();
-
-            // Hash the patched file and add it to the patched files list
-            using var md5 = MD5.Create();
-            md5.ComputeHash(patchedArray);
-            var md5Hash = Md5Value.From(md5.Hash!);
-            var xxHash = patchedArray.xxHash3();
-
-            patchedFiles.Add(new ArchivedFileEntry(new MemoryStreamFactory(srcPath, patchedFile), xxHash, Size.FromLong(patchedFile.Length)));
-            hashes[md5Hash] = new HashMapping
-            {
-                Hash = xxHash,
-                Size = Size.FromLong(patchedFile.Length),
-            };
+            var patch = patches[i];
+            var result = await PatchFile(patch.Key, patch.Value, srcFiles, collectionFiles, cancellationToken: innerCancellationToken);
+            results[i] = result;
         });
 
-        // Backup the patched files
-        await FileStore.BackupFiles(patchedFiles, deduplicate: true);
+        var archivedFileEntries = results.Select(static tuple => new ArchivedFileEntry(
+            StreamFactory: new MemoryStreamFactory(name: tuple.Item1.FileName, stream: tuple.Item2),
+            Hash: tuple.Item1.PatchedFileHashes.XxHash3,
+            Size: tuple.Item1.PatchedFileHashes.Size
+        )).ToArray();
+
+        await FileStore.BackupFiles(archivedFileEntries, deduplicate: true, token: cancellationToken);
+
+        if (ApplicationConstants.IsDebug)
+        {
+            foreach (var result in results)
+            {
+                var (patchedFile, _) = result;
+                var hash = patchedFile.PatchedFileHashes.XxHash3;
+                var hasFile = await FileStore.HaveFile(hash);
+                Debug.Assert(hasFile, "expected the file store to have the file it just backed up...");
+            }
+        }
+
+        return results.Select(static x => x.Item1).ToArray();
     }
 
-    private static Dictionary<RelativePath, LibraryFile.ReadOnly> IndexChildren(LibraryArchive.ReadOnly archive)
-    {
-        var children = archive.Children
-            .Select(static child => (child.Path, child.AsLibraryFile()))
-            .ToDictionary(static kv => kv.Item1, static kv => kv.Item2);
+    private record struct PatchedFile(RelativePath FileName, MultiHash PatchedFileHashes, MultiHash OriginalFileHashes);
 
-        return children;
+    private async ValueTask<(PatchedFile, MemoryStream)> PatchFile(
+        RelativePath srcPath,
+        Crc32Value expectedHash,
+        FrozenDictionary<RelativePath, LibraryFile.ReadOnly> srcFiles,
+        FrozenDictionary<RelativePath, LibraryFile.ReadOnly> collectionFiles,
+        CancellationToken cancellationToken)
+    {
+        if (!srcFiles.TryGetValue(srcPath, out var srcFile)) throw new KeyNotFoundException($"Collection download archive doesn't contain file `{srcPath}`");
+
+        var patchName = RelativePath.FromUnsanitizedInput($"patches/{CollectionMod.Name}/{srcPath}.diff");
+        if (!collectionFiles.TryGetValue(patchName, out var patchFile)) throw new KeyNotFoundException($"Collection archive doesn't contain file `{patchName}`");
+
+        var patchedFileStream = new MemoryStream(capacity: (int)srcFile.Size.Value);
+        var (originalFileHashes, patchedFileHashes) = await PatchFile(fileToPatch: srcFile, patchDataFile: patchFile, expectedHash: expectedHash, outputStream: patchedFileStream, cancellationToken: cancellationToken);
+
+        var patchedFile = new PatchedFile(
+            FileName: srcPath,
+            PatchedFileHashes: patchedFileHashes,
+            OriginalFileHashes: originalFileHashes
+        );
+
+        Debug.Assert(Size.FromLong(patchedFileStream.Length) == patchedFileHashes.Size.Value);
+        Logger.LogDebug("Patching result: `{PatchedFile}`", patchedFile);
+
+        patchedFileStream.Position = 0;
+        return (patchedFile, patchedFileStream);
+    }
+
+    private async ValueTask<(MultiHash OriginalFileHashes, MultiHash PatchedFileHashes)> PatchFile(LibraryFile.ReadOnly fileToPatch, LibraryFile.ReadOnly patchDataFile, Crc32Value expectedHash, Stream outputStream, CancellationToken cancellationToken)
+    {
+        await using var inputStream = await FileStore.GetFileStream(fileToPatch.Hash, token: cancellationToken);
+
+        var originalFileHashes = await MultiHasher.HashStream(inputStream, cancellationToken: cancellationToken);
+        if (originalFileHashes.Crc32 != expectedHash.Value) throw new InvalidOperationException("The source file's CRC32 hash does not match the expected hash.");
+
+        inputStream.Position = 0;
+
+        var patchData = await FileStore.Load(patchDataFile.Hash, token: cancellationToken);
+        PatchFile(inputStream, patchData, outputStream);
+
+        outputStream.Position = 0;
+        var patchedFileHashes = await MultiHasher.HashStream(outputStream, cancellationToken: cancellationToken);
+
+        return (originalFileHashes, patchedFileHashes);
+    }
+
+    private static void PatchFile(Stream inputStream, byte[] patchData, Stream outputStream)
+    {
+        // NOTE(erri120): This patching library is kinda ass, the API isn't async, they create this memory stream multiple times, and generally allocate a bunch of memory.
+        // I wouldn't be surprised if this line will show up in memory and performance diagnosers.
+        BsDiff.BinaryPatch.Apply(inputStream, openPatchStream: () => new MemoryStream(patchData, writable: false), outputStream);
     }
 
     private LibraryFile.ReadOnly GetLibraryFile(CollectionDownload.ReadOnly download, IDb db)

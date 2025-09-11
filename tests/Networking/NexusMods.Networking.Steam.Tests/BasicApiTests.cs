@@ -22,9 +22,9 @@ public class BasicApiTests(ILogger<BasicApiTests> logger, ISteamSession session)
         
         var largestFile = manifest.Files.OrderByDescending(f => f.Size).First();
         await using var stream = session.GetFileStream(SdvAppId, manifest, largestFile.Path);
-        var multiHash = new MultiHasher();
-        var result = await multiHash.HashStream(stream, CancellationToken.None);
-        
+
+        var result = await MultiHasher.HashStream(stream, cancellationToken: CancellationToken.None);
+
         stream.Length.Should().Be((long)largestFile.Size.Value);
         result.Sha1.Should().Be(largestFile.Hash);
     }
