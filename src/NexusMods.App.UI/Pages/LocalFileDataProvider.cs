@@ -11,6 +11,7 @@ using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Pages.LibraryPage;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Query;
+using NexusMods.MnemonicDB.Abstractions.ValueSerializers;
 using NexusMods.Sdk.Hashes;
 using UIObservableExtensions = NexusMods.App.UI.Extensions.ObservableExtensions;
 
@@ -106,7 +107,7 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
             
             var relatedDownloadedCollectionsObservable = conn
                 .ObserveDatoms(CollectionDownloadExternal.Md5)
-                .FilterImmutable(datom => ((Md5Attribute.ReadDatom)datom.Resolved(conn)).V == md5.Value)
+                .FilterImmutable(datom => Md5Value.From(UInt128Serializer.Read(datom.ValueSpan)) == md5.Value)
                 .AsEntityIds()
                 .Distinct()
                 .Transform(datom => NexusMods.Abstractions.NexusModsLibrary.Models.CollectionDownload.Load(conn.Db, datom.E).CollectionRevision.Collection)
