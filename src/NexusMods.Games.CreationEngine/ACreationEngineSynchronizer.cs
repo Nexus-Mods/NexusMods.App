@@ -1,13 +1,19 @@
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
+using NexusMods.Games.CreationEngine.Abstractions;
 using NexusMods.Paths;
 
 namespace NexusMods.Games.CreationEngine;
 
 public abstract class ACreationEngineSynchronizer : ALoadoutSynchronizer
 {
-    protected ACreationEngineSynchronizer(IServiceProvider provider) : base(provider)
+    private IIntrinsicFile[] _intrinsicFiles;
+    protected ACreationEngineSynchronizer(IServiceProvider provider, ICreationEngineGame game) : base(provider)
     {
+        _intrinsicFiles =
+        [
+            new PluginsFile(game),
+        ];
     }
 
     public override bool IsIgnoredBackupPath(GamePath path)

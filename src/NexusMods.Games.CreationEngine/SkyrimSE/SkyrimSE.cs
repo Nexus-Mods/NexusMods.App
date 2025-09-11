@@ -7,6 +7,7 @@ using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
+using NexusMods.Games.CreationEngine.Abstractions;
 using NexusMods.Games.CreationEngine.Installers;
 using NexusMods.Games.FOMOD;
 using NexusMods.Games.Generic.Installers;
@@ -16,7 +17,7 @@ using NexusMods.Sdk.IO;
 
 namespace NexusMods.Games.CreationEngine.SkyrimSE;
 
-public partial class SkyrimSE : AGame, ISteamGame, IGogGame
+public partial class SkyrimSE : AGame, ISteamGame, IGogGame, ICreationEngineGame
 {
     private readonly IServiceProvider _serviceProvider;
 
@@ -42,7 +43,7 @@ public partial class SkyrimSE : AGame, ISteamGame, IGogGame
         return [];
     }
     
-    protected override ILoadoutSynchronizer MakeSynchronizer(IServiceProvider provider) => new SkyrimSESynchronizer(provider);
+    protected override ILoadoutSynchronizer MakeSynchronizer(IServiceProvider provider) => new SkyrimSESynchronizer(provider, this);
 
     public override SupportType SupportType => SupportType.Unsupported;
     public IEnumerable<uint> SteamIds => [489830];
@@ -71,4 +72,6 @@ public partial class SkyrimSE : AGame, ISteamGame, IGogGame
             
         }.Build(),
     ];
+
+    public GamePath PluginsFile => new GamePath(LocationId.Game, "Data/SKSE/Plugins/SkyrimSE.ini");
 }

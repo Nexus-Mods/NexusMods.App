@@ -1791,6 +1791,13 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         }
     }
 
+    /// <summary>
+    /// Gets a list of files intrinsic to this game. Such as mod order files, preference files, etc.
+    /// These files will not be backed up and will not be included in the loadout directly. Instead, they are
+    /// generated at sync time by calling the implementations of the files themselves. 
+    /// </summary>
+    protected virtual IEnumerable<IIntrinsicFile> IntrinsicFiles => [];
+
     private static string GetNewShortName(IDb db, GameInstallMetadataId installationId)
     {
         var existingShortNames = Loadout.All(db)
