@@ -5,7 +5,7 @@ using NexusMods.MnemonicDB.Abstractions.Models;
 namespace NexusMods.Abstractions.Library.Models;
 
 [PublicAPI]
-[Include<LibraryItem>]
+[Include<LibraryArchive>]
 public partial class ManuallyCreatedArchive : IModelDefinition
 {
     public enum CreationSource

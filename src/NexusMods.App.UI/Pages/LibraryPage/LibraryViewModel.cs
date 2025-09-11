@@ -322,7 +322,11 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
                 .AddTo(disposables);
 
             // Auto check updates on entering library.
-            RefreshUpdatesCommand.Execute(Unit.Default);
+            R3.Observable
+                .Return(Unit.Default)
+                .ObserveOnThreadPool()
+                .Subscribe(this,static (_, self) => self.RefreshUpdatesCommand.Execute(Unit.Default))
+                .AddTo(disposables);
         });
     }
 
@@ -1212,6 +1216,7 @@ public class LibraryTreeDataGridAdapter :
             ColumnCreator.Create<EntityId, SharedColumns.ItemSize>(),
             ColumnCreator.Create<EntityId, LibraryColumns.DownloadedDate>(sortDirection: ListSortDirection.Descending),
             ColumnCreator.Create<EntityId, SharedColumns.InstalledDate>(),
+            ColumnCreator.Create<EntityId, LibraryColumns.Collections>(),
             ColumnCreator.Create<EntityId, LibraryColumns.Actions>(),
         ];
     }

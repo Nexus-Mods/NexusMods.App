@@ -495,23 +495,8 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                 {
                     var group = viewModFilesArgumentsSubject.Value;
                     if (!group.HasValue) return;
-
-                    var isReadonly = group.Value.AsLoadoutItem()
-                        .GetThisAndParents()
-                        .Any(item => IsRequired(item.LoadoutItemId, _connection));
-
-                    var pageData = new PageData
-                    {
-                        FactoryId = LoadoutGroupFilesPageFactory.StaticId,
-                        Context = new LoadoutGroupFilesPageContext
-                        {
-                            GroupIds = [group.Value.Id],
-                            IsReadOnly = isReadonly,
-                        },
-                    };
-                    var workspaceController = GetWorkspaceController();
-                    var behavior = workspaceController.GetOpenPageBehavior(pageData, info);
-                    workspaceController.OpenPage(workspaceController.ActiveWorkspaceId, pageData, behavior);
+                    
+                    OpenViewModFilesPage(group.Value, info, GetWorkspaceController(), _connection);
                 },
                 false
             );
@@ -581,6 +566,13 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                                 HandleOpenModPageFor(viewModPageMessage.Ids, _connection, 
                                     _serviceProvider.GetRequiredService<IOSInterop>(), 
                                     cancellationToken);
+                                return Task.CompletedTask;
+                            },
+                            viewModFilesMessage =>
+                            {
+                                HandleViewModFiles(viewModFilesMessage.Ids, 
+                                    viewModFilesMessage.NavigationInformation, 
+                                    _connection, GetWorkspaceController());
                                 return Task.CompletedTask;
                             },
                             uninstallItemMessage => HandleUninstallItem(uninstallItemMessage.Ids, windowManager, _connection)
@@ -809,6 +801,36 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
         workspaceController.OpenPage(workspaceController.ActiveWorkspaceId, pageData, behavior);
     }
     
+    public static void HandleViewModFiles(LoadoutItemId[] ids, NavigationInformation navInfo, IConnection connection, IWorkspaceController workspaceController)
+    {
+        if (ids.Length == 0) return;
+        var loadoutItemId = ids.First();
+        
+        var group = LoadoutItemGroup.Load(connection.Db, loadoutItemId);
+
+        OpenViewModFilesPage(group, navInfo, workspaceController, connection);
+    }
+
+    private static void OpenViewModFilesPage(LoadoutItemGroup.ReadOnly group, NavigationInformation navInfo, IWorkspaceController workspaceController, IConnection connection)
+    {
+        var isReadonly = group.AsLoadoutItem()
+            .GetThisAndParents()
+            .Any(item => IsRequired(item.LoadoutItemId, connection));
+
+        var pageData = new PageData
+        {
+            FactoryId = LoadoutGroupFilesPageFactory.StaticId,
+            Context = new LoadoutGroupFilesPageContext
+            {
+                GroupIds = [group.Id],
+                IsReadOnly = isReadonly,
+            },
+        };
+       
+        var behavior = workspaceController.GetOpenPageBehavior(pageData, navInfo);
+        workspaceController.OpenPage(workspaceController.ActiveWorkspaceId, pageData, behavior);
+    }
+
     public static async Task HandleUninstallItem(LoadoutItemId[] ids, IWindowManager windowManager, IConnection connection)
     {
         if (ids.Length == 0) return;
