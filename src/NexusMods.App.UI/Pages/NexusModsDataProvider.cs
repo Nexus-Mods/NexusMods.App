@@ -311,12 +311,7 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
             .AsEntityIds()
             .Distinct()
             .Transform(datom => NexusMods.Abstractions.NexusModsLibrary.Models.CollectionDownload.Load(_connection.Db, datom.E).CollectionRevision.Collection)
-            .ChangeKey(collection => collection.Id)
-            .Distinct()
-            .Transform(collection => collection.Name)
-            .SortBy(static name => name)
-            .RemoveKey()
-            .StartWithEmpty();
+            .ChangeKey(collection => collection.Id);
 
         LibraryDataProviderHelper.AddRelatedCollectionsComponent(itemModel, linkedLoadoutItemsObservable, relatedDownloadedCollectionsObservable);
     }
@@ -337,12 +332,7 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
                     )
                     .ChangeKey(collection => collection.Id)
                     .Distinct()
-            )
-            .Distinct()
-            .Transform(collection => collection.Name)
-            .SortBy(static name => name)
-            .RemoveKey()
-            .StartWithEmpty();
+            );
 
         LibraryDataProviderHelper.AddRelatedCollectionsComponent(itemModel, linkedLoadoutItemsObservable, relatedDownloadedCollectionsObservable);
     }

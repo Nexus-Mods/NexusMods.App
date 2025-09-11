@@ -104,19 +104,14 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
         else
         {
             var conn = localFile.Db.Connection;
-            
+
             var relatedDownloadedCollectionsObservable = conn
                 .ObserveDatoms(CollectionDownloadExternal.Md5)
                 .FilterImmutable(datom => Md5Value.From(UInt128Serializer.Read(datom.ValueSpan)) == md5.Value)
                 .AsEntityIds()
                 .Distinct()
                 .Transform(datom => NexusMods.Abstractions.NexusModsLibrary.Models.CollectionDownload.Load(conn.Db, datom.E).CollectionRevision.Collection)
-                .ChangeKey(collection => collection.Id)
-                .Distinct()
-                .Transform(collection => collection.Name)
-                .SortBy(static name => name)
-                .RemoveKey()
-                .StartWithEmpty();
+                .ChangeKey(collection => collection.Id);
             
             LibraryDataProviderHelper.AddRelatedCollectionsComponent(itemModel, linkedLoadoutItemsObservable, relatedDownloadedCollectionsObservable );
         }

@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Extensions;
@@ -92,14 +93,22 @@ public static class LibraryDataProviderHelper
         CompositeItemModel<EntityId> itemModel,
         IObservable<IChangeSet<LoadoutItem.ReadOnly, EntityId>> linkedLoadoutItemsObservable)
     {
-        AddRelatedCollectionsComponent(itemModel, linkedLoadoutItemsObservable, System.Reactive.Linq.Observable.Return(ChangeSet<string>.Empty));
+        AddRelatedCollectionsComponent(itemModel, linkedLoadoutItemsObservable, 
+            System.Reactive.Linq.Observable.Return(ChangeSet<CollectionMetadata.ReadOnly, EntityId>.Empty));
     }
     
     public static void AddRelatedCollectionsComponent(
         CompositeItemModel<EntityId> itemModel,
         IObservable<IChangeSet<LoadoutItem.ReadOnly, EntityId>> linkedLoadoutItemsObservable,
-        IObservable<IChangeSet<string>> relatedDownloadedCollectionsObservable)
+        IObservable<IChangeSet<CollectionMetadata.ReadOnly, EntityId>> relatedDownloadedCollectionsObservable)
     {
+        var downloadedNamesObservable = relatedDownloadedCollectionsObservable
+            .Distinct()
+            .Transform(collection => collection.Name)
+            .SortBy(static name => name)
+            .RemoveKey()
+            .StartWithEmpty();
+        
         var installedCollectionsObservable = linkedLoadoutItemsObservable
             .Transform(item => item.Parent.AsLoadoutItem())
             .ChangeKey(coll => coll.Id)
@@ -110,7 +119,7 @@ public static class LibraryDataProviderHelper
             .StartWithEmpty();
 
         // Only take downloaded entries that are not already installed
-        var filteredDownloadedCollectionsObservable = relatedDownloadedCollectionsObservable.Except(installedCollectionsObservable);
+        var filteredDownloadedCollectionsObservable = downloadedNamesObservable.Except(installedCollectionsObservable);
 
         var hasCollectionsObservable = installedCollectionsObservable.IsEmpty()
             .CombineLatest(filteredDownloadedCollectionsObservable.IsEmpty(), 
