@@ -1,4 +1,10 @@
-using System.Text.RegularExpressions;
+using Microsoft.Extensions.DependencyInjection;
+using Mutagen.Bethesda;
+using Mutagen.Bethesda.Plugins;
+using Mutagen.Bethesda.Plugins.Binary.Parameters;
+using Mutagen.Bethesda.Plugins.Binary.Streams;
+using Mutagen.Bethesda.Plugins.Records;
+using Mutagen.Bethesda.Skyrim;
 using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.GameLocators.GameCapabilities;
@@ -12,9 +18,9 @@ using NexusMods.Games.CreationEngine.Abstractions;
 using NexusMods.Games.CreationEngine.Emitters;
 using NexusMods.Games.CreationEngine.Installers;
 using NexusMods.Games.FOMOD;
-using NexusMods.Games.Generic.Installers;
+using NexusMods.Hashing.xxHash3;
 using NexusMods.Paths;
-using NexusMods.Paths.Utilities;
+using NexusMods.Sdk.FileStore;
 using NexusMods.Sdk.IO;
 
 namespace NexusMods.Games.CreationEngine.SkyrimSE;
@@ -23,12 +29,12 @@ public partial class SkyrimSE : AGame, ISteamGame, IGogGame, ICreationEngineGame
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly IDiagnosticEmitter[] _emitters;
-    private readonly PluginUtilities<SkyrimSE> _utilities;
+    private readonly IFileStore _fileStore;
 
     public SkyrimSE(IServiceProvider provider) : base(provider)
     {
         _serviceProvider = provider;
-        _utilities = new PluginUtilities<SkyrimSE>(provider);
+        _fileStore = provider.GetRequiredService<IFileStore>();
 
         _emitters =
         [
@@ -83,5 +89,15 @@ public partial class SkyrimSE : AGame, ISteamGame, IGogGame, ICreationEngineGame
         }.Build(),
     ];
 
-    public IPluginUtilities PluginUtilities => _utilities;
+    private static readonly GroupMask EmptyGroupMask = new(false);
+    public async ValueTask<IMod?> ParsePlugin(Hash hash, RelativePath? name = null)
+    {
+        var fileName = name?.FileName.ToString() ?? "unknown.esm";
+        var key = ModKey.FromFileName(fileName);
+        await using var stream = await _fileStore.GetFileStream(hash);
+        var meta = ParsingMeta.Factory(BinaryReadParameters.Default, GameRelease.SkyrimSE, key, stream);
+        await using var mutagenStream = new MutagenBinaryReadStream(stream, meta);
+        using var frame = new MutagenFrame(mutagenStream);
+        return SkyrimMod.CreateFromBinary(frame, SkyrimRelease.SkyrimSE, EmptyGroupMask);
+    }
 }

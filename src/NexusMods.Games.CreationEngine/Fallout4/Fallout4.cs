@@ -1,4 +1,10 @@
-using System.Text.RegularExpressions;
+using Microsoft.Extensions.DependencyInjection;
+using Mutagen.Bethesda;
+using Mutagen.Bethesda.Fallout4;
+using Mutagen.Bethesda.Plugins;
+using Mutagen.Bethesda.Plugins.Binary.Parameters;
+using Mutagen.Bethesda.Plugins.Binary.Streams;
+using Mutagen.Bethesda.Plugins.Records;
 using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.GameLocators.GameCapabilities;
@@ -12,9 +18,9 @@ using NexusMods.Games.CreationEngine.Abstractions;
 using NexusMods.Games.CreationEngine.Emitters;
 using NexusMods.Games.CreationEngine.Installers;
 using NexusMods.Games.FOMOD;
-using NexusMods.Games.Generic.Installers;
+using NexusMods.Hashing.xxHash3;
 using NexusMods.Paths;
-using NexusMods.Paths.Utilities;
+using NexusMods.Sdk.FileStore;
 using NexusMods.Sdk.IO;
 
 namespace NexusMods.Games.CreationEngine.Fallout4;
@@ -22,13 +28,13 @@ namespace NexusMods.Games.CreationEngine.Fallout4;
 public partial class Fallout4 : AGame, ISteamGame, IGogGame, ICreationEngineGame
 {
     private readonly IServiceProvider _serviceProvider;
-    private readonly PluginUtilities<Fallout4> _utilities;
     private readonly IDiagnosticEmitter[] _emitters;
+    private readonly IFileStore _fileStore;
 
     public Fallout4(IServiceProvider provider) : base(provider)
     {
         _serviceProvider = provider;
-        _utilities = new PluginUtilities<Fallout4>(provider);
+        _fileStore = provider.GetRequiredService<IFileStore>();
         
         _emitters =
         [
@@ -90,5 +96,15 @@ public partial class Fallout4 : AGame, ISteamGame, IGogGame, ICreationEngineGame
     
     public override IDiagnosticEmitter[] DiagnosticEmitters => _emitters;
 
-    public IPluginUtilities PluginUtilities => _utilities;
+    private static readonly GroupMask EmptyGroupMask = new(false);
+    public async ValueTask<IMod?> ParsePlugin(Hash hash, RelativePath? name = null)
+    {
+        var fileName = name?.FileName.ToString() ?? "unknown.esm";
+        var key = ModKey.FromFileName(fileName);
+        await using var stream = await _fileStore.GetFileStream(hash);
+        var meta = ParsingMeta.Factory(BinaryReadParameters.Default, GameRelease.Fallout4, key, stream);
+        await using var mutagenStream = new MutagenBinaryReadStream(stream, meta);
+        using var frame = new MutagenFrame(mutagenStream);
+        return Fallout4Mod.CreateFromBinary(frame, Fallout4Release.Fallout4, EmptyGroupMask);
+    }
 }
