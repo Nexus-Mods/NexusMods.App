@@ -6,9 +6,8 @@ using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.NexusModsLibrary;
+using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
-using NexusMods.Abstractions.NexusWebApi.Types.V2.Uid;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Pages.LibraryPage;
@@ -86,6 +85,53 @@ public static class LibraryDataProviderHelper
             componentFactory: (valueObservable, initialValue) => new DateComponent(
                 initialValue,
                 valueObservable
+            )
+        );
+    }
+
+    public static void AddRelatedCollectionsComponent(
+        CompositeItemModel<EntityId> itemModel,
+        IObservable<IChangeSet<LoadoutItem.ReadOnly, EntityId>> linkedLoadoutItemsObservable)
+    {
+        AddRelatedCollectionsComponent(itemModel, linkedLoadoutItemsObservable, 
+            System.Reactive.Linq.Observable.Return(ChangeSet<CollectionMetadata.ReadOnly, EntityId>.Empty));
+    }
+    
+    public static void AddRelatedCollectionsComponent(
+        CompositeItemModel<EntityId> itemModel,
+        IObservable<IChangeSet<LoadoutItem.ReadOnly, EntityId>> linkedLoadoutItemsObservable,
+        IObservable<IChangeSet<CollectionMetadata.ReadOnly, EntityId>> relatedDownloadedCollectionsObservable)
+    {
+        var downloadedNamesObservable = relatedDownloadedCollectionsObservable
+            .Distinct()
+            .Transform(collection => collection.Name)
+            .SortBy(static name => name)
+            .RemoveKey()
+            .StartWithEmpty();
+        
+        var installedCollectionsObservable = linkedLoadoutItemsObservable
+            .Transform(item => item.Parent.AsLoadoutItem())
+            .ChangeKey(coll => coll.Id)
+            .Distinct()
+            .Transform(collection => collection.Name)
+            .SortBy(static name => name)
+            .RemoveKey()
+            .StartWithEmpty();
+
+        // Only take downloaded entries that are not already installed
+        var filteredDownloadedCollectionsObservable = downloadedNamesObservable.Except(installedCollectionsObservable);
+
+        var hasCollectionsObservable = installedCollectionsObservable.IsEmpty()
+            .CombineLatest(filteredDownloadedCollectionsObservable.IsEmpty(), 
+                (installedIsEmpty, relatedIsEmpty) => !installedIsEmpty || !relatedIsEmpty)
+            .DistinctUntilChanged()
+            .ToObservable();
+
+        itemModel.AddObservable(LibraryColumns.Collections.RelatedCollectionsComponentKey,
+            hasCollectionsObservable,
+            componentFactory: () => new LibraryComponents.RelatedCollectionsComponent(
+                installedCollectionsObservable,
+                filteredDownloadedCollectionsObservable
             )
         );
     }

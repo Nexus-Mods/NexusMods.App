@@ -1,5 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
+using System.Reactive.Linq;
 using DynamicData;
+using DynamicData.Aggregation;
 using DynamicData.Kernel;
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Library.Models;
@@ -65,6 +67,22 @@ public static class LibraryColumns
         public static readonly ComponentKey ComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(DateComponent));
 
         public static string GetColumnHeader() => "Downloaded";
+        public static string GetColumnTemplateResourceKey() => ColumnTemplateResourceKey;
+    }
+    
+    [UsedImplicitly]
+    public sealed class Collections : ICompositeColumnDefinition<Collections>
+    {
+        public static int Compare<TKey>(CompositeItemModel<TKey> a, CompositeItemModel<TKey> b) where TKey : notnull
+        {
+            var aValue = a.GetOptional<LibraryComponents.RelatedCollectionsComponent>(key: RelatedCollectionsComponentKey);
+            var bValue = b.GetOptional<LibraryComponents.RelatedCollectionsComponent>(key: RelatedCollectionsComponentKey);
+            return aValue.Compare(bValue);
+        }
+
+        public const string ColumnTemplateResourceKey = nameof(LibraryColumns) + "_" + nameof(Collections);
+        public static readonly ComponentKey RelatedCollectionsComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(LibraryComponents.RelatedCollectionsComponent));
+        public static string GetColumnHeader() => "Collections";
         public static string GetColumnTemplateResourceKey() => ColumnTemplateResourceKey;
     }
 
@@ -248,6 +266,75 @@ public static class LibraryComponents
             base.Dispose(disposing);
         }
     }
+    
+    public sealed class RelatedCollectionsComponent : ReactiveR3Object, IItemModelComponent<RelatedCollectionsComponent>, IComparable<RelatedCollectionsComponent>
+    {
+        private readonly IDisposable _activationDisposable; 
+        
+        public StringComponent InstalledCollections { get; }
+        public StringComponent DownloadedCollections { get; }
+
+        public ValueComponent<bool> ShowSeparator { get; }
+        public ValueComponent<bool> HasInstalledCollections { get; }
+        public ValueComponent<bool> HasDownloadedCollections { get; }
+
+        public RelatedCollectionsComponent(IObservable<IChangeSet<string>> installedCollections, IObservable<IChangeSet<string>> downloadedCollections)
+        {
+            InstalledCollections = new StringComponent("", installedCollections.QueryWhenChanged(items => string.Join(", ", items)));
+            DownloadedCollections = new StringComponent("", downloadedCollections.QueryWhenChanged(items => string.Join(", ", items)));
+            
+            ShowSeparator = new ValueComponent<bool>(false, installedCollections.IsNotEmpty().CombineLatest(downloadedCollections.IsNotEmpty(),
+                (hasInstalled, hasDownloaded) => hasDownloaded && hasInstalled));
+            HasInstalledCollections = new ValueComponent<bool>(false, installedCollections.IsNotEmpty());
+            HasDownloadedCollections = new ValueComponent<bool>(false, downloadedCollections.IsNotEmpty());
+            
+            _activationDisposable = this.WhenActivated(static (self, disposables) =>
+            {
+                self.InstalledCollections.Activate().AddTo(disposables);
+                self.DownloadedCollections.Activate().AddTo(disposables);
+                self.ShowSeparator.Activate().AddTo(disposables);
+                self.HasInstalledCollections.Activate().AddTo(disposables);
+                self.HasDownloadedCollections.Activate().AddTo(disposables);
+            });
+        }
+        
+        public int CompareTo(RelatedCollectionsComponent? other)
+        {
+            if (other is null) return 1;
+            var installedCompare = InstalledCollections.CompareTo(other.InstalledCollections);
+            return installedCompare != 0 ? installedCompare : DownloadedCollections.CompareTo(other.DownloadedCollections);
+        }
+
+        public FilterResult MatchesFilter(Filter filter)
+        {
+            var installedResult = InstalledCollections.MatchesFilter(filter);
+            if (installedResult == FilterResult.Pass) return FilterResult.Pass;
+
+            var downloadedResult = DownloadedCollections.MatchesFilter(filter);
+            if (downloadedResult == FilterResult.Pass) return FilterResult.Pass;
+
+            if (installedResult == FilterResult.Fail || downloadedResult == FilterResult.Fail)
+                return FilterResult.Fail;
+
+            return FilterResult.Indeterminate;
+        }
+        
+        private bool _isDisposed;
+        protected override void Dispose(bool disposing)
+        {
+            if (!_isDisposed)
+            {
+                if (disposing)
+                {
+                    Disposable.Dispose(_activationDisposable, ShowSeparator, InstalledCollections, HasInstalledCollections, HasDownloadedCollections);
+                }
+
+                _isDisposed = true;
+            }
+
+            base.Dispose(disposing);
+        }
+    }
 
     public sealed class InstallAction : ReactiveR3Object, IItemModelComponent<InstallAction>, IComparable<InstallAction>
     {
@@ -418,7 +505,7 @@ public static class LibraryComponents
         {
             var initialUpdates = (ModUpdatesOnModPage)initialValue;
             _newFiles = new BindableReactiveProperty<ModUpdatesOnModPage>(value: initialUpdates);
-            _buttonText = new BindableReactiveProperty<string>();
+            _buttonText = new BindableReactiveProperty<string>("");
             _updateButtonText = new BindableReactiveProperty<string>(value: GetUpdateButtonText(initialUpdates.NumberOfModFilesToUpdate));
             _updateAndKeepOldModButtonText = new BindableReactiveProperty<string>(value: GetUpdateAndKeepOldModButtonText(initialUpdates.NumberOfModFilesToUpdate));
 
