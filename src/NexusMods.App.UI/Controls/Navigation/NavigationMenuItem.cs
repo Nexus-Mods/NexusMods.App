@@ -14,12 +14,12 @@ public class NavigationMenuItem : MenuItem
     public static readonly StyledProperty<ReactiveCommand<NavigationInput, Unit>?> NavigateCommandProperty =
         AvaloniaProperty.Register<NavigationControl, ReactiveCommand<NavigationInput, Unit>?>(nameof(NavigationCommand));
 
-    public ICommand? NavigationCommand
+    public ReactiveCommand<NavigationInformation, Unit>? NavigationCommand
     {
         get
         {
             var value = GetValue(CommandProperty);
-            return value;
+            return value as ReactiveCommand<NavigationInformation, Unit>;
         }
         set => SetValue(CommandProperty, value);
     }
@@ -42,7 +42,7 @@ public class NavigationMenuItem : MenuItem
         _contextMenuCommand = ReactiveCommand.Create<OpenPageBehaviorType>(openPageBehaviorType =>
         {
             var navigationInformation = NavigationInformation.From(openPageBehaviorType);
-            NavigationCommand?.Execute(navigationInformation);
+            Command?.Execute(navigationInformation);
         });
 
         var contextMenu = new ContextMenu
