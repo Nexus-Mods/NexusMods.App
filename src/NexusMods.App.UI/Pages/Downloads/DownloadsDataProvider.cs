@@ -98,7 +98,7 @@ public sealed class DownloadsDataProvider(IServiceProvider serviceProvider) : ID
     private static string ResolveGameNameInitial(GameId gameId)
     {
         // Return a default value since we can't access the registry synchronously
-        return "Unknown Game";
+        return Language.Downloads_UnknownGame;
     }
 
     private Observable<string> ResolveGameNameObservable(GameId gameId)
@@ -107,9 +107,9 @@ public sealed class DownloadsDataProvider(IServiceProvider serviceProvider) : ID
             .ToObservableChangeSet()
             .Transform(game => game.Game)
             .Filter(game => game.GameId.Equals(gameId))
-            .QueryWhenChanged(query => query.FirstOrDefault()?.Name ?? "Unknown Game")
+            .QueryWhenChanged(query => query.FirstOrDefault()?.Name ?? Language.Downloads_UnknownGame)
             .ToObservable()
-            .Prepend("Unknown Game");
+            .Prepend(Language.Downloads_UnknownGame);
     }
 
     private ImageComponent CreateIconComponent(DownloadInfo download)

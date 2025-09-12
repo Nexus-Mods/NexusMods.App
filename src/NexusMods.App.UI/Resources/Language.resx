@@ -1261,5 +1261,14 @@ Keep the downloaded files in your library in case you want to retry the installa
         <value>--</value>
         <comment>Displayed when download speed is inactive or zero</comment>
     </data>
+    <data name="Downloads_UnknownGame" xml:space="preserve">
+        <value>Unknown Game</value>
+    </data>
+    <data name="Downloads_UnknownDownload" xml:space="preserve">
+        <value>Unknown Download</value>
+    </data>
+    <data name="GameWidget_VersionUnknown" xml:space="preserve">
+        <value>Version: Unknown</value>
+    </data>
 
 </root>
