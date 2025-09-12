@@ -182,6 +182,15 @@
     <data name="DownloadsView_UnderDevelopment" xml:space="preserve">
         <value>The Downloads page is currently being reworked and will be replaced in a future update. We apologise for the inconvenience.</value>
     </data>
+    <data name="DownloadsLeftMenu_AllDownloads" xml:space="preserve">
+        <value>All Downloads</value>
+    </data>
+    <data name="DownloadsLeftMenu_AllCompleted" xml:space="preserve">
+        <value>All Completed</value>
+    </data>
+    <data name="DownloadsLeftMenu_GameSpecificDownloads" xml:space="preserve">
+        <value>{0} Downloads</value>
+    </data>
     <data name="NexusLoginOverlayView__Please_Click_Authorize" xml:space="preserve">
         <value>Please click "Authorise" on the website</value>
     </data>
@@ -1244,4 +1253,22 @@ Keep the downloaded files in your library in case you want to retry the installa
     <data name="Loadout_UninstallItem_Menu_Text__Uninstall_read_only" xml:space="preserve">
         <value>Uninstall read-only</value>
     </data>
+    <data name="Downloads_SizeProgress_Of" xml:space="preserve">
+        <value> of </value>
+        <comment>Used in size progress display: "15.6MB of 56MB"</comment>
+    </data>
+    <data name="Downloads_Speed_Inactive" xml:space="preserve">
+        <value>--</value>
+        <comment>Displayed when download speed is inactive or zero</comment>
+    </data>
+    <data name="Downloads_UnknownGame" xml:space="preserve">
+        <value>Unknown Game</value>
+    </data>
+    <data name="Downloads_UnknownDownload" xml:space="preserve">
+        <value>Unknown Download</value>
+    </data>
+    <data name="GameWidget_VersionUnknown" xml:space="preserve">
+        <value>Version: Unknown</value>
+    </data>
+
 </root>
