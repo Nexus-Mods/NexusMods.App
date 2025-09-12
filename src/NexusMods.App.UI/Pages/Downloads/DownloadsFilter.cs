@@ -6,6 +6,8 @@ namespace NexusMods.App.UI.Pages.Downloads;
 /// <summary>
 /// Filter for downloads based on scope and optional game ID.
 /// </summary>
+/// <param name="Scope">The filtering scope to apply</param>
+/// <param name="GameId">Optional game ID for game-specific filtering</param>
 public readonly record struct DownloadsFilter(DownloadsScope Scope, Optional<GameId> GameId)
 {
     /// <summary>

@@ -22,10 +22,8 @@ public record CompletedDownloadsPageContext : DownloadsPageContext;
 public record GameSpecificDownloadsPageContext(GameId GameId) : DownloadsPageContext;
 
 [UsedImplicitly]
-public class DownloadsPageFactory : APageFactory<IDownloadsPageViewModel, DownloadsPageContext>
+public class DownloadsPageFactory(IServiceProvider serviceProvider) : APageFactory<IDownloadsPageViewModel, DownloadsPageContext>(serviceProvider)
 {
-    public DownloadsPageFactory(IServiceProvider serviceProvider) : base(serviceProvider) { }
-
     public static readonly PageFactoryId StaticId = PageFactoryId.From(Guid.Parse("c8f7a2e1-9b4d-4c3a-8f6e-1a2b3c4d5e6f"));
     public override PageFactoryId Id => StaticId;
 
