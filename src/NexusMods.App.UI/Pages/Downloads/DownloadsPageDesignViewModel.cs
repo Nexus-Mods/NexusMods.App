@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
@@ -8,6 +9,7 @@ namespace NexusMods.App.UI.Pages.Downloads;
 
 public class DownloadsPageDesignViewModel : APageViewModel<IDownloadsPageViewModel>, IDownloadsPageViewModel
 {
+    public DownloadsTreeDataGridAdapter Adapter { get; }
     public int SelectionCount => 5;
     
     public bool IsEmptyStateActive { get; set; } = true;
@@ -18,6 +20,12 @@ public class DownloadsPageDesignViewModel : APageViewModel<IDownloadsPageViewMod
 
     public DownloadsPageDesignViewModel() : base(new DesignWindowManager())
     {
+        // Create a dummy adapter for design-time
+        var serviceProvider = new ServiceCollection()
+            .BuildServiceProvider();
+        
+        Adapter = new DownloadsTreeDataGridAdapter(serviceProvider, DownloadsFilter.All());
+        
         TabTitle = Language.Downloads_WorkspaceTitle;
         TabIcon = IconValues.PictogramDownload;
     }

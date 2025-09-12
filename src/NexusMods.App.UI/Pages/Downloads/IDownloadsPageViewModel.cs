@@ -5,6 +5,7 @@ namespace NexusMods.App.UI.Pages.Downloads;
 
 public interface IDownloadsPageViewModel : IPageViewModelInterface
 {
+    public DownloadsTreeDataGridAdapter Adapter { get; }
     public int SelectionCount { get; }
     public ReactiveCommand<Unit> PauseAllCommand { get; }
     public ReactiveCommand<Unit> ResumeAllCommand { get; }

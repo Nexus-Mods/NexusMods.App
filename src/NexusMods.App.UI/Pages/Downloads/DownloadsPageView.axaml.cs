@@ -1,5 +1,10 @@
+using System.Reactive.Disposables;
 using Avalonia.ReactiveUI;
 using JetBrains.Annotations;
+using NexusMods.Abstractions.Downloads;
+using NexusMods.App.UI.Controls;
+using NexusMods.MnemonicDB.Abstractions;
+using ReactiveUI;
 
 namespace NexusMods.App.UI.Pages.Downloads;
 
@@ -10,6 +15,20 @@ public partial class DownloadsPageView : ReactiveUserControl<IDownloadsPageViewM
     {
         InitializeComponent();
 
-        // TODO: Add WhenActivated block for bindings and reactive subscriptions
+        TreeDataGridViewHelper.SetupTreeDataGridAdapter<DownloadsPageView, IDownloadsPageViewModel, CompositeItemModel<DownloadId>, DownloadId>(
+            this,
+            TreeDataGridDownloads,
+            vm => vm.Adapter
+        );
+
+        this.WhenActivated(disposables =>
+        {
+            // Bind TreeDataGrid Source
+            this.OneWayBind(ViewModel,
+                    vm => vm.Adapter.Source.Value,
+                    view => view.TreeDataGridDownloads.Source
+                )
+                .DisposeWith(disposables);
+        });
     }
 }

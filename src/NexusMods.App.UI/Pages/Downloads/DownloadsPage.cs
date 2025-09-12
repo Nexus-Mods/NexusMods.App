@@ -31,7 +31,8 @@ public class DownloadsPageFactory(IServiceProvider serviceProvider) : APageFacto
     {
         return new DownloadsPageViewModel(
             ServiceProvider.GetRequiredService<IWindowManager>(),
-            ServiceProvider.GetRequiredService<IDownloadsService>()
+            ServiceProvider,
+            context
         );
     }
 }

@@ -26,22 +26,54 @@
         <!-- Content area with toolbar and main content -->
         <Grid Grid.Row="1" RowDefinitions="Auto, *" Margin="0,16,0,0">
 
-            <!-- Toolbar placeholder -->
+            <!-- Toolbar with command buttons -->
             <controls:Toolbar Grid.Row="0" Margin="24,12, 24, 0">
-                <!-- TODO: Add toolbar buttons -->
                 <ItemsControl>
+                    <controls:StandardButton x:Name="PauseAllButton"
+                                             Text="Pause All"
+                                             Type="Tertiary"
+                                             Size="Toolbar"
+                                             Fill="None"
+                                             ShowIcon="Left"
+                                             LeftIcon="{x:Static icons:IconValues.Pause}"
+                                             Command="{Binding PauseAllCommand}" />
+                    
+                    <controls:StandardButton x:Name="ResumeAllButton"
+                                             Text="Resume All"
+                                             Type="Tertiary"
+                                             Size="Toolbar"
+                                             Fill="None"
+                                             ShowIcon="Left"
+                                             LeftIcon="{x:Static icons:IconValues.Play}"
+                                             Command="{Binding ResumeAllCommand}" />
+                    
+                    <controls:StandardButton x:Name="CancelSelectedButton"
+                                             Text="Cancel Selected"
+                                             Type="Tertiary"
+                                             Size="Toolbar"
+                                             Fill="None"
+                                             ShowIcon="Left"
+                                             LeftIcon="{x:Static icons:IconValues.Close}"
+                                             Command="{Binding CancelSelectedCommand}" />
                 </ItemsControl>
             </controls:Toolbar>
 
-            <!-- Main content with empty state -->
+            <!-- Main content with TreeDataGrid -->
             <controls:EmptyState Grid.Row="1"
                                  IsActive="{Binding IsEmptyStateActive}"
                                  Header="{x:Static resources:Language.InProgress_NoDownloadsTextBlock}">
                 <controls:EmptyState.Subtitle>
                     <StackPanel Orientation="Vertical" Spacing="16">
-                        <TextBlock Text="Download management will be available in the next update." />
+                        <TextBlock Text="No downloads are currently active." />
                     </StackPanel>
                 </controls:EmptyState.Subtitle>
+
+                <TreeDataGrid x:Name="TreeDataGridDownloads"
+                              ShowColumnHeaders="True"
+                              CanUserResizeColumns="True"
+                              CanUserSortColumns="True"
+                              Classes="MainListsStyling"
+                              Margin="0 8 0 0" />
             </controls:EmptyState>
 
         </Grid>
