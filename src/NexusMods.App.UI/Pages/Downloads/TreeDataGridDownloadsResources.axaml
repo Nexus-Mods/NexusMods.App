@@ -1,0 +1,136 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
+                    xmlns:downloads="clr-namespace:NexusMods.App.UI.Pages.Downloads"
+                    xmlns:abstractions="clr-namespace:NexusMods.Abstractions.Downloads;assembly=NexusMods.Abstractions.Downloads"
+                    xmlns:icons="clr-namespace:NexusMods.UI.Sdk.Icons;assembly=NexusMods.UI.Sdk">
+
+    <!-- Game column template -->
+    <DataTemplate x:Key="{x:Static downloads:DownloadColumns+Game.ColumnTemplateResourceKey}">
+        <DataTemplate.DataType>
+            <x:Type TypeName="controls:CompositeItemModel" x:TypeArguments="abstractions:DownloadId" />
+        </DataTemplate.DataType>
+
+        <controls:ComponentControl x:TypeArguments="abstractions:DownloadId" Content="{CompiledBinding}">
+            <controls:ComponentControl.ComponentTemplate>
+                <controls:ComponentTemplate x:TypeArguments="downloads:DownloadComponents+GameComponent"
+                                            ComponentKey="{x:Static downloads:DownloadColumns+Game.ComponentKey}">
+                    <controls:ComponentTemplate.DataTemplate>
+                        <DataTemplate DataType="{x:Type downloads:DownloadComponents+GameComponent}">
+                            <TextBlock Text="{CompiledBinding GameName.Value}" />
+                        </DataTemplate>
+                    </controls:ComponentTemplate.DataTemplate>
+                </controls:ComponentTemplate>
+            </controls:ComponentControl.ComponentTemplate>
+
+            <controls:ComponentControl.Fallback>
+                <TextBlock Text="-" />
+            </controls:ComponentControl.Fallback>
+        </controls:ComponentControl>
+    </DataTemplate>
+
+    <!-- Size column template -->
+    <DataTemplate x:Key="{x:Static downloads:DownloadColumns+Size.ColumnTemplateResourceKey}">
+        <DataTemplate.DataType>
+            <x:Type TypeName="controls:CompositeItemModel" x:TypeArguments="abstractions:DownloadId" />
+        </DataTemplate.DataType>
+
+        <controls:ComponentControl x:TypeArguments="abstractions:DownloadId" Content="{CompiledBinding}">
+            <controls:ComponentControl.ComponentTemplate>
+                <controls:ComponentTemplate x:TypeArguments="downloads:DownloadComponents+SizeProgressComponent"
+                                            ComponentKey="{x:Static downloads:DownloadColumns+Size.ComponentKey}">
+                    <controls:ComponentTemplate.DataTemplate>
+                        <DataTemplate DataType="{x:Type downloads:DownloadComponents+SizeProgressComponent}">
+                            <TextBlock Text="{CompiledBinding DisplayText.Value}" />
+                        </DataTemplate>
+                    </controls:ComponentTemplate.DataTemplate>
+                </controls:ComponentTemplate>
+            </controls:ComponentControl.ComponentTemplate>
+
+            <controls:ComponentControl.Fallback>
+                <TextBlock Text="-" />
+            </controls:ComponentControl.Fallback>
+        </controls:ComponentControl>
+    </DataTemplate>
+
+    <!-- Speed column template -->
+    <DataTemplate x:Key="{x:Static downloads:DownloadColumns+Speed.ColumnTemplateResourceKey}">
+        <DataTemplate.DataType>
+            <x:Type TypeName="controls:CompositeItemModel" x:TypeArguments="abstractions:DownloadId" />
+        </DataTemplate.DataType>
+
+        <controls:ComponentControl x:TypeArguments="abstractions:DownloadId" Content="{CompiledBinding}">
+            <controls:ComponentControl.ComponentTemplate>
+                <controls:ComponentTemplate x:TypeArguments="downloads:DownloadComponents+SpeedComponent"
+                                            ComponentKey="{x:Static downloads:DownloadColumns+Speed.ComponentKey}">
+                    <controls:ComponentTemplate.DataTemplate>
+                        <DataTemplate DataType="{x:Type downloads:DownloadComponents+SpeedComponent}">
+                            <TextBlock Text="{CompiledBinding DisplayText.Value}" />
+                        </DataTemplate>
+                    </controls:ComponentTemplate.DataTemplate>
+                </controls:ComponentTemplate>
+            </controls:ComponentControl.ComponentTemplate>
+
+            <controls:ComponentControl.Fallback>
+                <TextBlock Text="-" />
+            </controls:ComponentControl.Fallback>
+        </controls:ComponentControl>
+    </DataTemplate>
+
+    <!-- Status column template -->
+    <DataTemplate x:Key="{x:Static downloads:DownloadColumns+Status.ColumnTemplateResourceKey}">
+        <DataTemplate.DataType>
+            <x:Type TypeName="controls:CompositeItemModel" x:TypeArguments="abstractions:DownloadId" />
+        </DataTemplate.DataType>
+
+        <controls:ComponentControl x:TypeArguments="abstractions:DownloadId" Content="{CompiledBinding}">
+            <controls:ComponentControl.ComponentTemplate>
+                <controls:ComponentTemplate x:TypeArguments="downloads:DownloadComponents+StatusComponent"
+                                            ComponentKey="{x:Static downloads:DownloadColumns+Status.ComponentKey}">
+                    <controls:ComponentTemplate.DataTemplate>
+                        <DataTemplate DataType="{x:Type downloads:DownloadComponents+StatusComponent}">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <!-- Progress Bar -->
+                                <ProgressBar Value="{Binding Progress.Value}" 
+                                             Minimum="0" Maximum="1" 
+                                             Width="120" Height="8" />
+                                
+                                <!-- Action Buttons -->
+                                <StackPanel Orientation="Horizontal" Spacing="4">
+                                    <!-- Pause Button -->
+                                    <Button Command="{CompiledBinding PauseCommand}" 
+                                            IsVisible="{CompiledBinding CanPause.Value}"
+                                            Classes="IconButton" 
+                                            ToolTip.Tip="Pause Download">
+                                        <icons:UnifiedIcon Value="{x:Static icons:IconValues.Pause}" />
+                                    </Button>
+                                    
+                                    <!-- Resume Button -->
+                                    <Button Command="{CompiledBinding ResumeCommand}" 
+                                            IsVisible="{CompiledBinding CanResume.Value}"
+                                            Classes="IconButton" 
+                                            ToolTip.Tip="Resume Download">
+                                        <icons:UnifiedIcon Value="{x:Static icons:IconValues.PlayArrow}" />
+                                    </Button>
+                                    
+                                    <!-- Cancel Button -->
+                                    <Button Command="{CompiledBinding CancelCommand}" 
+                                            IsVisible="{CompiledBinding CanCancel.Value}"
+                                            Classes="IconButton" 
+                                            ToolTip.Tip="Cancel Download">
+                                        <icons:UnifiedIcon Value="{x:Static icons:IconValues.Close}" />
+                                    </Button>
+                                </StackPanel>
+                            </StackPanel>
+                        </DataTemplate>
+                    </controls:ComponentTemplate.DataTemplate>
+                </controls:ComponentTemplate>
+            </controls:ComponentControl.ComponentTemplate>
+
+            <controls:ComponentControl.Fallback>
+                <TextBlock Text="-" />
+            </controls:ComponentControl.Fallback>
+        </controls:ComponentControl>
+    </DataTemplate>
+
+</ResourceDictionary>
