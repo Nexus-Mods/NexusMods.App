@@ -1,5 +1,7 @@
 using DynamicData;
 using DynamicData.Kernel;
+using Microsoft.CodeAnalysis;
+using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Games.RedEngine.Cyberpunk2077.Extensions;
@@ -139,23 +141,49 @@ public class RedModSortOrderVariety : ASortOrderVariety<
     /// <inheritdoc />
     protected override IReadOnlyList<SortItemData<SortItemKey<string>>> RetrieveSortOrder(SortOrderId sortOrderEntityId, IDb dbToUse)
     {
-        return dbToUse.RetrieveRedModSortableEntries(sortOrderEntityId)
-            .Select(redModSortableEntry =>
-                {
-                    var sortableEntry = redModSortableEntry.AsSortOrderItem();
-                    return new SortItemData<SortItemKey<string>>(
-                        new SortItemKey<string>(redModSortableEntry.RedModFolderName.Path),
-                        sortableEntry.SortIndex
-                    );
-                }
-            )
+        // TODO: Move query somewhere else
+        return dbToUse.Connection.Query<(string FolderName, int SortIndex, EntityId ItemId)>($"""
+            SELECT s.RedModFolderName, s.SortIndex, s.Id
+            FROM mdb_RedModSortOrderItem(Db=>{dbToUse}) s
+            WHERE s.ParentSortOrder = {sortOrderEntityId}
+            ORDER BY s.SortIndex
+            """)
+            .Select(row => new SortItemData<SortItemKey<string>>(
+                new SortItemKey<string>(row.FolderName),
+                row.SortIndex
+            ))
             .ToList();
     }
     
     /// <inheritdoc />
-    protected override IReadOnlyList<SortItemLoadoutData<SortItemKey<string>>> RetrieveLoadoutData(LoadoutId loadoutId, Optional<CollectionGroupId> collectionGroupId, IDb? db)
+    protected override IReadOnlyList<SortItemLoadoutData<SortItemKey<string>>> RetrieveLoadoutData(LoadoutId loadoutId, DynamicData.Kernel.Optional<CollectionGroupId> collectionGroupId, IDb? db)
     {
-        throw new NotImplementedException();
+        var dbToUse = db ?? Connection.Db;
+        
+        // TODO: Move query somewhere else
+        var result = Connection.Query<(string FolderName, bool IsEnabled, string ModName, EntityId ModGroupId)>($"""
+                                                           SELECT
+                                                                regexp_extract(file.TargetPath.Item3, '^Mods\/([^\/]+)', 1, 'i') AS ModFolderName,
+                                                                enabledState.IsEnabled,
+                                                                groupItem.Name,
+                                                                groupItem.Id
+                                                           FROM mdb_LoadoutItemWithTargetPath(Db=>{dbToUse}) as file
+                                                           JOIN loadouts.LoadoutItemEnabledState(Db=>{dbToUse}, loadoutId=>{loadoutId}) as enabledState on file.Id = enabledState.Id
+                                                           JOIN mdb_LoadoutItemGroup(Db=>{dbToUse}) as groupItem on file.Parent = groupItem.Id
+                                                           WHERE file.TargetPath.Item1 = {loadoutId}
+                                                           AND file.TargetPath.Item2 = {LocationId.Game}
+                                                           AND ModFolderName != ''
+                                                           """
+        )
+        .Select(row => new SortItemLoadoutData<SortItemKey<string>>(
+            new SortItemKey<string>(row.FolderName),
+            row.IsEnabled,
+            row.ModName,
+            row.ModGroupId == 0 ? DynamicData.Kernel.Optional<LoadoutItemGroupId>.None : LoadoutItemGroupId.From(row.Item4)
+        ))
+        .ToList();
+        
+        return result;
     }
 
     /// <inheritdoc />
