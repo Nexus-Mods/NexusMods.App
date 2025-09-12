@@ -9,4 +9,6 @@ public static class KnownCEExtensions
     public static readonly Extension ESM = new Extension(".esm");
     public static readonly Extension ESP = new Extension(".esp");
     public static readonly Extension ESL = new Extension(".esl");
+    
+    public static readonly Extension[] Plugins = { ESM, ESP, ESL };
 }

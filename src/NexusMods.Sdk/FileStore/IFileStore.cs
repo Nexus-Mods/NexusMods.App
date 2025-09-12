@@ -46,11 +46,6 @@ public interface IFileStore
     Task BackupFiles(IEnumerable<ArchivedFileEntry> backups, bool deduplicate = true, CancellationToken token = default);
 
     /// <summary>
-    /// Similar to <c>BackupFiles</c> except the same archive is used.
-    /// </summary>
-    Task BackupFiles(string archiveName, IEnumerable<ArchivedFileEntry> files, CancellationToken cancellationToken = default);
-
-    /// <summary>
     /// Extract the given files to the given disk locations, provide as a less-abstract interface in case
     /// the extractor needs more direct access (such as memory mapping).
     /// </summary>
