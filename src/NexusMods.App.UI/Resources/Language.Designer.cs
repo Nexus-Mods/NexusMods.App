@@ -2379,5 +2379,17 @@ namespace NexusMods.App.UI.Resources {
                 return ResourceManager.GetString("Loadout_UninstallItem_Menu_Text__Uninstall_read_only", resourceCulture);
             }
         }
+        
+        public static string Downloads_SizeProgress_Of {
+            get {
+                return ResourceManager.GetString("Downloads_SizeProgress_Of", resourceCulture);
+            }
+        }
+        
+        public static string Downloads_Speed_Inactive {
+            get {
+                return ResourceManager.GetString("Downloads_Speed_Inactive", resourceCulture);
+            }
+        }
     }
 }
