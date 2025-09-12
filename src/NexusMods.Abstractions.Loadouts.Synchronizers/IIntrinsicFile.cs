@@ -13,7 +13,7 @@ public interface IIntrinsicFile
     /// <summary>
     /// Write the contents of this file to the stream.
     /// </summary>
-    public Task Write(Stream stream, Loadout.ReadOnly loadout, Dictionary<GamePath, SyncNode> syncTree, ITransaction tx);
+    public Task Write(Stream stream, Loadout.ReadOnly loadout, Dictionary<GamePath, SyncNode> syncTree);
 
     /// <summary>
     /// Ingest the contents of the stream into the loadout

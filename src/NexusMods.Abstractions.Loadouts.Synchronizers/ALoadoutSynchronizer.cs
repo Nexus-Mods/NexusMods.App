@@ -278,6 +278,27 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 }
             }
         }
+
+        // Add in the intrinsic files
+        foreach (var file in IntrinsicFiles)
+        {
+            ref var found = ref CollectionsMarshal.GetValueRefOrAddDefault(syncTree, file.Path, out var exists);
+            if (exists)
+            {
+                Logger.LogWarning("Found duplicate intrinsic file `{Path}` in Loadout {LoadoutName} for game {Game}", file.Path, loadout.Name, loadout.InstallationInstance.Game.Name);
+            }
+            found.SourceItemType = LoadoutSourceItemType.Intrinsic;
+            var stream = new MemoryStream();
+            file.Write(stream, loadout, syncTree);
+            stream.Position = 0;
+            var span = stream.GetBuffer().AsSpan(0, (int)stream.Length);
+            found.Loadout = new SyncNodePart()
+            {
+                Hash = span.xxHash3(),
+                Size = Size.From((ulong)span.Length),
+                LastModifiedTicks = 0,
+            };
+        }
         
         // Remove deleted files. I'm not super happy with this requiring a full scan of
         // the loadout, but we have to somehow mark the deleted files and then delete them. 

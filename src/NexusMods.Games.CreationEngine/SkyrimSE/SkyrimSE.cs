@@ -35,6 +35,7 @@ public partial class SkyrimSE : AGame, ISteamGame, IGogGame, ICreationEngineGame
         return new Dictionary<LocationId, AbsolutePath>()
         {
             { LocationId.Game, installation.Path },
+            { LocationId.AppData, fileSystem.GetKnownPath(KnownPath.LocalApplicationDataDirectory) / "Skyrim Special Edition" },
         };
     }
 

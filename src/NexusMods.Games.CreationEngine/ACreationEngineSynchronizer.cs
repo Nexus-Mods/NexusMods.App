@@ -16,6 +16,8 @@ public abstract class ACreationEngineSynchronizer : ALoadoutSynchronizer
         ];
     }
 
+    protected override IIntrinsicFile[] IntrinsicFiles => _intrinsicFiles;
+    
     public override bool IsIgnoredBackupPath(GamePath path)
     {
         // Don't backup BSA files by default

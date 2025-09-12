@@ -18,8 +18,14 @@ public class PluginsFile : IIntrinsicFile
     
     public GamePath Path { get; }
     
-    public Task Write(Stream stream, Loadout.ReadOnly loadout, Dictionary<GamePath, SyncNode> syncTree, ITransaction tx)
+    public Task Write(Stream stream, Loadout.ReadOnly loadout, Dictionary<GamePath, SyncNode> syncTree)
     {
+        var install = loadout.InstallationInstance;
+        var plugins = syncTree.Where(p => p.Key.Parent == KnownPaths.Data && KnownCEExtensions.PluginFiles.Contains(p.Key.Extension))
+            .ToArray();
+        
+        List<IMod> headers = new();
+        
         throw new NotImplementedException();
     }
 
