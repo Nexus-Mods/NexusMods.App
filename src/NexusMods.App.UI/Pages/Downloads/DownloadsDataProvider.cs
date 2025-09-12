@@ -3,6 +3,7 @@ using Avalonia.Media.Imaging;
 using DynamicData;
 using DynamicData.Binding;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Downloads;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.NexusModsLibrary;
@@ -25,6 +26,7 @@ public sealed class DownloadsDataProvider(IServiceProvider serviceProvider) : ID
     private readonly IGameRegistry _gameRegistry = serviceProvider.GetRequiredService<IGameRegistry>();
     private readonly IConnection _connection = serviceProvider.GetRequiredService<IConnection>();
     private readonly Lazy<IResourceLoader<EntityId, Bitmap>> _thumbnailLoader = new(() => ImagePipelines.GetModPageThumbnailPipeline(serviceProvider));
+    private readonly ILogger? _logger = serviceProvider.GetService<ILogger>();
 
 
     public IObservable<IChangeSet<CompositeItemModel<DownloadId>, DownloadId>> ObserveDownloads(DownloadsFilter filter)
@@ -124,8 +126,9 @@ public sealed class DownloadsDataProvider(IServiceProvider serviceProvider) : ID
                 return ImageComponent.FromPipeline(_thumbnailLoader.Value, fileMetadata.ModPageId, ImagePipelines.ModPageThumbnailFallback);
             }
         }
-        catch
+        catch (Exception ex)
         {
+            _logger?.LogWarning(ex, "Failed to load thumbnail for download {DownloadId}", download.Id);
             // Fall through to fallback
         }
 
