@@ -4,10 +4,4 @@ using NexusMods.Games.CreationEngine.Abstractions;
 
 namespace NexusMods.Games.CreationEngine.SkyrimSE;
 
-public class SkyrimSESynchronizer : ACreationEngineSynchronizer
-{
-    public SkyrimSESynchronizer(IServiceProvider provider, ICreationEngineGame game) : base(provider, game)
-    {
-    }
-    
-}
+public class SkyrimSESynchronizer(IServiceProvider provider, ICreationEngineGame game) : ACreationEngineSynchronizer(provider, game);

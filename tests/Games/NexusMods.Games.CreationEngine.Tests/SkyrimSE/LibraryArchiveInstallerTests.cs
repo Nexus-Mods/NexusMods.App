@@ -1,7 +1,12 @@
+using System.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Mutagen.Bethesda.Plugins;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
+using NexusMods.Games.CreationEngine.Abstractions;
+using NexusMods.Games.CreationEngine.SkyrimSE;
 using NexusMods.Games.TestFramework;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.HyperDuck;
@@ -61,6 +66,44 @@ public class LibraryArchiveInstallerTests(ITestOutputHelper outputHelper) : AIso
             .OrderBy(x => x.Item1);
 
         await VerifyTable(contents, name);
+
+    }
+
+    [Theory]
+    [InlineData("Honeystrand Grove is an Actual Grove", 158433, 662320)]
+    [InlineData("JK's Interiors Patch Collection", 35910, 549166)]
+    [Trait("RequiresNetworking", "True")]
+    public async Task CanReadPluginData(string name, uint modId, uint fileId)
+    {
+        var extensions = new[] { KnownCEExtensions.ESM, KnownCEExtensions.ESP, KnownCEExtensions.ESL };
+        var loadout = await CreateLoadout();
+        await using var tempFile = TemporaryFileManager.CreateFile();
+        var download = await NexusModsLibrary.CreateDownloadJob(tempFile.Path, Game.GameId, ModId.From(modId), FileId.From(fileId));
+        var libraryArchive = await LibraryService.AddDownload(download);
+
+        var installed = await LibraryService.InstallItem(libraryArchive.AsLibraryItem(), loadout);
+        
+        var plugins = installed.LoadoutItemGroup!.Value.Children
+            .OfTypeLoadoutItemWithTargetPath()
+            .Where(t => extensions.Contains(t.TargetPath.Item3.Extension))
+            .OfTypeLoadoutFile()
+            .ToArray();
+
+
+        List<(string Plugin, int Index, string Master, ModType Type)> data = [];
+        foreach (var plugin in plugins)
+        {
+            var fileName = plugin.AsLoadoutItemWithTargetPath().TargetPath.Item3.FileName;
+            var header = await ((ICreationEngineGame) Game).ParsePlugin(plugin.Hash, fileName);
+            var index = 0;
+            foreach (var masterRef in header!.MasterReferences)
+            {
+                data.Add((fileName, index, masterRef.Master.FileName.ToString(), masterRef.Master.Type));
+                index++;
+            }
+        }
+
+        await VerifyTable(data, name);
 
     }
 }
