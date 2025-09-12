@@ -7,6 +7,8 @@ using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Settings;
 using NexusMods.Abstractions.UI;
+using NexusMods.App.UI.Controls;
+using NexusMods.App.UI.Helpers;
 using NexusMods.CrossPlatform.Process;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -28,7 +30,7 @@ public class MiniGameWidgetViewModel : AViewModel<IMiniGameWidgetViewModel>, IMi
             .WhenAnyValue(vm => vm.Game)
             .Where(game => game is not null)
             .OffUi()
-            .SelectMany(LoadImage)
+            .SelectMany(game => ImageHelper.LoadGameIconAsync(game, (int)ImageSizes.GameThumbnail.Width, _logger))
             .WhereNotNull()
             .ToProperty(this, vm => vm.Image, scheduler: RxApp.MainThreadScheduler);
 
@@ -45,22 +47,7 @@ public class MiniGameWidgetViewModel : AViewModel<IMiniGameWidgetViewModel>, IMi
         );
     }
 
-    private async Task<Bitmap?> LoadImage(IGame? game)
-    {
-        if (game is null)
-            return null;
 
-        try
-        {
-            var iconStream = await game.Icon.GetStreamAsync();
-            return Bitmap.DecodeToWidth(iconStream, (int)ImageSizes.GameThumbnail.Width);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "While loading game image for {GameName}", game.Name);
-            return null;
-        }
-    }
 
     [Reactive] public IGame? Game { get; set; }
     public GameInstallation[]? GameInstallations { get; set; }

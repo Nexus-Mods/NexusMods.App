@@ -11,6 +11,11 @@ namespace NexusMods.App.UI;
 public static class ImageSizes
 {
     /// <summary>
+    /// Size for the LeftMenu icon, typically used in LeftMenu items
+    /// </summary>
+    public static readonly Size LeftMenuIcon = new(24, 24);
+    
+    /// <summary>
     /// Size for the game icon, typically used in Spine and MyLoadouts
     /// </summary>
     public static readonly Size GameThumbnail = new(48, 48);

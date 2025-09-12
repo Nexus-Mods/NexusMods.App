@@ -2,6 +2,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:loadout="clr-namespace:NexusMods.App.UI.LeftMenu.Loadout;assembly=NexusMods.App.UI"
         xmlns:home="clr-namespace:NexusMods.App.UI.LeftMenu.Home;assembly=NexusMods.App.UI"
+        xmlns:downloads="clr-namespace:NexusMods.App.UI.LeftMenu.Downloads;assembly=NexusMods.App.UI"
         xmlns:icons="clr-namespace:NexusMods.UI.Sdk.Icons;assembly=NexusMods.UI.Sdk">
     <Design.PreviewWith>
         <Border Padding="0">
@@ -62,7 +63,8 @@
     <!-- HOME & LOADOUT LEFT MENU -->
     <Style Selector="
         home|HomeLeftMenuView,
-        loadout|LoadoutLeftMenuView">
+        loadout|LoadoutLeftMenuView,
+        downloads|DownloadsLeftMenuView">
 
         <!-- add resources -->
 
