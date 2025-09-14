@@ -1,3 +1,4 @@
+using Mutagen.Bethesda.Plugins.Records;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
