@@ -7,6 +7,7 @@ using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.UI.Sdk.Icons;
+using ObservableCollections;
 using R3;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -130,9 +131,8 @@ public class DownloadsPageViewModel : APageViewModel<IDownloadsPageViewModel>, I
             Adapter.Activate().AddTo(disposables);
             
             // Track selection count using count property
-            System.Reactive.Linq.Observable.FromEventPattern<PropertyChangedEventArgs>(
-                    Adapter.SelectedModels, nameof(Adapter.SelectedModels.CollectionChanged))
-                .Select(_ => Adapter.SelectedModels.Count)
+            Adapter.SelectedModels
+                .ObserveCountChanged(notifyCurrentCount: true)
                 .Subscribe(count => SelectionCount = count)
                 .AddTo(disposables);
 
