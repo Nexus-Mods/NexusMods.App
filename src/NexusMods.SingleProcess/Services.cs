@@ -33,6 +33,7 @@ public static class Services
         switch (mode)
         {
             case Mode.Main:
+                services.AddTransient<CliClient>();
                 services.AddSingleton<CliServer>();
                 services.AddHostedService(s => s.GetRequiredService<CliServer>());
                 break;
