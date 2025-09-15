@@ -1,4 +1,5 @@
 using NexusMods.Abstractions.UI;
+using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.Resources;
 using R3;
 
@@ -33,6 +34,39 @@ public static class SharedComponents
                 if (disposing)
                 {
                     Disposable.Dispose(CommandViewModPage, IsEnabled);
+                }
+
+                _isDisposed = true;
+            }
+
+            base.Dispose(disposing);
+        }
+    }
+    
+    public sealed class ViewModFilesAction : ReactiveR3Object, IItemModelComponent<ViewModFilesAction>, IComparable<ViewModFilesAction>
+    {
+        public ReactiveCommand<NavigationInformation, NavigationInformation> Command { get; } = new(info => info);
+        public IReadOnlyBindableReactiveProperty<bool> IsEnabled { get; }
+
+        public int CompareTo(ViewModFilesAction? other)
+        {
+            if (other is null) return 1;
+            return 0; // All open file location actions are considered equal for sorting
+        }
+
+        public ViewModFilesAction(bool isEnabled = true)
+        {
+            IsEnabled = new BindableReactiveProperty<bool>(isEnabled);
+        }
+
+        private bool _isDisposed;
+        protected override void Dispose(bool disposing)
+        {
+            if (!_isDisposed)
+            {
+                if (disposing)
+                {
+                    Disposable.Dispose(Command, IsEnabled);
                 }
 
                 _isDisposed = true;

@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../src/NexusMods.Library/NexusMods.Library.csproj" />
+    <ProjectReference Include="../../src/NexusMods.Abstractions.Downloads/NexusMods.Abstractions.Downloads.csproj" />
+    <ProjectReference Include="../../src/NexusMods.Abstractions.Jobs/NexusMods.Abstractions.Jobs.csproj" />
+    <ProjectReference Include="../../src/NexusMods.Jobs/NexusMods.Jobs.csproj" />
+    <ProjectReference Include="../../src/NexusMods.Networking.HttpDownloader/NexusMods.Networking.HttpDownloader.csproj" />
+    <ProjectReference Include="../../src/NexusMods.Abstractions.HttpDownloads/NexusMods.Abstractions.HttpDownloads.csproj" />
+    <ProjectReference Include="../../src/NexusMods.Abstractions.NexusModsLibrary/NexusMods.Abstractions.NexusModsLibrary.csproj" />
+    <ProjectReference Include="..\..\src\NexusMods.DataModel\NexusMods.DataModel.csproj" />
+    <ProjectReference Include="..\..\src\NexusMods.Settings\NexusMods.Settings.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Xunit.DependencyInjection" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" />
+    <PackageReference Include="NexusMods.MnemonicDB" />
+  </ItemGroup>
+</Project>

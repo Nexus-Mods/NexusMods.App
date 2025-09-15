@@ -7,6 +7,7 @@ using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 using NexusMods.MnemonicDB.Abstractions.Models;
+using NexusMods.Paths;
 
 namespace NexusMods.Abstractions.Collections;
 
@@ -79,22 +80,36 @@ public partial class NexusCollectionLoadoutGroup : IModelDefinition
                 
                 // We've now orphaned the bundled files, so we'll now create a download archive that contains the files this loadout group needs.
 
+                var fileName = "Bundled Files - " + ent.AsLoadoutItemGroup().AsLoadoutItem().Name;
+                
                 // Create a new library item, 
                 var libraryFile = new ManuallyCreatedArchive.New(tx, out var libraryFileId)
                 {
                     Source = ManuallyCreatedArchive.CreationSource.CollectionBundled,
-                    LibraryItem = new LibraryItem.New(tx, libraryFileId)
+                    LibraryArchive = new LibraryArchive.New(tx, libraryFileId)
                     {
-                        Name = "Bundled Files - " + ent.AsLoadoutItemGroup().AsLoadoutItem().Name,
-                    }
+                        IsArchive = true,
+                        LibraryFile = new LibraryFile.New(tx, libraryFileId)
+                        {
+                            Hash = Hash.Zero,
+                            // We'll update the size later with the total size of all the files
+                            Size = Size.Zero,
+                            FileName = fileName,
+                            LibraryItem = new LibraryItem.New(tx, libraryFileId)
+                            {
+                                Name = fileName,
+                            },
+                        },
+                        
+                    },
                 };
-                // Mark this as an archive
-                tx.Add(libraryFileId, LibraryArchive.Archive, Null.Instance);
                 
                 // Link the mod group to the archive
                 tx.Add(item, LibraryLinkedLoadoutItem.LibraryItemId, libraryFileId);
 
                 var added = new HashSet<Hash>();
+
+                var sum = Size.Zero;
                 // Now link up all the required items
                 foreach (var child in ent.AsLoadoutItemGroup().Children.OfTypeLoadoutItemWithTargetPath().OfTypeLoadoutFile())
                 {
@@ -118,8 +133,11 @@ public partial class NexusCollectionLoadoutGroup : IModelDefinition
                             },
                         },
                     };
+                    sum += child.Size;
                     added.Add(child.Hash);
                 }
+                
+                tx.Add(libraryFileId, NexusMods.Abstractions.Library.Models.LibraryFile.Size, sum);
             }
 
         }

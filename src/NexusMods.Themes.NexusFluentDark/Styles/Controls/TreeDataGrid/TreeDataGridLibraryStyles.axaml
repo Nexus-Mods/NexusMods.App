@@ -56,6 +56,23 @@
                 <Style Selector="^.LibraryColumns_ItemSize">
                     <Setter Property="HorizontalAlignment" Value="Right" />
                 </Style>
+                
+                <!-- library -> collections cell -->
+                <Style Selector="^.LibraryColumns_Collections">
+                    <Style Selector="^ StackPanel#CollectionsStack">
+                        <Setter Property="Spacing" Value="{StaticResource Spacing-1}" />
+
+                        <Style Selector="^ > icons|UnifiedIcon">
+                            <Setter Property="Size" Value="16" />
+                            <Setter Property="Foreground" Value="{DynamicResource NeutralSubduedBrush}" />
+                        </Style>
+
+                        <Style Selector="^ > TextBlock">
+                            <Setter Property="VerticalAlignment" Value="Center" />
+                            <Setter Property="Foreground" Value="{DynamicResource NeutralSubduedBrush}" />
+                        </Style>
+                    </Style>
+                </Style>
 
                 <!-- library -> actions cell -->
                 <Style Selector="^.LibraryColumns_Actions">

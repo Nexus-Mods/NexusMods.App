@@ -91,6 +91,7 @@ public static class LoadoutDataProviderHelper
         itemModel.Add(SharedColumns.Name.NameComponentKey, new NameComponent(value: loadoutItem.Name));
         itemModel.Add(SharedColumns.InstalledDate.ComponentKey, new DateComponent(value: loadoutItem.GetCreatedAt()));
         itemModel.Add(LoadoutColumns.EnabledState.LoadoutItemIdsComponentKey, new LoadoutComponents.LoadoutItemIds(itemId: loadoutItem));
+        itemModel.Add(LoadoutColumns.EnabledState.ViewModFilesComponentKey, new SharedComponents.ViewModFilesAction(isEnabled: true));
 
         AddCollection(connection, itemModel, loadoutItem);
         AddParentCollectionDisabled(connection, itemModel, loadoutItem);
@@ -186,6 +187,14 @@ public static class LoadoutDataProviderHelper
             initialValue: initialValue,
             valueObservable: dateObservable
         ));
+    }
+    
+    public static void AddViewModFilesActionComponent(
+        CompositeItemModel<EntityId> itemModel,  
+        IObservable<IChangeSet<LoadoutItem.ReadOnly, EntityId>> linkedItemsObservable)
+    {
+        // Always show, will open the first mod page if multiple
+        itemModel.Add(LoadoutColumns.EnabledState.ViewModFilesComponentKey, new SharedComponents.ViewModFilesAction(isEnabled: true));
     }
 
     public static void AddUninstallItemComponent(CompositeItemModel<EntityId> itemModel, LoadoutItem.ReadOnly loadoutItem)

@@ -95,7 +95,7 @@ internal sealed class DiagnosticManager : IDiagnosticManager
         var baseSyncTree = synchronizer.BuildSyncTree(lastScannedDiskState, previousDiskState, loadout);
         synchronizer.ProcessSyncTree(baseSyncTree);
         var syncTree = baseSyncTree.ToFrozenDictionary();
-
+        
         try
         {
             List<Diagnostic> diagnostics = [];

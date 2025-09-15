@@ -264,6 +264,13 @@ public class CollectionLoadoutViewModel : APageViewModel<ICollectionLoadoutViewM
                             cancellationToken);
                         return Task.CompletedTask;
                     },
+                    viewModFilesMessage =>
+                    {
+                        LoadoutViewModel.HandleViewModFiles(viewModFilesMessage.Ids, 
+                            viewModFilesMessage.NavigationInformation, 
+                            connection, GetWorkspaceController());
+                        return Task.CompletedTask;
+                    },
                     uninstallItemMessage => LoadoutViewModel.HandleUninstallItem(uninstallItemMessage.Ids, windowManager, connection)
                 );
             }, awaitOperation: AwaitOperation.Parallel, configureAwait: false).AddTo(disposables);
