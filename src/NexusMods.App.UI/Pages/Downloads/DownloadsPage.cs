@@ -19,7 +19,12 @@ public record AllDownloadsPageContext : DownloadsPageContext;
 public record CompletedDownloadsPageContext : DownloadsPageContext;
 
 [JsonName("NexusMods.App.UI.Pages.Downloads.GameSpecificDownloadsPageContext")]
-public record GameSpecificDownloadsPageContext(GameId GameId) : DownloadsPageContext;
+public record GameSpecificDownloadsPageContext(GameId GameId) : DownloadsPageContext
+{
+    // Required for serialization, do not remove.
+    // ReSharper disable once UnusedMember.Global
+    public GameSpecificDownloadsPageContext() : this(GameId.DefaultValue) {}
+}
 
 [UsedImplicitly]
 public class DownloadsPageFactory(IServiceProvider serviceProvider) : APageFactory<IDownloadsPageViewModel, DownloadsPageContext>(serviceProvider)
