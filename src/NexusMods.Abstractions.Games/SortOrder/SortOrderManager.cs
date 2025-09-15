@@ -136,7 +136,7 @@ public class SortOrderManager : ISortOrderManager, IDisposable
                                                  SELECT item.Loadout, MAX(d.T) as tx
                                                  FROM mdb_LoadoutItem(Db=>{_connection}) item
                                                  JOIN mdb_Loadout(Db=>{_connection}) loadout on item.Loadout = loadout.Id
-                                                 JOIN mdb_GameInstallMetadata(Db=>{_connection}) as install on loadout.InstallationId = install.Id
+                                                 JOIN mdb_GameInstallMetadata(Db=>{_connection}) as install on loadout.Installation = install.Id
                                                  LEFT JOIN mdb_Datoms() d ON d.E = item.Id
                                                  WHERE install.GameId = {gameId.Value}
                                                  GROUP BY item.Loadout
@@ -170,7 +170,7 @@ public class SortOrderManager : ISortOrderManager, IDisposable
                                                  JOIN mdb_LoadoutItemGroup(Db=>{_connection}) itemGroup on itemGroup.Parent = collection.Id
                                                  JOIN mdb_LoadoutItem(Db=>{_connection}) item on item.Parent = itemGroup.Id
                                                  JOIN mdb_Loadout(Db=>{_connection}) loadout on collection.Loadout = loadout.Id
-                                                 JOIN mdb_GameInstallMetadata(Db=>{_connection}) as install on loadout.InstallationId = install.Id
+                                                 JOIN mdb_GameInstallMetadata(Db=>{_connection}) as install on loadout.Installation = install.Id
                                                  LEFT JOIN mdb_Datoms() d ON d.E = item.Id OR d.E = itemGroup.Id OR d.E = collection.Id
                                                  WHERE install.GameId = {gameId.Value}
                                                  GROUP BY collection.Id
