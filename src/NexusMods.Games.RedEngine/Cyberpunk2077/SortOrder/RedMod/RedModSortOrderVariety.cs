@@ -74,12 +74,88 @@ public class RedModSortOrderVariety : ASortOrderVariety<
 
     public override IObservable<IChangeSet<RedModReactiveSortItem, SortItemKey<string>>> GetSortableItemsChangeSet(SortOrderId sortOrderId)
     {
-        throw new NotImplementedException();
+        var sortOrder = Abstractions.Loadouts.SortOrder.Load(Connection.Db, sortOrderId);
+        var parentEntity = sortOrder.ParentEntity.Match(
+            loadoutId => loadoutId.Value,
+            collectionGroupId => collectionGroupId.Value
+        );
+        var loadoutId = sortOrder.LoadoutId;
+        
+        // TODO: Move query somewhere else
+        // TODO: deduplicate common query code
+        // TODO: This is looking up loadout data in the entire lodaout, but if the parent entity is a collection, should we limit the lookup to just that collection?
+        // TODO: This can return multiple mods for each FolderName, need to get out just one.
+        var query = Connection.Query<(string FolderName, int SortIndex, EntityId ItemId, bool? IsEnabled, string? ModName, EntityId? ModGroupId)>($"""
+            WITH matchingMods AS (
+                SELECT
+                    regexp_extract(file.TargetPath.Item3, '^mods\/([^\/]+)\/info\.json$') AS ModFolderName,
+                    enabledState.IsEnabled AS IsEnabled,
+                    groupItem.Name AS ModName,
+                    groupItem.Id AS ModGroupId
+                FROM mdb_LoadoutItemWithTargetPath(Db=>{Connection}) as file
+                JOIN loadouts.LoadoutItemEnabledState({Connection}, {loadoutId}) as enabledState ON file.Id = enabledState.Id
+                JOIN mdb_LoadoutItemGroup(Db=>{Connection}) as groupItem ON file.Parent = groupItem.Id
+                WHERE file.TargetPath.Item1 = {loadoutId}
+                  AND file.TargetPath.Item2 = {LocationId.Game}
+                  AND ModFolderName != ''
+            ),
+            loadoutData AS (
+                SELECT
+                    ModFolderName,
+                    IsEnabled,
+                    ModName,
+                    ModGroupId
+                FROM (
+                    SELECT 
+                        matchingMods.*,
+                        ROW_NUMBER() OVER (
+                            PARTITION BY matchingMods.ModFolderName
+                            ORDER BY matchingMods.IsEnabled DESC, matchingMods.ModGroupId DESC
+                        ) AS ranking
+                    FROM matchingMods
+                ) ranked
+                WHERE ranking = 1
+            )
+            
+            SELECT sortItem.RedModFolderName, sortItem.SortIndex, sortItem.Id, loadoutItem.IsEnabled, loadoutItem.Name, loadoutItem.Id
+            FROM mdb_RedModSortOrderItem(Db=>{Connection}) sortItem
+            LEFT OUTER JOIN loadoutData(Db=>{Connection}) loadoutItem on sortItem.RedModFolderName = loadoutItem.ModFolderName
+            WHERE sortItem.ParentSortOrder = {sortOrderId}
+            ORDER BY sortItem.SortIndex
+            """
+        );
+
+        var result = query.Observe(table => new SortItemKey<string>(table.FolderName))
+            .Transform(row =>
+                {
+                    var model = new RedModReactiveSortItem(
+                        row.SortIndex,
+                        RelativePath.FromUnsanitizedInput(row.FolderName),
+                        modName: row.ModName ?? row.FolderName,
+                        isActive: row.IsEnabled ?? false
+                    );
+
+                    if (row.ModGroupId == null) return model;
+                    
+                    model.ModGroupId = LoadoutItemGroupId.From(row.ModGroupId.Value);
+                    var loadoutData = new SortItemLoadoutData<SortItemKey<string>>(
+                        model.Key,
+                        model.IsActive,
+                        model.ModName,
+                        model.ModGroupId
+                    );
+                    model.LoadoutData = loadoutData;
+                    
+                    return model;
+                }
+            );
+        
+        return result;
     }
 
     public override IReadOnlyList<RedModReactiveSortItem> GetSortableItems(SortOrderId sortOrderId, IDb? db)
     {
-        var dbToUse = db ?? Connection.Db;
+            var dbToUse = db ?? Connection.Db;
         var sortOrder = Abstractions.Loadouts.SortOrder.Load(dbToUse, sortOrderId);
         var optionalCollection = sortOrder.ParentEntity.Match(
             loadoutId => DynamicData.Kernel.Optional<CollectionGroupId>.None,
@@ -188,18 +264,35 @@ public class RedModSortOrderVariety : ASortOrderVariety<
         var dbToUse = db ?? Connection.Db;
         
         // TODO: Move query somewhere else
+        // TODO: Update ranking logic to use better criteria than most recently created ModGroupId
         var result = Connection.Query<(string FolderName, bool IsEnabled, string ModName, EntityId ModGroupId)>($"""
+                                                           WITH mod_items AS (
+                                                               SELECT
+                                                                   regexp_extract(file.TargetPath.Item3, '^mods\/([^\/]+)\/info\.json$') AS ModFolderName,
+                                                                   enabledState.IsEnabled AS IsEnabled,
+                                                                   groupItem.Name AS ModName,
+                                                                   groupItem.Id AS ModGroupId
+                                                               FROM mdb_LoadoutItemWithTargetPath(Db=>{dbToUse}) as file
+                                                               JOIN loadouts.LoadoutItemEnabledState({dbToUse}, {loadoutId}) as enabledState ON file.Id = enabledState.Id
+                                                               JOIN mdb_LoadoutItemGroup(Db=>{dbToUse}) as groupItem ON file.Parent = groupItem.Id
+                                                               WHERE file.TargetPath.Item1 = {loadoutId}
+                                                                 AND file.TargetPath.Item2 = {LocationId.Game}
+                                                                 AND ModFolderName != ''
+                                                           )
                                                            SELECT
-                                                                regexp_extract(file.TargetPath.Item3, '^Mods\/([^\/]+)', 1, 'i') AS ModFolderName,
-                                                                enabledState.IsEnabled,
-                                                                groupItem.Name,
-                                                                groupItem.Id
-                                                           FROM mdb_LoadoutItemWithTargetPath(Db=>{dbToUse}) as file
-                                                           JOIN loadouts.LoadoutItemEnabledState(Db=>{dbToUse}, loadoutId=>{loadoutId}) as enabledState on file.Id = enabledState.Id
-                                                           JOIN mdb_LoadoutItemGroup(Db=>{dbToUse}) as groupItem on file.Parent = groupItem.Id
-                                                           WHERE file.TargetPath.Item1 = {loadoutId}
-                                                           AND file.TargetPath.Item2 = {LocationId.Game}
-                                                           AND ModFolderName != ''
+                                                               ModFolderName,
+                                                               IsEnabled,
+                                                               ModName,
+                                                               ModGroupId
+                                                           FROM (
+                                                               SELECT *,
+                                                                      ROW_NUMBER() OVER (
+                                                                          PARTITION BY ModFolderName
+                                                                          ORDER BY IsEnabled DESC, ModGroupId DESC
+                                                                      ) AS ranking
+                                                               FROM mod_items
+                                                           ) ranked
+                                                           WHERE ranking = 1
                                                            """
         )
         .Select(row => new SortItemLoadoutData<SortItemKey<string>>(
