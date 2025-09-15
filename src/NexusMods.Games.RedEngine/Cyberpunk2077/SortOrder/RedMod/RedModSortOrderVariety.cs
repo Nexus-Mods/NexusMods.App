@@ -8,6 +8,7 @@ using NexusMods.Games.RedEngine.Cyberpunk2077.Extensions;
 using NexusMods.Games.RedEngine.Cyberpunk2077.Models;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
+using NexusMods.Paths;
 using OneOf;
 
 namespace NexusMods.Games.RedEngine.Cyberpunk2077.SortOrder;
@@ -78,8 +79,34 @@ public class RedModSortOrderVariety : ASortOrderVariety<
 
     public override IReadOnlyList<RedModReactiveSortItem> GetSortableItems(SortOrderId sortOrderId, IDb? db)
     {
-        throw new NotImplementedException();
-        // Make sure to use the correct db for the query
+        var dbToUse = db ?? Connection.Db;
+        var sortOrder = Abstractions.Loadouts.SortOrder.Load(dbToUse, sortOrderId);
+        var optionalCollection = sortOrder.ParentEntity.Match(
+            loadoutId => DynamicData.Kernel.Optional<CollectionGroupId>.None,
+            collectionGroupId => DynamicData.Kernel.Optional<CollectionGroupId>.Create(collectionGroupId)
+        );
+        
+        var sortingData = RetrieveSortOrder(sortOrderId, dbToUse);
+        var loadoutData = RetrieveLoadoutData(sortOrder.LoadoutId, optionalCollection,  dbToUse);
+        
+        // This reconcile currently removes sort items that are not in the loadout, maybe that isn't desired?
+        // TODO: Consider showing items that are missing loadout data instead.
+        var reconciled = Reconcile(sortingData, loadoutData);
+
+        return reconciled.Select(tuple =>
+            {
+                return new RedModReactiveSortItem(
+                    tuple.SortedEntry.SortIndex,
+                    RelativePath.FromUnsanitizedInput(tuple.SortedEntry.Key.Key),
+                    tuple.ItemLoadoutData.ModName,
+                    tuple.ItemLoadoutData.IsEnabled
+                )
+                {
+                    ModGroupId = tuple.ItemLoadoutData.ModGroupId,
+                    LoadoutData = tuple.ItemLoadoutData,
+                };
+            }
+        ).ToList();
     }
 
     protected override void PersistSortOrderCore(
