@@ -165,11 +165,11 @@ public class SortOrderManager : ISortOrderManager, IDisposable
         // For each changed collection, reconcile the sort orders for that collection
         // TODO: Move query somewhere else
         _connection.Query<(EntityId ChangedCollection, EntityId LoaodutId, TxId TxId)>($"""
-                                                 SELECT collection.Id, collection.LoadoutId, MAX(d.T) as tx
+                                                 SELECT collection.Id, collection.Loadout, MAX(d.T) as tx
                                                  FROM mdb_CollectionGroup(Db=>{_connection}) collection
                                                  JOIN mdb_LoadoutItemGroup(Db=>{_connection}) itemGroup on itemGroup.Parent = collection.Id
                                                  JOIN mdb_LoadoutItem(Db=>{_connection}) item on item.Parent = itemGroup.Id
-                                                 JOIN mdb_Loadout(Db=>{_connection}) loadout on collection.LoadoutId = loadout.Id
+                                                 JOIN mdb_Loadout(Db=>{_connection}) loadout on collection.Loadout = loadout.Id
                                                  JOIN mdb_GameInstallMetadata(Db=>{_connection}) as install on loadout.InstallationId = install.Id
                                                  LEFT JOIN mdb_Datoms() d ON d.E = item.Id OR d.E = itemGroup.Id OR d.E = collection.Id
                                                  WHERE install.GameId = {gameId.Value}
