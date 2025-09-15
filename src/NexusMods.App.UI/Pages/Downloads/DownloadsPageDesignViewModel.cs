@@ -11,12 +11,16 @@ public class DownloadsPageDesignViewModel : APageViewModel<IDownloadsPageViewMod
 {
     public DownloadsTreeDataGridAdapter Adapter { get; }
     public int SelectionCount => 5;
+    public Observable<bool> HasRunningItems { get; } = Observable.Return(true);
+    public Observable<bool> HasPausedItems { get; } = Observable.Return(true);
     
     public bool IsEmptyStateActive { get; set; } = true;
 
     public ReactiveCommand<Unit> PauseAllCommand { get; } = new ReactiveCommand();
     public ReactiveCommand<Unit> ResumeAllCommand { get; } = new ReactiveCommand();
     public ReactiveCommand<Unit> CancelSelectedCommand { get; } = new ReactiveCommand();
+    public ReactiveCommand<Unit> PauseSelectedCommand { get; } = new ReactiveCommand();
+    public ReactiveCommand<Unit> ResumeSelectedCommand { get; } = new ReactiveCommand();
 
     public DownloadsPageDesignViewModel() : base(new DesignWindowManager())
     {
