@@ -87,6 +87,8 @@ public abstract class AGame : IGame
 
     /// <inheritdoc />
     public virtual ILoadoutSynchronizer Synchronizer => _synchronizer.Value;
+    
+    public virtual ISortOrderManager SortOrderManager => _sortOrderManager.Value;
 
     /// <inheritdoc />
     public GameInstallation InstallationFromLocatorResult(GameLocatorResult metadata, EntityId dbId, IGameLocator locator)
