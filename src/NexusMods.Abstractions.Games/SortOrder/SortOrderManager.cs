@@ -48,9 +48,9 @@ public class SortOrderManager : ISortOrderManager, IDisposable
     }
 
     /// <inheritdoc />
-    public ReadOnlySpan<ISortOrderVariety> GetSortOrderVarieties()
+    public IReadOnlyList<ISortOrderVariety> GetSortOrderVarieties()
     {
-        return _sortOrderVarieties.Values.AsSpan();
+        return _sortOrderVarieties.Values;
     }
 
     /// <inheritdoc />

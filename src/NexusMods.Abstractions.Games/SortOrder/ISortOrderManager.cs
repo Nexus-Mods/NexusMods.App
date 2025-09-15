@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using DynamicData.Kernel;
 using NexusMods.Abstractions.Loadouts;
 
@@ -21,7 +22,7 @@ public interface ISortOrderManager
     /// One instance of ISortOrderVariety for each variety.
     /// </summary>
     /// <returns></returns>
-    public ReadOnlySpan<ISortOrderVariety> GetSortOrderVarieties();
+    public IReadOnlyList<ISortOrderVariety> GetSortOrderVarieties();
     
     /// <summary>
     /// Sets the sort order varieties for the current game.
