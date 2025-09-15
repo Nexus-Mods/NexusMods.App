@@ -1,27 +1,26 @@
 using System.Text.Json.Serialization;
-using NexusMods.Abstractions.Collections.Json;
 
-namespace NexusMods.Games.FOMOD;
+namespace NexusMods.Abstractions.Collections.Json;
 
-public class FomodOption : Option
+public class Option
 {
     [JsonPropertyName("name")]
     public string name { get; init; } = string.Empty;
     
     [JsonPropertyName("groups")]
-    public FomodGroup[] groups { get; init; } = [];
+    public Group[] groups { get; init; } = [];
 }
 
-public class FomodGroup : Group
+public class Group
 {
     [JsonPropertyName("name")]
     public string name { get; init; } = string.Empty;
     
     [JsonPropertyName("choices")]
-    public FomodChoice[] choices { get; init; } = [];
+    public Choice[] choices { get; init; } = [];
 }
 
-public class FomodChoice : Choice
+public class Choice
 {
     [JsonPropertyName("name")]
     public string name { get; init; } = string.Empty;

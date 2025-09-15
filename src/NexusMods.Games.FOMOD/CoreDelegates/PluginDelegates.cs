@@ -1,5 +1,6 @@
 using FomodInstaller.Interface;
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.Loadouts;
 
 namespace NexusMods.Games.FOMOD.CoreDelegates;
 
@@ -10,10 +11,11 @@ namespace NexusMods.Games.FOMOD.CoreDelegates;
 public class PluginDelegates : IPluginDelegates
 {
     private readonly ILogger<PluginDelegates> _logger;
-
-    public PluginDelegates(ILogger<PluginDelegates> logger)
+    private readonly InstallerDelegates _installerDelegates;
+    public PluginDelegates(ILogger<PluginDelegates> logger, InstallerDelegates installerDelegates)
     {
         _logger = logger;
+        _installerDelegates = installerDelegates;
     }
 
     /// <summary>
@@ -21,8 +23,24 @@ public class PluginDelegates : IPluginDelegates
     /// </summary>
     public Task<string[]> GetAll(bool activeOnly)
     {
-        _logger.LogWarning($"NotImplemented: {nameof(GetAll)} with activeOnly={{ActiveOnly}}. Using default value: empty array.", activeOnly);
-        return Task.FromResult(Array.Empty<string>());
+        Loadout.ReadOnly loadout = _installerDelegates.CurLoadout;
+        List<string> loadoutItems = new List<string>();
+        foreach (var item in loadout.Items)
+        {
+            if (!activeOnly)
+            {
+                loadoutItems.Add(item.Name);
+            }
+            else
+            {
+                if (!item.IsDisabled)
+                {
+                    loadoutItems.Add(item.Name);
+                }
+            }
+        }
+        
+        return Task.FromResult(loadoutItems.ToArray());
     }
 
     /// <summary>
@@ -30,8 +48,16 @@ public class PluginDelegates : IPluginDelegates
     /// </summary>
     public Task<bool> IsActive(string pluginName)
     {
-        _logger.LogWarning($"NotImplemented: {nameof(IsActive)} with pluginName='{{PluginName}}'. Using default value: true", pluginName);
-        return Task.FromResult(true);
+        Loadout.ReadOnly loadout = _installerDelegates.CurLoadout;
+        foreach (LoadoutItem.ReadOnly item in loadout.Items)
+        {
+            if (item.Name.Equals(pluginName, StringComparison.OrdinalIgnoreCase))
+            {
+                return Task.FromResult(!item.IsDisabled);
+            }
+        }
+
+        return Task.FromResult(false);
     }
 
     /// <summary>
@@ -39,7 +65,14 @@ public class PluginDelegates : IPluginDelegates
     /// </summary>
     public Task<bool> IsPresent(string pluginName)
     {
-        _logger.LogWarning($"NotImplemented: {nameof(IsPresent)} with pluginName='{{PluginName}}'. Using default value: true", pluginName);
-        return Task.FromResult(true);
+        Loadout.ReadOnly loadout = _installerDelegates.CurLoadout;
+        foreach (LoadoutItem.ReadOnly item in loadout.Items)
+        {
+            if (item.Name.Equals(pluginName, StringComparison.OrdinalIgnoreCase))
+            {
+                return Task.FromResult(true);
+            }
+        }
+        return Task.FromResult(false);
     }
 }

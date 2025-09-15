@@ -15,9 +15,9 @@ public class PresetGuidedInstaller : IGuidedInstaller
     /// <summary>
     /// Constructor.
     /// </summary>
-    public PresetGuidedInstaller(FomodOption[] steps)
+    public PresetGuidedInstaller(NexusMods.Abstractions.Collections.Json.Option[] steps)
     {
-        _steps = steps;
+        _steps = steps.Cast<FomodOption>().ToArray();
     }
 
     /// <inheritdoc/>

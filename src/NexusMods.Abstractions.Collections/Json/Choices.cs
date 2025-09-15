@@ -1,5 +1,4 @@
 using System.Text.Json.Serialization;
-using NexusMods.Games.FOMOD;
 
 namespace NexusMods.Abstractions.Collections.Json;
 
@@ -10,5 +9,5 @@ public class Choices
     public required ChoicesType Type { get; init; }
 
     [JsonPropertyName("options")]
-    public FomodOption[] Options { get; init; } = [];
+    public Option[] Options { get; init; } = [];
 }

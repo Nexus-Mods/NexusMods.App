@@ -70,7 +70,7 @@ public class FomodXmlInstaller : ALibraryArchiveInstaller
         LoadoutItemGroup.New loadoutGroup,
         ITransaction transaction,
         Loadout.ReadOnly loadout,
-        FomodOption[]? options,
+        NexusMods.Abstractions.Collections.Json.Option[]? options,
         CancellationToken cancellationToken)
     {
         if (!libraryArchive.Children.TryGetFirst(x => x.Path.EndsWith(FomodConstants.XmlConfigRelativePath), out var xmlFile))
@@ -102,6 +102,7 @@ public class FomodXmlInstaller : ALibraryArchiveInstaller
         var installerDelegates = _delegates as InstallerDelegates;
         if (installerDelegates is not null)
         {
+            installerDelegates.CurLoadout = loadout;
             if (options is not null)
             {
                 // NOTE(halgari) The support for passing in presets to the installer is utterly broken. So we're going to

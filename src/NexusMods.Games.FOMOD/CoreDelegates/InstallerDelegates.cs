@@ -3,6 +3,7 @@ using FomodInstaller.Interface.ui;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GuidedInstallers;
+using NexusMods.Abstractions.Loadouts;
 
 namespace NexusMods.Games.FOMOD.CoreDelegates;
 
@@ -15,13 +16,14 @@ public sealed class InstallerDelegates : ICoreDelegates
 
     public IUIDelegates ui => UiDelegates;
     public UiDelegates UiDelegates;
+    public Loadout.ReadOnly CurLoadout;
 
     public InstallerDelegates(
         ILoggerFactory loggerFactory,
         IGuidedInstaller guidedInstaller)
     {
         context = new ContextDelegates(loggerFactory.CreateLogger<ContextDelegates>());
-        plugin = new PluginDelegates(loggerFactory.CreateLogger<PluginDelegates>());
+        plugin = new PluginDelegates(loggerFactory.CreateLogger<PluginDelegates>(), this);
         UiDelegates = new UiDelegates(
             loggerFactory.CreateLogger<UiDelegates>(),
             guidedInstaller
