@@ -132,9 +132,8 @@ public class SortOrderManager : ISortOrderManager, IDisposable
             )
             .AddTo(compositeDisposable);
         
-        // TODO: Create observed query to detect changes to all game loadout contents, and returns the changed loadouts and collections
-        
         // For each changed loadout, reconcile the sort orders for that loadout
+        // TODO: Move query somewhere else
         _connection.Query<(EntityId ChangedLoadout, TxId TxId)>($$"""
                                                  SELECT item.LoadoutId, MAX(d.T) as tx
                                                  FROM mdb_LoadoutItem(Db=>{Connection}) item
@@ -166,6 +165,7 @@ public class SortOrderManager : ISortOrderManager, IDisposable
             .AddTo(compositeDisposable);
         
         // For each changed collection, reconcile the sort orders for that collection
+        // TODO: Move query somewhere else
         _connection.Query<(EntityId ChangedCollection, EntityId LoaodutId, TxId TxId)>($$"""
                                                  SELECT collection.Id, collection.LoadoutId, MAX(d.T) as tx
                                                  FROM mdb_CollectionGroup(Db=>{Connection}) collection
