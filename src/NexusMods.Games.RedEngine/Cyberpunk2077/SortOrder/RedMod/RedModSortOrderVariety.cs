@@ -96,7 +96,7 @@ public class RedModSortOrderVariety : ASortOrderVariety<
                 JOIN loadouts.LoadoutItemEnabledState({Connection}, {loadoutId}) as enabledState ON file.Id = enabledState.Id
                 JOIN mdb_LoadoutItemGroup(Db=>{Connection}) as groupItem ON file.Parent = groupItem.Id
                 WHERE file.TargetPath.Item1 = {loadoutId}
-                  AND file.TargetPath.Item2 = {LocationId.Game}
+                  AND file.TargetPath.Item2 = {LocationId.Game.Value}
                   AND ModFolderName != ''
             ),
             loadoutData AS (
@@ -276,7 +276,7 @@ public class RedModSortOrderVariety : ASortOrderVariety<
                                                                JOIN loadouts.LoadoutItemEnabledState({dbToUse}, {loadoutId}) as enabledState ON file.Id = enabledState.Id
                                                                JOIN mdb_LoadoutItemGroup(Db=>{dbToUse}) as groupItem ON file.Parent = groupItem.Id
                                                                WHERE file.TargetPath.Item1 = {loadoutId}
-                                                                 AND file.TargetPath.Item2 = {LocationId.Game}
+                                                                 AND file.TargetPath.Item2 = {LocationId.Game.Value}
                                                                  AND ModFolderName != ''
                                                            )
                                                            SELECT

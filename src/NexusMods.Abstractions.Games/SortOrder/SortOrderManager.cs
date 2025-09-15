@@ -64,6 +64,7 @@ public class SortOrderManager : ISortOrderManager, IDisposable
     protected void SubscribeToChanges(GameId gameId)
     {
         var compositeDisposable = new CompositeDisposable();
+        var conn = _connection;
         
         // Create/remove SortOrders for loadouts
         Loadout.ObserveAll(_connection)
@@ -131,14 +132,14 @@ public class SortOrderManager : ISortOrderManager, IDisposable
         
         // For each changed loadout, reconcile the sort orders for that loadout
         // TODO: Move query somewhere else
-        _connection.Query<(EntityId ChangedLoadout, TxId TxId)>($$"""
-                                                 SELECT item.LoadoutId, MAX(d.T) as tx
-                                                 FROM mdb_LoadoutItem(Db=>{Connection}) item
-                                                 JOIN mdb_Loadout(Db=>{Connection}) loadout on item.LoadoutId = loadout.Id
-                                                 JOIN mdb_GameInstallMetadata(Db=>{Connection}) as install on loadout.InstallationId = install.Id
+        _connection.Query<(EntityId ChangedLoadout, TxId TxId)>($"""
+                                                 SELECT item.Loadout, MAX(d.T) as tx
+                                                 FROM mdb_LoadoutItem(Db=>{_connection}) item
+                                                 JOIN mdb_Loadout(Db=>{_connection}) loadout on item.Loadout = loadout.Id
+                                                 JOIN mdb_GameInstallMetadata(Db=>{_connection}) as install on loadout.InstallationId = install.Id
                                                  LEFT JOIN mdb_Datoms() d ON d.E = item.Id
-                                                 WHERE install.GameId = {gameId}
-                                                 GROUP BY item.LoadoutId
+                                                 WHERE install.GameId = {gameId.Value}
+                                                 GROUP BY item.Loadout
                                                  """
             )
             .Observe(x => x.ChangedLoadout)
@@ -163,15 +164,15 @@ public class SortOrderManager : ISortOrderManager, IDisposable
         
         // For each changed collection, reconcile the sort orders for that collection
         // TODO: Move query somewhere else
-        _connection.Query<(EntityId ChangedCollection, EntityId LoaodutId, TxId TxId)>($$"""
+        _connection.Query<(EntityId ChangedCollection, EntityId LoaodutId, TxId TxId)>($"""
                                                  SELECT collection.Id, collection.LoadoutId, MAX(d.T) as tx
-                                                 FROM mdb_CollectionGroup(Db=>{Connection}) collection
-                                                 JOIN mdb_LoadoutItemGroup(Db=>{Connection}) itemGroup on itemGroup.Parent = collection.Id
-                                                 JOIN mdb_LoadoutItem(Db=>{Connection}) item on item.Parent = itemGroup.Id
-                                                 JOIN mdb_Loadout(Db=>{Connection}) loadout on collection.LoadoutId = loadout.Id
-                                                 JOIN mdb_GameInstallMetadata(Db=>{Connection}) as install on loadout.InstallationId = install.Id
+                                                 FROM mdb_CollectionGroup(Db=>{_connection}) collection
+                                                 JOIN mdb_LoadoutItemGroup(Db=>{_connection}) itemGroup on itemGroup.Parent = collection.Id
+                                                 JOIN mdb_LoadoutItem(Db=>{_connection}) item on item.Parent = itemGroup.Id
+                                                 JOIN mdb_Loadout(Db=>{_connection}) loadout on collection.LoadoutId = loadout.Id
+                                                 JOIN mdb_GameInstallMetadata(Db=>{_connection}) as install on loadout.InstallationId = install.Id
                                                  LEFT JOIN mdb_Datoms() d ON d.E = item.Id OR d.E = itemGroup.Id OR d.E = collection.Id
-                                                 WHERE install.GameId = {gameId}
+                                                 WHERE install.GameId = {gameId.Value}
                                                  GROUP BY collection.Id
                                                  """
             )
