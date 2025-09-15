@@ -173,7 +173,7 @@ public class SortOrderManager : ISortOrderManager, IDisposable
                                                  JOIN mdb_GameInstallMetadata(Db=>{_connection}) as install on loadout.Installation = install.Id
                                                  LEFT JOIN mdb_Datoms() d ON d.E = item.Id OR d.E = itemGroup.Id OR d.E = collection.Id
                                                  WHERE install.GameId = {gameId.Value}
-                                                 GROUP BY collection.Id
+                                                 GROUP BY collection.Id, collection.Loadout
                                                  """
             )
             .Observe(x => x.ChangedCollection)
