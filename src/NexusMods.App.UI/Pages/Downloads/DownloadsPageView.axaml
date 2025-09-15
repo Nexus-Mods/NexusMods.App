@@ -10,6 +10,7 @@
     xmlns:icons="clr-namespace:NexusMods.UI.Sdk.Icons;assembly=NexusMods.UI.Sdk"
     xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
     xmlns:pageHeader="clr-namespace:NexusMods.App.UI.Controls.PageHeader"
+    xmlns:search="clr-namespace:NexusMods.App.UI.Controls.Search"
     mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="450"
     x:Class="NexusMods.App.UI.Pages.Downloads.DownloadsPageView"
     Background="{StaticResource SurfaceTransparentBrush}">
@@ -27,6 +28,14 @@
         <Grid Grid.Row="1" RowDefinitions="Auto, *" Margin="0,16,0,0">
             <!-- Toolbar with command 'all' buttons -->
             <StackPanel Grid.Row="0" Orientation="Horizontal">
+                
+                <controls:Toolbar Margin="4, 0">
+                    <ItemsControl>
+                        <search:SearchControl x:Name="SearchControl"
+                                              PageName="Downloads"
+                                              ButtonSize="Toolbar" />
+                    </ItemsControl>
+                </controls:Toolbar>
                 
                 <controls:Toolbar Margin="4, 0">
                     <ItemsControl>

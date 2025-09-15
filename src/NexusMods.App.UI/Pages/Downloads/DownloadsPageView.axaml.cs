@@ -3,6 +3,7 @@ using Avalonia.ReactiveUI;
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Downloads;
 using NexusMods.App.UI.Controls;
+using NexusMods.App.UI.Controls.Search;
 using NexusMods.MnemonicDB.Abstractions;
 using ReactiveUI;
 
@@ -28,6 +29,11 @@ public partial class DownloadsPageView : ReactiveUserControl<IDownloadsPageViewM
                     vm => vm.Adapter.Source.Value,
                     view => view.TreeDataGridDownloads.Source
                 )
+                .DisposeWith(disposables);
+
+            // Add SearchControl keyboard handlers and adapter binding
+            SearchControl.AttachKeyboardHandlers(this, disposables);
+            this.OneWayBind(ViewModel, vm => vm.Adapter, view => view.SearchControl.Adapter)
                 .DisposeWith(disposables);
         });
     }
