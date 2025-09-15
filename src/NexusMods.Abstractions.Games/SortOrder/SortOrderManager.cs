@@ -2,7 +2,6 @@ using System.Collections.Frozen;
 using DynamicData;
 using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.MnemonicDB.Abstractions;
@@ -19,7 +18,6 @@ public class SortOrderManager : ISortOrderManager, IDisposable
 {
     private readonly IServiceProvider _serviceProvider; 
     private readonly IConnection _connection;
-    private readonly ILogger _logger;
     private IDisposable? _subscription;
     
     private FrozenDictionary<SortOrderVarietyId, ISortOrderVariety> _sortOrderVarieties;
@@ -28,7 +26,6 @@ public class SortOrderManager : ISortOrderManager, IDisposable
     {
         _serviceProvider = serviceProvider;
         _connection = _serviceProvider.GetRequiredService<IConnection>();
-        _logger = _serviceProvider.GetRequiredService<ILogger>();
         _sortOrderVarieties = FrozenDictionary<SortOrderVarietyId, ISortOrderVariety>.Empty;
     }
 
