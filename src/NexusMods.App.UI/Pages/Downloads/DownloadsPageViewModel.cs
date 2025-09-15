@@ -1,15 +1,11 @@
-using System.Reactive.Disposables;
+using System.ComponentModel;
 using System.Reactive.Linq;
-using DynamicData;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Downloads;
-using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
-using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.UI.Sdk.Icons;
-using OneOf;
 using R3;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -18,8 +14,6 @@ namespace NexusMods.App.UI.Pages.Downloads;
 
 public class DownloadsPageViewModel : APageViewModel<IDownloadsPageViewModel>, IDownloadsPageViewModel
 {
-    private readonly IDownloadsService _downloadsService;
-
     [Reactive] public int SelectionCount { get; private set; } = 0;
     
     [Reactive] public bool IsEmptyStateActive { get; set; } = true;
@@ -31,8 +25,8 @@ public class DownloadsPageViewModel : APageViewModel<IDownloadsPageViewModel>, I
 
     public DownloadsPageViewModel(IWindowManager windowManager, IServiceProvider serviceProvider, DownloadsPageContext context) : base(windowManager)
     {
-        _downloadsService = serviceProvider.GetRequiredService<IDownloadsService>();
-        
+        var downloadsService = serviceProvider.GetRequiredService<IDownloadsService>();
+
         // Create filter based on context
         var filter = context switch
         {
@@ -48,18 +42,23 @@ public class DownloadsPageViewModel : APageViewModel<IDownloadsPageViewModel>, I
         TabIcon = IconValues.PictogramDownload;
 
         // Commands
-        PauseAllCommand = new ReactiveCommand<Unit>(_ => _downloadsService.PauseAll());
-        ResumeAllCommand = new ReactiveCommand<Unit>(_ => _downloadsService.ResumeAll());
+        PauseAllCommand = new ReactiveCommand<Unit>(_ => downloadsService.PauseAll());
+        ResumeAllCommand = new ReactiveCommand<Unit>(_ => downloadsService.ResumeAll());
         
         var hasSelection = this.WhenAnyValue(vm => vm.SelectionCount)
             .ToObservable()
             .Select(count => count > 0);
         
         CancelSelectedCommand = hasSelection.ToReactiveCommand<Unit>(
-            executeAsync: (_, cancellationToken) =>
+            executeAsync: (_, _) =>
             {
-                var selectedDownloads = GetSelectedDownloads();
-                _downloadsService.CancelRange(selectedDownloads);
+                foreach (var model in Adapter.SelectedModels)
+                {
+                    var downloadRef = model.GetOptional<DownloadRef>(DownloadColumns.DownloadRefComponentKey);
+                    if (downloadRef.HasValue)
+                        downloadsService.CancelDownload(downloadRef.Value.Download);
+                }
+
                 return ValueTask.CompletedTask;
             },
             awaitOperation: AwaitOperation.Parallel,
@@ -72,7 +71,7 @@ public class DownloadsPageViewModel : APageViewModel<IDownloadsPageViewModel>, I
             Adapter.Activate().AddTo(disposables);
             
             // Track selection count using count property
-            System.Reactive.Linq.Observable.FromEventPattern<System.ComponentModel.PropertyChangedEventArgs>(
+            System.Reactive.Linq.Observable.FromEventPattern<PropertyChangedEventArgs>(
                     Adapter.SelectedModels, nameof(Adapter.SelectedModels.CollectionChanged))
                 .Select(_ => Adapter.SelectedModels.Count)
                 .Subscribe(count => SelectionCount = count)
@@ -84,50 +83,28 @@ public class DownloadsPageViewModel : APageViewModel<IDownloadsPageViewModel>, I
                 .AddTo(disposables);
 
             // Subscribe to adapter messages for individual download actions
-            Adapter.MessageSubject.SubscribeAwait(
-                onNextAsync: async (message, cancellationToken) =>
+            Adapter.MessageSubject.Subscribe(
+                (message) =>
                 {
                     message.Switch(
                         pauseMessage =>
                         {
                             foreach (var download in pauseMessage.Downloads)
-                            {
-                                _downloadsService.PauseDownload(download);
-                            }
+                                downloadsService.PauseDownload(download);
                         },
                         resumeMessage =>
                         {
                             foreach (var download in resumeMessage.Downloads)
-                            {
-                                _downloadsService.ResumeDownload(download);
-                            }
+                                downloadsService.ResumeDownload(download);
                         },
                         cancelMessage =>
                         {
                             foreach (var download in cancelMessage.Downloads)
-                            {
-                                _downloadsService.CancelDownload(download);
-                            }
+                                downloadsService.CancelDownload(download);
                         }
                     );
                 }
             ).AddTo(disposables);
         });
-    }
-
-    private DownloadInfo[] GetSelectedDownloads()
-    {
-        var downloads = new List<DownloadInfo>();
-        
-        foreach (var model in Adapter.SelectedModels)
-        {
-            var downloadRef = model.GetOptional<DownloadRef>(DownloadColumns.DownloadRefComponentKey);
-            if (downloadRef.HasValue)
-            {
-                downloads.Add(downloadRef.Value.Download);
-            }
-        }
-        
-        return downloads.ToArray();
     }
 }
