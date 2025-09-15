@@ -36,7 +36,7 @@ public abstract class AGame : IGame
         _gameLocators = provider.GetServices<IGameLocator>();
         // In a Lazy so we don't get a circular dependency
         _synchronizer = new Lazy<ILoadoutSynchronizer>(() => MakeSynchronizer(provider));
-        _sortOrderManager = new Lazy<ISortOrderManager>(() => MakeSortOrderManager(provider));
+        _sortOrderManager = new Lazy<ISortOrderManager>(() => MakeSortOrderManager(provider, this));
         _fs = provider.GetRequiredService<IFileSystem>();
     }
 
@@ -48,10 +48,10 @@ public abstract class AGame : IGame
         return new DefaultSynchronizer(provider);
     }
     
-    private ISortOrderManager MakeSortOrderManager(IServiceProvider provider)
+    private ISortOrderManager MakeSortOrderManager(IServiceProvider provider, IGame game)
     {
         var manager = new SortOrderManager(provider);
-        manager.RegisterSortOrderVarieties(GetSortOrderVarieties());
+        manager.RegisterSortOrderVarieties(GetSortOrderVarieties(), game);
         return manager;
     }
 

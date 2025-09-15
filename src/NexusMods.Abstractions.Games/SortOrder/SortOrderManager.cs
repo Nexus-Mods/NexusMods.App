@@ -1,8 +1,10 @@
 using System.Collections.Frozen;
+using DynamicData;
 using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.MnemonicDB.Abstractions;
 using R3;
 using OneOf;
@@ -52,40 +54,151 @@ public class SortOrderManager : ISortOrderManager, IDisposable
     }
 
     /// <inheritdoc />
-    public void RegisterSortOrderVarieties(ISortOrderVariety[] sortOrderVarieties)
+    public void RegisterSortOrderVarieties(ISortOrderVariety[] sortOrderVarieties, IGame game)
     {
         _sortOrderVarieties = sortOrderVarieties.ToDictionary(variety => variety.SortOrderVarietyId)
             .ToFrozenDictionary();
         
         // Subscribe to changes in the sort orders
-        SubscribeToChanges();
+        SubscribeToChanges(game.GameId);
     }
 
 
-    protected void SubscribeToChanges()
+    protected void SubscribeToChanges(GameId gameId)
     {
-        foreach (var variety in _sortOrderVarieties.Values)
-        {
-            throw new NotImplementedException();
-            
-            // TODO: Do initial cleanup
-            // Remove orphaned sort orders
-            // Create missing sort orders for existing loadouts/collections
-            // Update existing sort orders to match the current state of the loadouts/collections
-            //
-            // variety.RefreshSortOrders();
+        var compositeDisposable = new CompositeDisposable();
         
-            // TODO: Subscribe to loadouts/collections changes
-            // Additions (add new sort orders for new loadouts/collections)
-            // Updates (reconcile sort orders when loadouts/collections change)
-            //     Skip updates for sort orders that don't want to be updated
-            // Deletions (remove sort orders when loadouts/collections are deleted)
-            //
-            // variety.SubscribeToChanges();
+        // Create/remove SortOrders for loadouts
+        Loadout.ObserveAll(_connection)
+            .StartWithEmpty()
+            .FilterImmutable(l => l.Installation.GameId == gameId)
+            .ToObservable()
+            .SubscribeAwait(async (changes, token) =>
+                {
+                    foreach (var change in changes)
+                    {
+                        var loadoutId = change.Current.LoadoutId;
+                        var parentEntity = loadoutId;
+
+                        switch (change.Reason)
+                        {
+                            case ChangeReason.Add:
+                                // Create the sort order for this loadout
+                                // TODO: GetOrCreateSortOrderFor or UpdateLoadOrders
+                                // Might not be needed if the other subscription to loadout items handles it
+                                break;
+                            case ChangeReason.Update:
+                                // If loadout changes, we handle that in a separate subscription
+                                break;
+                            case ChangeReason.Remove:
+                                // Remove the orphaned sort orders
+                                // TODO
+                                break;
+                        }
+                    }
+                }
+            )
+            .AddTo(compositeDisposable);
         
-            // TODO: Ensure subscription are disposed when a sort order is removed or manager is disposed
-        }
+        // Create/remove SortOrders for collection groups
+        CollectionGroup.ObserveAll(_connection)
+            .StartWithEmpty()
+            .FilterImmutable(cg => cg.AsLoadoutItemGroup().AsLoadoutItem().Loadout.Installation.GameId == gameId)
+            .ToObservable()
+            .SubscribeAwait(async (changes, token) =>
+                {
+                    foreach (var change in changes)
+                    {
+                        var collectionGroupId = change.Current.CollectionGroupId;
+                        var parentEntity = OneOf<LoadoutId, CollectionGroupId>.FromT1(collectionGroupId);
+
+                        switch (change.Reason)
+                        {
+                            case ChangeReason.Add:
+                                // Create the sort order for this collection group
+                                // TODO: GetOrCreateSortOrderFor or UpdateLoadOrders
+                                // Might not be needed if the other subscription to loadout items handles it
+                                break;
+                            case ChangeReason.Update:
+                                // If collection group changes, we handle that in a separate subscription
+                                break;
+                            case ChangeReason.Remove:
+                                // Remove the orphaned sort orders
+                                // TODO
+                                break;
+                        }
+                    }
+                }
+            )
+            .AddTo(compositeDisposable);
         
+        // TODO: Create observed query to detect changes to all game loadout contents, and returns the changed loadouts and collections
+        
+        // For each changed loadout, reconcile the sort orders for that loadout
+        _connection.Query<(EntityId ChangedLoadout, TxId TxId)>($$"""
+                                                 SELECT item.LoadoutId, MAX(d.T) as tx
+                                                 FROM mdb_LoadoutItem(Db=>{Connection}) item
+                                                 JOIN mdb_Loadout(Db=>{Connection}) loadout on item.LoadoutId = loadout.Id
+                                                 JOIN mdb_GameInstallMetadata(Db=>{Connection}) as install on loadout.InstallationId = install.Id
+                                                 LEFT JOIN mdb_Datoms() d ON d.E = item.Id
+                                                 WHERE install.GameId = {gameId}
+                                                 GROUP BY item.LoadoutId
+                                                 """
+            )
+            .Observe(x => x.ChangedLoadout)
+            .ToObservable()
+            .SubscribeAwait(async (changes, token) =>
+            {
+                foreach (var change in changes)
+                {
+                    if (change.Reason != ChangeReason.Update)
+                        continue;
+                    
+                    var changedLoadoutId = new LoadoutId(change.Key);
+                    var txId = change.Current.TxId;
+                    // TODO: This is likely wrong, we need to use this DB to get the loadout data, but the latest DB to get the sort order data
+                    var referenceDb = _connection.AsOf(txId);
+
+                    await UpdateLoadOrders(changedLoadoutId, token: token);
+                }
+               
+            })
+            .AddTo(compositeDisposable);
+        
+        // For each changed collection, reconcile the sort orders for that collection
+        _connection.Query<(EntityId ChangedCollection, EntityId LoaodutId, TxId TxId)>($$"""
+                                                 SELECT collection.Id, collection.LoadoutId, MAX(d.T) as tx
+                                                 FROM mdb_CollectionGroup(Db=>{Connection}) collection
+                                                 JOIN mdb_LoadoutItemGroup(Db=>{Connection}) itemGroup on itemGroup.Parent = collection.Id
+                                                 JOIN mdb_LoadoutItem(Db=>{Connection}) item on item.Parent = itemGroup.Id
+                                                 JOIN mdb_Loadout(Db=>{Connection}) loadout on collection.LoadoutId = loadout.Id
+                                                 JOIN mdb_GameInstallMetadata(Db=>{Connection}) as install on loadout.InstallationId = install.Id
+                                                 LEFT JOIN mdb_Datoms() d ON d.E = item.Id OR d.E = itemGroup.Id OR d.E = collection.Id
+                                                 WHERE install.GameId = {gameId}
+                                                 GROUP BY collection.Id
+                                                 """
+            )
+            .Observe(x => x.ChangedCollection)
+            .ToObservable()
+            .SubscribeAwait(async (changes, token) =>
+            {
+                foreach (var change in changes)
+                {
+                    if (change.Reason != ChangeReason.Update)
+                        continue;
+                    
+                    var loadoutId = change.Current.LoaodutId;
+                    var collectionId = new CollectionGroupId(change.Key);
+                    var txId = change.Current.TxId;
+                    var referenceDb = _connection.AsOf(txId);
+
+                    await UpdateLoadOrders(loadoutId, collectionId, token: token);
+                }
+               
+            })
+            .AddTo(compositeDisposable);
+        
+        _subscription = compositeDisposable;
     }
 
     public void Dispose()
