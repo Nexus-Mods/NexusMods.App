@@ -329,7 +329,5 @@ public class GeneralLoadoutManagementTests(ITestOutputHelper helper) : ACyberpun
         otherDiskPath.FileExists.Should().BeTrue("This file is not deleted and is in a mod in this loadout");
         
         await Verify(sb.ToString(), extension: "md");
-        
     }
-
 }

@@ -1,6 +1,9 @@
 using System.Text;
+using FluentAssertions;
 using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.Games.TestFramework;
+using NexusMods.Paths;
 using Xunit.Abstractions;
 
 namespace NexusMods.DataModel.Synchronizer.Tests;
@@ -50,5 +53,35 @@ public class GeneralFileManagementTests (ITestOutputHelper helper) : ACyberpunkI
             """, [loadoutA]);
         
         await Verify(sb.ToString(), extension: "md");
+    }
+
+    [Fact]
+    public async Task Test_FileConflicts()
+    {
+        var loadout = await CreateLoadout();
+
+        Synchronizer.GetFileConflicts(Loadout.Load(Connection.Db, loadout)).Should().BeEmpty(because: "loadout is empty");
+
+        var dataPath = FileSystem.GetKnownPath(KnownPath.CurrentDirectory).Combine("Resources/TestMod.zip");
+        var libraryArchive = await RegisterLocalArchive(dataPath);
+
+        var collection1 = await CreateCollection(loadout, name: "Collection 1");
+        await LibraryService.InstallItem(libraryArchive.AsLibraryFile().AsLibraryItem(), loadout, parent: collection1.AsLoadoutItemGroup().LoadoutItemGroupId);
+
+        Synchronizer.GetFileConflicts(Loadout.Load(Connection.Db, loadout)).Should().BeEmpty(because: "no conflicts yet");
+
+        var collection2 = await CreateCollection(loadout, name: "Collection 2");
+        await LibraryService.InstallItem(libraryArchive.AsLibraryFile().AsLibraryItem(), loadout, parent: collection2.AsLoadoutItemGroup().LoadoutItemGroupId);
+
+        Synchronizer
+            .GetFileConflicts(Loadout.Load(Connection.Db, loadout))
+            .Should().HaveCount(2, because: "loadout has two file conflicts")
+            .And.ContainKey(new GamePath(LocationId.Game, "bin/x64/ThisIsATestFile.txt"), because: "one of the conflicting files")
+            .And.ContainKey(new GamePath(LocationId.Game, "bin/x64/And Another One.txt"), because: "one of the conflicting files")
+            .And.AllSatisfy(kv => kv.Value.Should()
+                .AllSatisfy(value => kv.Key
+                    .Equals(value.AsT0.AsLoadoutItemWithTargetPath().TargetPath).Should().BeTrue(because: "file should be grouped correctly")
+                )
+            );
     }
 }
