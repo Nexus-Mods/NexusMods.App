@@ -3,8 +3,10 @@ using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.GC;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Loadouts.Files.Diff;
+using NexusMods.Hashing.xxHash3;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.IndexSegments;
+using OneOf;
 
 namespace NexusMods.Abstractions.Loadouts.Synchronizers;
 
@@ -49,8 +51,9 @@ public interface ILoadoutSynchronizer
     /// new changes in the loadout will be applied to the game folder.
     /// </summary>
     Task<Loadout.ReadOnly> Synchronize(Loadout.ReadOnly loadout, SynchronizeLoadoutJob? job = null);
-    
-    
+
+    Dictionary<GamePath, OneOf<LoadoutFile.ReadOnly, DeletedFile.ReadOnly>[]> GetFileConflicts(Loadout.ReadOnly loadout);
+
     /// <summary>
     /// Rescan the files in the folders this game requires. This is used to bring the local cache up to date with the
     /// whatever is on disk.
