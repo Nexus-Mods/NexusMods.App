@@ -72,11 +72,12 @@ FROM loadouts.EnabledLoadoutItemWithTargetPathInLoadout(db, loadoutId) items
 LEFT JOIN mdb_LoadoutFile(Db=>db) file ON file.Id = items.Id
 LEFT JOIN mdb_DeletedFile(Db=>db) deleted ON deleted.Id = items.Id;
 
-CREATE MACRO loadouts.FileConflicts(db, loadoutId) AS TABLE
+CREATE MACRO loadouts.FileConflicts(db, loadoutId, removeDuplicates) AS TABLE
 SELECT
     TargetPath.Item2,
     TargetPath.Item3,
     LIST((Id, IsDeleted))
 FROM loadouts.EnabledFilesWithMetadata(db, loadoutId)
 GROUP BY TargetPath.Item2, TargetPath.Item3
-HAVING len(LIST((Id, Hash))) >= 2;
+HAVING len(LIST((Id, Hash))) >= 2
+    AND (NOT removeDuplicates OR COUNT(DISTINCT Hash) > 1);

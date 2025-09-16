@@ -52,7 +52,7 @@ public interface ILoadoutSynchronizer
     /// </summary>
     Task<Loadout.ReadOnly> Synchronize(Loadout.ReadOnly loadout, SynchronizeLoadoutJob? job = null);
 
-    Dictionary<GamePath, OneOf<LoadoutFile.ReadOnly, DeletedFile.ReadOnly>[]> GetFileConflicts(Loadout.ReadOnly loadout);
+    Dictionary<GamePath, OneOf<LoadoutFile.ReadOnly, DeletedFile.ReadOnly>[]> GetFileConflicts(Loadout.ReadOnly loadout, bool removeDuplicates = true);
 
     /// <summary>
     /// Rescan the files in the folders this game requires. This is used to bring the local cache up to date with the

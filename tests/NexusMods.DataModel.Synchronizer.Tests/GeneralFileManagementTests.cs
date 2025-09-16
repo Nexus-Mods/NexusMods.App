@@ -73,8 +73,10 @@ public class GeneralFileManagementTests (ITestOutputHelper helper) : ACyberpunkI
         var collection2 = await CreateCollection(loadout, name: "Collection 2");
         await LibraryService.InstallItem(libraryArchive.AsLibraryFile().AsLibraryItem(), loadout, parent: collection2.AsLoadoutItemGroup().LoadoutItemGroupId);
 
+        Synchronizer.GetFileConflicts(Loadout.Load(Connection.Db, loadout), removeDuplicates: true).Should().BeEmpty(because: "all conflicts are duplicates");
+
         Synchronizer
-            .GetFileConflicts(Loadout.Load(Connection.Db, loadout))
+            .GetFileConflicts(Loadout.Load(Connection.Db, loadout), removeDuplicates: false)
             .Should().HaveCount(2, because: "loadout has two file conflicts")
             .And.ContainKey(new GamePath(LocationId.Game, "bin/x64/ThisIsATestFile.txt"), because: "one of the conflicting files")
             .And.ContainKey(new GamePath(LocationId.Game, "bin/x64/And Another One.txt"), because: "one of the conflicting files")

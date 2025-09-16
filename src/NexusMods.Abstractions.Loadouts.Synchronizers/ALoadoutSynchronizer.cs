@@ -194,10 +194,10 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         return newOverrides.Id;
     }
 
-    public Dictionary<GamePath, OneOf<LoadoutFile.ReadOnly, DeletedFile.ReadOnly>[]> GetFileConflicts(Loadout.ReadOnly loadout)
+    public Dictionary<GamePath, OneOf<LoadoutFile.ReadOnly, DeletedFile.ReadOnly>[]> GetFileConflicts(Loadout.ReadOnly loadout, bool removeDuplicates = true)
     {
         var db = loadout.Db;
-        var query = Loadout.FileConflictsQuery(db, loadout);
+        var query = Loadout.FileConflictsQuery(db, loadout, removeDuplicates: removeDuplicates);
         var result = query.ToDictionary(row => new GamePath(row.Location, row.Path), row =>
         {
             var files = row.Item3.Select(tuple =>
@@ -217,7 +217,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     {
         var referenceDb = _fileHashService.Current;
         Dictionary<GamePath, SyncNode> syncTree = new();
-        
+
         // Add in the game state
         foreach (var gameFile in GetNormalGameState(referenceDb, loadout))
         {

@@ -52,8 +52,8 @@ public partial class Loadout
             $"SELECT Id, TargetPath.Item2, TargetPath.Item3, Hash, Size, IsDeleted FROM loadouts.EnabledFilesWithMetadata({db}, {loadoutId})");
     }
 
-    public static Query<(LocationId Location, RelativePath Path, List<(EntityId Id, bool IsDeleted)>)> FileConflictsQuery(IDb db, LoadoutId loadoutId)
+    public static Query<(LocationId Location, RelativePath Path, List<(EntityId Id, bool IsDeleted)>)> FileConflictsQuery(IDb db, LoadoutId loadoutId, bool removeDuplicates)
     {
-        return db.Connection.Query<(LocationId Location, RelativePath Path, List<(EntityId Id, bool IsDeleted)>)>($"SELECT * FROM loadouts.FileConflicts({db}, {loadoutId})");
+        return db.Connection.Query<(LocationId Location, RelativePath Path, List<(EntityId Id, bool IsDeleted)>)>($"SELECT * FROM loadouts.FileConflicts({db}, {loadoutId}, {removeDuplicates})");
     }
 }
