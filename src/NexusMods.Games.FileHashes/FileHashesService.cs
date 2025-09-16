@@ -8,6 +8,7 @@ using NexusMods.Abstractions.EpicGameStore.Values;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.FileHashes;
 using NexusMods.Abstractions.Games.FileHashes.Models;
+using NexusMods.Abstractions.GOG.Values;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Abstractions.Settings;
@@ -27,6 +28,8 @@ namespace NexusMods.Games.FileHashes;
 
 internal sealed class FileHashesService : IFileHashesService, IDisposable
 {
+    private const string DefaultLanguage = "en-US";
+    
     private readonly ScopedAsyncLock _lock = new();
     private readonly FileHashesServiceSettings _settings;
     private readonly IFileSystem _fileSystem;
@@ -333,6 +336,11 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable
 
         if (gameStore == GameStore.GOG)
         {
+            HashSet<GogBuild.ReadOnly> gogBuilds = [];
+            HashSet<ProductId> gogProducts = [];
+            Dictionary<EntityId, GogManifest.ReadOnly> gogManifests = [];
+            
+            // So first we find all the valid build Ids, and then assume that everything else is a product Id
             foreach (var id in locatorIds)
             {
                 if (!ulong.TryParse(id.Value, out var parsedId))
@@ -340,10 +348,36 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable
 
                 var gogId = BuildId.From(parsedId);
 
-                if (!GogBuild.FindByBuildId(Current, gogId).TryGetFirst(out var firstBuild))
+                if (GogBuild.FindByBuildId(Current, gogId).TryGetFirst(out var firstBuild))
+                {
+                    gogBuilds.Add(firstBuild);
                     continue;
+                }
+                
+                var productId = ProductId.From(parsedId);
+                gogProducts.Add(productId);
+            }
+            
+            // Now we emit all the files from the build products, and then also from any secondary products
+            foreach (var build in gogBuilds)
+            {
+                foreach (var depot in build.Depots)
+                {
+                    // We only care about the productId of the build, and the productIds of the secondary products
+                    if (!(depot.ProductId == build.ProductId || gogProducts.Contains(depot.ProductId)))
+                        continue;
+                    
+                    // If there is a language setting for the files, they have to be the same as the default language
+                    if (!(depot.Languages.Count == 0 || depot.Languages.Contains(DefaultLanguage)))
+                        continue;
 
-                foreach (var file in firstBuild.Files)
+                    gogManifests[depot.Manifest.Id] = depot.Manifest;
+                }
+            }
+
+            foreach (var (_ , manifest) in gogManifests)
+            {
+                foreach (var file in manifest.Files)
                 {
                     yield return new GameFileRecord
                     {
@@ -354,6 +388,7 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable
                     };
                 }
             }
+            
         }
         else if (gameStore == GameStore.Steam)
         {
@@ -560,7 +595,7 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable
     {
         if (gameStore == GameStore.GOG)
         {
-            return versionDefinition.GogBuilds.Select(build => LocatorId.From(build.BuildId.ToString())).ToArray();
+            return versionDefinition.GogBuilds.Select(build => LocatorId.From(build.BuildId!.Value.ToString())).ToArray();
         }
 
         if (gameStore == GameStore.Steam)

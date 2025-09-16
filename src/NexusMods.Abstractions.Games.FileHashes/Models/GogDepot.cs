@@ -19,4 +19,9 @@ public partial class GogDepot : IModelDefinition
     /// The manifest pointed to by this depot
     /// </summary>
     public static readonly ReferenceAttribute<GogManifest> Manifest = new(Namespace, nameof(Manifest));
+    
+    /// <summary>
+    /// The languages in this depot.
+    /// </summary>
+    public static readonly StringsAttribute Languages = new(Namespace, nameof(Languages)) { IsIndexed = false };
 }

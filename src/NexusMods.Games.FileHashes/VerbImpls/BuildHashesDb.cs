@@ -321,6 +321,13 @@ public class BuildHashesDb : IAsyncDisposable
                 pathCount++;
             }
             pathEntities[manifestId] = pathIds;
+
+            var manifestEnt = new GogManifest.New(tx)
+            {
+                ManifestId = manifestId,
+                FilesIds = pathIds,
+            };
+            manifestEntities[manifestId] = manifestEnt.Id;
         }
         
         foreach (var (buildId, build) in builds)
@@ -335,13 +342,15 @@ public class BuildHashesDb : IAsyncDisposable
 
                 foreach (var depot in buildDetail.Depots)
                 {
-                    var _ = new GogDepot.New(tx)
+                    var depotEnt = new GogDepot.New(tx)
                     {
                         ProductId = depot.ProductId,
                         Size = depot.Size,
                         CompressedSize = depot.CompressedSize,
                         ManifestId = manifestEntities[depot.Manifest],
+                        Languages = depot.Languages,
                     };
+                    depotIds.Add(depotEnt.Id);
                 }
                 
                 var os = build.OS switch
@@ -356,6 +365,7 @@ public class BuildHashesDb : IAsyncDisposable
                 {
                     BuildId = BuildId.From(ulong.Parse(buildId)),
                     ProductId = build.ProductId,
+                    ManifestId = primaryDepot.Manifest,
                     OperatingSystem = os,
                     VersionName = build.VersionName,
                     Public = build.Public,
@@ -365,7 +375,7 @@ public class BuildHashesDb : IAsyncDisposable
             }
             catch (Exception ex)
             {
-                await _renderer.Error(ex, "Failed to import {0}: {1}", foundHashesFile, ex.Message);
+                await _renderer.Error(ex, "Failed to import {0}: {1}", build.BuildId, ex.Message);
             }
             buildCount++;
         }
@@ -383,7 +393,7 @@ public class BuildHashesDb : IAsyncDisposable
         {
             try
             {
-                using var fs = file.Read();
+                await using var fs = file.Read();
                 var parsed = JsonSerializer.Deserialize<T>(fs, _jsonOptions)!;
                 dict[file.GetFileNameWithoutExtension()] = parsed;
             }
