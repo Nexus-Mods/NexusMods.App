@@ -298,6 +298,7 @@ public abstract class ASortOrderVariety<TKey, TSortableItem, TItemLoadoutData, T
     /// <summary>
     /// Returns a collection of loadout-specific TItemLoadoutData for each relevant item found in the provided loadout/collection.
     /// These loadout data items are unsorted and do not have a sort index.
+    /// This already filters out duplicates, currently selecting the most recently added enabled item for each key.
     /// </summary>
     protected abstract IReadOnlyList<TItemLoadoutData> RetrieveLoadoutData(
         LoadoutId loadoutId,
