@@ -23,8 +23,8 @@
     <Grid RowDefinitions="Auto, *">
 
         <pageHeader:PageHeader Grid.Row="0"
-                               Title="{x:Static resources:Language.Downloads_WorkspaceTitle}"
-                               Description="Manage your active and completed downloads"
+                               Title="{Binding HeaderTitle}"
+                               Description="{Binding HeaderDescription}"
                                Icon="{x:Static icons:IconValues.PictogramDownload}"
                                Margin="24 24 24 0" />
 

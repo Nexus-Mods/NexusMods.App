@@ -2,6 +2,7 @@ using System.ComponentModel;
 using System.Reactive.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Downloads;
+using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
@@ -20,6 +21,9 @@ public class DownloadsPageViewModel : APageViewModel<IDownloadsPageViewModel>, I
     [Reactive] public int SelectionCount { get; private set; } = 0;
     
     [Reactive] public bool IsEmptyStateActive { get; set; } = true;
+    
+    public string HeaderTitle { get; private set; } = string.Empty;
+    public string HeaderDescription { get; private set; } = string.Empty;
 
     public DownloadsTreeDataGridAdapter Adapter { get; }
     public ReactiveCommand<Unit> PauseAllCommand { get; }
@@ -48,6 +52,15 @@ public class DownloadsPageViewModel : APageViewModel<IDownloadsPageViewModel>, I
         
         TabTitle = Language.Downloads_WorkspaceTitle;
         TabIcon = IconValues.PictogramDownload;
+        
+        // Set header title and description based on context
+        (HeaderTitle, HeaderDescription) = context switch
+        {
+            AllDownloadsPageContext => (Language.DownloadsLeftMenu_AllDownloads, Language.DownloadsPage_AllDownloads_Description),
+            CompletedDownloadsPageContext => (Language.DownloadsLeftMenu_AllCompleted, Language.DownloadsPage_AllCompleted_Description),
+            GameSpecificDownloadsPageContext g => (string.Format(Language.DownloadsLeftMenu_GameSpecificDownloads, downloadsDataProvider.ResolveGameName(g.GameId)), Language.DownloadsPage_GameSpecificDownloads_Description),
+            _ => (Language.InProgressTitleTextBlock, Language.DownloadsPage_Default_Description)
+        };
 
         // Commands
         PauseAllCommand = new ReactiveCommand<Unit>(_ => downloadsService.PauseAll());

@@ -2409,5 +2409,29 @@ namespace NexusMods.App.UI.Resources {
                 return ResourceManager.GetString("GameWidget_VersionUnknown", resourceCulture);
             }
         }
+        
+        public static string DownloadsPage_AllDownloads_Description {
+            get {
+                return ResourceManager.GetString("DownloadsPage_AllDownloads_Description", resourceCulture);
+            }
+        }
+        
+        public static string DownloadsPage_AllCompleted_Description {
+            get {
+                return ResourceManager.GetString("DownloadsPage_AllCompleted_Description", resourceCulture);
+            }
+        }
+        
+        public static string DownloadsPage_GameSpecificDownloads_Description {
+            get {
+                return ResourceManager.GetString("DownloadsPage_GameSpecificDownloads_Description", resourceCulture);
+            }
+        }
+        
+        public static string DownloadsPage_Default_Description {
+            get {
+                return ResourceManager.GetString("DownloadsPage_Default_Description", resourceCulture);
+            }
+        }
     }
 }

@@ -2,6 +2,8 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using DynamicData;
 using NexusMods.Abstractions.Downloads;
+using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
@@ -21,6 +23,8 @@ public class DownloadsPageDesignViewModel : APageViewModel<IDownloadsPageViewMod
     public Observable<bool> HasPausedItems { get; } = R3.Observable.Return(false);
     
     public bool IsEmptyStateActive { get; set; } = false;
+    public string HeaderTitle { get; } = Language.DownloadsLeftMenu_AllDownloads;
+    public string HeaderDescription { get; } = Language.DownloadsPage_AllDownloads_Description;
 
     public ReactiveCommand<Unit> PauseAllCommand { get; } = new R3.ReactiveCommand();
     public ReactiveCommand<Unit> ResumeAllCommand { get; } = new R3.ReactiveCommand();
@@ -60,6 +64,11 @@ public class DesignTimeDownloadsDataProvider : IDownloadsDataProvider
         return ObserveDownloads(filter)
             .QueryWhenChanged(q => q.Count)
             .Prepend(0);
+    }
+    
+    public string ResolveGameName(GameId gameId)
+    {
+        return "Design Game";
     }
     
     private static CompositeItemModel<DownloadId>[] CreateDummyDownloads()

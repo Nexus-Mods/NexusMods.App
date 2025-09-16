@@ -5,6 +5,7 @@ using DynamicData.Binding;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Downloads;
+using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
@@ -95,7 +96,7 @@ public sealed class DownloadsDataProvider(IServiceProvider serviceProvider) : ID
         return model;
     }
 
-    private string ResolveGameName(GameId gameId)
+    public string ResolveGameName(GameId gameId)
     {
         return _gameRegistry.InstalledGames
             .FirstOrDefault(g => g.Game.GameId.Equals(gameId))?.Game.Name 

@@ -15,4 +15,7 @@ public interface IDownloadsPageViewModel : IPageViewModelInterface
     public ReactiveCommand<Unit> ResumeSelectedCommand { get; }
     public ReactiveCommand<Unit> CancelSelectedCommand { get; }
     public bool IsEmptyStateActive { get; set; }
+    
+    public string HeaderTitle { get; }
+    public string HeaderDescription { get; }
 }
