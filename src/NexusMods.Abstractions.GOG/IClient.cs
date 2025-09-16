@@ -36,14 +36,20 @@ public interface IClient
     /// </summary>
     public Task<Build[]> GetBuilds(ProductId productId, OS os, CancellationToken token);
 
+
+    /// <summary>
+    /// Gets the details for a build, can include multiple depots, some of which may come from other productIds
+    /// </summary>
+    public Task<BuildDetails> GetBuildDetails(Build build, CancellationToken token);
+
     /// <summary>
     /// Get the depot information for a build.
     /// </summary>
-    public Task<DepotInfo> GetDepot(Build build, CancellationToken token);
+    public Task<DepotInfo> GetDepot(BuildDetailsDepot depot, CancellationToken token);
 
     /// <summary>
     /// Given a depot, a build, and a path, return a stream to the file. This file is seekable, and will cache and
     /// stream in data as required from the CDN.
     /// </summary>
-    public Task<Stream> GetFileStream(Build build, DepotInfo depotInfo, RelativePath path, CancellationToken token);
+    public Task<Stream> GetFileStream(ProductId productId, DepotInfo depotInfo, RelativePath path, CancellationToken token);
 }
