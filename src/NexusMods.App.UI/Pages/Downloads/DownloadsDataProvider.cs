@@ -66,7 +66,7 @@ public sealed class DownloadsDataProvider(IServiceProvider serviceProvider) : ID
 
         // Add game component
         model.Add(DownloadColumns.Game.ComponentKey, new DownloadComponents.GameComponent(
-            gameName: ResolveGameNameInitial(download.GameId)));
+            gameName: ResolveGameName(download.GameId)));
 
         // Add size progress component (Size column)
         model.Add(DownloadColumns.Size.ComponentKey, new DownloadComponents.SizeProgressComponent(
@@ -95,21 +95,11 @@ public sealed class DownloadsDataProvider(IServiceProvider serviceProvider) : ID
         return model;
     }
 
-    private static string ResolveGameNameInitial(GameId gameId)
-    {
-        // Return a default value since we can't access the registry synchronously
-        return Language.Downloads_UnknownGame;
-    }
-
-    private Observable<string> ResolveGameNameObservable(GameId gameId)
+    private string ResolveGameName(GameId gameId)
     {
         return _gameRegistry.InstalledGames
-            .ToObservableChangeSet()
-            .Transform(game => game.Game)
-            .Filter(game => game.GameId.Equals(gameId))
-            .QueryWhenChanged(query => query.FirstOrDefault()?.Name ?? Language.Downloads_UnknownGame)
-            .ToObservable()
-            .Prepend(Language.Downloads_UnknownGame);
+            .FirstOrDefault(g => g.Game.GameId.Equals(gameId))?.Game.Name 
+            ?? Language.Downloads_UnknownGame;
     }
 
     private ImageComponent CreateIconComponent(DownloadInfo download)
