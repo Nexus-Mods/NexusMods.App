@@ -119,8 +119,7 @@ public class RedModSortOrderVariety : ASortOrderVariety<
             
             SELECT sortItem.RedModFolderName, sortItem.SortIndex, sortItem.Id, loadoutItem.IsEnabled, loadoutItem.Name, loadoutItem.Id
             FROM mdb_RedModSortOrderItem(Db=>{Connection}) sortItem
-            LEFT OUTER JOIN loadoutData(Db=>{Connection}) loadoutItem on sortItem.RedModFolderName = loadoutItem.ModFolderName
-            WHERE sortItem.ParentSortOrder = {sortOrderId}
+            WHERE sortItem.ParentSortOrder = {sortOrderId.Value}
             ORDER BY sortItem.SortIndex
             """
         );
@@ -248,7 +247,7 @@ public class RedModSortOrderVariety : ASortOrderVariety<
         return dbToUse.Connection.Query<(string FolderName, int SortIndex, EntityId ItemId)>($"""
             SELECT s.RedModFolderName, s.SortIndex, s.Id
             FROM mdb_RedModSortOrderItem(Db=>{dbToUse}) s
-            WHERE s.ParentSortOrder = {sortOrderEntityId}
+            WHERE s.ParentSortOrder = {sortOrderEntityId.Value}
             ORDER BY s.SortIndex
             """)
             .Select(row => new SortItemData<SortItemKey<string>>(
@@ -333,7 +332,7 @@ public class RedModSortOrderVariety : ASortOrderVariety<
         // Add any remaining loadout items that were not in the source sorted entries
         var itemsToAdd = loadoutItemsDict.Values
             .Where(item => !processedKeys.Contains(item.Key))
-            .OrderByDescending(item => item.ModGroupId)
+            .OrderByDescending(item => item.ModGroupId.Value.Value)
             .Select(loadoutItemData => (
                 new SortItemData<SortItemKey<string>>(loadoutItemData.Key, 0), // SortIndex will be updated later
                 loadoutItemData
