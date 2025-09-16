@@ -23,23 +23,17 @@ public abstract class ASortOrderVariety<TKey, TSortableItem, TItemLoadoutData, T
     where TItemLoadoutData : ISortItemLoadoutData<TKey>
     where TSortedEntry : ISortItemData<TKey>
 {
-    private readonly ILogger _logger;
+    private readonly ILogger<ASortOrderVariety<TKey, TSortableItem, TItemLoadoutData, TSortedEntry>> _logger;
     
     /// <summary>
     /// Database connection
     /// </summary>
     protected readonly IConnection Connection;
-    
-    /// <summary>
-    /// The game sort order manager that this variety belongs to.
-    /// </summary>
-    protected readonly ISortOrderManager Manager;
-    
-    protected ASortOrderVariety(IServiceProvider serviceProvider, ISortOrderManager manager)
+
+    protected ASortOrderVariety(IServiceProvider serviceProvider)
     {
         Connection = serviceProvider.GetRequiredService<IConnection>();
-        _logger = serviceProvider.GetRequiredService<ILogger>();
-        Manager = manager;
+        _logger = serviceProvider.GetRequiredService<ILogger<ASortOrderVariety<TKey, TSortableItem, TItemLoadoutData, TSortedEntry>>>();
     }
         
 #region public members

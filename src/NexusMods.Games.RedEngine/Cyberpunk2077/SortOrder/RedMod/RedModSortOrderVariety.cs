@@ -23,7 +23,7 @@ public class RedModSortOrderVariety : ASortOrderVariety<
     
     public override SortOrderVarietyId SortOrderVarietyId => StaticVarietyId;
 
-    public RedModSortOrderVariety(IServiceProvider serviceProvider, ISortOrderManager manager) : base(serviceProvider, manager) { }
+    public RedModSortOrderVariety(IServiceProvider serviceProvider) : base(serviceProvider) { }
     
     public override SortOrderUiMetadata SortOrderUiMetadata { get; } = new()
     {
