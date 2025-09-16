@@ -146,22 +146,7 @@
                     <controls:ComponentTemplate x:TypeArguments="controls:ImageComponent"
                                                 ComponentKey="{x:Static controls:SharedColumns+Name.ImageComponentKey}">
                         <controls:ComponentTemplate.DataTemplate>
-                            <DataTemplate DataType="{x:Type controls:ImageComponent}">
-                                    <Panel>
-                                        <Image Source="{CompiledBinding Value.Value}" />
-                                               
-                                        <!-- The below grid is used to overlay the badge icons on top of the image.
-                                        This is not used yet but thought I'd placeholder it for future -->
-                                        <Grid ColumnDefinitions="Auto,*,Auto" VerticalAlignment="Top" IsVisible="False">
-                                            <Border x:Name="ModFileCountBadgeBorder" Grid.Column="0">
-                                                <TextBlock Text="3"/>
-                                            </Border>
-                                            <Border x:Name="UpdateAvailableBadgeBorder" Grid.Column="2">
-                                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.ArrowUp}"/>
-                                            </Border>
-                                        </Grid>
-                                    </Panel>
-                            </DataTemplate>
+                            <StaticResource ResourceKey="SharedImageTemplate" />
                         </controls:ComponentTemplate.DataTemplate>
                     </controls:ComponentTemplate>
                 </controls:ComponentControl.ComponentTemplate>
@@ -177,9 +162,7 @@
                     <controls:ComponentTemplate x:TypeArguments="controls:NameComponent"
                                                 ComponentKey="{x:Static controls:SharedColumns+Name.NameComponentKey}">
                         <controls:ComponentTemplate.DataTemplate>
-                            <DataTemplate DataType="{x:Type controls:NameComponent}">
-                                <TextBlock Text="{CompiledBinding Value.Value}" />
-                            </DataTemplate>
+                            <StaticResource ResourceKey="SharedNameTextTemplate" />
                         </controls:ComponentTemplate.DataTemplate>
                     </controls:ComponentTemplate>
                 </controls:ComponentControl.ComponentTemplate>
