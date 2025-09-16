@@ -13,17 +13,15 @@ public readonly record struct PauseMessage(DownloadInfo[] Downloads);
 public readonly record struct ResumeMessage(DownloadInfo[] Downloads);
 public readonly record struct CancelMessage(DownloadInfo[] Downloads);
 
-public sealed class DownloadsTreeDataGridAdapter(IServiceProvider serviceProvider, DownloadsFilter filter) :
+public sealed class DownloadsTreeDataGridAdapter(IDownloadsDataProvider provider, DownloadsFilter filter) :
     TreeDataGridAdapter<CompositeItemModel<DownloadId>, DownloadId>,
     ITreeDataGirdMessageAdapter<OneOf<PauseMessage, ResumeMessage, CancelMessage>>
 {
-    private readonly IDownloadsDataProvider _provider = serviceProvider.GetRequiredService<IDownloadsDataProvider>();
-
     public Subject<OneOf<PauseMessage, ResumeMessage, CancelMessage>> MessageSubject { get; } = new();
 
     protected override IObservable<IChangeSet<CompositeItemModel<DownloadId>, DownloadId>> GetRootsObservable(bool viewHierarchical)
     {
-        return _provider.ObserveDownloads(filter);
+        return provider.ObserveDownloads(filter);
     }
 
     protected override IColumn<CompositeItemModel<DownloadId>>[] CreateColumns(bool viewHierarchical)
