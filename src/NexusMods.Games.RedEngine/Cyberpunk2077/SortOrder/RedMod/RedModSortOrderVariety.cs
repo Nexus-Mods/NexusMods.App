@@ -96,8 +96,8 @@ public class RedModSortOrderVariety : ASortOrderVariety<
                 JOIN loadouts.LoadoutItemEnabledState({Connection}, {loadoutId}) as enabledState ON file.Id = enabledState.Id
                 JOIN mdb_LoadoutItemGroup(Db=>{Connection}) as groupItem ON file.Parent = groupItem.Id
                 WHERE file.TargetPath.Item1 = {loadoutId}
-                  AND file.TargetPath.Item2 = {LocationId.Game.Value}
-                  AND ModFolderName != ''
+                    AND file.TargetPath.Item2 = {LocationId.Game.Value}
+                    AND ModFolderName != ''
             ),
             loadoutData AS (
                 SELECT
@@ -106,7 +106,7 @@ public class RedModSortOrderVariety : ASortOrderVariety<
                     ModName,
                     ModGroupId
                 FROM (
-                    SELECT 
+                    SELECT
                         matchingMods.*,
                         ROW_NUMBER() OVER (
                             PARTITION BY matchingMods.ModFolderName
@@ -117,8 +117,9 @@ public class RedModSortOrderVariety : ASortOrderVariety<
                 WHERE ranking = 1
             )
             
-            SELECT sortItem.RedModFolderName, sortItem.SortIndex, sortItem.Id, loadoutItem.IsEnabled, loadoutItem.Name, loadoutItem.Id
+            SELECT sortItem.RedModFolderName, sortItem.SortIndex, sortItem.Id, loadoutData.IsEnabled, loadoutData.ModName, loadoutData.ModGroupId
             FROM mdb_RedModSortOrderItem(Db=>{Connection}) sortItem
+            LEFT OUTER JOIN loadoutData on sortItem.RedModFolderName = loadoutData.ModFolderName
             WHERE sortItem.ParentSortOrder = {sortOrderId.Value}
             ORDER BY sortItem.SortIndex
             """
