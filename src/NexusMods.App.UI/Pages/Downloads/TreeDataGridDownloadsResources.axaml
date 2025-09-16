@@ -133,4 +133,62 @@
         </controls:ComponentControl>
     </DataTemplate>
 
+    <!-- Name column template override for Downloads (DownloadId-typed) -->
+    <DataTemplate x:Key="{x:Static controls:SharedColumns+Name.ColumnTemplateResourceKey}">
+        <DataTemplate.DataType>
+            <x:Type TypeName="controls:CompositeItemModel" x:TypeArguments="abstractions:DownloadId" />
+        </DataTemplate.DataType>
+
+        <StackPanel Orientation="Horizontal">
+            <!-- Thumbnail -->
+            <controls:ComponentControl x:TypeArguments="abstractions:DownloadId" Content="{CompiledBinding}">
+                <controls:ComponentControl.ComponentTemplate>
+                    <controls:ComponentTemplate x:TypeArguments="controls:ImageComponent"
+                                                ComponentKey="{x:Static controls:SharedColumns+Name.ImageComponentKey}">
+                        <controls:ComponentTemplate.DataTemplate>
+                            <DataTemplate DataType="{x:Type controls:ImageComponent}">
+                                    <Panel>
+                                        <Image Source="{CompiledBinding Value.Value}" />
+                                               
+                                        <!-- The below grid is used to overlay the badge icons on top of the image.
+                                        This is not used yet but thought I'd placeholder it for future -->
+                                        <Grid ColumnDefinitions="Auto,*,Auto" VerticalAlignment="Top" IsVisible="False">
+                                            <Border x:Name="ModFileCountBadgeBorder" Grid.Column="0">
+                                                <TextBlock Text="3"/>
+                                            </Border>
+                                            <Border x:Name="UpdateAvailableBadgeBorder" Grid.Column="2">
+                                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.ArrowUp}"/>
+                                            </Border>
+                                        </Grid>
+                                    </Panel>
+                            </DataTemplate>
+                        </controls:ComponentTemplate.DataTemplate>
+                    </controls:ComponentTemplate>
+                </controls:ComponentControl.ComponentTemplate>
+
+                <controls:ComponentControl.Fallback >
+                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.ModsOutline}" x:Name="FallbackIcon" />
+                </controls:ComponentControl.Fallback>
+            </controls:ComponentControl>
+            
+            <!-- Name -->
+            <controls:ComponentControl x:TypeArguments="abstractions:DownloadId" Content="{CompiledBinding}">
+                <controls:ComponentControl.ComponentTemplate>
+                    <controls:ComponentTemplate x:TypeArguments="controls:NameComponent"
+                                                ComponentKey="{x:Static controls:SharedColumns+Name.NameComponentKey}">
+                        <controls:ComponentTemplate.DataTemplate>
+                            <DataTemplate DataType="{x:Type controls:NameComponent}">
+                                <TextBlock Text="{CompiledBinding Value.Value}" />
+                            </DataTemplate>
+                        </controls:ComponentTemplate.DataTemplate>
+                    </controls:ComponentTemplate>
+                </controls:ComponentControl.ComponentTemplate>
+
+                <controls:ComponentControl.Fallback>
+                    <TextBlock Text="-" />
+                </controls:ComponentControl.Fallback>
+            </controls:ComponentControl>
+        </StackPanel>
+    </DataTemplate>
+
 </ResourceDictionary>
