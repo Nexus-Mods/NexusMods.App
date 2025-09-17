@@ -32,6 +32,7 @@ using NexusMods.Sdk;
 using NexusMods.Sdk.FileStore;
 using NexusMods.Sdk.IO;
 using ReactiveUI;
+using OneOf;
 using Reloaded.Memory.Extensions;
 
 namespace NexusMods.Abstractions.Loadouts.Synchronizers;
@@ -200,13 +201,30 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         return newOverrides.Id;
     }
 
+    public Dictionary<GamePath, OneOf<LoadoutFile.ReadOnly, DeletedFile.ReadOnly>[]> GetFileConflicts(Loadout.ReadOnly loadout, bool removeDuplicates = true)
+    {
+        var db = loadout.Db;
+        var query = Loadout.FileConflictsQuery(db, loadout, removeDuplicates: removeDuplicates);
+        var result = query.ToDictionary(row => new GamePath(row.Location, row.Path), row =>
+        {
+            var files = row.Item3.Select(tuple =>
+            {
+                var (entityId, isDeleted) = tuple;
+                if (isDeleted) return DeletedFile.Load(db, entityId);
+                return OneOf<LoadoutFile.ReadOnly, DeletedFile.ReadOnly>.FromT0(LoadoutFile.Load(db, entityId));
+            }).ToArray();
 
+            return files;
+        });
+
+        return result;
+    }
 
     public Dictionary<GamePath, SyncNode> BuildSyncTree<T>(T latestDiskState, T previousDiskState, Loadout.ReadOnly loadout) where T : IEnumerable<PathPartPair>
     {
         var referenceDb = _fileHashService.Current;
         Dictionary<GamePath, SyncNode> syncTree = new();
-        
+
         // Add in the game state
         foreach (var gameFile in GetNormalGameState(referenceDb, loadout))
         {
@@ -693,10 +711,8 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                     break;
 
                 case Actions.IngestFromDisk:
-                    #if DEBUG
-                    if (syncTree.Any(n => n.Value.Actions.HasFlag(Actions.IngestFromDisk)))
+                    if (ApplicationConstants.IsDebug && syncTree.Any(n => n.Value.Actions.HasFlag(Actions.IngestFromDisk)))
                         throw new InvalidOperationException("Cannot ingest files from disk when not in a loadout context");
-                    #endif
                     break;
 
                 case Actions.DeleteFromDisk:
@@ -708,10 +724,8 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                     break;
 
                 case Actions.AddReifiedDelete:
-                    #if DEBUG
-                    if (syncTree.Any(n => n.Value.Actions.HasFlag(Actions.AddReifiedDelete)))
+                    if (ApplicationConstants.IsDebug && syncTree.Any(n => n.Value.Actions.HasFlag(Actions.AddReifiedDelete)))
                         throw new InvalidOperationException("Cannot add reified deletes when not in a loadout context");
-                    #endif
                     break;
 
                 case Actions.WarnOfUnableToExtract:
@@ -1098,7 +1112,6 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             .TryGetFirst(out var downloadA);
 
         if (!hasDownloadA) return Optional<bool>.None;
-;
         var hasDownloadB = b
             .GetThisAndParents()
             .OfTypeLoadoutItemGroup()
