@@ -1,8 +1,5 @@
-
 using DynamicData;
-using DynamicData.Kernel;
 using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.Loadouts.Rows;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.HyperDuck;
 using NexusMods.MnemonicDB.Abstractions;
@@ -53,5 +50,10 @@ public partial class Loadout
     {
         return db.Connection.Query<(EntityId, LocationId, RelativePath, Hash, Size, bool)>(
             $"SELECT Id, TargetPath.Item2, TargetPath.Item3, Hash, Size, IsDeleted FROM loadouts.EnabledFilesWithMetadata({db}, {loadoutId})");
+    }
+
+    public static Query<(LocationId Location, RelativePath Path, List<(EntityId Id, bool IsDeleted)>)> FileConflictsQuery(IDb db, LoadoutId loadoutId, bool removeDuplicates)
+    {
+        return db.Connection.Query<(LocationId Location, RelativePath Path, List<(EntityId Id, bool IsDeleted)>)>($"SELECT * FROM loadouts.FileConflicts({db}, {loadoutId}, {removeDuplicates})");
     }
 }
