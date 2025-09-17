@@ -130,9 +130,10 @@ public class SortOrderManager : ISortOrderManager, IDisposable
             )
             .AddTo(compositeDisposable);
         
+        
         // For each changed loadout, reconcile the sort orders for that loadout
         // TODO: Move query somewhere else
-        _connection.Query<(EntityId ChangedLoadout, TxId TxId)>($"""
+        _connection.Query<(EntityId ChangedLoadout, ulong TxId)>($"""
                                                  SELECT item.Loadout, MAX(d.T) as tx
                                                  FROM mdb_LoadoutItem(Db=>{_connection}) item
                                                  JOIN mdb_Loadout(Db=>{_connection}) loadout on item.Loadout = loadout.Id
@@ -154,7 +155,6 @@ public class SortOrderManager : ISortOrderManager, IDisposable
                     var changedLoadoutId = new LoadoutId(change.Key);
                     var txId = change.Current.TxId;
                     // TODO: This is likely wrong, we need to use this DB to get the loadout data, but the latest DB to get the sort order data
-                    var referenceDb = _connection.AsOf(txId);
 
                     await UpdateLoadOrders(changedLoadoutId, token: token);
                 }
@@ -164,7 +164,7 @@ public class SortOrderManager : ISortOrderManager, IDisposable
         
         // For each changed collection, reconcile the sort orders for that collection
         // TODO: Move query somewhere else
-        _connection.Query<(EntityId ChangedCollection, EntityId LoaodutId, TxId TxId)>($"""
+        _connection.Query<(EntityId ChangedCollection, EntityId LoaodutId, ulong TxId)>($"""
                                                  SELECT collection.Id, collection.Loadout, MAX(d.T) as tx
                                                  FROM mdb_CollectionGroup(Db=>{_connection}) collection
                                                  JOIN mdb_LoadoutItemGroup(Db=>{_connection}) itemGroup on itemGroup.Parent = collection.Id
@@ -187,8 +187,6 @@ public class SortOrderManager : ISortOrderManager, IDisposable
                     
                     var loadoutId = change.Current.LoaodutId;
                     var collectionId = new CollectionGroupId(change.Key);
-                    var txId = change.Current.TxId;
-                    var referenceDb = _connection.AsOf(txId);
 
                     await UpdateLoadOrders(loadoutId, collectionId, token: token);
                 }
