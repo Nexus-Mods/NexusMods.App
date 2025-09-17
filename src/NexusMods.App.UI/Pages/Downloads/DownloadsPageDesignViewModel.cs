@@ -80,7 +80,7 @@ public class DesignTimeDownloadsDataProvider : IDownloadsDataProvider
         var model1 = new CompositeItemModel<DownloadId>(id1);
         
         // Add Name component
-        model1.Add(SharedColumns.Name.NameComponentKey, new NameComponent(
+        model1.Add(DownloadColumns.Name.NameComponentKey, new NameComponent(
             initialValue: "Example Mod v1.2.3",
             valueObservable: R3.Observable.Return("Example Mod v1.2.3")));
         
@@ -106,7 +106,7 @@ public class DesignTimeDownloadsDataProvider : IDownloadsDataProvider
         var id2 = DownloadId.From(Guid.NewGuid());
         var model2 = new CompositeItemModel<DownloadId>(id2);
         
-        model2.Add(SharedColumns.Name.NameComponentKey, new NameComponent(
+        model2.Add(DownloadColumns.Name.NameComponentKey, new NameComponent(
             initialValue: "Graphics Enhancement Pack",
             valueObservable: R3.Observable.Return("Graphics Enhancement Pack")));
         
@@ -129,7 +129,7 @@ public class DesignTimeDownloadsDataProvider : IDownloadsDataProvider
         var id3 = DownloadId.From(Guid.NewGuid());
         var model3 = new CompositeItemModel<DownloadId>(id3);
         
-        model3.Add(SharedColumns.Name.NameComponentKey, new NameComponent(
+        model3.Add(DownloadColumns.Name.NameComponentKey, new NameComponent(
             initialValue: "Ultimate Texture Pack",
             valueObservable: R3.Observable.Return("Ultimate Texture Pack")));
         

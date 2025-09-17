@@ -26,7 +26,7 @@ public sealed class DownloadsTreeDataGridAdapter(IDownloadsDataProvider provider
 
     protected override IColumn<CompositeItemModel<DownloadId>>[] CreateColumns(bool viewHierarchical)
     {
-        var nameColumn = ColumnCreator.Create<DownloadId, SharedColumns.Name>();
+        var nameColumn = ColumnCreator.Create<DownloadId, DownloadColumns.Name>();
 
         return
         [

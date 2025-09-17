@@ -58,12 +58,12 @@ public sealed class DownloadsDataProvider(IServiceProvider serviceProvider) : ID
         var model = new CompositeItemModel<DownloadId>(download.Id);
 
         // Add name component (Name+Icon column)
-        model.Add(SharedColumns.Name.NameComponentKey, new NameComponent(
+        model.Add(DownloadColumns.Name.NameComponentKey, new NameComponent(
             initialValue: download.Name,
             valueObservable: download.WhenAnyValue(x => x.Name).ToObservable()));
 
         // Add icon component for Name+Icon column
-        model.Add(SharedColumns.Name.ImageComponentKey, CreateIconComponent(download));
+        model.Add(DownloadColumns.Name.ImageComponentKey, CreateIconComponent(download));
 
         // Add game component
         model.Add(DownloadColumns.Game.ComponentKey, new DownloadComponents.GameComponent(

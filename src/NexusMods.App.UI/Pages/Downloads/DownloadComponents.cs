@@ -22,8 +22,8 @@ namespace NexusMods.App.UI.Pages.Downloads;
  * 
  * COLUMNS & COMPONENTS:
  * 1. Name+Icon Column:
- *    - Uses SharedColumns.Name.NameComponentKey (from Controls/TreeDataGrid/SharedColumns.cs)
- *    - Uses SharedColumns.Name.ImageComponentKey (from Controls/TreeDataGrid/SharedColumns.cs)
+ *    - Uses DownloadColumns.Name.NameComponentKey (from this file)
+ *    - Uses DownloadColumns.Name.ImageComponentKey (from this file)
  *    - Icon should show mod/download icon when available.
  * 
  * 2. Game Column:  

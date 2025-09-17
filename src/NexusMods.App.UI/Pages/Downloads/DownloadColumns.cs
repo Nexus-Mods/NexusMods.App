@@ -1,4 +1,5 @@
 using NexusMods.App.UI.Controls;
+using NexusMods.App.UI.Extensions;
 
 namespace NexusMods.App.UI.Pages.Downloads;
 
@@ -9,10 +10,9 @@ namespace NexusMods.App.UI.Pages.Downloads;
  * This file defines the column structure for the Downloads TreeDataGrid.
  * Each column implements ICompositeColumnDefinition<T> and maps to specific components.
  * 
- * COLUMN STRUCTURE (5 columns total):
+ * COLUMN STRUCTURE (6 columns total):
  * 
- * 1. NAME+ICON COLUMN:
- *    - Uses SharedColumns.Name from Controls/TreeDataGrid/SharedColumns.cs
+ * 1. NAME+ICON COLUMN (defined here as DownloadColumns.Name):
  *    - Components: NameComponent + ImageComponent  
  *    - Shows download/mod name with icon
  * 
@@ -43,6 +43,24 @@ namespace NexusMods.App.UI.Pages.Downloads;
 /// </summary>
 public static class DownloadColumns
 {
+    /// <summary>Displays download name with thumbnail, sorted alphabetically by name.</summary>
+    public sealed class Name : ICompositeColumnDefinition<Name>
+    {
+        public static int Compare<TKey>(CompositeItemModel<TKey> a, CompositeItemModel<TKey> b) where TKey : notnull
+        {
+            var aValue = a.GetOptional<NameComponent>(NameComponentKey);
+            var bValue = b.GetOptional<NameComponent>(NameComponentKey);
+            return aValue.Compare(bValue);
+        }
+
+        public const string ColumnTemplateResourceKey = nameof(DownloadColumns) + "_" + nameof(Name);
+        public static readonly ComponentKey NameComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(NameComponent));
+        public static readonly ComponentKey ImageComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(ImageComponent));
+
+        public static string GetColumnHeader() => "Name";
+        public static string GetColumnTemplateResourceKey() => ColumnTemplateResourceKey;
+    }
+
     /// <summary>Displays game name with game icon, sorted alphabetically by name.</summary>
     public sealed class Game : ICompositeColumnDefinition<Game>
     {

@@ -133,8 +133,8 @@
         </controls:ComponentControl>
     </DataTemplate>
 
-    <!-- Name column template override for Downloads (DownloadId-typed) -->
-    <DataTemplate x:Key="{x:Static controls:SharedColumns+Name.ColumnTemplateResourceKey}">
+<!-- Name column template override for Downloads (DownloadId-typed) -->
+    <DataTemplate x:Key="{x:Static downloads:DownloadColumns+Name.ColumnTemplateResourceKey}">
         <DataTemplate.DataType>
             <x:Type TypeName="controls:CompositeItemModel" x:TypeArguments="abstractions:DownloadId" />
         </DataTemplate.DataType>
@@ -144,7 +144,7 @@
             <controls:ComponentControl x:TypeArguments="abstractions:DownloadId" Content="{CompiledBinding}">
                 <controls:ComponentControl.ComponentTemplate>
                     <controls:ComponentTemplate x:TypeArguments="controls:ImageComponent"
-                                                ComponentKey="{x:Static controls:SharedColumns+Name.ImageComponentKey}">
+                                                ComponentKey="{x:Static downloads:DownloadColumns+Name.ImageComponentKey}">
                         <controls:ComponentTemplate.DataTemplate>
                             <StaticResource ResourceKey="SharedImageTemplate" />
                         </controls:ComponentTemplate.DataTemplate>
@@ -160,7 +160,7 @@
             <controls:ComponentControl x:TypeArguments="abstractions:DownloadId" Content="{CompiledBinding}">
                 <controls:ComponentControl.ComponentTemplate>
                     <controls:ComponentTemplate x:TypeArguments="controls:NameComponent"
-                                                ComponentKey="{x:Static controls:SharedColumns+Name.NameComponentKey}">
+                                                ComponentKey="{x:Static downloads:DownloadColumns+Name.NameComponentKey}">
                         <controls:ComponentTemplate.DataTemplate>
                             <StaticResource ResourceKey="SharedNameTextTemplate" />
                         </controls:ComponentTemplate.DataTemplate>
