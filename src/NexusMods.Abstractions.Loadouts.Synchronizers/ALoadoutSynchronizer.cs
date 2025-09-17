@@ -560,6 +560,10 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
         loadout = await ReprocessOverrides(loadout);
 
+        job?.SetStatus("Archive Cleanup");
+        await _garbageCollectorRunner.RunAsync();
+        
+
         return loadout;
     }
 
@@ -584,8 +588,6 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             Logger.LogCritical("Found no installation of the game `{Store}`/`{Game}` anymore!", loadout.InstallationInstance.Store, loadout.InstallationInstance.Game.Name);
             return loadout;
         }
-
-        var locatorIds = _fileHashService.GetLocatorIdsForGame(loadout.InstallationInstance);
 
         var metadataLocatorIds = gameLocatorResult.Metadata.ToLocatorIds().ToArray();
         var newLocatorIds = metadataLocatorIds.Distinct().ToArray();

@@ -21,6 +21,7 @@ using NexusMods.MnemonicDB.Storage;
 using NexusMods.Networking.EpicGameStore.DTOs.EgData;
 using NexusMods.Paths;
 using NexusMods.Paths.Utilities;
+using NexusMods.Sdk;
 using NexusMods.Sdk.ProxyConsole;
 using YamlDotNet.Serialization;
 using Build = NexusMods.Networking.EpicGameStore.DTOs.EgData.Build;
@@ -191,7 +192,7 @@ public class BuildHashesDb : IAsyncDisposable
                 }
                 catch (InvalidOperationException _)
                 {
-                    await _renderer.TextLine("Failed to find Steam manifest for {0} {1} {2}", gameName, osName, id);
+                    await _renderer.TextLine("Failed to anchor Steam manifest {0} to {1} for {2}", id, definition.Name, gameName);
                 }
             }
             
@@ -225,61 +226,69 @@ public class BuildHashesDb : IAsyncDisposable
         var manifestCount = 0;
         var pathCounts = 0;
         
-        foreach (var appData in appPath.EnumerateFiles(KnownExtensions.Json))
+        var manifests = await LoadAllFromFolder<Manifest>(path / "json" / "stores" / "steam" / "manifests");
+        
+        var apps = await LoadAllFromFolder<ProductInfo>(path / "json" / "stores" / "steam" / "apps");
+        
+        var depotsToAppId = (from app in apps.Values
+            from depot in app.Depots
+            select (depot.DepotId, app.AppId))
+            .ToLookup(t => t.DepotId, t => t.AppId);
+        
+
+        foreach (var (manifestName, manifestInfo) in manifests)
         {
-            try
-            {
-                await using var appStream = appData.Read();
-                var parsedAppData = (await JsonSerializer.DeserializeAsync<ProductInfo>(appStream, _jsonOptions))!;
+            var manifestPath = path / "json" / "stores" / "steam" / "manifests" / (manifestInfo.ManifestId + ".json");
+            await using var manifestStream = manifestPath.Read();
+            var parsedManifest = (await JsonSerializer.DeserializeAsync<Manifest>(manifestStream, _jsonOptions))!;
 
-                foreach (var depot in parsedAppData.Depots)
+            var pathIds = new List<EntityId>();
+            bool hasFailures = false;
+            foreach (var file in parsedManifest.Files)
+            {
+                // Steam manifests include folders, which we don't care about
+                if (file.Chunks.Length == 0)
+                    continue;
+
+                var refDbRelation = HashRelation.FindBySha1(refDb, file.Hash).FirstOrDefault();
+                if (!refDbRelation.IsValid())
                 {
-                    foreach (var (manifestName, manifestInfo) in depot.Manifests)
-                    {
-                        var manifestPath = path / "json" / "stores" / "steam" / "manifests" / (manifestInfo.ManifestId + ".json");
-                        await using var manifestStream = manifestPath.Read();
-                        var parsedManifest = (await JsonSerializer.DeserializeAsync<Manifest>(manifestStream, _jsonOptions))!;
-
-                        var pathIds = new List<EntityId>();
-                        foreach (var file in parsedManifest.Files)
-                        {
-                            // Steam manifests include folders, which we don't care about
-                            if (file.Chunks.Length == 0)
-                                continue;
-
-                            var refDbRelation = HashRelation.FindBySha1(refDb, file.Hash).FirstOrDefault();
-                            if (!refDbRelation.IsValid())
-                            {
-                                throw new Exception($"Sha1 not found in the reference database for path {file.Path} and hash {file.Hash}");
-                            }
-
-                            // The paths from steam can be in a format that isn't directly valid, so we sanitize them
-                            var sanitizedPath = RelativePath.FromUnsanitizedInput(file.Path.ToString());
-                            var relationId = EnsureHashPathRelation(tx, refDb, sanitizedPath,
-                                file.Hash
-                            );
-                            pathIds.Add(relationId);
-                            pathCounts++;
-                        }
-
-                        _ = new SteamManifest.New(tx)
-                        {
-                            AppId = parsedAppData.AppId,
-                            DepotId = depot.DepotId,
-                            ManifestId = manifestInfo.ManifestId,
-                            Name = manifestName,
-                            FilesIds = pathIds,
-                        };
-                        manifestCount++;
-                    }
+                    await _renderer.TextLine($"Skipping {0} due to missing SHA1 hashes", manifestInfo.ManifestId);
+                    hasFailures = true;
+                    break;
                 }
+
+                // The paths from steam can be in a format that isn't directly valid, so we sanitize them
+                var sanitizedPath = RelativePath.FromUnsanitizedInput(file.Path.ToString());
+                var relationId = EnsureHashPathRelation(tx, refDb, sanitizedPath,
+                    file.Hash
+                );
+                pathIds.Add(relationId);
+                pathCounts++;
             }
-            catch (Exception ex)
+
+            if (hasFailures)
             {
-                await _renderer.TextLine("Failed to import {0}: {1}", appData, ex.Message);
+                continue;
             }
             
+            if (!depotsToAppId[manifestInfo.DepotId].TryGetFirst(out var appId))
+            {
+                await _renderer.TextLine("Skipping Manifest {0} because it doesn't have a matching AppId", manifestInfo.ManifestId);
+                continue;
+            }
+
+            _ = new SteamManifest.New(tx)
+            {
+                AppId = appId,
+                DepotId = manifestInfo.DepotId,
+                ManifestId = manifestInfo.ManifestId,
+                Name = manifestName,
+                FilesIds = pathIds,
+            };
+            manifestCount++;
         }
+
         var result = await tx.Commit();
         RemapHashPaths(result);
         await _renderer.TextLine("Imported {0} manifests with {1} paths", manifestCount, pathCounts);
