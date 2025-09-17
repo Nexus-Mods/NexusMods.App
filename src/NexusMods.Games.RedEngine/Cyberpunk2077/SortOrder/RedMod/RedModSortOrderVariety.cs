@@ -88,7 +88,7 @@ public class RedModSortOrderVariety : ASortOrderVariety<
         var query = Connection.Query<(string FolderName, int SortIndex, EntityId ItemId, bool? IsEnabled, string? ModName, EntityId? ModGroupId)>($"""
             WITH matchingMods AS (
                 SELECT
-                    regexp_extract(file.TargetPath.Item3, '^mods\/([^\/]+)\/info\.json$') AS ModFolderName,
+                    regexp_extract(file.TargetPath.Item3, '^mods\/([^\/]+)\/info\.json$', 1, 'i') AS ModFolderName,
                     enabledState.IsEnabled AS IsEnabled,
                     groupItem.Name AS ModName,
                     groupItem.Id AS ModGroupId
@@ -268,7 +268,7 @@ public class RedModSortOrderVariety : ASortOrderVariety<
         var result = Connection.Query<(string FolderName, bool IsEnabled, string ModName, EntityId ModGroupId)>($"""
                                                            WITH mod_items AS (
                                                                SELECT
-                                                                   regexp_extract(file.TargetPath.Item3, '^mods\/([^\/]+)\/info\.json$') AS ModFolderName,
+                                                                   regexp_extract(file.TargetPath.Item3, '^mods\/([^\/]+)\/info\.json$', 1, 'i') AS ModFolderName,
                                                                    enabledState.IsEnabled AS IsEnabled,
                                                                    groupItem.Name AS ModName,
                                                                    groupItem.Id AS ModGroupId
