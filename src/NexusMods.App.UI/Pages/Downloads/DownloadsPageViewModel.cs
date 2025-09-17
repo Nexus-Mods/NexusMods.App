@@ -12,7 +12,6 @@ using ObservableCollections;
 using R3;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
-using Observable = R3.Observable;
 
 namespace NexusMods.App.UI.Pages.Downloads;
 
@@ -33,6 +32,8 @@ public class DownloadsPageViewModel : APageViewModel<IDownloadsPageViewModel>, I
     public ReactiveCommand<Unit> CancelSelectedCommand { get; }
     public Observable<bool> HasRunningItems { get; }
     public Observable<bool> HasPausedItems { get; }
+    
+private readonly Subject<Unit> _reevaluateStatusSubject = new();
 
     public DownloadsPageViewModel(IWindowManager windowManager, IServiceProvider serviceProvider, DownloadsPageContext context) : base(windowManager)
     {
@@ -71,17 +72,24 @@ public class DownloadsPageViewModel : APageViewModel<IDownloadsPageViewModel>, I
             .Select(count => count > 0);
         
         // Create observables that track selection and status changes
+        
+        // Note(sewer): downloadsService.ActiveDownloads.Select(changeSet => changeSet.Count) makes this fired 
+        var numActiveDownloadsChanges = downloadsService.ActiveDownloads.Select(changeSet => changeSet.Count);
         HasRunningItems = this.WhenAnyValue(vm => vm.SelectionCount)
             .Select(_ => Adapter.SelectedModels
                 .Select(model => model.GetOptional<DownloadComponents.StatusComponent>(DownloadColumns.Status.ComponentKey))
                 .Where(opt => opt.HasValue)
-                .Any(opt => opt.Value.Status.Value == JobStatus.Running)).ToObservable();
+                .Any(opt => opt.Value.Status.Value == JobStatus.Running))
+            .CombineLatest(numActiveDownloadsChanges, (hasRunning, _) => hasRunning)
+            .ToObservable();
         
         HasPausedItems = this.WhenAnyValue(vm => vm.SelectionCount)
             .Select(_ => Adapter.SelectedModels
                 .Select(model => model.GetOptional<DownloadComponents.StatusComponent>(DownloadColumns.Status.ComponentKey))
                 .Where(opt => opt.HasValue)
-                .Any(opt => opt.Value.Status.Value == JobStatus.Paused)).ToObservable();
+                .Any(opt => opt.Value.Status.Value == JobStatus.Paused))
+            .CombineLatest(numActiveDownloadsChanges, (hasRunning, _) => hasRunning)
+            .ToObservable();
         
         PauseSelectedCommand = HasRunningItems.ToReactiveCommand<Unit>(
             executeAsync: (_, _) =>
@@ -95,6 +103,9 @@ public class DownloadsPageViewModel : APageViewModel<IDownloadsPageViewModel>, I
                     if (downloadRef.HasValue && statusComponent is { HasValue: true, Value.Status.Value: JobStatus.Running })
                         downloadsService.PauseDownload(downloadRef.Value.Download);
                 }
+
+                // Trigger re-evaluation of status observables
+                _reevaluateStatusSubject.OnNext(Unit.Default);
 
                 return ValueTask.CompletedTask;
             },
@@ -115,6 +126,9 @@ public class DownloadsPageViewModel : APageViewModel<IDownloadsPageViewModel>, I
                     if (downloadRef.HasValue && statusComponent.HasValue && statusComponent.Value.Status.Value == JobStatus.Paused)
                         downloadsService.ResumeDownload(downloadRef.Value.Download);
                 }
+
+                // Trigger re-evaluation of status observables
+                _reevaluateStatusSubject.OnNext(Unit.Default);
 
                 return ValueTask.CompletedTask;
             },
