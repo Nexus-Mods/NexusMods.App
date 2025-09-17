@@ -32,8 +32,6 @@ public class DownloadsPageViewModel : APageViewModel<IDownloadsPageViewModel>, I
     public ReactiveCommand<Unit> CancelSelectedCommand { get; }
     public Observable<bool> HasRunningItems { get; }
     public Observable<bool> HasPausedItems { get; }
-    
-    private readonly System.Reactive.Subjects.Subject<Unit> _reevaluateStatusSubject = new();
 
     public DownloadsPageViewModel(IWindowManager windowManager, IServiceProvider serviceProvider, DownloadsPageContext context) : base(windowManager)
     {
@@ -70,11 +68,22 @@ public class DownloadsPageViewModel : APageViewModel<IDownloadsPageViewModel>, I
         var hasSelection = this.WhenAnyValue(vm => vm.SelectionCount)
             .ToObservable()
             .Select(count => count > 0);
+
+        var runningCountChanges = downloadsService.GetDownloadsByStatus(JobStatus.Running)
+            // NOTE(sewer): This is a hack.
+            //
+            // We can't subscribe to DownloadComponents.StatusComponent directly because
+            // the JobStatus field there is derived from the model, like in 
+            // downloadsService.GetDownloadsByStatus(JobStatus.Running) . 
+            // We can't guarantee a specific execution order; so we wait with a small hack.
+            .Delay(TimeSpan.FromMilliseconds(100)) 
+            .OnUI()
+            .Select(_ => Unit.Default);
         
         // Create observables that track selection and status changes
         var statusReevaluationTrigger = this.WhenAnyValue(vm => vm.SelectionCount)
             .Select(_ => Unit.Default)
-            .Merge(_reevaluateStatusSubject);
+            .Merge(runningCountChanges);
 
         HasRunningItems = statusReevaluationTrigger
             .Select(_ => Adapter.SelectedModels
@@ -103,9 +112,6 @@ public class DownloadsPageViewModel : APageViewModel<IDownloadsPageViewModel>, I
                         downloadsService.PauseDownload(downloadRef.Value.Download);
                 }
 
-                // Trigger re-evaluation of status observables
-                _reevaluateStatusSubject.OnNext(Unit.Default);
-
                 return ValueTask.CompletedTask;
             },
             awaitOperation: AwaitOperation.Parallel,
@@ -125,9 +131,6 @@ public class DownloadsPageViewModel : APageViewModel<IDownloadsPageViewModel>, I
                     if (downloadRef.HasValue && statusComponent.HasValue && statusComponent.Value.Status.Value == JobStatus.Paused)
                         downloadsService.ResumeDownload(downloadRef.Value.Download);
                 }
-
-                // Trigger re-evaluation of status observables
-                _reevaluateStatusSubject.OnNext(Unit.Default);
 
                 return ValueTask.CompletedTask;
             },
