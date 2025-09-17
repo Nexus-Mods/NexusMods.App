@@ -578,6 +578,8 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             return loadout;
         }
 
+        var locatorIds = _fileHashService.GetLocatorIdsForGame(loadout.InstallationInstance);
+
         var metadataLocatorIds = gameLocatorResult.Metadata.ToLocatorIds().ToArray();
         var newLocatorIds = metadataLocatorIds.Distinct().ToArray();
         

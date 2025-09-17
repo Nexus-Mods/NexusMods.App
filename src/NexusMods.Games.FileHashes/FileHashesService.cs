@@ -15,7 +15,7 @@ using NexusMods.Abstractions.Settings;
 using NexusMods.Abstractions.Steam.Values;
 using NexusMods.Games.FileHashes.DTOs;
 using NexusMods.Hashing.xxHash3;
-using NexusMods.MnemonicDB;
+using NexusMods.HyperDuck;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Storage;
 using NexusMods.MnemonicDB.Storage.RocksDbBackend;
@@ -23,6 +23,7 @@ using NexusMods.Paths;
 using NexusMods.Sdk;
 using NexusMods.Sdk.IO;
 using BuildId = NexusMods.Abstractions.GOG.Values.BuildId;
+using Connection = NexusMods.MnemonicDB.Connection;
 
 namespace NexusMods.Games.FileHashes;
 
@@ -45,6 +46,8 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable
     private ConnectedDb? _currentDb;
 
     private readonly ILogger<FileHashesService> _logger;
+    private readonly IQueryEngine _queryEngine;
+    private IQueryMixin _queryMixin;
 
     private record ConnectedDb(IDb Db, DatomStore Store, Backend Backend, DatabaseInfo DatabaseInfo);
 
@@ -57,6 +60,8 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable
         _settings = settingsManager.Get<FileHashesServiceSettings>();
         _databases = new Dictionary<AbsolutePath, ConnectedDb>();
         _provider = provider;
+        _queryEngine = provider.GetRequiredService<IQueryEngine>();
+        _queryMixin = _queryEngine.DuckDb;
 
         _hashDatabaseLocation = _settings.HashDatabaseLocation.ToPath(_fileSystem);
         _hashDatabaseLocation.CreateDirectory();
@@ -79,7 +84,7 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable
             };
 
             var store = new DatomStore(_provider.GetRequiredService<ILogger<DatomStore>>(), settings, backend);
-            var connection = new Connection(_provider.GetRequiredService<ILogger<Connection>>(), store, _provider, [], readOnlyMode: true);
+            var connection = new Connection(_provider.GetRequiredService<ILogger<Connection>>(), store, _provider, [], readOnlyMode: true, prefix: "hashes", queryEngine: _queryEngine);
             var connectedDb = new ConnectedDb(connection.Db, store, backend, databaseInfo);
 
             _databases[databaseInfo.Path] = connectedDb;
@@ -631,6 +636,42 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable
             .OrderByDescending(t => t.Matches)
             .Select(t => t.VersionData)
             .FirstOrOptional(_ => true);
+    }
+
+    public LocatorId[] GetLocatorIdsForGame(GameInstallation gameInstallation)
+    {
+        if (gameInstallation.Store == GameStore.Steam)
+        {
+            var ids = _queryMixin.Query<DepotId>("SELECT * FROM file_hashes.resolve_steam_depots({gameInstallation.GameMetadataId});")
+                .Select(id => LocatorId.From(id.Value.ToString()))
+                .ToArray();
+            return ids;
+        }
+        else if (gameInstallation.Store == GameStore.GOG)
+        {
+            if (!_queryMixin.Query<(BuildId, ProductId, List<ProductId>)>("SELECT BuildId, BuildProductId, ProductIds FROM file_hashes.resolve_gog_build({gameInstallation.GameMetadataId})")
+                .TryGetFirst(out var found))
+                return [];
+            
+            var ids = new List<LocatorId>();
+            
+            ids.Add(LocatorId.From(found.Item1.Value.ToString()));
+            
+            // We want to add the Build Id and then all the product Ids that are not the same as the Build's product
+            foreach (var productId in found.Item3)
+            {
+                if (productId == found.Item2)
+                    continue;
+                
+                ids.Add(LocatorId.From(productId.Value.ToString()));
+            }
+            
+            return ids.ToArray();
+        }
+        else
+        {
+            throw new NotSupportedException("No way to get locator IDs for: " + gameInstallation.Store);
+        }
     }
 
     /// <inheritdoc/>
