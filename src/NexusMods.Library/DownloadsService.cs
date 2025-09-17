@@ -129,24 +129,54 @@ public sealed class DownloadsService : IDownloadsService, IDisposable
     // Control operations
     public void PauseDownload(DownloadInfo downloadInfo) 
     {
-        _jobMonitor.Pause(downloadInfo.Id);
+        try
+        {
+            _jobMonitor.Pause(downloadInfo.Id);
+        }
+        catch (OperationCanceledException)
+        {
+            // Due to job cancellation, exception is expected.
+        }
     }
     
     public void ResumeDownload(DownloadInfo downloadInfo) 
     {
-        _jobMonitor.Resume(downloadInfo.Id);
+        try
+        {
+            _jobMonitor.Resume(downloadInfo.Id);
+        }
+        catch (OperationCanceledException)
+        {
+            // Due to job cancellation, exception is expected.
+        }
     }
     
     public void CancelDownload(DownloadInfo downloadInfo) 
     {
-        _jobMonitor.Cancel(downloadInfo.Id);
+        try
+        {
+            _jobMonitor.Cancel(downloadInfo.Id);
+        }
+        catch (OperationCanceledException)
+        {
+            // Due to job cancellation, exception is expected.
+        }
     }
     public void PauseAll()
     {
         foreach (var download in _downloadCache.Items)
         {
             if (download.Status == JobStatus.Running)
-                _jobMonitor.Pause(download.Id);
+            {
+                try
+                {
+                    _jobMonitor.Pause(download.Id);
+                }
+                catch (OperationCanceledException)
+                {
+                    // Due to job cancellation, exception is expected.
+                }
+            }
         }
     }
 
@@ -155,14 +185,30 @@ public sealed class DownloadsService : IDownloadsService, IDisposable
         foreach (var download in _downloadCache.Items)
         {
             if (download.Status == JobStatus.Paused)
-                _jobMonitor.Resume(download.Id);
+            {
+                try
+                {
+                    _jobMonitor.Resume(download.Id);
+                }
+                catch (OperationCanceledException)
+                {
+                    // Due to job cancellation, exception is expected.
+                }
+            }
         }
     }
     public void CancelRange(IEnumerable<DownloadInfo> downloads)
     {
         foreach (var download in downloads)
         {
-            _jobMonitor.Cancel(download.Id);
+            try
+            {
+                _jobMonitor.Cancel(download.Id);
+            }
+            catch (OperationCanceledException)
+            {
+                // Due to job cancellation, exception is expected.
+            }
         }
     }
     
