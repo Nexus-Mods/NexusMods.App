@@ -30,16 +30,9 @@ internal class AddDownloadJob : IJobDefinitionWithStart<AddDownloadJob, LibraryF
     public async ValueTask<LibraryFile.ReadOnly> StartAsync(IJobContext<AddDownloadJob> context)
     {
         await context.YieldAsync();
-        
-        try
-        {
-            await DownloadJob;
-        }
-        catch (Exception)
-        {
-            // Download was cancelled, so we should not proceed with file extraction
-            return default(LibraryFile.ReadOnly);
-        }
+
+        // This throws if download cancelled, will be caught downstream.
+        await DownloadJob;
 
         await context.YieldAsync();
         using var tx = Connection.BeginTransaction();

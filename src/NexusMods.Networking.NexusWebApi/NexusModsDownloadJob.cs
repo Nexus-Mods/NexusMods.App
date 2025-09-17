@@ -45,10 +45,9 @@ public class NexusModsDownloadJob : IDownloadJob, IJobDefinitionWithStart<NexusM
         }
         catch (TaskCanceledException)
         {
-            // User-initiated cancellation should not be treated as an error
+            // Propagate cancellation so upstream jobs (e.g. AddDownloadJob) can abort follow-up actions.
             Logger.LogInformation("Download cancelled by user for file `{GameId}/{ModId}/{FileId}`", FileMetadata.Uid.GameId, FileMetadata.ModPage.Uid.ModId, FileMetadata.Uid.FileId);
-            // Don't rethrow TaskCanceledException for user-initiated cancellations
-            return Destination;
+            throw;
         }
         catch (Exception e)
         {
