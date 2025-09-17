@@ -33,7 +33,7 @@ public class DownloadsPageViewModel : APageViewModel<IDownloadsPageViewModel>, I
     public Observable<bool> HasRunningItems { get; }
     public Observable<bool> HasPausedItems { get; }
     
-private readonly Subject<Unit> _reevaluateStatusSubject = new();
+    private readonly System.Reactive.Subjects.Subject<Unit> _reevaluateStatusSubject = new();
 
     public DownloadsPageViewModel(IWindowManager windowManager, IServiceProvider serviceProvider, DownloadsPageContext context) : base(windowManager)
     {
@@ -72,23 +72,22 @@ private readonly Subject<Unit> _reevaluateStatusSubject = new();
             .Select(count => count > 0);
         
         // Create observables that track selection and status changes
-        
-        // Note(sewer): downloadsService.ActiveDownloads.Select(changeSet => changeSet.Count) makes this fired 
-        var numActiveDownloadsChanges = downloadsService.ActiveDownloads.Select(changeSet => changeSet.Count);
-        HasRunningItems = this.WhenAnyValue(vm => vm.SelectionCount)
+        var statusReevaluationTrigger = this.WhenAnyValue(vm => vm.SelectionCount)
+            .Select(_ => Unit.Default)
+            .Merge(_reevaluateStatusSubject);
+
+        HasRunningItems = statusReevaluationTrigger
             .Select(_ => Adapter.SelectedModels
                 .Select(model => model.GetOptional<DownloadComponents.StatusComponent>(DownloadColumns.Status.ComponentKey))
                 .Where(opt => opt.HasValue)
                 .Any(opt => opt.Value.Status.Value == JobStatus.Running))
-            .CombineLatest(numActiveDownloadsChanges, (hasRunning, _) => hasRunning)
             .ToObservable();
         
-        HasPausedItems = this.WhenAnyValue(vm => vm.SelectionCount)
+        HasPausedItems = statusReevaluationTrigger
             .Select(_ => Adapter.SelectedModels
                 .Select(model => model.GetOptional<DownloadComponents.StatusComponent>(DownloadColumns.Status.ComponentKey))
                 .Where(opt => opt.HasValue)
                 .Any(opt => opt.Value.Status.Value == JobStatus.Paused))
-            .CombineLatest(numActiveDownloadsChanges, (hasRunning, _) => hasRunning)
             .ToObservable();
         
         PauseSelectedCommand = HasRunningItems.ToReactiveCommand<Unit>(
