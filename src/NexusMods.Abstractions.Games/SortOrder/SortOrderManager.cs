@@ -103,7 +103,7 @@ public class SortOrderManager : ISortOrderManager, IDisposable
             .StartWithEmpty()
             .FilterImmutable(cg => cg.AsLoadoutItemGroup().AsLoadoutItem().Loadout.Installation.GameId == gameId)
             .ToObservable()
-            .SubscribeAwait(async (changes, token) =>
+            .SubscribeAwait(static async (changes, token) =>
                 {
                     foreach (var change in changes)
                     {
@@ -145,7 +145,7 @@ public class SortOrderManager : ISortOrderManager, IDisposable
             )
             .Observe(x => x.ChangedLoadout)
             .ToObservable()
-            .SubscribeAwait(async (changes, token) =>
+            .SubscribeAwait(this, static async (changes, state, token) =>
             {
                 foreach (var change in changes)
                 {
@@ -156,7 +156,7 @@ public class SortOrderManager : ISortOrderManager, IDisposable
                     var txId = change.Current.TxId;
                     // TODO: This is likely wrong, we need to use this DB to get the loadout data, but the latest DB to get the sort order data
 
-                    await UpdateLoadOrders(changedLoadoutId, token: token);
+                    await state.UpdateLoadOrders(changedLoadoutId, token: token);
                 }
                
             })
@@ -178,7 +178,7 @@ public class SortOrderManager : ISortOrderManager, IDisposable
             )
             .Observe(x => x.ChangedCollection)
             .ToObservable()
-            .SubscribeAwait(async (changes, token) =>
+            .SubscribeAwait(this, static async (changes, state, token) =>
             {
                 foreach (var change in changes)
                 {
@@ -188,7 +188,7 @@ public class SortOrderManager : ISortOrderManager, IDisposable
                     var loadoutId = change.Current.LoaodutId;
                     var collectionId = new CollectionGroupId(change.Key);
 
-                    await UpdateLoadOrders(loadoutId, collectionId, token: token);
+                    await state.UpdateLoadOrders(loadoutId, collectionId, token: token);
                 }
                
             })
