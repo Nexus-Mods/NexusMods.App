@@ -30,73 +30,67 @@
 
         <!-- Content area with toolbar and main content -->
         <Grid Grid.Row="1" RowDefinitions="Auto, *" Margin="0,16,0,0">
+
             <!-- Toolbar with command 'all' buttons -->
-            <StackPanel Grid.Row="0" Orientation="Horizontal">
-                
-                <controls:Toolbar Margin="4, 0">
-                    <ItemsControl>
-                        <search:SearchControl x:Name="SearchControl"
-                                              PageName="Downloads"
-                                              ButtonSize="Toolbar" />
-                    </ItemsControl>
-                </controls:Toolbar>
-                
-                <controls:Toolbar Margin="4, 0">
-                    <ItemsControl>
-                        <controls:StandardButton x:Name="PauseAllButton"
-                                                 Text="Pause all"
-                                                 Type="Tertiary"
-                                                 Size="Toolbar"
-                                                 Fill="None"
-                                                 ShowIcon="Left"
-                                                 LeftIcon="{x:Static icons:IconValues.Pause}"
-                                                 Command="{Binding PauseAllCommand}" />
-                        
-                        <controls:StandardButton x:Name="ResumeAllButton"
-                                                 Text="Resume all"
-                                                 Type="Tertiary"
-                                                 Size="Toolbar"
-                                                 Fill="None"
-                                                 ShowIcon="Left"
-                                                 LeftIcon="{x:Static icons:IconValues.PlayArrow}"
-                                                 Command="{Binding ResumeAllCommand}" />
-                    </ItemsControl>
-                </controls:Toolbar>
-            
-                <!-- Toolbar with command 'selected' buttons -->
-                <controls:Toolbar Margin="4, 0">
-                    <ItemsControl>
-                        <controls:StandardButton x:Name="PauseSelectedButton"
-                                                 Text=""
-                                                 Type="Tertiary"
-                                                 Size="Toolbar"
-                                                 Fill="None"
-                                                 ShowIcon="Left"
-                                                 LeftIcon="{x:Static icons:IconValues.Pause}"
-                                                 Command="{Binding PauseSelectedCommand}"
-                                                 IsVisible="{Binding HasRunningItems^}" />
-                        
-                        <controls:StandardButton x:Name="ResumeSelectedButton"
-                                                 Text=""
-                                                 Type="Tertiary"
-                                                 Size="Toolbar"
-                                                 Fill="None"
-                                                 ShowIcon="Left"
-                                                 LeftIcon="{x:Static icons:IconValues.PlayArrow}"
-                                                 Command="{Binding ResumeSelectedCommand}"
-                                                 IsVisible="{Binding HasPausedItems^}" />
-                        
-                        <controls:StandardButton x:Name="CancelSelectedButton"
-                                                 Text=""
-                                                 Type="Tertiary"
-                                                 Size="Toolbar"
-                                                 Fill="None"
-                                                 ShowIcon="Left"
-                                                 LeftIcon="{x:Static icons:IconValues.Close}"
-                                                 Command="{Binding CancelSelectedCommand}" />
-                    </ItemsControl>
-                </controls:Toolbar>
-            </StackPanel>
+
+            <controls:Toolbar Margin="24, 0">
+                <ItemsControl>
+                    <search:SearchControl x:Name="SearchControl"
+                                          PageName="Downloads"
+                                          ButtonSize="Toolbar" />
+                </ItemsControl>
+
+                <ItemsControl>
+                    <controls:StandardButton x:Name="PauseAllButton"
+                                             Text="Pause all"
+                                             Type="Tertiary"
+                                             Size="Toolbar"
+                                             Fill="None"
+                                             ShowIcon="Left"
+                                             LeftIcon="{x:Static icons:IconValues.Pause}"
+                                             Command="{Binding PauseAllCommand}" />
+
+                    <controls:StandardButton x:Name="ResumeAllButton"
+                                             Text="Resume all"
+                                             Type="Tertiary"
+                                             Size="Toolbar"
+                                             Fill="None"
+                                             ShowIcon="Left"
+                                             LeftIcon="{x:Static icons:IconValues.PlayArrow}"
+                                             Command="{Binding ResumeAllCommand}" />
+                </ItemsControl>
+
+                <ItemsControl>
+                    <controls:StandardButton x:Name="PauseSelectedButton"
+                                             Text=""
+                                             Type="Tertiary"
+                                             Size="Toolbar"
+                                             Fill="None"
+                                             ShowIcon="Left"
+                                             LeftIcon="{x:Static icons:IconValues.Pause}"
+                                             Command="{Binding PauseSelectedCommand}"
+                                             IsVisible="{Binding HasRunningItems^}" />
+
+                    <controls:StandardButton x:Name="ResumeSelectedButton"
+                                             Text=""
+                                             Type="Tertiary"
+                                             Size="Toolbar"
+                                             Fill="None"
+                                             ShowIcon="Left"
+                                             LeftIcon="{x:Static icons:IconValues.PlayArrow}"
+                                             Command="{Binding ResumeSelectedCommand}"
+                                             IsVisible="{Binding HasPausedItems^}" />
+
+                    <controls:StandardButton x:Name="CancelSelectedButton"
+                                             Text=""
+                                             Type="Tertiary"
+                                             Size="Toolbar"
+                                             Fill="None"
+                                             ShowIcon="Left"
+                                             LeftIcon="{x:Static icons:IconValues.Close}"
+                                             Command="{Binding CancelSelectedCommand}" />
+                </ItemsControl>
+            </controls:Toolbar>
 
             <!-- Main content with TreeDataGrid -->
             <controls:EmptyState Grid.Row="1"

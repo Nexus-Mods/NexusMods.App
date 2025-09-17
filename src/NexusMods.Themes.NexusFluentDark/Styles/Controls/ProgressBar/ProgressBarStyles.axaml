@@ -31,7 +31,7 @@
     <!-- Download ProgressBar -->
     <Style Selector="ProgressBar.DownloadBar">
         <Setter Property="ShowProgressText" Value="True" />
-        <Setter Property="Height" Value="24" />
+        <Setter Property="MinHeight" Value="28" />
         <Setter Property="Foreground" Value="{StaticResource InfoWeakBrush}" />
         <Setter Property="Background">
             <SolidColorBrush Color="{StaticResource InfoWeak}"
@@ -39,6 +39,10 @@
         </Setter>
 
         <Setter Property="CornerRadius" Value="{StaticResource Rounded-sm}" />
+        
+        <Setter Property="BorderBrush" Value="{StaticResource BrandInfo900Brush}" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="BackgroundSizing" Value="OuterBorderEdge" />
 
         <Style Selector="^ /template/ Border#PART_Indicator">
             <Setter Property="CornerRadius" Value="{StaticResource Rounded-none}" />
