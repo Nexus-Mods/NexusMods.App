@@ -81,15 +81,16 @@ internal class ManuallyCreatedArchiveDataProvider : ILibraryDataProvider, ILoado
         ManuallyCreatedArchive.ReadOnly archive,
         IObservable<IChangeSet<LoadoutItem.ReadOnly, EntityId>> linkedLoadoutItemsObservable)
     {
-        itemModel.Add(SharedColumns.Name.NameComponentKey, new NameComponent(value: archive.AsLibraryItem().Name));
+        itemModel.Add(SharedColumns.Name.NameComponentKey, new NameComponent(value: archive.AsLibraryArchive().AsLibraryFile().AsLibraryItem().Name));
         itemModel.Add(LibraryColumns.DownloadedDate.ComponentKey, new DateComponent(value: archive.GetCreatedAt()));
-        itemModel.Add(LibraryColumns.Actions.LibraryItemIdsComponentKey, new LibraryComponents.LibraryItemIds(archive.AsLibraryItem()));
+        itemModel.Add(LibraryColumns.Actions.LibraryItemIdsComponentKey, new LibraryComponents.LibraryItemIds(archive.AsLibraryArchive().AsLibraryFile().AsLibraryItem()));
 
         LibraryDataProviderHelper.AddInstalledDateComponent(itemModel, linkedLoadoutItemsObservable);
         LibraryDataProviderHelper.AddInstallActionComponent(itemModel, linkedLoadoutItemsObservable);
         LibraryDataProviderHelper.AddViewChangelogActionComponent(itemModel, isEnabled: false);
         LibraryDataProviderHelper.AddViewModPageActionComponent(itemModel, isEnabled: false);
         LibraryDataProviderHelper.AddHideUpdatesActionComponent(itemModel, isEnabled: false, isVisible: false);
+        LibraryDataProviderHelper.AddRelatedCollectionsComponent(itemModel, linkedLoadoutItemsObservable);
     }
 
     private IObservable<IChangeSet<ManuallyCreatedArchive.ReadOnly, EntityId>> FilterLoadoutItems(LoadoutFilter loadoutFilter)
@@ -131,7 +132,7 @@ internal class ManuallyCreatedArchiveDataProvider : ILibraryDataProvider, ILoado
             ChildrenObservable = childrenObservable,
         };
 
-        parentItemModel.Add(SharedColumns.Name.NameComponentKey, new NameComponent(value: archive.AsLibraryItem().Name));
+        parentItemModel.Add(SharedColumns.Name.NameComponentKey, new NameComponent(value: archive.AsLibraryArchive().AsLibraryFile().AsLibraryItem().Name));
         parentItemModel.Add(SharedColumns.Name.ImageComponentKey, new ImageComponent(value: ImagePipelines.ModPageThumbnailFallback));
 
         LoadoutDataProviderHelper.AddDateComponent(parentItemModel, archive.GetCreatedAt(), linkedItemsObservable);
@@ -141,6 +142,7 @@ internal class ManuallyCreatedArchiveDataProvider : ILibraryDataProvider, ILoado
         LoadoutDataProviderHelper.AddLockedEnabledStates(parentItemModel, linkedItemsObservable);
         LoadoutDataProviderHelper.AddEnabledStateToggle(_connection, parentItemModel, linkedItemsObservable);
         LoadoutDataProviderHelper.AddLoadoutItemIds(parentItemModel, linkedItemsObservable);
+        LoadoutDataProviderHelper.AddViewModFilesActionComponent(parentItemModel, linkedItemsObservable);
         LoadoutDataProviderHelper.AddUninstallItemComponent(parentItemModel, linkedItemsObservable);
         
 

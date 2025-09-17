@@ -1,4 +1,5 @@
 using System.Reactive;
+using System.Windows.Input;
 using Avalonia;
 using Avalonia.Controls;
 using DynamicData.Kernel;
@@ -41,7 +42,7 @@ public class NavigationMenuItem : MenuItem
         _contextMenuCommand = ReactiveCommand.Create<OpenPageBehaviorType>(openPageBehaviorType =>
         {
             var navigationInformation = NavigationInformation.From(openPageBehaviorType);
-            NavigationCommand?.Execute(navigationInformation).Subscribe();
+            Command?.Execute(navigationInformation);
         });
 
         var contextMenu = new ContextMenu

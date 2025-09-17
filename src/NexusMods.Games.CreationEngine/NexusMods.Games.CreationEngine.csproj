@@ -17,5 +17,9 @@
       <None Remove="Resources\Fallout4\tile.webp" />
       <EmbeddedResource Include="Resources\Fallout4\tile.webp" />
     </ItemGroup>
+    <ItemGroup>
+      <PackageReference Include="Mutagen.Bethesda.Fallout4" />
+      <PackageReference Include="Mutagen.Bethesda.Skyrim" />
+    </ItemGroup>
 
 </Project>
