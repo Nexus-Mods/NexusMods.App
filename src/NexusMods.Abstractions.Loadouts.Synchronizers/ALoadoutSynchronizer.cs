@@ -201,20 +201,20 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         return newOverrides.Id;
     }
 
-    public Dictionary<GamePath, OneOf<LoadoutFile.ReadOnly, DeletedFile.ReadOnly>[]> GetFileConflicts(Loadout.ReadOnly loadout, bool removeDuplicates = true)
+    public Dictionary<GamePath, FileConflictGroup> GetFileConflicts(Loadout.ReadOnly loadout, bool removeDuplicates = true)
     {
         var db = loadout.Db;
         var query = Loadout.FileConflictsQuery(db, loadout, removeDuplicates: removeDuplicates);
         var result = query.ToDictionary(row => new GamePath(row.Location, row.Path), row =>
         {
-            var files = row.Item3.Select(tuple =>
+            var items = row.Item3.Select(tuple =>
             {
-                var (entityId, isDeleted) = tuple;
-                if (isDeleted) return DeletedFile.Load(db, entityId);
-                return OneOf<LoadoutFile.ReadOnly, DeletedFile.ReadOnly>.FromT0(LoadoutFile.Load(db, entityId));
+                var (entityId, isEnabled, isDeleted) = tuple;
+                OneOf<LoadoutFile.ReadOnly, DeletedFile.ReadOnly> file = isDeleted ? DeletedFile.Load(db, entityId) : LoadoutFile.Load(db, entityId);
+                return new FileConflictItem(isEnabled, file);
             }).ToArray();
 
-            return files;
+            return new FileConflictGroup(new GamePath(row.Location, row.Path), items);
         });
 
         return result;
@@ -249,8 +249,8 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 SourceItemType = LoadoutSourceItemType.Game,
             };
         }
-        
-        foreach (var loadoutItem in Loadout.EnabledLoadoutItemWithTargetPathInLoadoutQuery(loadout.Db, loadout.Id))
+
+        foreach (var loadoutItem in Loadout.LoadoutFileMetadataQuery(loadout.Db, loadout.Id, onlyEnabled: true))
         {
             if (loadoutItem.Path.Path == null)
                 throw new InvalidOperationException("Path is null");

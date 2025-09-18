@@ -80,9 +80,9 @@ public class GeneralFileManagementTests (ITestOutputHelper helper) : ACyberpunkI
             .Should().HaveCount(2, because: "loadout has two file conflicts")
             .And.ContainKey(new GamePath(LocationId.Game, "bin/x64/ThisIsATestFile.txt"), because: "one of the conflicting files")
             .And.ContainKey(new GamePath(LocationId.Game, "bin/x64/And Another One.txt"), because: "one of the conflicting files")
-            .And.AllSatisfy(kv => kv.Value.Should()
+            .And.AllSatisfy(kv => kv.Value.Items.Should()
                 .AllSatisfy(value => kv.Key
-                    .Equals(value.AsT0.AsLoadoutItemWithTargetPath().TargetPath).Should().BeTrue(because: "file should be grouped correctly")
+                    .Equals(value.File.AsT0.AsLoadoutItemWithTargetPath().TargetPath).Should().BeTrue(because: "file should be grouped correctly")
                 )
             );
     }
