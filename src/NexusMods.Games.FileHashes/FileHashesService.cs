@@ -3,6 +3,7 @@ using System.IO.Compression;
 using System.Text.Json;
 using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.EpicGameStore.Values;
 using NexusMods.Abstractions.GameLocators;
@@ -27,7 +28,7 @@ using Connection = NexusMods.MnemonicDB.Connection;
 
 namespace NexusMods.Games.FileHashes;
 
-internal sealed class FileHashesService : IFileHashesService, IDisposable
+internal sealed class FileHashesService : IFileHashesService, IDisposable, IHostedService
 {
     private const string DefaultLanguage = "en-US";
     
@@ -65,8 +66,6 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable
 
         _hashDatabaseLocation = _settings.HashDatabaseLocation.ToPath(_fileSystem);
         _hashDatabaseLocation.CreateDirectory();
-
-        Startup();
     }
 
     private ConnectedDb OpenDb(DatabaseInfo databaseInfo)
@@ -145,23 +144,6 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable
         return diff >= _settings.HashDatabaseUpdateInterval;
     }
 
-    private void Startup()
-    {
-        var existingDatabases = ExistingDBs().ToArray();
-
-        // Cleanup old databases
-        foreach (var databaseInfo in existingDatabases.Skip(1))
-        {
-            databaseInfo.Path.DeleteDirectory(true);
-        }
-
-        if (existingDatabases.TryGetFirst(out var latestDatabase))
-        {
-            _currentDb = OpenDb(latestDatabase);
-        }
-
-        Task.Run(async () => await CheckForUpdateCore(forceUpdate: false, cancellationToken: CancellationToken.None));
-    }
 
     private async Task CheckForUpdateCore(bool forceUpdate, CancellationToken cancellationToken = default)
     {
@@ -682,5 +664,37 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable
             connection.Backend.Dispose();
             connection.Store.Dispose();
         }
+    }
+
+    public async Task StartAsync(CancellationToken cancellationToken)
+    {
+        var existingDatabases = ExistingDBs().ToArray();
+
+        // Cleanup old databases
+        foreach (var databaseInfo in existingDatabases.Skip(1))
+        {
+            databaseInfo.Path.DeleteDirectory(true);
+        }
+
+        var forceUpdate = false;
+        try
+        {
+            if (existingDatabases.TryGetFirst(out var latestDatabase))
+            {
+                _currentDb = OpenDb(latestDatabase);
+            }
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Failed to open latest database, forcing update");
+            forceUpdate = true;
+        }
+
+        await CheckForUpdateCore(forceUpdate: forceUpdate, cancellationToken);
+    }
+
+    public Task StopAsync(CancellationToken cancellationToken)
+    {
+        return Task.CompletedTask;
     }
 }
