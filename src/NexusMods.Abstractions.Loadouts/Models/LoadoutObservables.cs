@@ -49,7 +49,7 @@ public partial class Loadout
     public static Query<(EntityId Id, bool IsEnabled, LocationId Location, RelativePath Path, Hash Hash, Size Size, bool IsDeleted)> LoadoutFileMetadataQuery(IDb db, LoadoutId loadoutId, bool onlyEnabled)
     {
         return db.Connection.Query<(EntityId Id, bool IsEnabled, LocationId Location, RelativePath Path, Hash Hash, Size Size, bool IsDeleted)>(
-            $"SELECT * FROM loadouts.LoadoutFileMetadata({db}, {loadoutId}, {onlyEnabled})"
+            $"SELECT Id, IsEnabled, TargetPath.Item2, TargetPath.Item3, Hash, Size, IsDeleted FROM loadouts.LoadoutFileMetadata({db}, {loadoutId}, {onlyEnabled})"
         );
     }
 
