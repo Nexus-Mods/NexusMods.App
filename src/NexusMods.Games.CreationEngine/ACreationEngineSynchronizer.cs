@@ -1,7 +1,10 @@
+using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.Loadouts.Sorting;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Games.CreationEngine.Abstractions;
 using NexusMods.Paths;
+using NexusMods.Sdk.FileStore;
 
 namespace NexusMods.Games.CreationEngine;
 
@@ -12,7 +15,7 @@ public abstract class ACreationEngineSynchronizer : ALoadoutSynchronizer
     {
         _intrinsicFiles =
         [
-            new PluginsFile(game),
+            new PluginsFile(game, provider.GetRequiredService<ISorter>(), provider.GetRequiredService<IFileStore>()),
         ];
     }
 

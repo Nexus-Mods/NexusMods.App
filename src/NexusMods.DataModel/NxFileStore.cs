@@ -26,7 +26,7 @@ namespace NexusMods.DataModel;
 /// <summary>
 /// A IFileStore implementation that uses the Nx format for storage.
 /// </summary>
-public class NxFileStore : IFileStore
+public class NxFileStore : IFileStore, IReadOnlyStreamSource
 {
     private readonly AsyncFriendlyReaderWriterLock _lock = new(); // See details on struct.
     private readonly AbsolutePath[] _archiveLocations;
@@ -636,4 +636,19 @@ public class NxFileStore : IFileStore
             throw new KeyNotFoundException("Missing file entry: " + hash.ToHex() + "this should never happen");
         return true;
     }
+
+#region IReadOnlyStreamSource
+    public async ValueTask<Stream?> OpenAsync(Hash hash, CancellationToken cancellationToken = default)
+    {
+        return await GetFileStream(hash, cancellationToken);
+    }
+
+    public bool Exists(Hash hash)
+    {
+        return _archivesByEntry.ContainsKey(hash);
+    }
+
+    public SourcePriority Priority => SourcePriority.Backup;
+#endregion
+    
 }
