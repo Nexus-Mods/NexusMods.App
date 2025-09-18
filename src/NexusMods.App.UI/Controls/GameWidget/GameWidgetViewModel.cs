@@ -8,6 +8,7 @@ using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Games.FileHashes;
 using NexusMods.Abstractions.Settings;
 using NexusMods.Abstractions.UI;
+using NexusMods.App.UI.Resources;
 using NexusMods.UI.Sdk.Icons;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -47,7 +48,7 @@ public class GameWidgetViewModel : AViewModel<IGameWidgetViewModel>, IGameWidget
                         await fileHashesService.GetFileHashesDb();
                         var locatorIds = installation.LocatorResultMetadata?.ToLocatorIds().ToArray() ?? [];
                         if (!fileHashesService.TryGetVanityVersion((installation.Store, locatorIds), out var vanityVersion))
-                            return "Version: Unknown";
+                            return Language.GameWidget_VersionUnknown;
                         return $"Version: {vanityVersion.Value}";
                     })
                     .BindToVM(this, vm => vm.Version)
