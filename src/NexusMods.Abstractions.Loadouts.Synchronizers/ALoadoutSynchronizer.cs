@@ -31,6 +31,7 @@ using NexusMods.Paths;
 using NexusMods.Sdk;
 using NexusMods.Sdk.FileStore;
 using NexusMods.Sdk.IO;
+using ReactiveUI;
 using OneOf;
 using Reloaded.Memory.Extensions;
 
@@ -45,6 +46,12 @@ using DiskState = Entities<DiskStateEntry.ReadOnly>;
 [PublicAPI]
 public class ALoadoutSynchronizer : ILoadoutSynchronizer
 {
+    /// <summary>
+    /// We'll limit backups to 2GB, for now we should never see much more than this
+    /// of modified game files. s
+    /// </summary>
+    private static Size MaximumBackupSize => Size.GB * 2;
+    
     private readonly ScopedAsyncLock _lock = new();
     private readonly IFileStore _fileStore;
 
@@ -570,6 +577,10 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         }
 
         loadout = await ReprocessOverrides(loadout);
+
+        job?.SetStatus("Archive Cleanup");
+        await _garbageCollectorRunner.RunAsync();
+        
 
         return loadout;
     }
@@ -1314,6 +1325,10 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             }
         );
 
+        var totalSize = archivedFiles.Sum(static x => x.Size);
+        if (totalSize > MaximumBackupSize)
+            throw new Exception($"Cannot backup files, total size is {totalSize}, which is larger than the maximum of {MaximumBackupSize}");
+        
         // PERFORMANCE: We deduplicate above with the HaveFile call.
         await _fileStore.BackupFiles(archivedFiles, deduplicate: false);
 

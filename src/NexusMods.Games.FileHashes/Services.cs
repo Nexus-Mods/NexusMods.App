@@ -16,8 +16,11 @@ public static class Services
             .AddPathHashRelationModel()
             .AddVersionDefinitionModel()
             .AddGogBuildModel()
+            .AddGogDepotModel()
+            .AddGogManifestModel()
             .AddSteamManifestModel()
             .AddEpicGameStoreBuildModel()
+            .AddFileHashesQueriesSql()
             .AddSingleton<IFileHashesService, FileHashesService>()
             .AddSettings<FileHashesServiceSettings>()
             .AddHashRelationModel();
