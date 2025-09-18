@@ -3,20 +3,29 @@ This schema is written to a markdown file for both documentation and validation 
 models in the app, then validate the tests to update this file. 
 
 ## Statistics
-   - Fingerprint: 0x714400B75CF19A0F
-   - Total attributes: 220
-   - Total namespaces: 72
+   - Fingerprint: 0x49DFDB6FC29E735A
+   - Total attributes: 229
+   - Total namespaces: 74
    
 ## Attributes
 | AttributeId                                                                        | Type                    | Indexed | Many  | NoHistory | 
 | ---------------------------------------------------------------------------------- | ----------------------- | ------- | ----- | --------- | 
 | NexusMods.Abstractions.Games.FileHashes.GogBuild/BuildId                           | UInt64                  | True    | False | False     | 
+| NexusMods.Abstractions.Games.FileHashes.GogBuild/Depots                            | Reference               | False   | True  | False     | 
 | NexusMods.Abstractions.Games.FileHashes.GogBuild/Files                             | Reference               | False   | True  | False     | 
+| NexusMods.Abstractions.Games.FileHashes.GogBuild/ManifestId                        | Utf8                    | True    | False | False     | 
 | NexusMods.Abstractions.Games.FileHashes.GogBuild/OperatingSystem                   | UInt8                   | False   | False | False     | 
 | NexusMods.Abstractions.Games.FileHashes.GogBuild/ProductId                         | UInt64                  | True    | False | False     | 
 | NexusMods.Abstractions.Games.FileHashes.GogBuild/Public                            | UInt8                   | False   | False | False     | 
 | NexusMods.Abstractions.Games.FileHashes.GogBuild/Tags                              | Utf8                    | False   | True  | False     | 
 | NexusMods.Abstractions.Games.FileHashes.GogBuild/Version                           | Utf8                    | True    | False | False     | 
+| NexusMods.Abstractions.Games.FileHashes.GogDepot/CompressedSize                    | UInt64                  | False   | False | False     | 
+| NexusMods.Abstractions.Games.FileHashes.GogDepot/Languages                         | Utf8                    | False   | True  | False     | 
+| NexusMods.Abstractions.Games.FileHashes.GogDepot/Manifest                          | Reference               | False   | False | False     | 
+| NexusMods.Abstractions.Games.FileHashes.GogDepot/ProductId                         | UInt64                  | True    | False | False     | 
+| NexusMods.Abstractions.Games.FileHashes.GogDepot/Size                              | UInt64                  | False   | False | False     | 
+| NexusMods.Abstractions.Games.FileHashes.GogManifest/Files                          | Reference               | False   | True  | False     | 
+| NexusMods.Abstractions.Games.FileHashes.GogManifest/ManifestId                     | Utf8                    | True    | False | False     | 
 | NexusMods.Abstractions.Games.FileHashes.HashRelation/Crc32                         | UInt32                  | True    | False | False     | 
 | NexusMods.Abstractions.Games.FileHashes.HashRelation/Md5                           | UInt128                 | True    | False | False     | 
 | NexusMods.Abstractions.Games.FileHashes.HashRelation/MinimalHash                   | UInt64                  | True    | False | False     | 
