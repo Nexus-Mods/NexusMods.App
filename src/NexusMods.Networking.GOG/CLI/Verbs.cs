@@ -8,11 +8,13 @@ using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Cli;
 using NexusMods.Abstractions.GOG;
+using NexusMods.Abstractions.GOG.DTOs;
 using NexusMods.Abstractions.GOG.Values;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Sdk.Hashes;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.Networking.GOG.DTOs;
+using NexusMods.Networking.GOG.Exceptions;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
 using NexusMods.Sdk;
@@ -56,6 +58,11 @@ public static class Verbs
         await using (var _ = await renderer.WithProgress())
         {
             {
+                var hashPathRoot = output / "hashes";
+                hashPathRoot.CreateDirectory();
+                var existingHashes = await LoadExistingHashes(hashPathRoot, indentedOptions, token);
+
+
                 // TODO: await HandleLinuxInstallers(client, ProductId.From((ulong)productId), token);
 
                 await foreach (var os in Enum.GetValues<OS>().WithProgress(renderer, "Operating Systems Builds").WithCancellation(token))
@@ -74,100 +81,154 @@ public static class Verbs
                             );
                         }
 
-                        var depot = await client.GetDepot(build, token);
+                        var buildDetails = await client.GetBuildDetails(build, token);
+                        var buildDetailsPath = output / "stores" / "gog" / "build_details" / (build.BuildId + ".json");
 
-                        var depotPath = output / "stores" / "gog" / "depots" / (build.BuildId + ".json");
-                        var foundHashesPath = output / "stores" / "gog" / "found_hashes" / (build.BuildId + ".json");
+                        var depotItems = buildDetails.Depots;
+                        Dictionary<string, AbsolutePath> manifestPaths = new();
+                        Dictionary<string, AbsolutePath> foundHashesPaths = new();
 
-                        if (depotPath.FileExists && foundHashesPath.FileExists)
-                            continue;
-
-                        depotPath.Parent.CreateDirectory();
+                        foreach (var depot in depotItems)
                         {
-                            depotPath.Parent.CreateDirectory();
-                            await using var outputStream = depotPath.Create();
-                            await JsonSerializer.SerializeAsync(outputStream, depot, indentedOptions,
+                            var manifestPath = output / "stores" / "gog" / "manifest" / (depot.Manifest + ".json");
+                            manifestPaths[depot.Manifest] = manifestPath;
+                            
+                            var foundHashesPath = output / "stores" / "gog" / "found_hashes" / (depot.Manifest + ".json");
+                            foundHashesPaths[depot.Manifest] = foundHashesPath;
+                        }
+
+                        if (manifestPaths.Values.All(p => p.FileExists) && foundHashesPaths.Values.All(p => p.FileExists) && buildDetailsPath.FileExists)
+                        {
+                            await renderer.TextLine($"Build {build.BuildId} already indexed, skipping");
+                            continue;
+                        }
+
+                        // Create the directory
+                        buildDetailsPath.Parent.CreateDirectory();
+                        manifestPaths.Values.First().Parent.CreateDirectory();
+                        foundHashesPaths.Values.First().Parent.CreateDirectory();
+                        
+                        // Write the build manifest
+                        {
+                            await using var outputStream = buildDetailsPath.Create();
+                            await JsonSerializer.SerializeAsync(outputStream, buildDetails, indentedOptions,
                                 token
                             );
                         }
 
-                        var hashPathRoot = output / "hashes";
-                        hashPathRoot.CreateDirectory();
+                        List<(string ManifestId, BuildDetailsDepot BuildDepot, DepotInfo Manifest)> depotInfos = [];
 
-                        var hashLock = new SemaphoreSlim(1, 1);
-
-                        ConcurrentDictionary<string, Hash> foundHashes = new();
-
-                        await Parallel.ForEachAsync(depot.Items, token, async (item, token) =>
+                        await Parallel.ForEachAsync(depotItems, token, async (depot, token) =>
                             {
-                                var fullSize = item.Chunks.Sum(s => (double)s.Size.Value);
+                                var manifest = await client.GetDepot(depot, token);
+                                lock (depotInfos)
                                 {
-                                    await using var progressTask = await renderer.StartProgressTask($"Hashing {item.Path}", maxValue: fullSize);
-                                    await using var stream = await client.GetFileStream(build, depot, item.Path, token);
-                                    await using var progressWrapper = new StreamProgressWrapper<ProgressTask>(stream, state: progressTask, notifyWritten: static (progressTask, values) =>
-                                    {
-                                        var (current, _) = values;
-                                        var task = progressTask.Increment(current.Value);
-                                    });
-
-                                    var multiHash = await MultiHasher.HashStream(stream, cancellationToken: token);
-                                    var hashStr = multiHash.XxHash3.ToString()[2..];
-
-                                    foundHashes.TryAdd(item.Path, multiHash.XxHash3);
-
-                                    var path = hashPathRoot / $"{hashStr[..2]}" / (hashStr + ".json");
-                                    path.Parent.CreateDirectory();
-
-                                    if (!path.FileExists)
-                                    {
-                                        try
-                                        {
-                                            await hashLock.WaitAsync(token);
-                                            await using var outputStream = path.Create();
-                                            await JsonSerializer.SerializeAsync(outputStream, multiHash, indentedOptions,
-                                                token
-                                            );
-                                        }
-                                        finally
-                                        {
-                                            hashLock.Release();
-                                        }
-                                    }
-                                }
-
-                                if (verify)
-                                {
-                                    var offset = Size.Zero;
-                                    await using var stream = await client.GetFileStream(build, depot, item.Path,
-                                        token
-                                    );
-                                    await foreach (var chunk in item.Chunks.WithProgress(renderer, $"Verifying {item.Path}"))
-                                    {
-                                        using var rented = MemoryPool<byte>.Shared.Rent((int)chunk.Size.Value);
-                                        var sized = rented.Memory[..(int)chunk.Size.Value];
-
-                                        await stream.ReadExactlyAsync(sized, token);
-
-                                        if ((ulong)stream.Position - offset.Value != chunk.Size.Value)
-                                            throw new InvalidOperationException("Chunk size mismatch");
-
-                                        offset += chunk.Size;
-
-
-                                        var md5 = Md5Value.From(MD5.HashData(sized.Span));
-                                        if (!md5.Equals(chunk.Md5))
-                                            throw new InvalidOperationException("MD5 mismatch");
-
-                                    }
+                                    depotInfos.Add((depot.Manifest, depot, manifest));
                                 }
                             }
                         );
+                        
+                        await renderer.TextLine($"Found {depotInfos.Count} depots to index");
 
-                        foundHashesPath.Parent.CreateDirectory();
-                        await using var foundHashStream = foundHashesPath.Create();
-                        await JsonSerializer.SerializeAsync(foundHashStream, foundHashes, indentedOptions,
-                            token
-                        );
+                        foreach (var depot in depotInfos)
+                        {
+                            await using var manifestFile = manifestPaths[depot.ManifestId].Create();
+                            await JsonSerializer.SerializeAsync(manifestFile, depot.Manifest, indentedOptions, token);
+                        }
+
+                        var hashLock = new SemaphoreSlim(1, 1);
+
+                        
+                        await renderer.TextLine("Indexing Existing Hashes.");
+
+
+                        await renderer.TextLine("Indexing Files");
+                        // Now we need to hash all the files, and write the hash variants as well as the foundHashes mapping
+                        try
+                        {
+                            await Parallel.ForEachAsync(depotInfos, token, async (row, _) =>
+                                {
+                                    var (manifestId, depot, manifest) = row;
+                                    ConcurrentDictionary<string, Hash> foundHashes = new();
+
+                                    await Parallel.ForEachAsync(manifest.Items, token, async (item, _) =>
+                                        {
+                                            // If we have a MD5 hash and we've already indexed it, don't re-index it
+                                            if (item.Md5.HasValue && existingHashes.TryGetValue(item.Md5.Value, out var hash))
+                                            {
+                                                foundHashes.TryAdd(item.Path, hash.XxHash3);
+                                                return;
+                                            }
+
+                                            var fullSize = item.Chunks.Sum(s => (double)s.Size.Value);
+                                            {
+                                                await using var progressTask = await renderer.StartProgressTask($"Hashing {item.Path}", maxValue: fullSize);
+                                                await using var stream = await client.GetFileStream(depot.ProductId, manifest, item.Path,
+                                                    token
+                                                );
+                                                await using var progressWrapper = new StreamProgressWrapper<ProgressTask>(stream, state: progressTask, notifyWritten: static (progressTask, values) =>
+                                                    {
+                                                        var (current, _) = values;
+                                                        var task = progressTask.Increment(current.Value);
+                                                    }
+                                                );
+
+                                                try
+                                                {
+                                                    var multiHash = await MultiHasher.HashStream(stream, cancellationToken: token);
+                                                    var hashStr = multiHash.XxHash3.ToString()[2..];
+
+                                                    foundHashes.TryAdd(item.Path, multiHash.XxHash3);
+
+                                                    var path = hashPathRoot / $"{hashStr[..2]}" / (hashStr + ".json");
+                                                    path.Parent.CreateDirectory();
+
+                                                    if (!path.FileExists)
+                                                    {
+                                                        try
+                                                        {
+                                                            await hashLock.WaitAsync(token);
+                                                            await using var outputStream = path.Create();
+                                                            await JsonSerializer.SerializeAsync(outputStream, multiHash, indentedOptions,
+                                                                token
+                                                            );
+                                                        }
+                                                        finally
+                                                        {
+                                                            hashLock.Release();
+                                                        }
+                                                    }
+                                                }
+                                                catch (Exception ex)
+                                                {
+                                                    Console.WriteLine($"Error hashing {item.Path}: {ex.Message}");
+                                                }
+                                            }
+                                        }
+                                    );
+
+                                    try
+                                    {
+                                        await hashLock.WaitAsync(token);
+                                        // Now write the found hashes mapping
+                                        var foundHashesPath = foundHashesPaths[manifestId];
+                                        await using var foundHashStream = foundHashesPath.Create();
+                                        await JsonSerializer.SerializeAsync(foundHashStream, foundHashes, indentedOptions,
+                                            token
+                                        );
+                                    }
+                                    finally
+                                    {
+                                        hashLock.Release();
+                                    }
+                                }
+                            );
+                        }
+                        catch (ForbiddenException)
+                        {
+                            await renderer.TextLine($"Skipping {build.BuildId} because it is forbidden");
+                            continue;
+                        }
                     }
                 }
             }
@@ -212,6 +273,33 @@ public static class Verbs
             // TODO: put in DB
         }
     }
+
+    private static async Task<Dictionary<Md5Value, MultiHash>> LoadExistingHashes(AbsolutePath folder, JsonSerializerOptions options, CancellationToken token)
+    {
+        var bag = new Dictionary<Md5Value, MultiHash>();
+        var hashFiles = folder.EnumerateFiles("*.json", true);
+        
+        await Parallel.ForEachAsync(hashFiles, token, async (file, token) =>
+        {
+            try
+            {
+                await using var stream = file.Read();
+                var hash = await JsonSerializer.DeserializeAsync<MultiHash>(stream, options, token);
+                lock (bag)
+                {
+                    bag.Add(hash!.Md5, hash);
+                }
+            }
+            catch (Exception ex)
+            {
+                // Ignore errors
+                Console.WriteLine($"Error loading hash file {file}: {ex.Message}");
+            }
+        });
+
+        return bag;
+    }
+
     
     private static GameInfo ParseGameInfoFile(ZipArchiveEntry zipArchiveEntry)
     {

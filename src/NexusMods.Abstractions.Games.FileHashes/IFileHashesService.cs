@@ -58,6 +58,8 @@ public interface IFileHashesService
     /// Suggest version data for a given game installation and files.
     /// </summary>
     public Optional<VersionData> SuggestVersionData(GameInstallation gameInstallation, IEnumerable<(GamePath Path, Hash Hash)> files);
+
+    LocatorId[] GetLocatorIdsForGame(GameInstallation loadoutInstallationInstance);
 }
 
 /// <summary>
