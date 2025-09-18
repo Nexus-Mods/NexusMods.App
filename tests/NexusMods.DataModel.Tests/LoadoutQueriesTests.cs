@@ -1,5 +1,5 @@
-using DynamicData.Kernel;
 using FluentAssertions;
+using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Games.TestFramework;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
@@ -206,5 +206,4 @@ public class LoadoutQueriesTests(ITestOutputHelper helper) : ACyberpunkIsolatedG
             targetItem.IsEnabled.Should().BeFalse(); // Item should still be disabled due to collection being disabled
         }
     }
-    
 }

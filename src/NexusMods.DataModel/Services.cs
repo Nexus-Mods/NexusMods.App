@@ -78,7 +78,7 @@ public static class Services
         // Game Registry
         coll.AddSingleton<IGameRegistry, GameRegistry.GameRegistry>();
         coll.AddHostedService(s => (GameRegistry.GameRegistry)s.GetRequiredService<IGameRegistry>());
-        coll.AddAttributeCollection(typeof(GameInstallMetadata));
+        coll.AddGameInstallMetadataModel();
         
         // File Store
         coll.AddAllSingleton<IFileStore, NxFileStore>();

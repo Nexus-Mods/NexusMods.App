@@ -1,14 +1,15 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:icons="clr-namespace:NexusMods.UI.Sdk.Icons;assembly=NexusMods.UI.Sdk"
-        xmlns:controls="clr-namespace:NexusMods.App.UI.Controls;assembly=NexusMods.App.UI">
+        xmlns:controls="clr-namespace:NexusMods.App.UI.Controls;assembly=NexusMods.App.UI"
+        xmlns:navigation="clr-namespace:NexusMods.App.UI.Controls.Navigation;assembly=NexusMods.App.UI">
 
     <Style Selector="TreeDataGridTemplateCell">
         <!-- <Setter Property="Background" Value="Blue" /> -->
 
         <!-- loadout -> actions cell -->
         <Style Selector="^.LoadoutColumns_EnabledState">
-            <Setter Property="HorizontalAlignment" Value="Left" />
+            <Setter Property="HorizontalAlignment" Value="Right" />
 
             <Style Selector="^ StackPanel">
                 <Setter Property="Spacing" Value="8" />
@@ -17,10 +18,13 @@
             <Style Selector="^ Border.LoadoutColumns_EnabledState_LockedEnabledState">
                 <!-- <Setter Property="Background" Value="DarkSlateGray" /> -->
                 <Style Selector="^ controls|StandardButton">
+                    <!-- <Setter Property="Background" Value="DarkRed" /> -->
+                    <Setter Property="Padding" Value="4 0 2 0"/>
                     <Style Selector="^ /template/ icons|UnifiedIcon#PART_RightIcon">
                         <Setter Property="Size" Value="24" />
                     </Style>
                 </Style>
+                
             </Style>
 
             <Style Selector="^ Border.LoadoutColumns_EnabledState_ParentCollectionDisabled">

@@ -198,6 +198,11 @@ jobs:
         shell: pwsh
         run: ./scripts/download-codesigntool.ps1
 
+      - name: Install InnoSetup
+        shell: pwsh
+        run: |
+          choco install innosetup
+
       - name: Create Setup
         working-directory: ${{ steps.transformInputs.outputs.projectDir }}
         run: pupnet -y -v ${{ inputs.AppVersion }} -k Setup -p DefineConstants=INSTALLATION_METHOD_INNO_SETUP

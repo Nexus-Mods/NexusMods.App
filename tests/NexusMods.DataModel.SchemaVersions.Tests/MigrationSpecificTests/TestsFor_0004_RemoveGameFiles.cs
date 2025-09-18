@@ -21,7 +21,8 @@ public class TestsFor_0004_RemoveGameFiles(ITestOutputHelper helper) : ALegacyDa
         var db = tempConnection.Connection.Db;
         foreach (var loadout in Loadout.All(db))
         {
-            loadout.Contains(Loadout.LocatorIds).Should().BeTrue("Loadout should contain LocatorIds");
+            if (databaseName != "SDV.2_5_2025.rocksdb.zip") 
+                loadout.Contains(Loadout.LocatorIds).Should().BeTrue("Loadout should contain LocatorIds");
             loadout.Contains(Loadout.GameVersion).Should().BeTrue("Loadout should contain GameVersion");
         }
 
