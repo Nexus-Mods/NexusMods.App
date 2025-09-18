@@ -101,11 +101,11 @@ internal class InstallLoadoutItemJob : IJobDefinitionWithStart<InstallLoadoutIte
         {
             var transactionResult = await mainTransaction.Commit();
             Transaction.Dispose();
-            return new InstallLoadoutItemJobResult(transactionResult.Remap(loadoutGroup));
+            return new InstallLoadoutItemJobResult(transactionResult.Remap(loadoutGroup), LoadoutItemGroupId.From(0));
         }
-        
+
         // Part of an external transaction, so we return null.
-        return new InstallLoadoutItemJobResult(null);
+        return new InstallLoadoutItemJobResult(null, loadoutGroup);
     }
 
     private async ValueTask<LoadoutItemGroup.New?> ExecuteInstallersAsync(

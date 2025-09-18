@@ -1,4 +1,5 @@
 using System.Buffers;
+using System.Buffers.Binary;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text.Json;
@@ -22,7 +23,7 @@ internal class Crc32JsonConverter : JsonConverter<Crc32Value>
         var status = Convert.FromHexString(input, bytes, out _, out _);
         Debug.Assert(status == OperationStatus.Done);
 
-        var value = MemoryMarshal.Read<uint>(bytes);
+        var value = BinaryPrimitives.ReadUInt32BigEndian(bytes);
         return Crc32Value.From(value);
     }
 
@@ -30,7 +31,7 @@ internal class Crc32JsonConverter : JsonConverter<Crc32Value>
     {
         Span<char> span = stackalloc char[sizeof(uint) * 2];
         Span<byte> bytes = stackalloc byte[sizeof(uint)];
-        MemoryMarshal.Write(bytes, value.Value);
+        BinaryPrimitives.WriteUInt32BigEndian(bytes, value.Value);
 
         var success = Convert.TryToHexString(bytes, span, out _);
         Debug.Assert(success);

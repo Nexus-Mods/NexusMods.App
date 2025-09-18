@@ -1,6 +1,7 @@
 name: Report a missing game
 description: 'Use this form to report when the app fails to locate a supported game. '
 title: 'Game Not Found'
+type: "Bug"
 labels:
   - 'Epic: Game Support'
   - user raised
