@@ -676,12 +676,21 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable, IHost
             databaseInfo.Path.DeleteDirectory(true);
         }
 
-        if (existingDatabases.TryGetFirst(out var latestDatabase))
+        var forceUpdate = false;
+        try
         {
-            _currentDb = OpenDb(latestDatabase);
+            if (existingDatabases.TryGetFirst(out var latestDatabase))
+            {
+                _currentDb = OpenDb(latestDatabase);
+            }
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Failed to open latest database, forcing update");
+            forceUpdate = true;
         }
 
-        await CheckForUpdateCore(forceUpdate: false, cancellationToken: CancellationToken.None);
+        await CheckForUpdateCore(forceUpdate: forceUpdate, cancellationToken);
     }
 
     public Task StopAsync(CancellationToken cancellationToken)
