@@ -47,8 +47,7 @@
                                              Size="Toolbar"
                                              Fill="None"
                                              ShowIcon="Left"
-                                             LeftIcon="{x:Static icons:IconValues.Pause}"
-                                             Command="{Binding PauseAllCommand}" />
+                                             LeftIcon="{x:Static icons:IconValues.Pause}" />
 
                     <controls:StandardButton x:Name="ResumeAllButton"
                                              Text="Resume all"
@@ -56,8 +55,7 @@
                                              Size="Toolbar"
                                              Fill="None"
                                              ShowIcon="Left"
-                                             LeftIcon="{x:Static icons:IconValues.PlayArrow}"
-                                             Command="{Binding ResumeAllCommand}" />
+                                             LeftIcon="{x:Static icons:IconValues.PlayArrow}" />
                 </ItemsControl>
 
                 <ItemsControl>
@@ -68,7 +66,6 @@
                                              Fill="None"
                                              ShowIcon="Left"
                                              LeftIcon="{x:Static icons:IconValues.Pause}"
-                                             Command="{Binding PauseSelectedCommand}"
                                              IsVisible="{Binding HasRunningItems^}" />
 
                     <controls:StandardButton x:Name="ResumeSelectedButton"
@@ -78,7 +75,6 @@
                                              Fill="None"
                                              ShowIcon="Left"
                                              LeftIcon="{x:Static icons:IconValues.PlayArrow}"
-                                             Command="{Binding ResumeSelectedCommand}"
                                              IsVisible="{Binding HasPausedItems^}" />
 
                     <controls:StandardButton x:Name="CancelSelectedButton"
@@ -87,8 +83,7 @@
                                              Size="Toolbar"
                                              Fill="None"
                                              ShowIcon="Left"
-                                             LeftIcon="{x:Static icons:IconValues.Close}"
-                                             Command="{Binding CancelSelectedCommand}" />
+                                             LeftIcon="{x:Static icons:IconValues.Close}" />
                 </ItemsControl>
             </controls:Toolbar>
 

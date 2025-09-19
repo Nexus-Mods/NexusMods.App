@@ -35,6 +35,22 @@ public partial class DownloadsPageView : ReactiveUserControl<IDownloadsPageViewM
             SearchControl.AttachKeyboardHandlers(this, disposables);
             this.OneWayBind(ViewModel, vm => vm.Adapter, view => view.SearchControl.Adapter)
                 .DisposeWith(disposables);
+            
+            // Bind command buttons
+            this.BindCommand(ViewModel, vm => vm.PauseAllCommand, view => view.PauseAllButton)
+                .DisposeWith(disposables);
+                
+            this.BindCommand(ViewModel, vm => vm.ResumeAllCommand, view => view.ResumeAllButton)
+                .DisposeWith(disposables);
+                
+            this.BindCommand(ViewModel, vm => vm.PauseSelectedCommand, view => view.PauseSelectedButton)
+                .DisposeWith(disposables);
+                
+            this.BindCommand(ViewModel, vm => vm.ResumeSelectedCommand, view => view.ResumeSelectedButton)
+                .DisposeWith(disposables);
+                
+            this.BindCommand(ViewModel, vm => vm.CancelSelectedCommand, view => view.CancelSelectedButton)
+                .DisposeWith(disposables);
         });
     }
 }
