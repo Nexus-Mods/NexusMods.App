@@ -924,9 +924,9 @@
 	<data name="UpgradeToPremiumView_Desc1" xml:space="preserve">
 		<value>Pobierz całą kolekcję modów z pełną prędkością jednym kliknięciem, nie opuszczając aplikacji. Użytkownicy darmowych kont mogą instalować mody pojedynczo z listy.</value>
 	</data>
-	<data name="UpgradeToPremiumView_Desc2" xml:space="preserve">
-		<value>Użytkownicy Premium otrzymują także:</value>
-	</data>
+    <data name="UpgradeToPremiumView_Desc2" xml:space="preserve">
+        <value>Z Premium otrzymujesz również:</value>
+    </data>
 	<data name="UpgradeToPremiumView_Bullet1" xml:space="preserve">
 		<value>Nieograniczona prędkość pobierania.</value>
 	</data>
@@ -1196,5 +1196,29 @@ Zachować pobrane pliki w bibliotece na wypadek późniejszej próby instalacji?
     </data>
     <data name="ToastNotification_Signed_in_successfully" xml:space="preserve">
         <value>Pomyślnie zalogowano</value>
+    </data>
+    <data name="DownloadsLeftMenu_AllCompleted" xml:space="preserve">
+        <value>Wszystkie ukończone</value>
+    </data>
+    <data name="DownloadsLeftMenu_AllDownloads" xml:space="preserve">
+        <value>Wszystkie pobrania</value>
+    </data>
+    <data name="DownloadsLeftMenu_GameSpecificDownloads" xml:space="preserve">
+        <value>{0}</value>
+    </data>
+    <data name="Downloads_SizeProgress_Of" xml:space="preserve">
+        <value> z </value>
+    </data>
+    <data name="Downloads_Speed_Inactive" xml:space="preserve">
+        <value>--</value>
+    </data>
+    <data name="Downloads_UnknownDownload" xml:space="preserve">
+        <value>Nieznane pobranie</value>
+    </data>
+    <data name="Downloads_UnknownGame" xml:space="preserve">
+        <value>Nieznana gra</value>
+    </data>
+    <data name="GameWidget_VersionUnknown" xml:space="preserve">
+        <value>Wersja: Nieznana</value>
     </data>
 </root>
