@@ -1,0 +1,50 @@
+<reactive:ReactiveUserControl
+    x:TypeArguments="local:IDownloadsPageViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:reactive="http://reactiveui.net"
+    xmlns:local="clr-namespace:NexusMods.App.UI.Pages.Downloads"
+    xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
+    xmlns:icons="clr-namespace:NexusMods.UI.Sdk.Icons;assembly=NexusMods.UI.Sdk"
+    xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
+    xmlns:pageHeader="clr-namespace:NexusMods.App.UI.Controls.PageHeader"
+    mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="450"
+    x:Class="NexusMods.App.UI.Pages.Downloads.DownloadsPageView"
+    Background="{StaticResource SurfaceTransparentBrush}">
+    <!-- Background set to ensure that clicks anywhere on the page are correctly registered and bring focus to it -->
+
+    <Grid RowDefinitions="Auto, *">
+
+        <pageHeader:PageHeader Grid.Row="0"
+                               Title="{x:Static resources:Language.Downloads_WorkspaceTitle}"
+                               Description="Manage your active and completed downloads"
+                               Icon="{x:Static icons:IconValues.PictogramDownload}"
+                               Margin="24 24 24 0" />
+
+        <!-- Content area with toolbar and main content -->
+        <Grid Grid.Row="1" RowDefinitions="Auto, *" Margin="0,16,0,0">
+
+            <!-- Toolbar placeholder -->
+            <controls:Toolbar Grid.Row="0" Margin="24,12, 24, 0">
+                <!-- TODO: Add toolbar buttons -->
+                <ItemsControl>
+                </ItemsControl>
+            </controls:Toolbar>
+
+            <!-- Main content with empty state -->
+            <controls:EmptyState Grid.Row="1"
+                                 IsActive="{Binding IsEmptyStateActive}"
+                                 Header="{x:Static resources:Language.InProgress_NoDownloadsTextBlock}">
+                <controls:EmptyState.Subtitle>
+                    <StackPanel Orientation="Vertical" Spacing="16">
+                        <TextBlock Text="Download management will be available in the next update." />
+                    </StackPanel>
+                </controls:EmptyState.Subtitle>
+            </controls:EmptyState>
+
+        </Grid>
+
+    </Grid>
+</reactive:ReactiveUserControl>

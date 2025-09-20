@@ -4,6 +4,7 @@
     
     <ItemGroup>
       <PackageReference Include="NexusMods.MnemonicDB" />
+      <PackageReference Include="NexusMods.MnemonicDB.SourceGenerator" />
       <PackageReference Include="NexusMods.Paths" />
       <PackageReference Include="YamlDotNet" />
     </ItemGroup>
@@ -38,5 +39,9 @@
             <EmbeddedResource Include="$(HashesDatabaseOutput)" LogicalName="games_hashes_db.zip" />
         </ItemGroup>
     </Target>
-
+    
+    <ItemGroup>
+        <AdditionalFiles Include="**\*.sql" />
+        <UpToDateCheckInput Include="**\*.sql"/>
+    </ItemGroup>
 </Project>
