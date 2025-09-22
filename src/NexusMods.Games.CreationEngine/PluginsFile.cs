@@ -42,6 +42,9 @@ public class PluginsFile : IIntrinsicFile
             .SelectAwait(MakeMetadata)
             .ToDictionaryAsync(x => x.ModKey);
 
+        if (plugins.Count == 0)
+            return;
+        
         var sorted = _sorter.Sort(plugins.Values.ToList(), IdSelector, plugin => RuleCreator(plugin, plugins))
             .ToList();
         _logger.LogDebug("Sorted {Count} plugin files", sorted.Count);

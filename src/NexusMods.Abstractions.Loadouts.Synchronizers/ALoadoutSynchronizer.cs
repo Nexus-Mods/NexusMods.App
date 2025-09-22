@@ -660,6 +660,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
             var instance = IntrinsicFiles.First(f => f.Path == path);
             var resolvedPath = register.GetResolvedPath(path);
+            resolvedPath.Parent.CreateDirectory();
             await using var stream = resolvedPath.Create();
             stream.SetLength(0);
             await instance.Write(stream, loadout, syncTree);
@@ -810,6 +811,11 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                     break;
                 
                 case Actions.AdaptLoadout:
+                    if (ApplicationConstants.IsDebug && syncTree.Any(n => n.Value.Actions.HasFlag(Actions.AdaptLoadout)))
+                        throw new InvalidOperationException("Cannot adapt loadout when not in a loadout context");
+                    break;
+                
+                case Actions.WriteIntrinsic:
                     if (ApplicationConstants.IsDebug && syncTree.Any(n => n.Value.Actions.HasFlag(Actions.AdaptLoadout)))
                         throw new InvalidOperationException("Cannot adapt loadout when not in a loadout context");
                     break;
