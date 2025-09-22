@@ -41,7 +41,7 @@ public class SortingSelectionViewModel : AViewModel<ISortingSelectionViewModel>,
             .Select(IViewModelInterface (providerFactory) => new LoadOrderViewModel(serviceProvider, providerFactory, providerFactory.GetLoadoutSortableItemProvider(loadout)))
             .ToList();
 
-        viewModels.Add(new FileConflictsViewModel(serviceProvider, loadoutId));
+        viewModels.Add(new FileConflictsViewModel(serviceProvider, windowManager, loadoutId));
         ViewModels = viewModels.ToArray();
 
         OpenAllModsLoadoutPageCommand = new ReactiveCommand<NavigationInformation>(info =>
