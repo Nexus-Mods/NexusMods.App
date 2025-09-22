@@ -253,36 +253,7 @@ public class RedModSortOrderVariety : ASortOrderVariety<
         
         // TODO: Move query somewhere else
         // TODO: Update ranking logic to use better criteria than most recently created ModGroupId
-        var result = Connection.Query<(string FolderName, bool IsEnabled, string ModName, EntityId ModGroupId)>($"""
-                                                           WITH mod_items AS (
-                                                               SELECT
-                                                                   regexp_extract(file.TargetPath.Item3, '^mods\/([^\/]+)\/info\.json$', 1, 'i') AS ModFolderName,
-                                                                   enabledState.IsEnabled AS IsEnabled,
-                                                                   groupItem.Name AS ModName,
-                                                                   groupItem.Id AS ModGroupId
-                                                               FROM mdb_LoadoutItemWithTargetPath(Db=>{dbToUse}) as file
-                                                               JOIN loadouts.LoadoutItemEnabledState({dbToUse}, {loadoutId}) as enabledState ON file.Id = enabledState.Id
-                                                               JOIN mdb_LoadoutItemGroup(Db=>{dbToUse}) as groupItem ON file.Parent = groupItem.Id
-                                                               WHERE file.TargetPath.Item1 = {loadoutId}
-                                                                 AND file.TargetPath.Item2 = {LocationId.Game.Value}
-                                                                 AND ModFolderName != ''
-                                                           )
-                                                           SELECT
-                                                               ModFolderName,
-                                                               IsEnabled,
-                                                               ModName,
-                                                               ModGroupId
-                                                           FROM (
-                                                               SELECT *,
-                                                                      ROW_NUMBER() OVER (
-                                                                          PARTITION BY ModFolderName
-                                                                          ORDER BY IsEnabled DESC, ModGroupId DESC
-                                                                      ) AS ranking
-                                                               FROM mod_items
-                                                           ) ranked
-                                                           WHERE ranking = 1
-                                                           """
-        )
+        var result = RedModExtensions.RetrieveWinningRedModsInLoadout(dbToUse, loadoutId)
         .Select(row => new SortItemLoadoutData<SortItemKey<string>>(
             new SortItemKey<string>(row.FolderName),
             row.IsEnabled,

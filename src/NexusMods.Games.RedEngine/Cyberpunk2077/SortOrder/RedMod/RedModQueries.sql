@@ -10,3 +10,40 @@ WHERE s.ParentSortOrder = sortOrderId
 ORDER BY s.SortIndex;
 
 
+-- Return loadout mod groups that contain a `mods/<folderName>/info.json` file for a given loadout
+CREATE MACRO redmod.LoadoutRedModGroups(db, loadoutId, gameLocationId) AS TABLE
+SELECT
+    regexp_extract(file.TargetPath.Item3, '^mods\/([^\/]+)\/info\.json$', 1, 'i') AS ModFolderName,
+    enabledState.IsEnabled AS IsEnabled,
+    groupItem.Name AS ModName,
+    groupItem.Id AS ModGroupId
+FROM mdb_LoadoutItemWithTargetPath(Db=>db) as file
+JOIN loadouts.LoadoutItemEnabledState(db, loadoutId) as enabledState ON file.Id = enabledState.Id
+JOIN mdb_LoadoutItemGroup(Db=>db) as groupItem ON file.Parent = groupItem.Id
+WHERE file.TargetPath.Item1 = loadoutId
+    AND file.TargetPath.Item2 = gameLocationId
+    AND ModFolderName != '';
+
+
+-- Return winning loadout red mod groups in case of multiple mods containing the same redmod folder
+-- TODO: Update ranking logic to use better criteria than most recently created ModGroupId
+CREATE MACRO redmod.WinningLoadoutRedModGroups(db, loadoutId, gameLocationId) AS TABLE
+SELECT
+    ModFolderName,
+    IsEnabled,
+    ModName,
+    ModGroupId
+FROM (
+         SELECT
+             matchingMods.*,
+             ROW_NUMBER() OVER (
+                            PARTITION BY matchingMods.ModFolderName
+                            ORDER BY matchingMods.IsEnabled DESC, matchingMods.ModGroupId DESC
+                        ) AS ranking
+         FROM redmod.LoadoutRedModGroups(db, loadoutId, gameLocationId) AS matchingMods
+     ) ranked
+WHERE ranking = 1;
+
+
+
+

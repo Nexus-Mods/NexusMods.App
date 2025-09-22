@@ -1,3 +1,4 @@
+using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Games.RedEngine.Cyberpunk2077.Models;
@@ -26,5 +27,13 @@ public static class RedModExtensions
                 row.SortIndex
             ))
             .ToList(); 
+    }
+    
+    public static IEnumerable<(string FolderName, bool IsEnabled, string ModName, EntityId ModGroupId)> RetrieveWinningRedModsInLoadout(IDb db, LoadoutId loadoutId)
+    {
+        return db.Connection.Query<(string FolderName, bool IsEnabled, string ModName, EntityId ModGroupId)>($"""
+                                                           SELECT * FROM redmod.WinningLoadoutRedModGroups({db.Connection}, {loadoutId}, {LocationId.Game.Value})
+                                                           """
+        );
     }
 }
