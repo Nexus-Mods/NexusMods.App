@@ -33,8 +33,8 @@
                                         <controls:StandardButton Command="{CompiledBinding CommandViewConflicts}"
                                                                  Text="View conflicts"
                                                                  Size="Small"
-                                                                 Type="Primary"
-                                                                 Fill="WeakAlt" />
+                                                                 Type="Tertiary"
+                                                                 Fill="Weak" />
                                     </DataTemplate>
                                 </controls:ComponentTemplate.DataTemplate>
                             </controls:ComponentTemplate>
