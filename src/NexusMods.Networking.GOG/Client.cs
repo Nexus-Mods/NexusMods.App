@@ -1,4 +1,5 @@
 using System.IO.Compression;
+using System.Net;
 using System.Net.Http.Json;
 using System.Runtime.InteropServices;
 using System.Text.Json;
@@ -16,6 +17,7 @@ using NexusMods.CrossPlatform.Process;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Networking.GOG.DTOs;
+using NexusMods.Networking.GOG.Exceptions;
 using NexusMods.Networking.GOG.Models;
 using NexusMods.Paths;
 using NexusMods.Sdk.IO;
@@ -84,7 +86,7 @@ internal class Client : IClient
         
         _pipeline = new ResiliencePipelineBuilder()
             .AddRetry(new RetryStrategyOptions())
-            .AddTimeout(TimeSpan.FromSeconds(10))
+            .AddTimeout(TimeSpan.FromSeconds(60))
             .Build();
     }
     
@@ -388,29 +390,33 @@ internal class Client : IClient
         await _connection.Excise(infos);
 
     }
+
+    /// <summary>
+    /// Gets the build details for a build, including all the depots
+    /// </summary>
+    public async Task<BuildDetails> GetBuildDetails(Build build, CancellationToken token)
+    {
+        using var result = await _client.GetAsync(build.Link, token);
+        if (!result.IsSuccessStatusCode)
+            throw new Exception($"Failed to get the manifest for {build.BuildId}. {result.StatusCode}");
+
+        await using var responseStream = await result.Content.ReadAsStreamAsync(token);
+        await using var deflateStream = new ZLibStream(responseStream, CompressionMode.Decompress);
+        var buildDetails = JsonSerializer.Deserialize<BuildDetails>(deflateStream, _jsonSerializerOptions);
+        return buildDetails!;
+    }
     
     /// <summary>
     /// Get the depot information for a build.
     /// </summary>
-    public async Task<DepotInfo> GetDepot(Build build, CancellationToken token)
+    public async Task<DepotInfo> GetDepot(BuildDetailsDepot depot, CancellationToken token)
     {
         return await _pipeline.ExecuteAsync(async token =>
             {
-                using var result = await _client.GetAsync(build.Link, token);
-                if (!result.IsSuccessStatusCode)
-                    throw new Exception($"Failed to get the manifest for {build.BuildId}. {result.StatusCode}");
-
-                await using var responseStream = await result.Content.ReadAsStreamAsync(token);
-                await using var deflateStream = new ZLibStream(responseStream, CompressionMode.Decompress);
-                //var streamReader = (new StreamReader(deflateStream)).ReadToEnd();
-                var buildDetails = JsonSerializer.Deserialize<BuildDetails>(deflateStream, _jsonSerializerOptions);
-
-                var firstDepot = buildDetails!.Depots.First();
-
-                var id = firstDepot.Manifest.ToString();
+                var id = depot.Manifest;
                 using var depotResult = await _client.GetAsync(new Uri("https://cdn.gog.com/content-system/v2/meta/" + id[..2] + "/" + id[2..4] + "/" + id), token);
                 if (!depotResult.IsSuccessStatusCode)
-                    throw new Exception($"Failed to get the depot for {build.BuildId}. {depotResult.StatusCode}");
+                    throw new Exception($"Failed to get the depot for {depot.ProductId}. {depotResult.StatusCode}");
 
                 await using var depotStream = await depotResult.Content.ReadAsStreamAsync(token);
                 await using var depotDeflateStream = new ZLibStream(depotStream, CompressionMode.Decompress);
@@ -431,7 +437,7 @@ internal class Client : IClient
     /// <summary>
     /// Given a depot, a build, and a path, return a stream to the file.
     /// </summary>
-    public async Task<Stream> GetFileStream(Build build, DepotInfo depotInfo, RelativePath path, CancellationToken token)
+    public async Task<Stream> GetFileStream(ProductId productId, DepotInfo depotInfo, RelativePath path, CancellationToken token)
     { 
         return await _pipeline.ExecuteAsync(async token =>
         {
@@ -439,7 +445,7 @@ internal class Client : IClient
             if (itemInfo == null)
                 throw new KeyNotFoundException($"The path {path} was not found in the depot.");
 
-            var secureUrl = await GetSecureUrl(build.ProductId, token);
+            var secureUrl = await GetSecureUrl(productId, token);
 
             if (itemInfo.SfcRef == null)
             {
@@ -489,6 +495,9 @@ internal class Client : IClient
             var request = await CreateMessage(new Uri($"https://content-system.gog.com/products/{productId.Value}/secure_link?generation=2&_version=2&path=/"), token);
 
             using var response = await _client.SendAsync(request, token);
+            if (response.StatusCode == HttpStatusCode.Forbidden)
+                throw new ForbiddenException("The user is not allowed to access the product.");
+            
             if (!response.IsSuccessStatusCode)
                 throw new Exception($"Failed to get the secure URLs for {productId}. {response.StatusCode}");
 

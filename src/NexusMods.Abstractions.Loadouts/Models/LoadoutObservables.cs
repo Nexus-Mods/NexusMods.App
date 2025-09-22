@@ -1,8 +1,5 @@
-
 using DynamicData;
-using DynamicData.Kernel;
 using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.Loadouts.Rows;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.HyperDuck;
 using NexusMods.MnemonicDB.Abstractions;
@@ -43,15 +40,23 @@ public partial class Loadout
     {
         return connection.Query<(EntityId GroupId, bool IsEnabled)>($"SELECT Id, IsEnabled FROM loadouts.ItemGroupEnabledState({connection}, {loadoutId})");
     }
-    
-    public static Query<(EntityId ItemId, bool IsEnabled)> LoadoutItemEnabledStateInLoadoutQuery(IConnection connection, LoadoutId loadoutId)
+
+    public static Query<(EntityId Id, bool IsEnabled)> LoadoutItemIsEnabledQuery(IDb db, LoadoutId loadoutId)
     {
-        return connection.Query<(EntityId ItemId, bool IsEnabled)>($"SELECT Id, IsEnabled FROM loadouts.LoadoutItemEnabledState({connection}, {loadoutId})");
+        return db.Connection.Query<(EntityId Id, bool IsEnabled)>($"SELECT * FROM loadouts.LoadoutItemIsEnabled({db}, {loadoutId})");
     }
-    
-    public static Query<(EntityId Id, LocationId Location, RelativePath Path, Hash Hash, Size Size, bool IsDeleted)> EnabledLoadoutItemWithTargetPathInLoadoutQuery(IDb db, LoadoutId loadoutId)
+
+    public static Query<(EntityId Id, bool IsEnabled, LocationId Location, RelativePath Path, Hash Hash, Size Size, bool IsDeleted)> LoadoutFileMetadataQuery(IDb db, LoadoutId loadoutId, bool onlyEnabled)
     {
-        return db.Connection.Query<(EntityId, LocationId, RelativePath, Hash, Size, bool)>(
-            $"SELECT Id, TargetPath.Item2, TargetPath.Item3, Hash, Size, IsDeleted FROM loadouts.EnabledFilesWithMetadata({db}, {loadoutId})");
+        return db.Connection.Query<(EntityId Id, bool IsEnabled, LocationId Location, RelativePath Path, Hash Hash, Size Size, bool IsDeleted)>(
+            $"SELECT Id, IsEnabled, TargetPath.Item2, TargetPath.Item3, Hash, Size, IsDeleted FROM loadouts.LoadoutFileMetadata({db}, {loadoutId}, {onlyEnabled})"
+        );
+    }
+
+    public static Query<(LocationId Location, RelativePath Path, List<(EntityId Id, bool IsEnabled, bool IsDeleted)>)> FileConflictsQuery(IDb db, LoadoutId loadoutId, bool removeDuplicates)
+    {
+        return db.Connection.Query<(LocationId Location, RelativePath Path, List<(EntityId Id, bool IsEnabled, bool IsDeleted)>)>(
+            $"SELECT * FROM loadouts.FileConflicts({db}, {loadoutId}, {removeDuplicates})"
+        );
     }
 }

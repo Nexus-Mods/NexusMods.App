@@ -33,41 +33,63 @@ FROM mdb_LoadoutItemGroup(Db=>db) group_table
 WHERE isColl_table.Id IS NULL
 AND group_table.Loadout = loadoutId;
 
--- Returns the enabled state of the items for a given loadout
--- does not include the collection groups or item groups
-CREATE MACRO loadouts.LoadoutItemEnabledState(db, loadoutId) AS TABLE
+-- Returns every leaf loadout item id and enabled state
+CREATE OR REPLACE MACRO loadouts.LoadoutItemIsEnabled (db, loadoutId) AS TABLE
 SELECT
-    item_table.Id AS Id,
-    item_table.Disabled = FALSE 
-        AND group_table.Disabled = FALSE
-        AND COALESCE(coll_table.Disabled, FALSE) = FALSE AS IsEnabled
-FROM mdb_LoadoutItem(Db=>db) item_table
-JOIN mdb_LoadoutItemGroup(Db=>db) group_table ON item_table.Parent = group_table.Id
-LEFT JOIN mdb_CollectionGroup(Db=>db) coll_table ON group_table.Parent = coll_table.Id
--- Exclude items that are groups themselves
-LEFT JOIN mdb_LoadoutItemGroup(Db=>db) isGroup_table ON item_table.Id = isGroup_table.Id
-WHERE isGroup_table.Id IS NULL
-AND item_table.Loadout = loadoutId;
+  loadout_item.Id,
+  loadout_item.Disabled = FALSE
+  AND loadout_group.Disabled = FALSE
+  AND COALESCE(installed_collection.Disabled, FALSE) = FALSE AS IsEnabled
+FROM
+  MDB_LOADOUTITEM (Db => db) loadout_item
+  JOIN MDB_LOADOUTITEMGROUP (Db => db) loadout_group ON loadout_item.Parent = loadout_group.Id
+  LEFT JOIN MDB_COLLECTIONGROUP (Db => db) installed_collection ON loadout_group.Parent = installed_collection.Id
+  LEFT JOIN MDB_LOADOUTITEMGROUP (Db => db) item_as_group ON loadout_item.Id = item_as_group.Id
+WHERE
+  item_as_group.Id IS NULL
+  AND loadout_item.Loadout = loadoutId;
 
+-- Returns every loadout item with target path and enabled state
+CREATE OR REPLACE MACRO loadouts.LoadoutPathItemIsEnabled (db, loadoutId, onlyEnabled) AS TABLE
+SELECT
+  item.Id,
+  item.IsEnabled,
+  item_with_path.TargetPath,
+FROM
+  loadouts.LoadoutItemIsEnabled (db, loadoutId) item
+  JOIN MDB_LOADOUTITEMWITHTARGETPATH (Db => db) item_with_path ON item.Id = item_with_path.Id
+WHERE
+  onlyEnabled = FALSE
+  OR item.IsEnabled = onlyEnabled;
 
---- Finds all the loadout items that have a target path that are enabled
-CREATE MACRO loadouts.EnabledLoadoutItemWithTargetPathInLoadout(db, loadoutId) AS TABLE
-SELECT item_table.Id, item_table.TargetPath
-FROM mdb_LoadoutItemWithTargetPath(Db=>db) item_table
-JOIN mdb_LoadoutItemGroup(Db=>db) group_table 
-    ON item_table.Parent = group_table.Id
-    AND group_table.Loadout = loadoutId
-    AND group_table.Disabled = FALSE
-LEFT JOIN mdb_CollectionGroup(Db=>db) coll_table 
-    ON group_table.Parent = coll_table.Id
-    AND coll_table.Loadout = loadoutId
-WHERE item_table.Loadout = loadoutId
-    AND (coll_table.Disabled IS NULL OR coll_table.Disabled = FALSE);
+-- Returns every loadout file with target path, hash, size, enabled and deleted state
+CREATE OR REPLACE MACRO loadouts.LoadoutFileMetadata (db, loadoutId, onlyEnabled) AS TABLE
+SELECT
+  item.Id,
+  item.IsEnabled,
+  item.TargetPath,
+  loadout_file.Hash,
+  loadout_file.Size,
+  deleted_file.Id IS NOT NULL as IsDeleted
+FROM
+  loadouts.LoadoutPathItemIsEnabled (db, loadoutId, onlyEnabled) item
+  LEFT JOIN MDB_LOADOUTFILE (Db => db) loadout_file ON item.Id = loadout_file.Id
+  LEFT JOIN MDB_DELETEDFILE (Db => db) deleted_file ON item.Id = deleted_file.Id;
 
--- Returns all the enabled targeted files, returning their id, path, hash, size and a flag
--- if the file is deleted or not
-CREATE MACRO loadouts.EnabledFilesWithMetadata(db, loadoutId) AS TABLE
-SELECT items.Id, items.TargetPath, file.Hash, file.Size, deleted.Id is NOT NULL as IsDeleted 
-FROM loadouts.EnabledLoadoutItemWithTargetPathInLoadout(db, loadoutId) items
-LEFT JOIN mdb_LoadoutFile(Db=>db) file ON file.Id = items.Id
-LEFT JOIN mdb_DeletedFile(Db=>db) deleted ON deleted.Id = items.Id;
+-- Returns all file conflict groups
+CREATE OR REPLACE MACRO loadouts.FileConflicts (db, loadoutId, removeDuplicates) AS TABLE
+SELECT
+  TargetPath.Item2,
+  TargetPath.Item3,
+  LIST(STRUCT_PACK(Id := Id, IsEnabled := IsEnabled, IsDeleted := IsDeleted)) AS Conflicts
+FROM
+  loadouts.LoadoutFileMetadata (db, loadoutId, FALSE)
+GROUP BY
+  TargetPath.Item2,
+  TargetPath.Item3
+HAVING
+  len(LIST(Id)) >= 2
+  AND (
+    NOT removeDuplicates
+    OR COUNT(DISTINCT Hash) > 1
+  );

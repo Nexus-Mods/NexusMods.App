@@ -1,5 +1,5 @@
-using DynamicData.Kernel;
 using FluentAssertions;
+using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Games.TestFramework;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
@@ -138,7 +138,7 @@ public class LoadoutQueriesTests(ITestOutputHelper helper) : ACyberpunkIsolatedG
 
         // Check if the item is enabled
         {
-            var itemStates = Loadout.LoadoutItemEnabledStateInLoadoutQuery(Connection, loadout.Id);
+            var itemStates = Loadout.LoadoutItemIsEnabledQuery(Connection.Db, loadout.Id);
             itemStates.Should().OnlyContain(x => x.IsEnabled);
         }
 
@@ -155,8 +155,8 @@ public class LoadoutQueriesTests(ITestOutputHelper helper) : ACyberpunkIsolatedG
 
         // Check the item states again
         {
-            var itemStates = Loadout.LoadoutItemEnabledStateInLoadoutQuery(Connection, loadout.Id);
-            var targetItem = itemStates.Should().ContainSingle(x => x.ItemId == item.Id).Subject;
+            var itemStates = Loadout.LoadoutItemIsEnabledQuery(Connection.Db, loadout.Id);
+            var targetItem = itemStates.Should().ContainSingle(x => x.Id == item.Id).Subject;
             targetItem.IsEnabled.Should().BeFalse();
         }
 
@@ -178,8 +178,8 @@ public class LoadoutQueriesTests(ITestOutputHelper helper) : ACyberpunkIsolatedG
 
         // Check the item states again
         {
-            var itemStates = Loadout.LoadoutItemEnabledStateInLoadoutQuery(Connection, loadout.Id);
-            var targetItem = itemStates.Should().ContainSingle(x => x.ItemId == item.Id).Subject;
+            var itemStates = Loadout.LoadoutItemIsEnabledQuery(Connection.Db, loadout.Id);
+            var targetItem = itemStates.Should().ContainSingle(x => x.Id == item.Id).Subject;
             targetItem.IsEnabled.Should().BeFalse(); // Item should still be disabled due to group being disabled
         }
 
@@ -201,10 +201,9 @@ public class LoadoutQueriesTests(ITestOutputHelper helper) : ACyberpunkIsolatedG
 
         // Check the item states again
         {
-            var itemStates = Loadout.LoadoutItemEnabledStateInLoadoutQuery(Connection, loadout.Id);
-            var targetItem = itemStates.Should().ContainSingle(x => x.ItemId == item.Id).Subject;
+            var itemStates = Loadout.LoadoutItemIsEnabledQuery(Connection.Db, loadout.Id);
+            var targetItem = itemStates.Should().ContainSingle(x => x.Id == item.Id).Subject;
             targetItem.IsEnabled.Should().BeFalse(); // Item should still be disabled due to collection being disabled
         }
     }
-    
 }

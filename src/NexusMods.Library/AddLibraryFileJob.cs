@@ -119,7 +119,7 @@ internal class AddLibraryFileJob : IJobDefinitionWithStart<AddLibraryFileJob, Li
     /// </summary>
     private async Task<bool> CheckIfArchiveAsync(AbsolutePath filePath)
     {
-        await using var stream = filePath.Open(FileMode.Open, FileAccess.Read, FileShare.None);
+        await using var stream = filePath.Open(FileMode.Open, FileAccess.Read, FileShare.Read);
         var canExtract = await FileExtractor.CanExtract(stream);
         return canExtract;
     }

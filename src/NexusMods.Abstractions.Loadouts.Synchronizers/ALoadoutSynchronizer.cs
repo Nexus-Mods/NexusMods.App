@@ -31,6 +31,8 @@ using NexusMods.Paths;
 using NexusMods.Sdk;
 using NexusMods.Sdk.FileStore;
 using NexusMods.Sdk.IO;
+using ReactiveUI;
+using OneOf;
 using Reloaded.Memory.Extensions;
 
 namespace NexusMods.Abstractions.Loadouts.Synchronizers;
@@ -44,6 +46,12 @@ using DiskState = Entities<DiskStateEntry.ReadOnly>;
 [PublicAPI]
 public class ALoadoutSynchronizer : ILoadoutSynchronizer
 {
+    /// <summary>
+    /// We'll limit backups to 2GB, for now we should never see much more than this
+    /// of modified game files. s
+    /// </summary>
+    private static Size MaximumBackupSize => Size.GB * 2;
+    
     private readonly ScopedAsyncLock _lock = new();
     private readonly IFileStore _fileStore;
 
@@ -193,13 +201,30 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         return newOverrides.Id;
     }
 
+    public Dictionary<GamePath, FileConflictGroup> GetFileConflicts(Loadout.ReadOnly loadout, bool removeDuplicates = true)
+    {
+        var db = loadout.Db;
+        var query = Loadout.FileConflictsQuery(db, loadout, removeDuplicates: removeDuplicates);
+        var result = query.ToDictionary(row => new GamePath(row.Location, row.Path), row =>
+        {
+            var items = row.Item3.Select(tuple =>
+            {
+                var (entityId, isEnabled, isDeleted) = tuple;
+                OneOf<LoadoutFile.ReadOnly, DeletedFile.ReadOnly> file = isDeleted ? DeletedFile.Load(db, entityId) : LoadoutFile.Load(db, entityId);
+                return new FileConflictItem(isEnabled, file);
+            }).ToArray();
 
+            return new FileConflictGroup(new GamePath(row.Location, row.Path), items);
+        });
+
+        return result;
+    }
 
     public Dictionary<GamePath, SyncNode> BuildSyncTree<T>(T latestDiskState, T previousDiskState, Loadout.ReadOnly loadout) where T : IEnumerable<PathPartPair>
     {
         var referenceDb = _fileHashService.Current;
         Dictionary<GamePath, SyncNode> syncTree = new();
-        
+
         // Add in the game state
         foreach (var gameFile in GetNormalGameState(referenceDb, loadout))
         {
@@ -224,8 +249,8 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 SourceItemType = LoadoutSourceItemType.Game,
             };
         }
-        
-        foreach (var loadoutItem in Loadout.EnabledLoadoutItemWithTargetPathInLoadoutQuery(loadout.Db, loadout.Id))
+
+        foreach (var loadoutItem in Loadout.LoadoutFileMetadataQuery(loadout.Db, loadout.Id, onlyEnabled: true))
         {
             if (loadoutItem.Path.Path == null)
                 throw new InvalidOperationException("Path is null");
@@ -553,6 +578,10 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
         loadout = await ReprocessOverrides(loadout);
 
+        job?.SetStatus("Archive Cleanup");
+        await _garbageCollectorRunner.RunAsync();
+        
+
         return loadout;
     }
 
@@ -682,10 +711,8 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                     break;
 
                 case Actions.IngestFromDisk:
-                    #if DEBUG
-                    if (syncTree.Any(n => n.Value.Actions.HasFlag(Actions.IngestFromDisk)))
+                    if (ApplicationConstants.IsDebug && syncTree.Any(n => n.Value.Actions.HasFlag(Actions.IngestFromDisk)))
                         throw new InvalidOperationException("Cannot ingest files from disk when not in a loadout context");
-                    #endif
                     break;
 
                 case Actions.DeleteFromDisk:
@@ -697,10 +724,8 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                     break;
 
                 case Actions.AddReifiedDelete:
-                    #if DEBUG
-                    if (syncTree.Any(n => n.Value.Actions.HasFlag(Actions.AddReifiedDelete)))
+                    if (ApplicationConstants.IsDebug && syncTree.Any(n => n.Value.Actions.HasFlag(Actions.AddReifiedDelete)))
                         throw new InvalidOperationException("Cannot add reified deletes when not in a loadout context");
-                    #endif
                     break;
 
                 case Actions.WarnOfUnableToExtract:
@@ -1087,7 +1112,6 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             .TryGetFirst(out var downloadA);
 
         if (!hasDownloadA) return Optional<bool>.None;
-;
         var hasDownloadB = b
             .GetThisAndParents()
             .OfTypeLoadoutItemGroup()
@@ -1301,6 +1325,10 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             }
         );
 
+        var totalSize = archivedFiles.Sum(static x => x.Size);
+        if (totalSize > MaximumBackupSize)
+            throw new Exception($"Cannot backup files, total size is {totalSize}, which is larger than the maximum of {MaximumBackupSize}");
+        
         // PERFORMANCE: We deduplicate above with the HaveFile call.
         await _fileStore.BackupFiles(archivedFiles, deduplicate: false);
 

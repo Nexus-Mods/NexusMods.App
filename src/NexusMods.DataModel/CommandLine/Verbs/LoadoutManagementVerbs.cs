@@ -44,11 +44,12 @@ public static class LoadoutManagementVerbs
             .AddVerb(() => BackupFiles)
             .AddVerb(() => ListGroupContents)
             .AddVerb(() => ListGroups)
+            .AddVerb(() => ListFileConflicts)
             .AddVerb(() => DeleteGroupItems)
             .AddVerb(() => CreateLoadout)
             .AddVerb(() => ListRevisions)
             .AddVerb(() => Revert);
-    
+
     [Verb("loadout version set", "Sets the game version for a loadout")]
     private static async Task<int> SetVersion([Injected] IRenderer renderer,
         [Option("l", "loadout", "Loadout to set the version for")] Loadout.ReadOnly loadout,
@@ -247,6 +248,20 @@ public static class LoadoutManagementVerbs
             .OfTypeLoadoutItemGroup()
             .Select(mod => (mod.AsLoadoutItem().Name, mod.Children.Count))
             .RenderTable(renderer, "Name", "Items");
+
+        return 0;
+    }
+
+    [Verb("loadout list-conflicts", "Lists file conflicts")]
+    private static async Task<int> ListFileConflicts(
+        [Injected] IRenderer renderer,
+        [Option("l", "loadout", "Loadout")] Loadout.ReadOnly loadout)
+    {
+        var synchronizer = loadout.InstallationInstance.GetGame().Synchronizer;
+        await synchronizer
+            .GetFileConflicts(loadout)
+            .Select(kv => (kv.Key, kv.Value.Items.Length))
+            .RenderTable(renderer, "Path", "Num Conflicts");
 
         return 0;
     }

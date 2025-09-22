@@ -7,6 +7,7 @@ using NexusMods.Abstractions.EpicGameStore.Values;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.GameLocators.Stores.GOG;
 using NexusMods.Abstractions.Games.FileHashes.Models;
+using NexusMods.Abstractions.GOG.DTOs;
 using NexusMods.Abstractions.GOG.Values;
 using NexusMods.Sdk.Hashes;
 using NexusMods.Abstractions.Steam.DTOs;
@@ -20,8 +21,10 @@ using NexusMods.MnemonicDB.Storage;
 using NexusMods.Networking.EpicGameStore.DTOs.EgData;
 using NexusMods.Paths;
 using NexusMods.Paths.Utilities;
+using NexusMods.Sdk;
 using NexusMods.Sdk.ProxyConsole;
 using YamlDotNet.Serialization;
+using Build = NexusMods.Networking.EpicGameStore.DTOs.EgData.Build;
 using BuildId = NexusMods.Abstractions.GOG.Values.BuildId;
 using Manifest = NexusMods.Abstractions.Steam.DTOs.Manifest;
 using OperatingSystem = NexusMods.Abstractions.Games.FileHashes.Values.OperatingSystem;
@@ -189,7 +192,7 @@ public class BuildHashesDb : IAsyncDisposable
                 }
                 catch (InvalidOperationException _)
                 {
-                    await _renderer.TextLine("Failed to find Steam manifest for {0} {1} {2}", gameName, osName, id);
+                    await _renderer.TextLine("Failed to anchor Steam manifest {0} to {1} for {2}", id, definition.Name, gameName);
                 }
             }
             
@@ -223,61 +226,69 @@ public class BuildHashesDb : IAsyncDisposable
         var manifestCount = 0;
         var pathCounts = 0;
         
-        foreach (var appData in appPath.EnumerateFiles(KnownExtensions.Json))
+        var manifests = await LoadAllFromFolder<Manifest>(path / "json" / "stores" / "steam" / "manifests");
+        
+        var apps = await LoadAllFromFolder<ProductInfo>(path / "json" / "stores" / "steam" / "apps");
+        
+        var depotsToAppId = (from app in apps.Values
+            from depot in app.Depots
+            select (depot.DepotId, app.AppId))
+            .ToLookup(t => t.DepotId, t => t.AppId);
+        
+
+        foreach (var (manifestName, manifestInfo) in manifests)
         {
-            try
-            {
-                await using var appStream = appData.Read();
-                var parsedAppData = (await JsonSerializer.DeserializeAsync<ProductInfo>(appStream, _jsonOptions))!;
+            var manifestPath = path / "json" / "stores" / "steam" / "manifests" / (manifestInfo.ManifestId + ".json");
+            await using var manifestStream = manifestPath.Read();
+            var parsedManifest = (await JsonSerializer.DeserializeAsync<Manifest>(manifestStream, _jsonOptions))!;
 
-                foreach (var depot in parsedAppData.Depots)
+            var pathIds = new List<EntityId>();
+            bool hasFailures = false;
+            foreach (var file in parsedManifest.Files)
+            {
+                // Steam manifests include folders, which we don't care about
+                if (file.Chunks.Length == 0)
+                    continue;
+
+                var refDbRelation = HashRelation.FindBySha1(refDb, file.Hash).FirstOrDefault();
+                if (!refDbRelation.IsValid())
                 {
-                    foreach (var (manifestName, manifestInfo) in depot.Manifests)
-                    {
-                        var manifestPath = path / "json" / "stores" / "steam" / "manifests" / (manifestInfo.ManifestId + ".json");
-                        await using var manifestStream = manifestPath.Read();
-                        var parsedManifest = (await JsonSerializer.DeserializeAsync<Manifest>(manifestStream, _jsonOptions))!;
-
-                        var pathIds = new List<EntityId>();
-                        foreach (var file in parsedManifest.Files)
-                        {
-                            // Steam manifests include folders, which we don't care about
-                            if (file.Chunks.Length == 0)
-                                continue;
-
-                            var refDbRelation = HashRelation.FindBySha1(refDb, file.Hash).FirstOrDefault();
-                            if (!refDbRelation.IsValid())
-                            {
-                                throw new Exception($"Sha1 not found in the reference database for path {file.Path} and hash {file.Hash}");
-                            }
-
-                            // The paths from steam can be in a format that isn't directly valid, so we sanitize them
-                            var sanitizedPath = RelativePath.FromUnsanitizedInput(file.Path.ToString());
-                            var relationId = EnsureHashPathRelation(tx, refDb, sanitizedPath,
-                                file.Hash
-                            );
-                            pathIds.Add(relationId);
-                            pathCounts++;
-                        }
-
-                        _ = new SteamManifest.New(tx)
-                        {
-                            AppId = parsedAppData.AppId,
-                            DepotId = depot.DepotId,
-                            ManifestId = manifestInfo.ManifestId,
-                            Name = manifestName,
-                            FilesIds = pathIds,
-                        };
-                        manifestCount++;
-                    }
+                    await _renderer.TextLine($"Skipping {0} due to missing SHA1 hashes", manifestInfo.ManifestId);
+                    hasFailures = true;
+                    break;
                 }
+
+                // The paths from steam can be in a format that isn't directly valid, so we sanitize them
+                var sanitizedPath = RelativePath.FromUnsanitizedInput(file.Path.ToString());
+                var relationId = EnsureHashPathRelation(tx, refDb, sanitizedPath,
+                    file.Hash
+                );
+                pathIds.Add(relationId);
+                pathCounts++;
             }
-            catch (Exception ex)
+
+            if (hasFailures)
             {
-                await _renderer.TextLine("Failed to import {0}: {1}", appData, ex.Message);
+                continue;
             }
             
+            if (!depotsToAppId[manifestInfo.DepotId].TryGetFirst(out var appId))
+            {
+                await _renderer.TextLine("Skipping Manifest {0} because it doesn't have a matching AppId", manifestInfo.ManifestId);
+                continue;
+            }
+
+            _ = new SteamManifest.New(tx)
+            {
+                AppId = appId,
+                DepotId = manifestInfo.DepotId,
+                ManifestId = manifestInfo.ManifestId,
+                Name = manifestName,
+                FilesIds = pathIds,
+            };
+            manifestCount++;
         }
+
         var result = await tx.Commit();
         RemapHashPaths(result);
         await _renderer.TextLine("Imported {0} manifests with {1} paths", manifestCount, pathCounts);
@@ -289,41 +300,69 @@ public class BuildHashesDb : IAsyncDisposable
         await _renderer.TextLine("Importing GOG data");
         
         var foundHashesPath = path / "json" / "stores" / "gog" / "found_hashes";
+        
+        var buildDetails = await LoadAllFromFolder<BuildDetails>(path / "json" / "stores" / "gog" / "build_details");
+        var foundHashes = await LoadAllFromFolder<Dictionary<string, Hash>>(path / "json" / "stores" / "gog" / "found_hashes");
+        var builds = await LoadAllFromFolder<NexusMods.Abstractions.GOG.DTOs.Build>(path / "json" / "stores" / "gog" / "builds");
 
         var refDb = _connection.Db;
         var pathCount = 0;
         var buildCount = 0;
-        foreach (var foundHashesFile in foundHashesPath.EnumerateFiles(KnownExtensions.Json))
+        
+        Dictionary<string, EntityId> manifestEntities = new();
+        Dictionary<string, List<EntityId>> pathEntities = new(); 
+        
+        // First we insert all the manifests, we do this by using the manifestId from the filename
+        // and inserting all the hash/path pairs
+        foreach (var (manifestId, files) in foundHashes)
+        {
+            List<EntityId> pathIds = new();
+            foreach (var (relPath, hash) in files)
+            {
+                var refDbRelation = HashRelation.FindByXxHash3(refDb, hash).FirstOrDefault();
+                if (!refDbRelation.IsValid())
+                {
+                    throw new Exception("Hash not found in the reference database for path " + relPath + " and hash " + hash);
+                }
+
+                var relationId = EnsureHashPathRelation(tx, refDb, relPath, hash);
+                pathIds.Add(relationId);
+                pathCount++;
+            }
+            pathEntities[manifestId] = pathIds;
+
+            var manifestEnt = new GogManifest.New(tx)
+            {
+                ManifestId = manifestId,
+                FilesIds = pathIds,
+            };
+            manifestEntities[manifestId] = manifestEnt.Id;
+        }
+        
+        foreach (var (buildId, build) in builds)
         {
             try
             {
-                await using var fs = foundHashesFile.Read();
-                var parsedFoundHashes = (await JsonSerializer.DeserializeAsync<Dictionary<string, Hash>>(fs, _jsonOptions))!;
+                var buildDetail = buildDetails[buildId];
+                var primaryDepot = buildDetail.Depots.First();
+                var primaryHashPaths = pathEntities[primaryDepot.Manifest];
 
-                var buildIdString = foundHashesFile.GetFileNameWithoutExtension();
-                var buildId = BuildId.From(ulong.Parse(buildIdString));
+                var depotIds = new List<EntityId>();
 
-
-                var pathIds = new List<EntityId>();
-
-                foreach (var (relativePath, hash) in parsedFoundHashes)
+                foreach (var depot in buildDetail.Depots)
                 {
-                    var refDbRelation = HashRelation.FindByXxHash3(refDb, Hash.From(hash.Value)).FirstOrDefault();
-                    if (!refDbRelation.IsValid())
+                    var depotEnt = new GogDepot.New(tx)
                     {
-                        throw new Exception("Hash not found in the reference database for path " + relativePath + " and hash " + hash);
-                    }
-
-                    var relationId = EnsureHashPathRelation(tx, refDb, relativePath, hash);
-                    pathIds.Add(relationId);
-                    pathCount++;
+                        ProductId = depot.ProductId,
+                        Size = depot.Size,
+                        CompressedSize = depot.CompressedSize,
+                        ManifestId = manifestEntities[depot.Manifest],
+                        Languages = depot.Languages,
+                    };
+                    depotIds.Add(depotEnt.Id);
                 }
-
-                var buildPath = path / "json" / "stores"/ "gog" / "builds" / (buildId + ".json");
-                await using var buildFs = buildPath.Read();
-                var parsedBuild = (await JsonSerializer.DeserializeAsync<NexusMods.Abstractions.GOG.DTOs.Build>(buildFs, _jsonOptions))!;
-
-                var os = parsedBuild.OS switch
+                
+                var os = build.OS switch
                 {
                     "windows" => OperatingSystem.Windows,
                     "osx" => OperatingSystem.MacOS,
@@ -333,17 +372,19 @@ public class BuildHashesDb : IAsyncDisposable
 
                 _ = new GogBuild.New(tx)
                 {
-                    BuildId = buildId,
-                    ProductId = parsedBuild.ProductId,
+                    BuildId = BuildId.From(ulong.Parse(buildId)),
+                    ProductId = build.ProductId,
+                    ManifestId = primaryDepot.Manifest,
                     OperatingSystem = os,
-                    VersionName = parsedBuild.VersionName,
-                    Public = parsedBuild.Public,
-                    FilesIds = pathIds,
+                    VersionName = build.VersionName,
+                    Public = build.Public,
+                    FilesIds = primaryHashPaths,
+                    DepotsIds = depotIds,
                 };
             }
             catch (Exception ex)
             {
-                await _renderer.Error(ex, "Failed to import {0}: {1}", foundHashesFile, ex.Message);
+                await _renderer.Error(ex, "Failed to import {0}: {1}", build.BuildId, ex.Message);
             }
             buildCount++;
         }
@@ -352,6 +393,26 @@ public class BuildHashesDb : IAsyncDisposable
         RemapHashPaths(result);
         
         await _renderer.TextLine("Imported {0} builds with {1} paths", buildCount, pathCount);
+    }
+
+    private async Task<Dictionary<string, T>> LoadAllFromFolder<T>(AbsolutePath folder)
+    {
+        var dict = new Dictionary<string, T>();
+        foreach (var file in folder.EnumerateFiles(KnownExtensions.Json))
+        {
+            try
+            {
+                await using var fs = file.Read();
+                var parsed = JsonSerializer.Deserialize<T>(fs, _jsonOptions)!;
+                dict[file.GetFileNameWithoutExtension()] = parsed;
+            }
+            catch (Exception ex)
+            {
+                await _renderer.Error(ex, "Failed to load {0}: {1}", file, ex.Message);
+            }
+        }
+
+        return dict;
     }
 
     private async Task AddEpicGameStoreData(AbsolutePath path)
