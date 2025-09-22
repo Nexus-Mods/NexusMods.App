@@ -1,3 +1,4 @@
+using DynamicData;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
@@ -36,4 +37,15 @@ public static class RedModExtensions
                                                            """
         );
     }
+
+    public static IObservable<IChangeSet<(string FolderName, int SortIndex, EntityId ItemId, bool? IsEnabled, string? ModName, EntityId? ModGroupId), SortItemKey<string>>> 
+        ObserveRedModSortOrder(IConnection connection, SortOrderId sortOrderId, LoadoutId loadoutId)
+    {
+        return connection.Query<(string FolderName, int SortIndex, EntityId ItemId, bool? IsEnabled, string? ModName, EntityId? ModGroupId)>($"""
+            SELECT * FROM redmod.RedModSortOrderWithLoadoutData({connection}, {sortOrderId.Value}, {loadoutId}, {LocationId.Game.Value})
+            """
+            )
+            .Observe(table => new SortItemKey<string>(table.FolderName));
+    }
+    
 }

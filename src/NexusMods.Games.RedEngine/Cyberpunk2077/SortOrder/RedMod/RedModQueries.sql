@@ -45,5 +45,16 @@ FROM (
 WHERE ranking = 1;
 
 
-
-
+-- Return the RedMod Sort Order for a given loadout including the loadout data
+CREATE MACRO redmod.RedModSortOrderWithLoadoutData(db, sortOrderId, loadoutId, gameLocationId) AS TABLE
+SELECT 
+    sortItem.RedModFolderName, 
+    sortItem.SortIndex,
+    sortItem.Id, 
+    loadoutData.IsEnabled, 
+    loadoutData.ModName, 
+    loadoutData.ModGroupId
+FROM mdb_RedModSortOrderItem(Db=>db) sortItem
+LEFT OUTER JOIN redmod.WinningLoadoutRedModGroups(db, loadoutId, gameLocationId) loadoutData on sortItem.RedModFolderName = loadoutData.ModFolderName
+WHERE sortItem.ParentSortOrder = sortOrderId
+ORDER BY sortItem.SortIndex;

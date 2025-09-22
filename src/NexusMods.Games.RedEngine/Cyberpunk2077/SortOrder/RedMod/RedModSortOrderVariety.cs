@@ -81,50 +81,9 @@ public class RedModSortOrderVariety : ASortOrderVariety<
         );
         var loadoutId = sortOrder.LoadoutId;
         
-        // TODO: Move query somewhere else
-        // TODO: deduplicate common query code
         // TODO: This is looking up loadout data in the entire lodaout, but if the parent entity is a collection, should we limit the lookup to just that collection?
-        var query = Connection.Query<(string FolderName, int SortIndex, EntityId ItemId, bool? IsEnabled, string? ModName, EntityId? ModGroupId)>($"""
-            WITH matchingMods AS (
-                SELECT
-                    regexp_extract(file.TargetPath.Item3, '^mods\/([^\/]+)\/info\.json$', 1, 'i') AS ModFolderName,
-                    enabledState.IsEnabled AS IsEnabled,
-                    groupItem.Name AS ModName,
-                    groupItem.Id AS ModGroupId
-                FROM mdb_LoadoutItemWithTargetPath(Db=>{Connection}) as file
-                JOIN loadouts.LoadoutItemEnabledState({Connection}, {loadoutId}) as enabledState ON file.Id = enabledState.Id
-                JOIN mdb_LoadoutItemGroup(Db=>{Connection}) as groupItem ON file.Parent = groupItem.Id
-                WHERE file.TargetPath.Item1 = {loadoutId}
-                    AND file.TargetPath.Item2 = {LocationId.Game.Value}
-                    AND ModFolderName != ''
-            ),
-            loadoutData AS (
-                SELECT
-                    ModFolderName,
-                    IsEnabled,
-                    ModName,
-                    ModGroupId
-                FROM (
-                    SELECT
-                        matchingMods.*,
-                        ROW_NUMBER() OVER (
-                            PARTITION BY matchingMods.ModFolderName
-                            ORDER BY matchingMods.IsEnabled DESC, matchingMods.ModGroupId DESC
-                        ) AS ranking
-                    FROM matchingMods
-                ) ranked
-                WHERE ranking = 1
-            )
-            
-            SELECT sortItem.RedModFolderName, sortItem.SortIndex, sortItem.Id, loadoutData.IsEnabled, loadoutData.ModName, loadoutData.ModGroupId
-            FROM mdb_RedModSortOrderItem(Db=>{Connection}) sortItem
-            LEFT OUTER JOIN loadoutData on sortItem.RedModFolderName = loadoutData.ModFolderName
-            WHERE sortItem.ParentSortOrder = {sortOrderId.Value}
-            ORDER BY sortItem.SortIndex
-            """
-        );
-
-        var result = query.Observe(table => new SortItemKey<string>(table.FolderName))
+        // TODO: Use better system to determine winner rather than modGroupId
+        var result = RedModExtensions.ObserveRedModSortOrder(Connection, sortOrderId, loadoutId)
             .Transform(row =>
                 {
                     var model = new RedModReactiveSortItem(
