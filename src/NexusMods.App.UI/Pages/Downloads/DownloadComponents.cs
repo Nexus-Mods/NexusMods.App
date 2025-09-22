@@ -265,11 +265,7 @@ public static class DownloadComponents
         public IReadOnlyBindableReactiveProperty<bool> CanResume { get; }
         public IReadOnlyBindableReactiveProperty<bool> CanCancel { get; }
 
-        private readonly IDisposable _activationDisposable;
-
         public StatusComponent(
-            IDownloadsService downloadsService,
-            DownloadInfo downloadInfo,
             Percent initialProgress,
             JobStatus initialStatus,
             Observable<Percent> progressObservable,
@@ -290,16 +286,6 @@ public static class DownloadComponents
             CanCancel = statusObservable
                 .Select(static status => status is JobStatus.Created or JobStatus.Running or JobStatus.Paused)
                 .ToBindableReactiveProperty(initialStatus is JobStatus.Created or JobStatus.Running or JobStatus.Paused);
-
-            // Set up command subscriptions
-            _activationDisposable = this.WhenActivated((downloadsService, downloadInfo), (self, state, disposables) =>
-            {
-                var (service, download) = state;
-
-                self.PauseCommand.Subscribe((service, download), static (_, state) => state.service.PauseDownload(state.download)).AddTo(disposables);
-                self.ResumeCommand.Subscribe((service, download), static (_, state) => state.service.ResumeDownload(state.download)).AddTo(disposables);
-                self.CancelCommand.Subscribe((service, download), static (_, state) => state.service.CancelDownload(state.download)).AddTo(disposables);
-            });
         }
 
         public int CompareTo(StatusComponent? other)
@@ -326,7 +312,7 @@ public static class DownloadComponents
             if (!_isDisposed)
             {
                 if (disposing)
-                    Disposable.Dispose(_activationDisposable, Progress, Status, PauseCommand, ResumeCommand, CancelCommand, CanPause, CanResume, CanCancel);
+                    Disposable.Dispose(Progress, Status, PauseCommand, ResumeCommand, CancelCommand, CanPause, CanResume, CanCancel);
 
                 _isDisposed = true;
             }

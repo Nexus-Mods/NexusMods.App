@@ -83,8 +83,6 @@ public sealed class DownloadsDataProvider(IServiceProvider serviceProvider) : ID
 
         // Add status component with embedded actions (Status column)
         model.Add(DownloadColumns.Status.ComponentKey, new DownloadComponents.StatusComponent(
-            downloadsService: _downloadsService,
-            downloadInfo: download,
             initialProgress: download.Progress,
             initialStatus: download.Status,
             progressObservable: download.WhenAnyValue(x => x.Progress).ToObservable(),
