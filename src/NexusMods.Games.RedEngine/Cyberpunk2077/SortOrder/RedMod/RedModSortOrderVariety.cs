@@ -154,7 +154,7 @@ public class RedModSortOrderVariety : ASortOrderVariety<
 
     public override IReadOnlyList<RedModReactiveSortItem> GetSortableItems(SortOrderId sortOrderId, IDb? db)
     {
-            var dbToUse = db ?? Connection.Db;
+        var dbToUse = db ?? Connection.Db;
         var sortOrder = Abstractions.Loadouts.SortOrder.Load(dbToUse, sortOrderId);
         var optionalCollection = sortOrder.ParentEntity.Match(
             loadoutId => DynamicData.Kernel.Optional<CollectionGroupId>.None,
@@ -243,18 +243,7 @@ public class RedModSortOrderVariety : ASortOrderVariety<
     /// <inheritdoc />
     protected override IReadOnlyList<SortItemData<SortItemKey<string>>> RetrieveSortOrder(SortOrderId sortOrderEntityId, IDb dbToUse)
     {
-        // TODO: Move query somewhere else
-        return dbToUse.Connection.Query<(string FolderName, int SortIndex, EntityId ItemId)>($"""
-            SELECT s.RedModFolderName, s.SortIndex, s.Id
-            FROM mdb_RedModSortOrderItem(Db=>{dbToUse}) s
-            WHERE s.ParentSortOrder = {sortOrderEntityId.Value}
-            ORDER BY s.SortIndex
-            """)
-            .Select(row => new SortItemData<SortItemKey<string>>(
-                new SortItemKey<string>(row.FolderName),
-                row.SortIndex
-            ))
-            .ToList();
+        return RedModExtensions.RetrieveRedModSortOrderItems(dbToUse, sortOrderEntityId);
     }
     
     /// <inheritdoc />

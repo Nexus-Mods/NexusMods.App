@@ -15,4 +15,16 @@ public static class RedModExtensions
             .OrderBy(si => si.AsSortOrderItem().SortIndex)
             .ToArray();
     }
+    
+    public static IReadOnlyList<SortItemData<SortItemKey<string>>> RetrieveRedModSortOrderItems(IDb db, SortOrderId sortOrderId)
+    {
+        return db.Connection.Query<(string FolderName, int SortIndex, EntityId ItemId)>($"""
+            SELECT * FROM redmod.RedModSortOrderItems({db}, {sortOrderId.Value})
+            """)
+            .Select(row => new SortItemData<SortItemKey<string>>(
+                new SortItemKey<string>(row.FolderName),
+                row.SortIndex
+            ))
+            .ToList(); 
+    }
 }
