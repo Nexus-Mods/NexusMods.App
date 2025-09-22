@@ -583,6 +583,11 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                     job?.SetStatus("Adding external changes");
                     ActionIngestFromDisk(syncTree, loadout, tx, ref overridesGroup);
                     break;
+                
+                case Actions.AdaptLoadout:
+                    job?.SetStatus("Updating loadout");
+                    await AdaptLoadout(syncTree, register, loadout, tx);
+                    break;
 
                 case Actions.DeleteFromDisk:
                     job?.SetStatus("Deleting files");
@@ -592,6 +597,11 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 case Actions.ExtractToDisk:
                     job?.SetStatus("Extracting files");
                     await ActionExtractToDisk(syncTree, register, tx, gameMetadataId, job);
+                    break;
+                
+                case Actions.WriteIntrinsic:
+                    job?.SetStatus("Writing intrinsic files");
+                    await ActionWriteIntrinsics(syncTree, register, tx, loadout, job);
                     break;
 
                 case Actions.AddReifiedDelete:
@@ -606,7 +616,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 case Actions.WarnOfConflict:
                     WarnOfConflict(syncTree);
                     break;
-
+                
                 default:
                     throw new InvalidOperationException($"Unknown action: {action}");
             }
@@ -636,6 +646,42 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         
 
         return loadout;
+    }
+
+    private async Task ActionWriteIntrinsics(Dictionary<GamePath, SyncNode> syncTree, IGameLocationsRegister register, IMainTransaction tx, Loadout.ReadOnly loadout, SynchronizeLoadoutJob? job)
+    {
+        foreach (var (path, node) in syncTree)
+        {
+            if (!node.Actions.HasFlag(Actions.WriteIntrinsic))
+                continue;
+            
+            if (node.SourceItemType != LoadoutSourceItemType.Intrinsic)
+                throw new Exception("WriteIntrinsic should only be called on intrinsic files");
+
+            var instance = IntrinsicFiles.First(f => f.Path == path);
+            var resolvedPath = register.GetResolvedPath(path);
+            await using var stream = resolvedPath.Create();
+            stream.SetLength(0);
+            await instance.Write(stream, loadout, syncTree);
+        }
+    }
+
+    private async Task AdaptLoadout(Dictionary<GamePath, SyncNode> syncTree, IGameLocationsRegister register, Loadout.ReadOnly loadout, IMainTransaction tx)
+    {
+        foreach (var (path, node) in syncTree)
+        {
+            if (!node.Actions.HasFlag(Actions.AdaptLoadout))
+                continue;
+            
+            if (node.SourceItemType != LoadoutSourceItemType.Intrinsic)
+                throw new Exception("AdaptLoadout should only be called on intrinsic files");
+
+            var instance = IntrinsicFiles.First(f => f.Path == path);
+            var resolvedPath = register.GetResolvedPath(path);
+            await using var stream = resolvedPath.Read();
+            await instance.Ingest(stream, loadout, syncTree, tx);
+        }
+
     }
 
     private async ValueTask<Loadout.ReadOnly> ReprocessOverrides(Loadout.ReadOnly loadout)
@@ -761,6 +807,11 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
                 case Actions.BackupFile:
                     await ActionBackupNewFiles(gameInstallation, syncTree);
+                    break;
+                
+                case Actions.AdaptLoadout:
+                    if (ApplicationConstants.IsDebug && syncTree.Any(n => n.Value.Actions.HasFlag(Actions.AdaptLoadout)))
+                        throw new InvalidOperationException("Cannot adapt loadout when not in a loadout context");
                     break;
 
                 case Actions.IngestFromDisk:

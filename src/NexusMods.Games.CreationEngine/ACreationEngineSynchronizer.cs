@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts.Sorting;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
@@ -15,7 +16,7 @@ public abstract class ACreationEngineSynchronizer : ALoadoutSynchronizer
     {
         _intrinsicFiles =
         [
-            new PluginsFile(game, provider.GetRequiredService<ISorter>()),
+            new PluginsFile(provider.GetRequiredService<ILogger<PluginsFile>>(), game, provider.GetRequiredService<ISorter>()),
         ];
     }
 

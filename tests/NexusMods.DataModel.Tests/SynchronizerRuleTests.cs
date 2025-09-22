@@ -30,6 +30,12 @@ public class SynchronizerRuleTests
         if (action.HasFlag(WarnOfUnableToExtract))
             signature.Should().NotHaveFlag(LoadoutArchived, "If we are warning of unable to extract, the loadout file should not be archived");
 
+        if (action.HasFlag(AdaptLoadout))
+            itemType.Should().Be(LoadoutSourceItemType.Intrinsic, "Only intrinsic files can adapt the loadouts");
+        
+        if (action.HasFlag(WriteIntrinsic))
+            itemType.Should().Be(LoadoutSourceItemType.Intrinsic, "Only intrinsic files can be written via WriteIntrinsic");
+
         if (itemType == LoadoutSourceItemType.Intrinsic)
         {
             action.Should().NotHaveFlag(ExtractToDisk, "Intrinsic files should not be extracted");

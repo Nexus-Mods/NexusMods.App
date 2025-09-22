@@ -262,7 +262,7 @@ public class ActionMapping
             ABB_XXX_II => AdaptLoadout,
             ABB_XXX_IG => IngestFromDisk,
             ABC_xxx_iL => WarnOfConflict,
-            ABC_xxx_iI => WarnOfConflict,
+            ABC_xxx_iI => WriteIntrinsic,
             ABC_xxx_iG => WarnOfConflict,
             ABC_Xxx_iL => WarnOfUnableToExtract,
             ABC_Xxx_iI => WriteIntrinsic,
