@@ -93,3 +93,15 @@ HAVING
     NOT removeDuplicates
     OR COUNT(DISTINCT Hash) > 1
   );
+
+-- Returns all file conflicts grouped by their parent
+CREATE OR REPLACE MACRO loadouts.FileConflictsByParentGroup (db, loadoutId, removeDuplicates) AS TABLE
+SELECT
+  loadout_item.Parent AS GroupId,
+  LIST(STRUCT_PACK(Id := "unnest".Id, LocationId := conflicts.Item2, TargetPath := conflicts.Item3)) as Items
+FROM
+  loadouts.FileConflicts (db, loadoutId, removeDuplicates) as conflicts
+  CROSS JOIN UNNEST(conflicts)
+  JOIN MDB_LOADOUTITEM (Db => db) loadout_item ON loadout_item.Id = "unnest".Id
+GROUP BY
+  loadout_item.Parent;
