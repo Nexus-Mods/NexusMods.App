@@ -75,7 +75,7 @@ public class SortOrderManager : ISortOrderManager, IDisposable
             .StartWithEmpty()
             .FilterImmutable(l => l.Installation.GameId == gameId)
             .ToObservable()
-            .SubscribeAwait(async (changes, token) =>
+            .SubscribeAwait(this, static async (changes, state, token) =>
                 {
                     foreach (var change in changes)
                     {
@@ -86,15 +86,15 @@ public class SortOrderManager : ISortOrderManager, IDisposable
                         {
                             case ChangeReason.Add:
                                 // Create the sort order for this loadout
-                                // TODO: GetOrCreateSortOrderFor or UpdateLoadOrders
                                 // Might not be needed if the other subscription to loadout items handles it
+                                await state.UpdateLoadOrders(loadoutId, token: token);
                                 break;
                             case ChangeReason.Update:
                                 // If loadout changes, we handle that in a separate subscription
                                 break;
                             case ChangeReason.Remove:
                                 // Remove the orphaned sort orders
-                                // TODO
+                                // TODO: Remove loadout sort order
                                 break;
                         }
                     }
@@ -107,26 +107,27 @@ public class SortOrderManager : ISortOrderManager, IDisposable
             .StartWithEmpty()
             .FilterImmutable(cg => cg.AsLoadoutItemGroup().AsLoadoutItem().Loadout.Installation.GameId == gameId)
             .ToObservable()
-            .SubscribeAwait(static async (changes, token) =>
+            .SubscribeAwait(this, static async (changes, state, token) =>
                 {
                     foreach (var change in changes)
                     {
                         var collectionGroupId = change.Current.CollectionGroupId;
-                        var parentEntity = OneOf<LoadoutId, CollectionGroupId>.FromT1(collectionGroupId);
+                        var loadoutId = change.Current.AsLoadoutItemGroup().AsLoadoutItem().LoadoutId;
+                        var parentEntity = Optional.Some(collectionGroupId);
 
                         switch (change.Reason)
                         {
                             case ChangeReason.Add:
                                 // Create the sort order for this collection group
-                                // TODO: GetOrCreateSortOrderFor or UpdateLoadOrders
                                 // Might not be needed if the other subscription to loadout items handles it
+                                await state.UpdateLoadOrders(loadoutId, parentEntity, token: token);
                                 break;
                             case ChangeReason.Update:
                                 // If collection group changes, we handle that in a separate subscription
                                 break;
                             case ChangeReason.Remove:
                                 // Remove the orphaned sort orders
-                                // TODO
+                                // TODO remove the collection sort order
                                 break;
                         }
                     }
@@ -135,13 +136,19 @@ public class SortOrderManager : ISortOrderManager, IDisposable
             .AddTo(compositeDisposable);
         
         // For each changed collection, reconcile the sort orders for that collection and for the parent loadout
-        // TODO: Move query somewhere else
         // TODO: listen to changes to Game files too
         // TODO: this only checks for changes to items in collections, external changes is not covered
         SortOrderQueries.TrackCollectionAndLoadoutChanges(_connection, gameId)
             .ToObservable()
             .SubscribeAwait(this, static async (changes, state, token) =>
             {
+                // Filter out updates where nothing changed
+                var filteredChanges = changes
+                    .Where(change => change.Reason != ChangeReason.Update || 
+                                     !change.Current.Equals(change.Previous.Value))
+                    .ToList();
+                if (filteredChanges.Count == 0) return;
+
                 var loadouts = new HashSet<LoadoutId>();
                 foreach (var change in changes)
                 {
@@ -153,9 +160,11 @@ public class SortOrderManager : ISortOrderManager, IDisposable
                     var loadoutId = change.Current.LoadoutId;
                     var collectionId = new CollectionGroupId(change.Key);
                 
+                    // Update collection sort order
                     await state.UpdateLoadOrders(loadoutId, collectionId, token: token);
                 }
                 
+                // Update loadout sort orders
                 foreach (var loadoutId in loadouts)
                 {
                     await state.UpdateLoadOrders(loadoutId, token: token);
