@@ -61,29 +61,40 @@ public class GeneralFileManagementTests (ITestOutputHelper helper) : ACyberpunkI
         var loadout = await CreateLoadout();
 
         Synchronizer.GetFileConflicts(Loadout.Load(Connection.Db, loadout)).Should().BeEmpty(because: "loadout is empty");
+        Synchronizer.GetFileConflictsByParentGroup(Loadout.Load(Connection.Db, loadout)).Should().BeEmpty(because: "loadout is empty");
 
         var dataPath = FileSystem.GetKnownPath(KnownPath.CurrentDirectory).Combine("Resources/TestMod.zip");
         var libraryArchive = await RegisterLocalArchive(dataPath);
 
         var collection1 = await CreateCollection(loadout, name: "Collection 1");
-        await LibraryService.InstallItem(libraryArchive.AsLibraryFile().AsLibraryItem(), loadout, parent: collection1.AsLoadoutItemGroup().LoadoutItemGroupId);
+        var item1Result = await LibraryService.InstallItem(libraryArchive.AsLibraryFile().AsLibraryItem(), loadout, parent: collection1.AsLoadoutItemGroup().LoadoutItemGroupId);
+        var item1Id = item1Result.LoadoutItemGroup!.Value.Id;
 
         Synchronizer.GetFileConflicts(Loadout.Load(Connection.Db, loadout)).Should().BeEmpty(because: "no conflicts yet");
+        Synchronizer.GetFileConflictsByParentGroup(Loadout.Load(Connection.Db, loadout)).Should().BeEmpty(because: "no conflicts yet");
 
         var collection2 = await CreateCollection(loadout, name: "Collection 2");
-        await LibraryService.InstallItem(libraryArchive.AsLibraryFile().AsLibraryItem(), loadout, parent: collection2.AsLoadoutItemGroup().LoadoutItemGroupId);
+        var item2Result = await LibraryService.InstallItem(libraryArchive.AsLibraryFile().AsLibraryItem(), loadout, parent: collection2.AsLoadoutItemGroup().LoadoutItemGroupId);
+        var item2Id = item2Result.LoadoutItemGroup!.Value.Id;
 
         Synchronizer.GetFileConflicts(Loadout.Load(Connection.Db, loadout), removeDuplicates: true).Should().BeEmpty(because: "all conflicts are duplicates");
+        Synchronizer.GetFileConflictsByParentGroup(Loadout.Load(Connection.Db, loadout), removeDuplicates: true).Should().BeEmpty(because: "all conflicts are duplicates");
 
         Synchronizer
             .GetFileConflicts(Loadout.Load(Connection.Db, loadout), removeDuplicates: false)
             .Should().HaveCount(2, because: "loadout has two file conflicts")
             .And.ContainKey(new GamePath(LocationId.Game, "bin/x64/ThisIsATestFile.txt"), because: "one of the conflicting files")
             .And.ContainKey(new GamePath(LocationId.Game, "bin/x64/And Another One.txt"), because: "one of the conflicting files")
-            .And.AllSatisfy(kv => kv.Value.Should()
+            .And.AllSatisfy(kv => kv.Value.Items.Should()
                 .AllSatisfy(value => kv.Key
-                    .Equals(value.AsT0.AsLoadoutItemWithTargetPath().TargetPath).Should().BeTrue(because: "file should be grouped correctly")
+                    .Equals(value.File.AsT0.AsLoadoutItemWithTargetPath().TargetPath).Should().BeTrue(because: "file should be grouped correctly")
                 )
             );
+
+        Synchronizer.GetFileConflictsByParentGroup(Loadout.Load(Connection.Db, loadout), removeDuplicates: false)
+            .Should().HaveCount(2, because: "two groups have conflicts")
+            .And.ContainKey(LoadoutItemGroup.Load(Connection.Db, item1Id))
+            .And.ContainKey(LoadoutItemGroup.Load(Connection.Db, item2Id))
+            .And.AllSatisfy(kv => kv.Value.Should().HaveCount(2, because: "group has two file conflicts"));
     }
 }
