@@ -2,6 +2,7 @@ using System.Security.Cryptography;
 using System.Text;
 using DynamicData.Kernel;
 using FluentAssertions;
+using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.Loadouts.Synchronizers.Rules;
 using NexusMods.Hashing.xxHash3;
 using Xunit.DependencyInjection;
@@ -84,6 +85,7 @@ public class SynchronizerRuleTests
             from loadout in new[] { Optional.None<Hash>(), Hash1, Hash2, Hash3 }
             from isIgnored in new[] { false, true }
             from archivedState in new Hash[][] { [], [Hash1], [Hash2], [Hash3], [Hash1, Hash2], [Hash1, Hash3], [Hash2, Hash3], [Hash1, Hash2, Hash3] }
+            from fileType in new LoadoutSourceItemType[] { LoadoutSourceItemType.Loadout , LoadoutSourceItemType.Intrinsic, LoadoutSourceItemType.Game}
             where disk.HasValue || prev.HasValue || loadout.HasValue
             let sig = SignatureBuilder.Build(
             
@@ -93,7 +95,8 @@ public class SynchronizerRuleTests
                 diskArchived: disk.HasValue && archivedState.Contains(disk.Value),
                 prevArchived: prev.HasValue && archivedState.Contains(prev.Value),
                 loadoutArchived: loadout.HasValue && archivedState.Contains(loadout.Value),
-                pathIsIgnored: isIgnored)
+                pathIsIgnored: isIgnored,
+                sourceItemType: fileType)
             let enumShorthand = MakeShorthand(sig, disk, prev, loadout)
             select (sig, enumShorthand, disk, prev, loadout);
 
@@ -111,8 +114,10 @@ public class SynchronizerRuleTests
                        (loadout.HasValue && sig.HasFlag(LoadoutArchived) ? "X" : "x");
         
         var ignored = sig.HasFlag(PathIsIgnored) ? "I" : "i";
+        var type = sig.HasFlag(IsGameFile) ? "G" : "L";
+        type = sig.HasFlag(IsIntrinsicFile) ? "I" : type;
         
-        return $"{diskCode}{prevCode}{loadoutCode}_{archived}_{ignored}";
+        return $"{diskCode}{prevCode}{loadoutCode}_{archived}_{ignored}{type}";
         
     }
 

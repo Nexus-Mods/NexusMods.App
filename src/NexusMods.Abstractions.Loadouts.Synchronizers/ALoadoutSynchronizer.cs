@@ -518,7 +518,8 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 diskArchived: item.HaveDisk && HaveArchive(item.Disk.Hash),
                 prevArchived: item.HavePrevious && HaveArchive(item.Previous.Hash),
                 loadoutArchived: item.Loadout.Hash != Hash.Zero && HaveArchive(item.Loadout.Hash),
-                pathIsIgnored: IsIgnoredBackupPath(path));
+                pathIsIgnored: IsIgnoredBackupPath(path),
+                item.SourceItemType);
 
 
             item.Signature = signature;

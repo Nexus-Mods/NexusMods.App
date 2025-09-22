@@ -1,374 +1,1110 @@
 ﻿/// <summary>
-/// Summary of all 92 possible signatures in a somewhat readable format
+/// Summary of all 276 possible signatures in a somewhat readable format
 /// </summary>
 public enum SignatureShorthand : ushort
 {
 	/// <summary>
 	/// LoadoutExists
 	/// </summary>
-	xxA_xxx_i = 0x0004,
+	xxA_xxx_iL = 0x0004,
+	/// <summary>
+	/// LoadoutExists, IsIntrinsicFile
+	/// </summary>
+	xxA_xxx_iI = 0x0804,
+	/// <summary>
+	/// LoadoutExists, IsGameFile
+	/// </summary>
+	xxA_xxx_iG = 0x0404,
 	/// <summary>
 	/// LoadoutExists, LoadoutArchived
 	/// </summary>
-	xxA_xxX_i = 0x0104,
+	xxA_xxX_iL = 0x0104,
+	/// <summary>
+	/// LoadoutExists, LoadoutArchived, IsIntrinsicFile
+	/// </summary>
+	xxA_xxX_iI = 0x0904,
+	/// <summary>
+	/// LoadoutExists, LoadoutArchived, IsGameFile
+	/// </summary>
+	xxA_xxX_iG = 0x0504,
 	/// <summary>
 	/// LoadoutExists, PathIsIgnored
 	/// </summary>
-	xxA_xxx_I = 0x0204,
+	xxA_xxx_IL = 0x0204,
+	/// <summary>
+	/// LoadoutExists, PathIsIgnored, IsIntrinsicFile
+	/// </summary>
+	xxA_xxx_II = 0x0A04,
+	/// <summary>
+	/// LoadoutExists, PathIsIgnored, IsGameFile
+	/// </summary>
+	xxA_xxx_IG = 0x0604,
 	/// <summary>
 	/// LoadoutExists, LoadoutArchived, PathIsIgnored
 	/// </summary>
-	xxA_xxX_I = 0x0304,
+	xxA_xxX_IL = 0x0304,
+	/// <summary>
+	/// LoadoutExists, LoadoutArchived, PathIsIgnored, IsIntrinsicFile
+	/// </summary>
+	xxA_xxX_II = 0x0B04,
+	/// <summary>
+	/// LoadoutExists, LoadoutArchived, PathIsIgnored, IsGameFile
+	/// </summary>
+	xxA_xxX_IG = 0x0704,
 	/// <summary>
 	/// PrevExists
 	/// </summary>
-	xAx_xxx_i = 0x0002,
+	xAx_xxx_iL = 0x0002,
+	/// <summary>
+	/// PrevExists, IsIntrinsicFile
+	/// </summary>
+	xAx_xxx_iI = 0x0802,
+	/// <summary>
+	/// PrevExists, IsGameFile
+	/// </summary>
+	xAx_xxx_iG = 0x0402,
 	/// <summary>
 	/// PrevExists, PrevArchived
 	/// </summary>
-	xAx_xXx_i = 0x0082,
+	xAx_xXx_iL = 0x0082,
+	/// <summary>
+	/// PrevExists, PrevArchived, IsIntrinsicFile
+	/// </summary>
+	xAx_xXx_iI = 0x0882,
+	/// <summary>
+	/// PrevExists, PrevArchived, IsGameFile
+	/// </summary>
+	xAx_xXx_iG = 0x0482,
 	/// <summary>
 	/// PrevExists, PathIsIgnored
 	/// </summary>
-	xAx_xxx_I = 0x0202,
+	xAx_xxx_IL = 0x0202,
+	/// <summary>
+	/// PrevExists, PathIsIgnored, IsIntrinsicFile
+	/// </summary>
+	xAx_xxx_II = 0x0A02,
+	/// <summary>
+	/// PrevExists, PathIsIgnored, IsGameFile
+	/// </summary>
+	xAx_xxx_IG = 0x0602,
 	/// <summary>
 	/// PrevExists, PrevArchived, PathIsIgnored
 	/// </summary>
-	xAx_xXx_I = 0x0282,
+	xAx_xXx_IL = 0x0282,
+	/// <summary>
+	/// PrevExists, PrevArchived, PathIsIgnored, IsIntrinsicFile
+	/// </summary>
+	xAx_xXx_II = 0x0A82,
+	/// <summary>
+	/// PrevExists, PrevArchived, PathIsIgnored, IsGameFile
+	/// </summary>
+	xAx_xXx_IG = 0x0682,
 	/// <summary>
 	/// PrevExists, LoadoutExists, PrevEqualsLoadout
 	/// </summary>
-	xAA_xxx_i = 0x0016,
+	xAA_xxx_iL = 0x0016,
+	/// <summary>
+	/// PrevExists, LoadoutExists, PrevEqualsLoadout, IsIntrinsicFile
+	/// </summary>
+	xAA_xxx_iI = 0x0816,
+	/// <summary>
+	/// PrevExists, LoadoutExists, PrevEqualsLoadout, IsGameFile
+	/// </summary>
+	xAA_xxx_iG = 0x0416,
 	/// <summary>
 	/// PrevExists, LoadoutExists, PrevEqualsLoadout, PrevArchived, LoadoutArchived
 	/// </summary>
-	xAA_xXX_i = 0x0196,
+	xAA_xXX_iL = 0x0196,
+	/// <summary>
+	/// PrevExists, LoadoutExists, PrevEqualsLoadout, PrevArchived, LoadoutArchived, IsIntrinsicFile
+	/// </summary>
+	xAA_xXX_iI = 0x0996,
+	/// <summary>
+	/// PrevExists, LoadoutExists, PrevEqualsLoadout, PrevArchived, LoadoutArchived, IsGameFile
+	/// </summary>
+	xAA_xXX_iG = 0x0596,
 	/// <summary>
 	/// PrevExists, LoadoutExists, PrevEqualsLoadout, PathIsIgnored
 	/// </summary>
-	xAA_xxx_I = 0x0216,
+	xAA_xxx_IL = 0x0216,
+	/// <summary>
+	/// PrevExists, LoadoutExists, PrevEqualsLoadout, PathIsIgnored, IsIntrinsicFile
+	/// </summary>
+	xAA_xxx_II = 0x0A16,
+	/// <summary>
+	/// PrevExists, LoadoutExists, PrevEqualsLoadout, PathIsIgnored, IsGameFile
+	/// </summary>
+	xAA_xxx_IG = 0x0616,
 	/// <summary>
 	/// PrevExists, LoadoutExists, PrevEqualsLoadout, PrevArchived, LoadoutArchived, PathIsIgnored
 	/// </summary>
-	xAA_xXX_I = 0x0396,
+	xAA_xXX_IL = 0x0396,
+	/// <summary>
+	/// PrevExists, LoadoutExists, PrevEqualsLoadout, PrevArchived, LoadoutArchived, PathIsIgnored, IsIntrinsicFile
+	/// </summary>
+	xAA_xXX_II = 0x0B96,
+	/// <summary>
+	/// PrevExists, LoadoutExists, PrevEqualsLoadout, PrevArchived, LoadoutArchived, PathIsIgnored, IsGameFile
+	/// </summary>
+	xAA_xXX_IG = 0x0796,
 	/// <summary>
 	/// PrevExists, LoadoutExists
 	/// </summary>
-	xAB_xxx_i = 0x0006,
+	xAB_xxx_iL = 0x0006,
+	/// <summary>
+	/// PrevExists, LoadoutExists, IsIntrinsicFile
+	/// </summary>
+	xAB_xxx_iI = 0x0806,
+	/// <summary>
+	/// PrevExists, LoadoutExists, IsGameFile
+	/// </summary>
+	xAB_xxx_iG = 0x0406,
 	/// <summary>
 	/// PrevExists, LoadoutExists, PrevArchived
 	/// </summary>
-	xAB_xXx_i = 0x0086,
+	xAB_xXx_iL = 0x0086,
+	/// <summary>
+	/// PrevExists, LoadoutExists, PrevArchived, IsIntrinsicFile
+	/// </summary>
+	xAB_xXx_iI = 0x0886,
+	/// <summary>
+	/// PrevExists, LoadoutExists, PrevArchived, IsGameFile
+	/// </summary>
+	xAB_xXx_iG = 0x0486,
 	/// <summary>
 	/// PrevExists, LoadoutExists, LoadoutArchived
 	/// </summary>
-	xAB_xxX_i = 0x0106,
+	xAB_xxX_iL = 0x0106,
+	/// <summary>
+	/// PrevExists, LoadoutExists, LoadoutArchived, IsIntrinsicFile
+	/// </summary>
+	xAB_xxX_iI = 0x0906,
+	/// <summary>
+	/// PrevExists, LoadoutExists, LoadoutArchived, IsGameFile
+	/// </summary>
+	xAB_xxX_iG = 0x0506,
 	/// <summary>
 	/// PrevExists, LoadoutExists, PrevArchived, LoadoutArchived
 	/// </summary>
-	xAB_xXX_i = 0x0186,
+	xAB_xXX_iL = 0x0186,
+	/// <summary>
+	/// PrevExists, LoadoutExists, PrevArchived, LoadoutArchived, IsIntrinsicFile
+	/// </summary>
+	xAB_xXX_iI = 0x0986,
+	/// <summary>
+	/// PrevExists, LoadoutExists, PrevArchived, LoadoutArchived, IsGameFile
+	/// </summary>
+	xAB_xXX_iG = 0x0586,
 	/// <summary>
 	/// PrevExists, LoadoutExists, PathIsIgnored
 	/// </summary>
-	xAB_xxx_I = 0x0206,
+	xAB_xxx_IL = 0x0206,
+	/// <summary>
+	/// PrevExists, LoadoutExists, PathIsIgnored, IsIntrinsicFile
+	/// </summary>
+	xAB_xxx_II = 0x0A06,
+	/// <summary>
+	/// PrevExists, LoadoutExists, PathIsIgnored, IsGameFile
+	/// </summary>
+	xAB_xxx_IG = 0x0606,
 	/// <summary>
 	/// PrevExists, LoadoutExists, PrevArchived, PathIsIgnored
 	/// </summary>
-	xAB_xXx_I = 0x0286,
+	xAB_xXx_IL = 0x0286,
+	/// <summary>
+	/// PrevExists, LoadoutExists, PrevArchived, PathIsIgnored, IsIntrinsicFile
+	/// </summary>
+	xAB_xXx_II = 0x0A86,
+	/// <summary>
+	/// PrevExists, LoadoutExists, PrevArchived, PathIsIgnored, IsGameFile
+	/// </summary>
+	xAB_xXx_IG = 0x0686,
 	/// <summary>
 	/// PrevExists, LoadoutExists, LoadoutArchived, PathIsIgnored
 	/// </summary>
-	xAB_xxX_I = 0x0306,
+	xAB_xxX_IL = 0x0306,
+	/// <summary>
+	/// PrevExists, LoadoutExists, LoadoutArchived, PathIsIgnored, IsIntrinsicFile
+	/// </summary>
+	xAB_xxX_II = 0x0B06,
+	/// <summary>
+	/// PrevExists, LoadoutExists, LoadoutArchived, PathIsIgnored, IsGameFile
+	/// </summary>
+	xAB_xxX_IG = 0x0706,
 	/// <summary>
 	/// PrevExists, LoadoutExists, PrevArchived, LoadoutArchived, PathIsIgnored
 	/// </summary>
-	xAB_xXX_I = 0x0386,
+	xAB_xXX_IL = 0x0386,
+	/// <summary>
+	/// PrevExists, LoadoutExists, PrevArchived, LoadoutArchived, PathIsIgnored, IsIntrinsicFile
+	/// </summary>
+	xAB_xXX_II = 0x0B86,
+	/// <summary>
+	/// PrevExists, LoadoutExists, PrevArchived, LoadoutArchived, PathIsIgnored, IsGameFile
+	/// </summary>
+	xAB_xXX_IG = 0x0786,
 	/// <summary>
 	/// DiskExists
 	/// </summary>
-	Axx_xxx_i = 0x0001,
+	Axx_xxx_iL = 0x0001,
+	/// <summary>
+	/// DiskExists, IsIntrinsicFile
+	/// </summary>
+	Axx_xxx_iI = 0x0801,
+	/// <summary>
+	/// DiskExists, IsGameFile
+	/// </summary>
+	Axx_xxx_iG = 0x0401,
 	/// <summary>
 	/// DiskExists, DiskArchived
 	/// </summary>
-	Axx_Xxx_i = 0x0041,
+	Axx_Xxx_iL = 0x0041,
+	/// <summary>
+	/// DiskExists, DiskArchived, IsIntrinsicFile
+	/// </summary>
+	Axx_Xxx_iI = 0x0841,
+	/// <summary>
+	/// DiskExists, DiskArchived, IsGameFile
+	/// </summary>
+	Axx_Xxx_iG = 0x0441,
 	/// <summary>
 	/// DiskExists, PathIsIgnored
 	/// </summary>
-	Axx_xxx_I = 0x0201,
+	Axx_xxx_IL = 0x0201,
+	/// <summary>
+	/// DiskExists, PathIsIgnored, IsIntrinsicFile
+	/// </summary>
+	Axx_xxx_II = 0x0A01,
+	/// <summary>
+	/// DiskExists, PathIsIgnored, IsGameFile
+	/// </summary>
+	Axx_xxx_IG = 0x0601,
 	/// <summary>
 	/// DiskExists, DiskArchived, PathIsIgnored
 	/// </summary>
-	Axx_Xxx_I = 0x0241,
+	Axx_Xxx_IL = 0x0241,
+	/// <summary>
+	/// DiskExists, DiskArchived, PathIsIgnored, IsIntrinsicFile
+	/// </summary>
+	Axx_Xxx_II = 0x0A41,
+	/// <summary>
+	/// DiskExists, DiskArchived, PathIsIgnored, IsGameFile
+	/// </summary>
+	Axx_Xxx_IG = 0x0641,
 	/// <summary>
 	/// DiskExists, LoadoutExists, DiskEqualsLoadout
 	/// </summary>
-	AxA_xxx_i = 0x0025,
+	AxA_xxx_iL = 0x0025,
+	/// <summary>
+	/// DiskExists, LoadoutExists, DiskEqualsLoadout, IsIntrinsicFile
+	/// </summary>
+	AxA_xxx_iI = 0x0825,
+	/// <summary>
+	/// DiskExists, LoadoutExists, DiskEqualsLoadout, IsGameFile
+	/// </summary>
+	AxA_xxx_iG = 0x0425,
 	/// <summary>
 	/// DiskExists, LoadoutExists, DiskEqualsLoadout, DiskArchived, LoadoutArchived
 	/// </summary>
-	AxA_XxX_i = 0x0165,
+	AxA_XxX_iL = 0x0165,
+	/// <summary>
+	/// DiskExists, LoadoutExists, DiskEqualsLoadout, DiskArchived, LoadoutArchived, IsIntrinsicFile
+	/// </summary>
+	AxA_XxX_iI = 0x0965,
+	/// <summary>
+	/// DiskExists, LoadoutExists, DiskEqualsLoadout, DiskArchived, LoadoutArchived, IsGameFile
+	/// </summary>
+	AxA_XxX_iG = 0x0565,
 	/// <summary>
 	/// DiskExists, LoadoutExists, DiskEqualsLoadout, PathIsIgnored
 	/// </summary>
-	AxA_xxx_I = 0x0225,
+	AxA_xxx_IL = 0x0225,
+	/// <summary>
+	/// DiskExists, LoadoutExists, DiskEqualsLoadout, PathIsIgnored, IsIntrinsicFile
+	/// </summary>
+	AxA_xxx_II = 0x0A25,
+	/// <summary>
+	/// DiskExists, LoadoutExists, DiskEqualsLoadout, PathIsIgnored, IsGameFile
+	/// </summary>
+	AxA_xxx_IG = 0x0625,
 	/// <summary>
 	/// DiskExists, LoadoutExists, DiskEqualsLoadout, DiskArchived, LoadoutArchived, PathIsIgnored
 	/// </summary>
-	AxA_XxX_I = 0x0365,
+	AxA_XxX_IL = 0x0365,
+	/// <summary>
+	/// DiskExists, LoadoutExists, DiskEqualsLoadout, DiskArchived, LoadoutArchived, PathIsIgnored, IsIntrinsicFile
+	/// </summary>
+	AxA_XxX_II = 0x0B65,
+	/// <summary>
+	/// DiskExists, LoadoutExists, DiskEqualsLoadout, DiskArchived, LoadoutArchived, PathIsIgnored, IsGameFile
+	/// </summary>
+	AxA_XxX_IG = 0x0765,
 	/// <summary>
 	/// DiskExists, LoadoutExists
 	/// </summary>
-	AxB_xxx_i = 0x0005,
+	AxB_xxx_iL = 0x0005,
+	/// <summary>
+	/// DiskExists, LoadoutExists, IsIntrinsicFile
+	/// </summary>
+	AxB_xxx_iI = 0x0805,
+	/// <summary>
+	/// DiskExists, LoadoutExists, IsGameFile
+	/// </summary>
+	AxB_xxx_iG = 0x0405,
 	/// <summary>
 	/// DiskExists, LoadoutExists, DiskArchived
 	/// </summary>
-	AxB_Xxx_i = 0x0045,
+	AxB_Xxx_iL = 0x0045,
+	/// <summary>
+	/// DiskExists, LoadoutExists, DiskArchived, IsIntrinsicFile
+	/// </summary>
+	AxB_Xxx_iI = 0x0845,
+	/// <summary>
+	/// DiskExists, LoadoutExists, DiskArchived, IsGameFile
+	/// </summary>
+	AxB_Xxx_iG = 0x0445,
 	/// <summary>
 	/// DiskExists, LoadoutExists, LoadoutArchived
 	/// </summary>
-	AxB_xxX_i = 0x0105,
+	AxB_xxX_iL = 0x0105,
+	/// <summary>
+	/// DiskExists, LoadoutExists, LoadoutArchived, IsIntrinsicFile
+	/// </summary>
+	AxB_xxX_iI = 0x0905,
+	/// <summary>
+	/// DiskExists, LoadoutExists, LoadoutArchived, IsGameFile
+	/// </summary>
+	AxB_xxX_iG = 0x0505,
 	/// <summary>
 	/// DiskExists, LoadoutExists, DiskArchived, LoadoutArchived
 	/// </summary>
-	AxB_XxX_i = 0x0145,
+	AxB_XxX_iL = 0x0145,
+	/// <summary>
+	/// DiskExists, LoadoutExists, DiskArchived, LoadoutArchived, IsIntrinsicFile
+	/// </summary>
+	AxB_XxX_iI = 0x0945,
+	/// <summary>
+	/// DiskExists, LoadoutExists, DiskArchived, LoadoutArchived, IsGameFile
+	/// </summary>
+	AxB_XxX_iG = 0x0545,
 	/// <summary>
 	/// DiskExists, LoadoutExists, PathIsIgnored
 	/// </summary>
-	AxB_xxx_I = 0x0205,
+	AxB_xxx_IL = 0x0205,
+	/// <summary>
+	/// DiskExists, LoadoutExists, PathIsIgnored, IsIntrinsicFile
+	/// </summary>
+	AxB_xxx_II = 0x0A05,
+	/// <summary>
+	/// DiskExists, LoadoutExists, PathIsIgnored, IsGameFile
+	/// </summary>
+	AxB_xxx_IG = 0x0605,
 	/// <summary>
 	/// DiskExists, LoadoutExists, DiskArchived, PathIsIgnored
 	/// </summary>
-	AxB_Xxx_I = 0x0245,
+	AxB_Xxx_IL = 0x0245,
+	/// <summary>
+	/// DiskExists, LoadoutExists, DiskArchived, PathIsIgnored, IsIntrinsicFile
+	/// </summary>
+	AxB_Xxx_II = 0x0A45,
+	/// <summary>
+	/// DiskExists, LoadoutExists, DiskArchived, PathIsIgnored, IsGameFile
+	/// </summary>
+	AxB_Xxx_IG = 0x0645,
 	/// <summary>
 	/// DiskExists, LoadoutExists, LoadoutArchived, PathIsIgnored
 	/// </summary>
-	AxB_xxX_I = 0x0305,
+	AxB_xxX_IL = 0x0305,
+	/// <summary>
+	/// DiskExists, LoadoutExists, LoadoutArchived, PathIsIgnored, IsIntrinsicFile
+	/// </summary>
+	AxB_xxX_II = 0x0B05,
+	/// <summary>
+	/// DiskExists, LoadoutExists, LoadoutArchived, PathIsIgnored, IsGameFile
+	/// </summary>
+	AxB_xxX_IG = 0x0705,
 	/// <summary>
 	/// DiskExists, LoadoutExists, DiskArchived, LoadoutArchived, PathIsIgnored
 	/// </summary>
-	AxB_XxX_I = 0x0345,
+	AxB_XxX_IL = 0x0345,
+	/// <summary>
+	/// DiskExists, LoadoutExists, DiskArchived, LoadoutArchived, PathIsIgnored, IsIntrinsicFile
+	/// </summary>
+	AxB_XxX_II = 0x0B45,
+	/// <summary>
+	/// DiskExists, LoadoutExists, DiskArchived, LoadoutArchived, PathIsIgnored, IsGameFile
+	/// </summary>
+	AxB_XxX_IG = 0x0745,
 	/// <summary>
 	/// DiskExists, PrevExists, DiskEqualsPrev
 	/// </summary>
-	AAx_xxx_i = 0x000B,
+	AAx_xxx_iL = 0x000B,
+	/// <summary>
+	/// DiskExists, PrevExists, DiskEqualsPrev, IsIntrinsicFile
+	/// </summary>
+	AAx_xxx_iI = 0x080B,
+	/// <summary>
+	/// DiskExists, PrevExists, DiskEqualsPrev, IsGameFile
+	/// </summary>
+	AAx_xxx_iG = 0x040B,
 	/// <summary>
 	/// DiskExists, PrevExists, DiskEqualsPrev, DiskArchived, PrevArchived
 	/// </summary>
-	AAx_XXx_i = 0x00CB,
+	AAx_XXx_iL = 0x00CB,
+	/// <summary>
+	/// DiskExists, PrevExists, DiskEqualsPrev, DiskArchived, PrevArchived, IsIntrinsicFile
+	/// </summary>
+	AAx_XXx_iI = 0x08CB,
+	/// <summary>
+	/// DiskExists, PrevExists, DiskEqualsPrev, DiskArchived, PrevArchived, IsGameFile
+	/// </summary>
+	AAx_XXx_iG = 0x04CB,
 	/// <summary>
 	/// DiskExists, PrevExists, DiskEqualsPrev, PathIsIgnored
 	/// </summary>
-	AAx_xxx_I = 0x020B,
+	AAx_xxx_IL = 0x020B,
+	/// <summary>
+	/// DiskExists, PrevExists, DiskEqualsPrev, PathIsIgnored, IsIntrinsicFile
+	/// </summary>
+	AAx_xxx_II = 0x0A0B,
+	/// <summary>
+	/// DiskExists, PrevExists, DiskEqualsPrev, PathIsIgnored, IsGameFile
+	/// </summary>
+	AAx_xxx_IG = 0x060B,
 	/// <summary>
 	/// DiskExists, PrevExists, DiskEqualsPrev, DiskArchived, PrevArchived, PathIsIgnored
 	/// </summary>
-	AAx_XXx_I = 0x02CB,
+	AAx_XXx_IL = 0x02CB,
+	/// <summary>
+	/// DiskExists, PrevExists, DiskEqualsPrev, DiskArchived, PrevArchived, PathIsIgnored, IsIntrinsicFile
+	/// </summary>
+	AAx_XXx_II = 0x0ACB,
+	/// <summary>
+	/// DiskExists, PrevExists, DiskEqualsPrev, DiskArchived, PrevArchived, PathIsIgnored, IsGameFile
+	/// </summary>
+	AAx_XXx_IG = 0x06CB,
 	/// <summary>
 	/// DiskExists, PrevExists, LoadoutExists, DiskEqualsPrev, PrevEqualsLoadout, DiskEqualsLoadout
 	/// </summary>
-	AAA_xxx_i = 0x003F,
+	AAA_xxx_iL = 0x003F,
+	/// <summary>
+	/// DiskExists, PrevExists, LoadoutExists, DiskEqualsPrev, PrevEqualsLoadout, DiskEqualsLoadout, IsIntrinsicFile
+	/// </summary>
+	AAA_xxx_iI = 0x083F,
+	/// <summary>
+	/// DiskExists, PrevExists, LoadoutExists, DiskEqualsPrev, PrevEqualsLoadout, DiskEqualsLoadout, IsGameFile
+	/// </summary>
+	AAA_xxx_iG = 0x043F,
 	/// <summary>
 	/// DiskExists, PrevExists, LoadoutExists, DiskEqualsPrev, PrevEqualsLoadout, DiskEqualsLoadout, DiskArchived, PrevArchived, LoadoutArchived
 	/// </summary>
-	AAA_XXX_i = 0x01FF,
+	AAA_XXX_iL = 0x01FF,
+	/// <summary>
+	/// DiskExists, PrevExists, LoadoutExists, DiskEqualsPrev, PrevEqualsLoadout, DiskEqualsLoadout, DiskArchived, PrevArchived, LoadoutArchived, IsIntrinsicFile
+	/// </summary>
+	AAA_XXX_iI = 0x09FF,
+	/// <summary>
+	/// DiskExists, PrevExists, LoadoutExists, DiskEqualsPrev, PrevEqualsLoadout, DiskEqualsLoadout, DiskArchived, PrevArchived, LoadoutArchived, IsGameFile
+	/// </summary>
+	AAA_XXX_iG = 0x05FF,
 	/// <summary>
 	/// DiskExists, PrevExists, LoadoutExists, DiskEqualsPrev, PrevEqualsLoadout, DiskEqualsLoadout, PathIsIgnored
 	/// </summary>
-	AAA_xxx_I = 0x023F,
+	AAA_xxx_IL = 0x023F,
+	/// <summary>
+	/// DiskExists, PrevExists, LoadoutExists, DiskEqualsPrev, PrevEqualsLoadout, DiskEqualsLoadout, PathIsIgnored, IsIntrinsicFile
+	/// </summary>
+	AAA_xxx_II = 0x0A3F,
+	/// <summary>
+	/// DiskExists, PrevExists, LoadoutExists, DiskEqualsPrev, PrevEqualsLoadout, DiskEqualsLoadout, PathIsIgnored, IsGameFile
+	/// </summary>
+	AAA_xxx_IG = 0x063F,
 	/// <summary>
 	/// DiskExists, PrevExists, LoadoutExists, DiskEqualsPrev, PrevEqualsLoadout, DiskEqualsLoadout, DiskArchived, PrevArchived, LoadoutArchived, PathIsIgnored
 	/// </summary>
-	AAA_XXX_I = 0x03FF,
+	AAA_XXX_IL = 0x03FF,
+	/// <summary>
+	/// DiskExists, PrevExists, LoadoutExists, DiskEqualsPrev, PrevEqualsLoadout, DiskEqualsLoadout, DiskArchived, PrevArchived, LoadoutArchived, PathIsIgnored, IsIntrinsicFile
+	/// </summary>
+	AAA_XXX_II = 0x0BFF,
+	/// <summary>
+	/// DiskExists, PrevExists, LoadoutExists, DiskEqualsPrev, PrevEqualsLoadout, DiskEqualsLoadout, DiskArchived, PrevArchived, LoadoutArchived, PathIsIgnored, IsGameFile
+	/// </summary>
+	AAA_XXX_IG = 0x07FF,
 	/// <summary>
 	/// DiskExists, PrevExists, LoadoutExists, DiskEqualsPrev
 	/// </summary>
-	AAB_xxx_i = 0x000F,
+	AAB_xxx_iL = 0x000F,
+	/// <summary>
+	/// DiskExists, PrevExists, LoadoutExists, DiskEqualsPrev, IsIntrinsicFile
+	/// </summary>
+	AAB_xxx_iI = 0x080F,
+	/// <summary>
+	/// DiskExists, PrevExists, LoadoutExists, DiskEqualsPrev, IsGameFile
+	/// </summary>
+	AAB_xxx_iG = 0x040F,
 	/// <summary>
 	/// DiskExists, PrevExists, LoadoutExists, DiskEqualsPrev, DiskArchived, PrevArchived
 	/// </summary>
-	AAB_XXx_i = 0x00CF,
+	AAB_XXx_iL = 0x00CF,
+	/// <summary>
+	/// DiskExists, PrevExists, LoadoutExists, DiskEqualsPrev, DiskArchived, PrevArchived, IsIntrinsicFile
+	/// </summary>
+	AAB_XXx_iI = 0x08CF,
+	/// <summary>
+	/// DiskExists, PrevExists, LoadoutExists, DiskEqualsPrev, DiskArchived, PrevArchived, IsGameFile
+	/// </summary>
+	AAB_XXx_iG = 0x04CF,
 	/// <summary>
 	/// DiskExists, PrevExists, LoadoutExists, DiskEqualsPrev, LoadoutArchived
 	/// </summary>
-	AAB_xxX_i = 0x010F,
+	AAB_xxX_iL = 0x010F,
+	/// <summary>
+	/// DiskExists, PrevExists, LoadoutExists, DiskEqualsPrev, LoadoutArchived, IsIntrinsicFile
+	/// </summary>
+	AAB_xxX_iI = 0x090F,
+	/// <summary>
+	/// DiskExists, PrevExists, LoadoutExists, DiskEqualsPrev, LoadoutArchived, IsGameFile
+	/// </summary>
+	AAB_xxX_iG = 0x050F,
 	/// <summary>
 	/// DiskExists, PrevExists, LoadoutExists, DiskEqualsPrev, DiskArchived, PrevArchived, LoadoutArchived
 	/// </summary>
-	AAB_XXX_i = 0x01CF,
+	AAB_XXX_iL = 0x01CF,
+	/// <summary>
+	/// DiskExists, PrevExists, LoadoutExists, DiskEqualsPrev, DiskArchived, PrevArchived, LoadoutArchived, IsIntrinsicFile
+	/// </summary>
+	AAB_XXX_iI = 0x09CF,
+	/// <summary>
+	/// DiskExists, PrevExists, LoadoutExists, DiskEqualsPrev, DiskArchived, PrevArchived, LoadoutArchived, IsGameFile
+	/// </summary>
+	AAB_XXX_iG = 0x05CF,
 	/// <summary>
 	/// DiskExists, PrevExists, LoadoutExists, DiskEqualsPrev, PathIsIgnored
 	/// </summary>
-	AAB_xxx_I = 0x020F,
+	AAB_xxx_IL = 0x020F,
+	/// <summary>
+	/// DiskExists, PrevExists, LoadoutExists, DiskEqualsPrev, PathIsIgnored, IsIntrinsicFile
+	/// </summary>
+	AAB_xxx_II = 0x0A0F,
+	/// <summary>
+	/// DiskExists, PrevExists, LoadoutExists, DiskEqualsPrev, PathIsIgnored, IsGameFile
+	/// </summary>
+	AAB_xxx_IG = 0x060F,
 	/// <summary>
 	/// DiskExists, PrevExists, LoadoutExists, DiskEqualsPrev, DiskArchived, PrevArchived, PathIsIgnored
 	/// </summary>
-	AAB_XXx_I = 0x02CF,
+	AAB_XXx_IL = 0x02CF,
+	/// <summary>
+	/// DiskExists, PrevExists, LoadoutExists, DiskEqualsPrev, DiskArchived, PrevArchived, PathIsIgnored, IsIntrinsicFile
+	/// </summary>
+	AAB_XXx_II = 0x0ACF,
+	/// <summary>
+	/// DiskExists, PrevExists, LoadoutExists, DiskEqualsPrev, DiskArchived, PrevArchived, PathIsIgnored, IsGameFile
+	/// </summary>
+	AAB_XXx_IG = 0x06CF,
 	/// <summary>
 	/// DiskExists, PrevExists, LoadoutExists, DiskEqualsPrev, LoadoutArchived, PathIsIgnored
 	/// </summary>
-	AAB_xxX_I = 0x030F,
+	AAB_xxX_IL = 0x030F,
+	/// <summary>
+	/// DiskExists, PrevExists, LoadoutExists, DiskEqualsPrev, LoadoutArchived, PathIsIgnored, IsIntrinsicFile
+	/// </summary>
+	AAB_xxX_II = 0x0B0F,
+	/// <summary>
+	/// DiskExists, PrevExists, LoadoutExists, DiskEqualsPrev, LoadoutArchived, PathIsIgnored, IsGameFile
+	/// </summary>
+	AAB_xxX_IG = 0x070F,
 	/// <summary>
 	/// DiskExists, PrevExists, LoadoutExists, DiskEqualsPrev, DiskArchived, PrevArchived, LoadoutArchived, PathIsIgnored
 	/// </summary>
-	AAB_XXX_I = 0x03CF,
+	AAB_XXX_IL = 0x03CF,
+	/// <summary>
+	/// DiskExists, PrevExists, LoadoutExists, DiskEqualsPrev, DiskArchived, PrevArchived, LoadoutArchived, PathIsIgnored, IsIntrinsicFile
+	/// </summary>
+	AAB_XXX_II = 0x0BCF,
+	/// <summary>
+	/// DiskExists, PrevExists, LoadoutExists, DiskEqualsPrev, DiskArchived, PrevArchived, LoadoutArchived, PathIsIgnored, IsGameFile
+	/// </summary>
+	AAB_XXX_IG = 0x07CF,
 	/// <summary>
 	/// DiskExists, PrevExists
 	/// </summary>
-	ABx_xxx_i = 0x0003,
+	ABx_xxx_iL = 0x0003,
+	/// <summary>
+	/// DiskExists, PrevExists, IsIntrinsicFile
+	/// </summary>
+	ABx_xxx_iI = 0x0803,
+	/// <summary>
+	/// DiskExists, PrevExists, IsGameFile
+	/// </summary>
+	ABx_xxx_iG = 0x0403,
 	/// <summary>
 	/// DiskExists, PrevExists, DiskArchived
 	/// </summary>
-	ABx_Xxx_i = 0x0043,
+	ABx_Xxx_iL = 0x0043,
+	/// <summary>
+	/// DiskExists, PrevExists, DiskArchived, IsIntrinsicFile
+	/// </summary>
+	ABx_Xxx_iI = 0x0843,
+	/// <summary>
+	/// DiskExists, PrevExists, DiskArchived, IsGameFile
+	/// </summary>
+	ABx_Xxx_iG = 0x0443,
 	/// <summary>
 	/// DiskExists, PrevExists, PrevArchived
 	/// </summary>
-	ABx_xXx_i = 0x0083,
+	ABx_xXx_iL = 0x0083,
+	/// <summary>
+	/// DiskExists, PrevExists, PrevArchived, IsIntrinsicFile
+	/// </summary>
+	ABx_xXx_iI = 0x0883,
+	/// <summary>
+	/// DiskExists, PrevExists, PrevArchived, IsGameFile
+	/// </summary>
+	ABx_xXx_iG = 0x0483,
 	/// <summary>
 	/// DiskExists, PrevExists, DiskArchived, PrevArchived
 	/// </summary>
-	ABx_XXx_i = 0x00C3,
+	ABx_XXx_iL = 0x00C3,
+	/// <summary>
+	/// DiskExists, PrevExists, DiskArchived, PrevArchived, IsIntrinsicFile
+	/// </summary>
+	ABx_XXx_iI = 0x08C3,
+	/// <summary>
+	/// DiskExists, PrevExists, DiskArchived, PrevArchived, IsGameFile
+	/// </summary>
+	ABx_XXx_iG = 0x04C3,
 	/// <summary>
 	/// DiskExists, PrevExists, PathIsIgnored
 	/// </summary>
-	ABx_xxx_I = 0x0203,
+	ABx_xxx_IL = 0x0203,
+	/// <summary>
+	/// DiskExists, PrevExists, PathIsIgnored, IsIntrinsicFile
+	/// </summary>
+	ABx_xxx_II = 0x0A03,
+	/// <summary>
+	/// DiskExists, PrevExists, PathIsIgnored, IsGameFile
+	/// </summary>
+	ABx_xxx_IG = 0x0603,
 	/// <summary>
 	/// DiskExists, PrevExists, DiskArchived, PathIsIgnored
 	/// </summary>
-	ABx_Xxx_I = 0x0243,
+	ABx_Xxx_IL = 0x0243,
+	/// <summary>
+	/// DiskExists, PrevExists, DiskArchived, PathIsIgnored, IsIntrinsicFile
+	/// </summary>
+	ABx_Xxx_II = 0x0A43,
+	/// <summary>
+	/// DiskExists, PrevExists, DiskArchived, PathIsIgnored, IsGameFile
+	/// </summary>
+	ABx_Xxx_IG = 0x0643,
 	/// <summary>
 	/// DiskExists, PrevExists, PrevArchived, PathIsIgnored
 	/// </summary>
-	ABx_xXx_I = 0x0283,
+	ABx_xXx_IL = 0x0283,
+	/// <summary>
+	/// DiskExists, PrevExists, PrevArchived, PathIsIgnored, IsIntrinsicFile
+	/// </summary>
+	ABx_xXx_II = 0x0A83,
+	/// <summary>
+	/// DiskExists, PrevExists, PrevArchived, PathIsIgnored, IsGameFile
+	/// </summary>
+	ABx_xXx_IG = 0x0683,
 	/// <summary>
 	/// DiskExists, PrevExists, DiskArchived, PrevArchived, PathIsIgnored
 	/// </summary>
-	ABx_XXx_I = 0x02C3,
+	ABx_XXx_IL = 0x02C3,
+	/// <summary>
+	/// DiskExists, PrevExists, DiskArchived, PrevArchived, PathIsIgnored, IsIntrinsicFile
+	/// </summary>
+	ABx_XXx_II = 0x0AC3,
+	/// <summary>
+	/// DiskExists, PrevExists, DiskArchived, PrevArchived, PathIsIgnored, IsGameFile
+	/// </summary>
+	ABx_XXx_IG = 0x06C3,
 	/// <summary>
 	/// DiskExists, PrevExists, LoadoutExists, DiskEqualsLoadout
 	/// </summary>
-	ABA_xxx_i = 0x0027,
+	ABA_xxx_iL = 0x0027,
+	/// <summary>
+	/// DiskExists, PrevExists, LoadoutExists, DiskEqualsLoadout, IsIntrinsicFile
+	/// </summary>
+	ABA_xxx_iI = 0x0827,
+	/// <summary>
+	/// DiskExists, PrevExists, LoadoutExists, DiskEqualsLoadout, IsGameFile
+	/// </summary>
+	ABA_xxx_iG = 0x0427,
 	/// <summary>
 	/// DiskExists, PrevExists, LoadoutExists, DiskEqualsLoadout, DiskArchived, LoadoutArchived
 	/// </summary>
-	ABA_XxX_i = 0x0167,
+	ABA_XxX_iL = 0x0167,
+	/// <summary>
+	/// DiskExists, PrevExists, LoadoutExists, DiskEqualsLoadout, DiskArchived, LoadoutArchived, IsIntrinsicFile
+	/// </summary>
+	ABA_XxX_iI = 0x0967,
+	/// <summary>
+	/// DiskExists, PrevExists, LoadoutExists, DiskEqualsLoadout, DiskArchived, LoadoutArchived, IsGameFile
+	/// </summary>
+	ABA_XxX_iG = 0x0567,
 	/// <summary>
 	/// DiskExists, PrevExists, LoadoutExists, DiskEqualsLoadout, PrevArchived
 	/// </summary>
-	ABA_xXx_i = 0x00A7,
+	ABA_xXx_iL = 0x00A7,
+	/// <summary>
+	/// DiskExists, PrevExists, LoadoutExists, DiskEqualsLoadout, PrevArchived, IsIntrinsicFile
+	/// </summary>
+	ABA_xXx_iI = 0x08A7,
+	/// <summary>
+	/// DiskExists, PrevExists, LoadoutExists, DiskEqualsLoadout, PrevArchived, IsGameFile
+	/// </summary>
+	ABA_xXx_iG = 0x04A7,
 	/// <summary>
 	/// DiskExists, PrevExists, LoadoutExists, DiskEqualsLoadout, DiskArchived, PrevArchived, LoadoutArchived
 	/// </summary>
-	ABA_XXX_i = 0x01E7,
+	ABA_XXX_iL = 0x01E7,
+	/// <summary>
+	/// DiskExists, PrevExists, LoadoutExists, DiskEqualsLoadout, DiskArchived, PrevArchived, LoadoutArchived, IsIntrinsicFile
+	/// </summary>
+	ABA_XXX_iI = 0x09E7,
+	/// <summary>
+	/// DiskExists, PrevExists, LoadoutExists, DiskEqualsLoadout, DiskArchived, PrevArchived, LoadoutArchived, IsGameFile
+	/// </summary>
+	ABA_XXX_iG = 0x05E7,
 	/// <summary>
 	/// DiskExists, PrevExists, LoadoutExists, DiskEqualsLoadout, PathIsIgnored
 	/// </summary>
-	ABA_xxx_I = 0x0227,
+	ABA_xxx_IL = 0x0227,
+	/// <summary>
+	/// DiskExists, PrevExists, LoadoutExists, DiskEqualsLoadout, PathIsIgnored, IsIntrinsicFile
+	/// </summary>
+	ABA_xxx_II = 0x0A27,
+	/// <summary>
+	/// DiskExists, PrevExists, LoadoutExists, DiskEqualsLoadout, PathIsIgnored, IsGameFile
+	/// </summary>
+	ABA_xxx_IG = 0x0627,
 	/// <summary>
 	/// DiskExists, PrevExists, LoadoutExists, DiskEqualsLoadout, DiskArchived, LoadoutArchived, PathIsIgnored
 	/// </summary>
-	ABA_XxX_I = 0x0367,
+	ABA_XxX_IL = 0x0367,
+	/// <summary>
+	/// DiskExists, PrevExists, LoadoutExists, DiskEqualsLoadout, DiskArchived, LoadoutArchived, PathIsIgnored, IsIntrinsicFile
+	/// </summary>
+	ABA_XxX_II = 0x0B67,
+	/// <summary>
+	/// DiskExists, PrevExists, LoadoutExists, DiskEqualsLoadout, DiskArchived, LoadoutArchived, PathIsIgnored, IsGameFile
+	/// </summary>
+	ABA_XxX_IG = 0x0767,
 	/// <summary>
 	/// DiskExists, PrevExists, LoadoutExists, DiskEqualsLoadout, PrevArchived, PathIsIgnored
 	/// </summary>
-	ABA_xXx_I = 0x02A7,
+	ABA_xXx_IL = 0x02A7,
+	/// <summary>
+	/// DiskExists, PrevExists, LoadoutExists, DiskEqualsLoadout, PrevArchived, PathIsIgnored, IsIntrinsicFile
+	/// </summary>
+	ABA_xXx_II = 0x0AA7,
+	/// <summary>
+	/// DiskExists, PrevExists, LoadoutExists, DiskEqualsLoadout, PrevArchived, PathIsIgnored, IsGameFile
+	/// </summary>
+	ABA_xXx_IG = 0x06A7,
 	/// <summary>
 	/// DiskExists, PrevExists, LoadoutExists, DiskEqualsLoadout, DiskArchived, PrevArchived, LoadoutArchived, PathIsIgnored
 	/// </summary>
-	ABA_XXX_I = 0x03E7,
+	ABA_XXX_IL = 0x03E7,
+	/// <summary>
+	/// DiskExists, PrevExists, LoadoutExists, DiskEqualsLoadout, DiskArchived, PrevArchived, LoadoutArchived, PathIsIgnored, IsIntrinsicFile
+	/// </summary>
+	ABA_XXX_II = 0x0BE7,
+	/// <summary>
+	/// DiskExists, PrevExists, LoadoutExists, DiskEqualsLoadout, DiskArchived, PrevArchived, LoadoutArchived, PathIsIgnored, IsGameFile
+	/// </summary>
+	ABA_XXX_IG = 0x07E7,
 	/// <summary>
 	/// DiskExists, PrevExists, LoadoutExists, PrevEqualsLoadout
 	/// </summary>
-	ABB_xxx_i = 0x0017,
+	ABB_xxx_iL = 0x0017,
+	/// <summary>
+	/// DiskExists, PrevExists, LoadoutExists, PrevEqualsLoadout, IsIntrinsicFile
+	/// </summary>
+	ABB_xxx_iI = 0x0817,
+	/// <summary>
+	/// DiskExists, PrevExists, LoadoutExists, PrevEqualsLoadout, IsGameFile
+	/// </summary>
+	ABB_xxx_iG = 0x0417,
 	/// <summary>
 	/// DiskExists, PrevExists, LoadoutExists, PrevEqualsLoadout, DiskArchived
 	/// </summary>
-	ABB_Xxx_i = 0x0057,
+	ABB_Xxx_iL = 0x0057,
+	/// <summary>
+	/// DiskExists, PrevExists, LoadoutExists, PrevEqualsLoadout, DiskArchived, IsIntrinsicFile
+	/// </summary>
+	ABB_Xxx_iI = 0x0857,
+	/// <summary>
+	/// DiskExists, PrevExists, LoadoutExists, PrevEqualsLoadout, DiskArchived, IsGameFile
+	/// </summary>
+	ABB_Xxx_iG = 0x0457,
 	/// <summary>
 	/// DiskExists, PrevExists, LoadoutExists, PrevEqualsLoadout, PrevArchived, LoadoutArchived
 	/// </summary>
-	ABB_xXX_i = 0x0197,
+	ABB_xXX_iL = 0x0197,
+	/// <summary>
+	/// DiskExists, PrevExists, LoadoutExists, PrevEqualsLoadout, PrevArchived, LoadoutArchived, IsIntrinsicFile
+	/// </summary>
+	ABB_xXX_iI = 0x0997,
+	/// <summary>
+	/// DiskExists, PrevExists, LoadoutExists, PrevEqualsLoadout, PrevArchived, LoadoutArchived, IsGameFile
+	/// </summary>
+	ABB_xXX_iG = 0x0597,
 	/// <summary>
 	/// DiskExists, PrevExists, LoadoutExists, PrevEqualsLoadout, DiskArchived, PrevArchived, LoadoutArchived
 	/// </summary>
-	ABB_XXX_i = 0x01D7,
+	ABB_XXX_iL = 0x01D7,
+	/// <summary>
+	/// DiskExists, PrevExists, LoadoutExists, PrevEqualsLoadout, DiskArchived, PrevArchived, LoadoutArchived, IsIntrinsicFile
+	/// </summary>
+	ABB_XXX_iI = 0x09D7,
+	/// <summary>
+	/// DiskExists, PrevExists, LoadoutExists, PrevEqualsLoadout, DiskArchived, PrevArchived, LoadoutArchived, IsGameFile
+	/// </summary>
+	ABB_XXX_iG = 0x05D7,
 	/// <summary>
 	/// DiskExists, PrevExists, LoadoutExists, PrevEqualsLoadout, PathIsIgnored
 	/// </summary>
-	ABB_xxx_I = 0x0217,
+	ABB_xxx_IL = 0x0217,
+	/// <summary>
+	/// DiskExists, PrevExists, LoadoutExists, PrevEqualsLoadout, PathIsIgnored, IsIntrinsicFile
+	/// </summary>
+	ABB_xxx_II = 0x0A17,
+	/// <summary>
+	/// DiskExists, PrevExists, LoadoutExists, PrevEqualsLoadout, PathIsIgnored, IsGameFile
+	/// </summary>
+	ABB_xxx_IG = 0x0617,
 	/// <summary>
 	/// DiskExists, PrevExists, LoadoutExists, PrevEqualsLoadout, DiskArchived, PathIsIgnored
 	/// </summary>
-	ABB_Xxx_I = 0x0257,
+	ABB_Xxx_IL = 0x0257,
+	/// <summary>
+	/// DiskExists, PrevExists, LoadoutExists, PrevEqualsLoadout, DiskArchived, PathIsIgnored, IsIntrinsicFile
+	/// </summary>
+	ABB_Xxx_II = 0x0A57,
+	/// <summary>
+	/// DiskExists, PrevExists, LoadoutExists, PrevEqualsLoadout, DiskArchived, PathIsIgnored, IsGameFile
+	/// </summary>
+	ABB_Xxx_IG = 0x0657,
 	/// <summary>
 	/// DiskExists, PrevExists, LoadoutExists, PrevEqualsLoadout, PrevArchived, LoadoutArchived, PathIsIgnored
 	/// </summary>
-	ABB_xXX_I = 0x0397,
+	ABB_xXX_IL = 0x0397,
+	/// <summary>
+	/// DiskExists, PrevExists, LoadoutExists, PrevEqualsLoadout, PrevArchived, LoadoutArchived, PathIsIgnored, IsIntrinsicFile
+	/// </summary>
+	ABB_xXX_II = 0x0B97,
+	/// <summary>
+	/// DiskExists, PrevExists, LoadoutExists, PrevEqualsLoadout, PrevArchived, LoadoutArchived, PathIsIgnored, IsGameFile
+	/// </summary>
+	ABB_xXX_IG = 0x0797,
 	/// <summary>
 	/// DiskExists, PrevExists, LoadoutExists, PrevEqualsLoadout, DiskArchived, PrevArchived, LoadoutArchived, PathIsIgnored
 	/// </summary>
-	ABB_XXX_I = 0x03D7,
+	ABB_XXX_IL = 0x03D7,
+	/// <summary>
+	/// DiskExists, PrevExists, LoadoutExists, PrevEqualsLoadout, DiskArchived, PrevArchived, LoadoutArchived, PathIsIgnored, IsIntrinsicFile
+	/// </summary>
+	ABB_XXX_II = 0x0BD7,
+	/// <summary>
+	/// DiskExists, PrevExists, LoadoutExists, PrevEqualsLoadout, DiskArchived, PrevArchived, LoadoutArchived, PathIsIgnored, IsGameFile
+	/// </summary>
+	ABB_XXX_IG = 0x07D7,
 	/// <summary>
 	/// DiskExists, PrevExists, LoadoutExists
 	/// </summary>
-	ABC_xxx_i = 0x0007,
+	ABC_xxx_iL = 0x0007,
+	/// <summary>
+	/// DiskExists, PrevExists, LoadoutExists, IsIntrinsicFile
+	/// </summary>
+	ABC_xxx_iI = 0x0807,
+	/// <summary>
+	/// DiskExists, PrevExists, LoadoutExists, IsGameFile
+	/// </summary>
+	ABC_xxx_iG = 0x0407,
 	/// <summary>
 	/// DiskExists, PrevExists, LoadoutExists, DiskArchived
 	/// </summary>
-	ABC_Xxx_i = 0x0047,
+	ABC_Xxx_iL = 0x0047,
+	/// <summary>
+	/// DiskExists, PrevExists, LoadoutExists, DiskArchived, IsIntrinsicFile
+	/// </summary>
+	ABC_Xxx_iI = 0x0847,
+	/// <summary>
+	/// DiskExists, PrevExists, LoadoutExists, DiskArchived, IsGameFile
+	/// </summary>
+	ABC_Xxx_iG = 0x0447,
 	/// <summary>
 	/// DiskExists, PrevExists, LoadoutExists, PrevArchived
 	/// </summary>
-	ABC_xXx_i = 0x0087,
+	ABC_xXx_iL = 0x0087,
+	/// <summary>
+	/// DiskExists, PrevExists, LoadoutExists, PrevArchived, IsIntrinsicFile
+	/// </summary>
+	ABC_xXx_iI = 0x0887,
+	/// <summary>
+	/// DiskExists, PrevExists, LoadoutExists, PrevArchived, IsGameFile
+	/// </summary>
+	ABC_xXx_iG = 0x0487,
 	/// <summary>
 	/// DiskExists, PrevExists, LoadoutExists, LoadoutArchived
 	/// </summary>
-	ABC_xxX_i = 0x0107,
+	ABC_xxX_iL = 0x0107,
+	/// <summary>
+	/// DiskExists, PrevExists, LoadoutExists, LoadoutArchived, IsIntrinsicFile
+	/// </summary>
+	ABC_xxX_iI = 0x0907,
+	/// <summary>
+	/// DiskExists, PrevExists, LoadoutExists, LoadoutArchived, IsGameFile
+	/// </summary>
+	ABC_xxX_iG = 0x0507,
 	/// <summary>
 	/// DiskExists, PrevExists, LoadoutExists, DiskArchived, PrevArchived
 	/// </summary>
-	ABC_XXx_i = 0x00C7,
+	ABC_XXx_iL = 0x00C7,
+	/// <summary>
+	/// DiskExists, PrevExists, LoadoutExists, DiskArchived, PrevArchived, IsIntrinsicFile
+	/// </summary>
+	ABC_XXx_iI = 0x08C7,
+	/// <summary>
+	/// DiskExists, PrevExists, LoadoutExists, DiskArchived, PrevArchived, IsGameFile
+	/// </summary>
+	ABC_XXx_iG = 0x04C7,
 	/// <summary>
 	/// DiskExists, PrevExists, LoadoutExists, DiskArchived, LoadoutArchived
 	/// </summary>
-	ABC_XxX_i = 0x0147,
+	ABC_XxX_iL = 0x0147,
+	/// <summary>
+	/// DiskExists, PrevExists, LoadoutExists, DiskArchived, LoadoutArchived, IsIntrinsicFile
+	/// </summary>
+	ABC_XxX_iI = 0x0947,
+	/// <summary>
+	/// DiskExists, PrevExists, LoadoutExists, DiskArchived, LoadoutArchived, IsGameFile
+	/// </summary>
+	ABC_XxX_iG = 0x0547,
 	/// <summary>
 	/// DiskExists, PrevExists, LoadoutExists, PrevArchived, LoadoutArchived
 	/// </summary>
-	ABC_xXX_i = 0x0187,
+	ABC_xXX_iL = 0x0187,
+	/// <summary>
+	/// DiskExists, PrevExists, LoadoutExists, PrevArchived, LoadoutArchived, IsIntrinsicFile
+	/// </summary>
+	ABC_xXX_iI = 0x0987,
+	/// <summary>
+	/// DiskExists, PrevExists, LoadoutExists, PrevArchived, LoadoutArchived, IsGameFile
+	/// </summary>
+	ABC_xXX_iG = 0x0587,
 	/// <summary>
 	/// DiskExists, PrevExists, LoadoutExists, DiskArchived, PrevArchived, LoadoutArchived
 	/// </summary>
-	ABC_XXX_i = 0x01C7,
+	ABC_XXX_iL = 0x01C7,
+	/// <summary>
+	/// DiskExists, PrevExists, LoadoutExists, DiskArchived, PrevArchived, LoadoutArchived, IsIntrinsicFile
+	/// </summary>
+	ABC_XXX_iI = 0x09C7,
+	/// <summary>
+	/// DiskExists, PrevExists, LoadoutExists, DiskArchived, PrevArchived, LoadoutArchived, IsGameFile
+	/// </summary>
+	ABC_XXX_iG = 0x05C7,
 	/// <summary>
 	/// DiskExists, PrevExists, LoadoutExists, PathIsIgnored
 	/// </summary>
-	ABC_xxx_I = 0x0207,
+	ABC_xxx_IL = 0x0207,
+	/// <summary>
+	/// DiskExists, PrevExists, LoadoutExists, PathIsIgnored, IsIntrinsicFile
+	/// </summary>
+	ABC_xxx_II = 0x0A07,
+	/// <summary>
+	/// DiskExists, PrevExists, LoadoutExists, PathIsIgnored, IsGameFile
+	/// </summary>
+	ABC_xxx_IG = 0x0607,
 	/// <summary>
 	/// DiskExists, PrevExists, LoadoutExists, DiskArchived, PathIsIgnored
 	/// </summary>
-	ABC_Xxx_I = 0x0247,
+	ABC_Xxx_IL = 0x0247,
+	/// <summary>
+	/// DiskExists, PrevExists, LoadoutExists, DiskArchived, PathIsIgnored, IsIntrinsicFile
+	/// </summary>
+	ABC_Xxx_II = 0x0A47,
+	/// <summary>
+	/// DiskExists, PrevExists, LoadoutExists, DiskArchived, PathIsIgnored, IsGameFile
+	/// </summary>
+	ABC_Xxx_IG = 0x0647,
 	/// <summary>
 	/// DiskExists, PrevExists, LoadoutExists, PrevArchived, PathIsIgnored
 	/// </summary>
-	ABC_xXx_I = 0x0287,
+	ABC_xXx_IL = 0x0287,
+	/// <summary>
+	/// DiskExists, PrevExists, LoadoutExists, PrevArchived, PathIsIgnored, IsIntrinsicFile
+	/// </summary>
+	ABC_xXx_II = 0x0A87,
+	/// <summary>
+	/// DiskExists, PrevExists, LoadoutExists, PrevArchived, PathIsIgnored, IsGameFile
+	/// </summary>
+	ABC_xXx_IG = 0x0687,
 	/// <summary>
 	/// DiskExists, PrevExists, LoadoutExists, LoadoutArchived, PathIsIgnored
 	/// </summary>
-	ABC_xxX_I = 0x0307,
+	ABC_xxX_IL = 0x0307,
+	/// <summary>
+	/// DiskExists, PrevExists, LoadoutExists, LoadoutArchived, PathIsIgnored, IsIntrinsicFile
+	/// </summary>
+	ABC_xxX_II = 0x0B07,
+	/// <summary>
+	/// DiskExists, PrevExists, LoadoutExists, LoadoutArchived, PathIsIgnored, IsGameFile
+	/// </summary>
+	ABC_xxX_IG = 0x0707,
 	/// <summary>
 	/// DiskExists, PrevExists, LoadoutExists, DiskArchived, PrevArchived, PathIsIgnored
 	/// </summary>
-	ABC_XXx_I = 0x02C7,
+	ABC_XXx_IL = 0x02C7,
+	/// <summary>
+	/// DiskExists, PrevExists, LoadoutExists, DiskArchived, PrevArchived, PathIsIgnored, IsIntrinsicFile
+	/// </summary>
+	ABC_XXx_II = 0x0AC7,
+	/// <summary>
+	/// DiskExists, PrevExists, LoadoutExists, DiskArchived, PrevArchived, PathIsIgnored, IsGameFile
+	/// </summary>
+	ABC_XXx_IG = 0x06C7,
 	/// <summary>
 	/// DiskExists, PrevExists, LoadoutExists, DiskArchived, LoadoutArchived, PathIsIgnored
 	/// </summary>
-	ABC_XxX_I = 0x0347,
+	ABC_XxX_IL = 0x0347,
+	/// <summary>
+	/// DiskExists, PrevExists, LoadoutExists, DiskArchived, LoadoutArchived, PathIsIgnored, IsIntrinsicFile
+	/// </summary>
+	ABC_XxX_II = 0x0B47,
+	/// <summary>
+	/// DiskExists, PrevExists, LoadoutExists, DiskArchived, LoadoutArchived, PathIsIgnored, IsGameFile
+	/// </summary>
+	ABC_XxX_IG = 0x0747,
 	/// <summary>
 	/// DiskExists, PrevExists, LoadoutExists, PrevArchived, LoadoutArchived, PathIsIgnored
 	/// </summary>
-	ABC_xXX_I = 0x0387,
+	ABC_xXX_IL = 0x0387,
+	/// <summary>
+	/// DiskExists, PrevExists, LoadoutExists, PrevArchived, LoadoutArchived, PathIsIgnored, IsIntrinsicFile
+	/// </summary>
+	ABC_xXX_II = 0x0B87,
+	/// <summary>
+	/// DiskExists, PrevExists, LoadoutExists, PrevArchived, LoadoutArchived, PathIsIgnored, IsGameFile
+	/// </summary>
+	ABC_xXX_IG = 0x0787,
 	/// <summary>
 	/// DiskExists, PrevExists, LoadoutExists, DiskArchived, PrevArchived, LoadoutArchived, PathIsIgnored
 	/// </summary>
-	ABC_XXX_I = 0x03C7,
+	ABC_XXX_IL = 0x03C7,
+	/// <summary>
+	/// DiskExists, PrevExists, LoadoutExists, DiskArchived, PrevArchived, LoadoutArchived, PathIsIgnored, IsIntrinsicFile
+	/// </summary>
+	ABC_XXX_II = 0x0BC7,
+	/// <summary>
+	/// DiskExists, PrevExists, LoadoutExists, DiskArchived, PrevArchived, LoadoutArchived, PathIsIgnored, IsGameFile
+	/// </summary>
+	ABC_XXX_IG = 0x07C7,
 }
