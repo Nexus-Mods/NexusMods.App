@@ -1,5 +1,5 @@
 ﻿/// <summary>
-/// Summary of all 276 possible signatures in a somewhat readable format
+/// Summary of all 256 possible signatures in a somewhat readable format
 /// </summary>
 public enum SignatureShorthand : ushort
 {
@@ -56,10 +56,6 @@ public enum SignatureShorthand : ushort
 	/// </summary>
 	xAx_xxx_iL = 0x0002,
 	/// <summary>
-	/// PrevExists, IsIntrinsicFile
-	/// </summary>
-	xAx_xxx_iI = 0x0802,
-	/// <summary>
 	/// PrevExists, IsGameFile
 	/// </summary>
 	xAx_xxx_iG = 0x0402,
@@ -67,10 +63,6 @@ public enum SignatureShorthand : ushort
 	/// PrevExists, PrevArchived
 	/// </summary>
 	xAx_xXx_iL = 0x0082,
-	/// <summary>
-	/// PrevExists, PrevArchived, IsIntrinsicFile
-	/// </summary>
-	xAx_xXx_iI = 0x0882,
 	/// <summary>
 	/// PrevExists, PrevArchived, IsGameFile
 	/// </summary>
@@ -80,10 +72,6 @@ public enum SignatureShorthand : ushort
 	/// </summary>
 	xAx_xxx_IL = 0x0202,
 	/// <summary>
-	/// PrevExists, PathIsIgnored, IsIntrinsicFile
-	/// </summary>
-	xAx_xxx_II = 0x0A02,
-	/// <summary>
 	/// PrevExists, PathIsIgnored, IsGameFile
 	/// </summary>
 	xAx_xxx_IG = 0x0602,
@@ -91,10 +79,6 @@ public enum SignatureShorthand : ushort
 	/// PrevExists, PrevArchived, PathIsIgnored
 	/// </summary>
 	xAx_xXx_IL = 0x0282,
-	/// <summary>
-	/// PrevExists, PrevArchived, PathIsIgnored, IsIntrinsicFile
-	/// </summary>
-	xAx_xXx_II = 0x0A82,
 	/// <summary>
 	/// PrevExists, PrevArchived, PathIsIgnored, IsGameFile
 	/// </summary>
@@ -248,10 +232,6 @@ public enum SignatureShorthand : ushort
 	/// </summary>
 	Axx_xxx_iL = 0x0001,
 	/// <summary>
-	/// DiskExists, IsIntrinsicFile
-	/// </summary>
-	Axx_xxx_iI = 0x0801,
-	/// <summary>
 	/// DiskExists, IsGameFile
 	/// </summary>
 	Axx_xxx_iG = 0x0401,
@@ -259,10 +239,6 @@ public enum SignatureShorthand : ushort
 	/// DiskExists, DiskArchived
 	/// </summary>
 	Axx_Xxx_iL = 0x0041,
-	/// <summary>
-	/// DiskExists, DiskArchived, IsIntrinsicFile
-	/// </summary>
-	Axx_Xxx_iI = 0x0841,
 	/// <summary>
 	/// DiskExists, DiskArchived, IsGameFile
 	/// </summary>
@@ -272,10 +248,6 @@ public enum SignatureShorthand : ushort
 	/// </summary>
 	Axx_xxx_IL = 0x0201,
 	/// <summary>
-	/// DiskExists, PathIsIgnored, IsIntrinsicFile
-	/// </summary>
-	Axx_xxx_II = 0x0A01,
-	/// <summary>
 	/// DiskExists, PathIsIgnored, IsGameFile
 	/// </summary>
 	Axx_xxx_IG = 0x0601,
@@ -283,10 +255,6 @@ public enum SignatureShorthand : ushort
 	/// DiskExists, DiskArchived, PathIsIgnored
 	/// </summary>
 	Axx_Xxx_IL = 0x0241,
-	/// <summary>
-	/// DiskExists, DiskArchived, PathIsIgnored, IsIntrinsicFile
-	/// </summary>
-	Axx_Xxx_II = 0x0A41,
 	/// <summary>
 	/// DiskExists, DiskArchived, PathIsIgnored, IsGameFile
 	/// </summary>
@@ -440,10 +408,6 @@ public enum SignatureShorthand : ushort
 	/// </summary>
 	AAx_xxx_iL = 0x000B,
 	/// <summary>
-	/// DiskExists, PrevExists, DiskEqualsPrev, IsIntrinsicFile
-	/// </summary>
-	AAx_xxx_iI = 0x080B,
-	/// <summary>
 	/// DiskExists, PrevExists, DiskEqualsPrev, IsGameFile
 	/// </summary>
 	AAx_xxx_iG = 0x040B,
@@ -451,10 +415,6 @@ public enum SignatureShorthand : ushort
 	/// DiskExists, PrevExists, DiskEqualsPrev, DiskArchived, PrevArchived
 	/// </summary>
 	AAx_XXx_iL = 0x00CB,
-	/// <summary>
-	/// DiskExists, PrevExists, DiskEqualsPrev, DiskArchived, PrevArchived, IsIntrinsicFile
-	/// </summary>
-	AAx_XXx_iI = 0x08CB,
 	/// <summary>
 	/// DiskExists, PrevExists, DiskEqualsPrev, DiskArchived, PrevArchived, IsGameFile
 	/// </summary>
@@ -464,10 +424,6 @@ public enum SignatureShorthand : ushort
 	/// </summary>
 	AAx_xxx_IL = 0x020B,
 	/// <summary>
-	/// DiskExists, PrevExists, DiskEqualsPrev, PathIsIgnored, IsIntrinsicFile
-	/// </summary>
-	AAx_xxx_II = 0x0A0B,
-	/// <summary>
 	/// DiskExists, PrevExists, DiskEqualsPrev, PathIsIgnored, IsGameFile
 	/// </summary>
 	AAx_xxx_IG = 0x060B,
@@ -475,10 +431,6 @@ public enum SignatureShorthand : ushort
 	/// DiskExists, PrevExists, DiskEqualsPrev, DiskArchived, PrevArchived, PathIsIgnored
 	/// </summary>
 	AAx_XXx_IL = 0x02CB,
-	/// <summary>
-	/// DiskExists, PrevExists, DiskEqualsPrev, DiskArchived, PrevArchived, PathIsIgnored, IsIntrinsicFile
-	/// </summary>
-	AAx_XXx_II = 0x0ACB,
 	/// <summary>
 	/// DiskExists, PrevExists, DiskEqualsPrev, DiskArchived, PrevArchived, PathIsIgnored, IsGameFile
 	/// </summary>
@@ -632,10 +584,6 @@ public enum SignatureShorthand : ushort
 	/// </summary>
 	ABx_xxx_iL = 0x0003,
 	/// <summary>
-	/// DiskExists, PrevExists, IsIntrinsicFile
-	/// </summary>
-	ABx_xxx_iI = 0x0803,
-	/// <summary>
 	/// DiskExists, PrevExists, IsGameFile
 	/// </summary>
 	ABx_xxx_iG = 0x0403,
@@ -643,10 +591,6 @@ public enum SignatureShorthand : ushort
 	/// DiskExists, PrevExists, DiskArchived
 	/// </summary>
 	ABx_Xxx_iL = 0x0043,
-	/// <summary>
-	/// DiskExists, PrevExists, DiskArchived, IsIntrinsicFile
-	/// </summary>
-	ABx_Xxx_iI = 0x0843,
 	/// <summary>
 	/// DiskExists, PrevExists, DiskArchived, IsGameFile
 	/// </summary>
@@ -656,10 +600,6 @@ public enum SignatureShorthand : ushort
 	/// </summary>
 	ABx_xXx_iL = 0x0083,
 	/// <summary>
-	/// DiskExists, PrevExists, PrevArchived, IsIntrinsicFile
-	/// </summary>
-	ABx_xXx_iI = 0x0883,
-	/// <summary>
 	/// DiskExists, PrevExists, PrevArchived, IsGameFile
 	/// </summary>
 	ABx_xXx_iG = 0x0483,
@@ -667,10 +607,6 @@ public enum SignatureShorthand : ushort
 	/// DiskExists, PrevExists, DiskArchived, PrevArchived
 	/// </summary>
 	ABx_XXx_iL = 0x00C3,
-	/// <summary>
-	/// DiskExists, PrevExists, DiskArchived, PrevArchived, IsIntrinsicFile
-	/// </summary>
-	ABx_XXx_iI = 0x08C3,
 	/// <summary>
 	/// DiskExists, PrevExists, DiskArchived, PrevArchived, IsGameFile
 	/// </summary>
@@ -680,10 +616,6 @@ public enum SignatureShorthand : ushort
 	/// </summary>
 	ABx_xxx_IL = 0x0203,
 	/// <summary>
-	/// DiskExists, PrevExists, PathIsIgnored, IsIntrinsicFile
-	/// </summary>
-	ABx_xxx_II = 0x0A03,
-	/// <summary>
 	/// DiskExists, PrevExists, PathIsIgnored, IsGameFile
 	/// </summary>
 	ABx_xxx_IG = 0x0603,
@@ -691,10 +623,6 @@ public enum SignatureShorthand : ushort
 	/// DiskExists, PrevExists, DiskArchived, PathIsIgnored
 	/// </summary>
 	ABx_Xxx_IL = 0x0243,
-	/// <summary>
-	/// DiskExists, PrevExists, DiskArchived, PathIsIgnored, IsIntrinsicFile
-	/// </summary>
-	ABx_Xxx_II = 0x0A43,
 	/// <summary>
 	/// DiskExists, PrevExists, DiskArchived, PathIsIgnored, IsGameFile
 	/// </summary>
@@ -704,10 +632,6 @@ public enum SignatureShorthand : ushort
 	/// </summary>
 	ABx_xXx_IL = 0x0283,
 	/// <summary>
-	/// DiskExists, PrevExists, PrevArchived, PathIsIgnored, IsIntrinsicFile
-	/// </summary>
-	ABx_xXx_II = 0x0A83,
-	/// <summary>
 	/// DiskExists, PrevExists, PrevArchived, PathIsIgnored, IsGameFile
 	/// </summary>
 	ABx_xXx_IG = 0x0683,
@@ -715,10 +639,6 @@ public enum SignatureShorthand : ushort
 	/// DiskExists, PrevExists, DiskArchived, PrevArchived, PathIsIgnored
 	/// </summary>
 	ABx_XXx_IL = 0x02C3,
-	/// <summary>
-	/// DiskExists, PrevExists, DiskArchived, PrevArchived, PathIsIgnored, IsIntrinsicFile
-	/// </summary>
-	ABx_XXx_II = 0x0AC3,
 	/// <summary>
 	/// DiskExists, PrevExists, DiskArchived, PrevArchived, PathIsIgnored, IsGameFile
 	/// </summary>
