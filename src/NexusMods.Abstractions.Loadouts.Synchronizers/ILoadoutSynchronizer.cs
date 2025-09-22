@@ -52,7 +52,8 @@ public interface ILoadoutSynchronizer
     /// </summary>
     Task<Loadout.ReadOnly> Synchronize(Loadout.ReadOnly loadout, SynchronizeLoadoutJob? job = null);
 
-    Dictionary<GamePath, OneOf<LoadoutFile.ReadOnly, DeletedFile.ReadOnly>[]> GetFileConflicts(Loadout.ReadOnly loadout, bool removeDuplicates = true);
+    Dictionary<GamePath, FileConflictGroup> GetFileConflicts(Loadout.ReadOnly loadout, bool removeDuplicates = true);
+    Dictionary<LoadoutItemGroup.ReadOnly, LoadoutFile.ReadOnly[]> GetFileConflictsByParentGroup(Loadout.ReadOnly loadout, bool removeDuplicates = true);
 
     /// <summary>
     /// Rescan the files in the folders this game requires. This is used to bring the local cache up to date with the
@@ -198,3 +199,6 @@ public interface ILoadoutSynchronizer
     /// </summary>
     Task<Loadout.ReadOnly> CopyLoadout(LoadoutId loadout);
 }
+
+public record struct FileConflictGroup(GamePath Path, FileConflictItem[] Items);
+public record struct FileConflictItem(bool IsEnabled, OneOf<LoadoutFile.ReadOnly, DeletedFile.ReadOnly> File);

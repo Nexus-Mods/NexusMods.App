@@ -40,20 +40,30 @@ public partial class Loadout
     {
         return connection.Query<(EntityId GroupId, bool IsEnabled)>($"SELECT Id, IsEnabled FROM loadouts.ItemGroupEnabledState({connection}, {loadoutId})");
     }
-    
-    public static Query<(EntityId ItemId, bool IsEnabled)> LoadoutItemEnabledStateInLoadoutQuery(IConnection connection, LoadoutId loadoutId)
+
+    public static Query<(EntityId Id, bool IsEnabled)> LoadoutItemIsEnabledQuery(IDb db, LoadoutId loadoutId)
     {
-        return connection.Query<(EntityId ItemId, bool IsEnabled)>($"SELECT Id, IsEnabled FROM loadouts.LoadoutItemEnabledState({connection}, {loadoutId})");
-    }
-    
-    public static Query<(EntityId Id, LocationId Location, RelativePath Path, Hash Hash, Size Size, bool IsDeleted)> EnabledLoadoutItemWithTargetPathInLoadoutQuery(IDb db, LoadoutId loadoutId)
-    {
-        return db.Connection.Query<(EntityId, LocationId, RelativePath, Hash, Size, bool)>(
-            $"SELECT Id, TargetPath.Item2, TargetPath.Item3, Hash, Size, IsDeleted FROM loadouts.EnabledFilesWithMetadata({db}, {loadoutId})");
+        return db.Connection.Query<(EntityId Id, bool IsEnabled)>($"SELECT * FROM loadouts.LoadoutItemIsEnabled({db}, {loadoutId})");
     }
 
-    public static Query<(LocationId Location, RelativePath Path, List<(EntityId Id, bool IsDeleted)>)> FileConflictsQuery(IDb db, LoadoutId loadoutId, bool removeDuplicates)
+    public static Query<(EntityId Id, bool IsEnabled, LocationId Location, RelativePath Path, Hash Hash, Size Size, bool IsDeleted)> LoadoutFileMetadataQuery(IDb db, LoadoutId loadoutId, bool onlyEnabled)
     {
-        return db.Connection.Query<(LocationId Location, RelativePath Path, List<(EntityId Id, bool IsDeleted)>)>($"SELECT * FROM loadouts.FileConflicts({db}, {loadoutId}, {removeDuplicates})");
+        return db.Connection.Query<(EntityId Id, bool IsEnabled, LocationId Location, RelativePath Path, Hash Hash, Size Size, bool IsDeleted)>(
+            $"SELECT Id, IsEnabled, TargetPath.Item2, TargetPath.Item3, Hash, Size, IsDeleted FROM loadouts.LoadoutFileMetadata({db}, {loadoutId}, {onlyEnabled})"
+        );
+    }
+
+    public static Query<(LocationId Location, RelativePath Path, List<(EntityId Id, bool IsEnabled, bool IsDeleted)>)> FileConflictsQuery(IDb db, LoadoutId loadoutId, bool removeDuplicates)
+    {
+        return db.Connection.Query<(LocationId Location, RelativePath Path, List<(EntityId Id, bool IsEnabled, bool IsDeleted)>)>(
+            $"SELECT * FROM loadouts.FileConflicts({db}, {loadoutId}, {removeDuplicates})"
+        );
+    }
+
+    public static Query<(EntityId GroupId, List<(EntityId Id, LocationId Location, RelativePath Path)>)> FileConflictsByParentGroupQuery(IDb db, LoadoutId loadoutId, bool removeDuplicates)
+    {
+        return db.Connection.Query<(EntityId GroupId, List<(EntityId Id, LocationId Location, RelativePath Path)>)>(
+            $"SELECT * FROM loadouts.FileConflictsByParentGroup({db}, {loadoutId}, {removeDuplicates})"
+        );
     }
 }

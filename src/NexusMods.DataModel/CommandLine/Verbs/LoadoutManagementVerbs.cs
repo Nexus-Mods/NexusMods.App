@@ -260,7 +260,7 @@ public static class LoadoutManagementVerbs
         var synchronizer = loadout.InstallationInstance.GetGame().Synchronizer;
         await synchronizer
             .GetFileConflicts(loadout)
-            .Select(kv => (kv.Key, kv.Value.Length))
+            .Select(kv => (kv.Key, kv.Value.Items.Length))
             .RenderTable(renderer, "Path", "Num Conflicts");
 
         return 0;
