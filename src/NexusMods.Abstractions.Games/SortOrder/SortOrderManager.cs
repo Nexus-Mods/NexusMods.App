@@ -138,23 +138,19 @@ public class SortOrderManager : ISortOrderManager, IDisposable
         // TODO: Move query somewhere else
         // TODO: listen to changes to Game files too
         // TODO: this only checks for changes to items in collections, external changes is not covered
-        _connection.Query<(EntityId ChangedCollection, EntityId LoaodutId, ulong TxId)>($"""
-                                                 SELECT * FROM sortorder.TrackCollectionAndLoadoutChanges({_connection}, {gameId.Value})
-                                                 """
-            )
-            .Observe(x => x.ChangedCollection)
+        SortOrderQueries.TrackCollectionAndLoadoutChanges(_connection, gameId)
             .ToObservable()
             .SubscribeAwait(this, static async (changes, state, token) =>
             {
                 var loadouts = new HashSet<LoadoutId>();
                 foreach (var change in changes)
                 {
-                    loadouts.Add(change.Current.LoaodutId);
+                    loadouts.Add(change.Current.LoadoutId);
                     
                     if (change.Reason != ChangeReason.Update)
                         continue;
                     
-                    var loadoutId = change.Current.LoaodutId;
+                    var loadoutId = change.Current.LoadoutId;
                     var collectionId = new CollectionGroupId(change.Key);
                 
                     await state.UpdateLoadOrders(loadoutId, collectionId, token: token);
