@@ -124,13 +124,35 @@ public sealed class DownloadsService : IDownloadsService, IDisposable
         _downloadCache.Connect()
             .Filter(x => x.GameId.Equals(gameId));
     
+    /// <summary>
+    /// Helper method to resolve a <see cref="DownloadInfo.Id"/> ID to the underlying <see cref="HttpDownloadJob"/> ID.
+    /// This is a temporary workaround until the job system properly delegates capabilities 
+    /// (tracked in issue #3892).
+    /// </summary>
+    /// <param name="downloadInfo">The download info containing the NexusModsDownloadJob ID</param>
+    /// <returns>The ID of the underlying HttpDownloadJob if found, otherwise the original ID</returns>
+    private JobId ResolveToHttpDownloadJobId(DownloadInfo downloadInfo)
+    {
+        // Try to find the job in the job monitor
+        var job = _jobMonitor.Find(downloadInfo.Id);
+        if (job == null)
+            return downloadInfo.Id;
+        
+        // Try to cast the job definition to INexusModsDownloadJob and return inner HttpDownloadJob if possible.
+        if (job.Definition is INexusModsDownloadJob nexusJob)
+            return nexusJob.HttpDownloadJob.Job.Id;
+        
+        return downloadInfo.Id;
+    }
     
     // Control operations
     public void PauseDownload(DownloadInfo downloadInfo) 
     {
         try
         {
-            _jobMonitor.Pause(downloadInfo.Id);
+            // Note(sewer) Workaround for issue #3892: Resolve to the underlying HttpDownloadJob ID
+            var httpDownloadJobId = ResolveToHttpDownloadJobId(downloadInfo);
+            _jobMonitor.Pause(httpDownloadJobId);
         }
         catch (OperationCanceledException)
         {
@@ -142,7 +164,9 @@ public sealed class DownloadsService : IDownloadsService, IDisposable
     {
         try
         {
-            _jobMonitor.Resume(downloadInfo.Id);
+            // Note(sewer) Workaround for issue #3892: Resolve to the underlying HttpDownloadJob ID
+            var httpDownloadJobId = ResolveToHttpDownloadJobId(downloadInfo);
+            _jobMonitor.Resume(httpDownloadJobId);
         }
         catch (OperationCanceledException)
         {
@@ -154,7 +178,9 @@ public sealed class DownloadsService : IDownloadsService, IDisposable
     {
         try
         {
-            _jobMonitor.Cancel(downloadInfo.Id);
+            // Note(sewer) Workaround for issue #3892: Resolve to the underlying HttpDownloadJob ID
+            var httpDownloadJobId = ResolveToHttpDownloadJobId(downloadInfo);
+            _jobMonitor.Cancel(httpDownloadJobId);
         }
         catch (OperationCanceledException)
         {
@@ -169,7 +195,9 @@ public sealed class DownloadsService : IDownloadsService, IDisposable
             {
                 try
                 {
-                    _jobMonitor.Pause(download.Id);
+                    // Note(sewer) Workaround for issue #3892: Resolve to the underlying HttpDownloadJob ID
+                    var httpDownloadJobId = ResolveToHttpDownloadJobId(download);
+                    _jobMonitor.Pause(httpDownloadJobId);
                 }
                 catch (OperationCanceledException)
                 {
@@ -187,7 +215,9 @@ public sealed class DownloadsService : IDownloadsService, IDisposable
             {
                 try
                 {
-                    _jobMonitor.Resume(download.Id);
+                    // Note(sewer) Workaround for issue #3892: Resolve to the underlying HttpDownloadJob ID
+                    var httpDownloadJobId = ResolveToHttpDownloadJobId(download);
+                    _jobMonitor.Resume(httpDownloadJobId);
                 }
                 catch (OperationCanceledException)
                 {
@@ -202,7 +232,9 @@ public sealed class DownloadsService : IDownloadsService, IDisposable
         {
             try
             {
-                _jobMonitor.Cancel(download.Id);
+                // Note(sewer) Workaround for issue #3892: Resolve to the underlying HttpDownloadJob ID
+                var httpDownloadJobId = ResolveToHttpDownloadJobId(download);
+                _jobMonitor.Cancel(httpDownloadJobId);
             }
             catch (OperationCanceledException)
             {
