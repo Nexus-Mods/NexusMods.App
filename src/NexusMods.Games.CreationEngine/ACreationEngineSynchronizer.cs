@@ -11,16 +11,17 @@ namespace NexusMods.Games.CreationEngine;
 
 public abstract class ACreationEngineSynchronizer : ALoadoutSynchronizer
 {
-    private IIntrinsicFile[] _intrinsicFiles;
+    private Dictionary<GamePath, IIntrinsicFile> _intrinsicFiles;
     protected ACreationEngineSynchronizer(IServiceProvider provider, ICreationEngineGame game) : base(provider)
     {
-        _intrinsicFiles =
-        [
-            new PluginsFile(provider.GetRequiredService<ILogger<PluginsFile>>(), game, provider.GetRequiredService<ISorter>()),
-        ];
+        var pluginsFile = new PluginsFile(provider.GetRequiredService<ILogger<PluginsFile>>(), game, provider.GetRequiredService<ISorter>());
+        _intrinsicFiles = new Dictionary<GamePath, IIntrinsicFile>()
+        {
+            {pluginsFile.Path, pluginsFile},
+        };
     }
 
-    protected override IIntrinsicFile[] IntrinsicFiles => _intrinsicFiles;
+    protected override Dictionary<GamePath, IIntrinsicFile> IntrinsicFiles => _intrinsicFiles;
     
     public override bool IsIgnoredBackupPath(GamePath path)
     {
