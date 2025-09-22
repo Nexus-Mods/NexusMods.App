@@ -214,4 +214,9 @@ public class StubbedFileHasherService : IFileHashesService
             .Select(t => t.VersionData)
             .FirstOrOptional(_ => true);
     }
+
+    public LocatorId[] GetLocatorIdsForGame(GameInstallation loadoutInstallationInstance)
+    {
+        throw new NotImplementedException();
+    }
 }

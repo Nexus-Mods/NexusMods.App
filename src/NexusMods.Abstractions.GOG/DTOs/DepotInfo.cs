@@ -39,6 +39,13 @@ public class DepotItem
     [JsonPropertyName("path")]
     public required RelativePath Path { get; init; }
     
+    
+    /// <summary>
+    /// The MD5 hash of the file.
+    /// </summary>
+    [JsonPropertyName("md5")]
+    public Md5Value? Md5 { get; init; }
+    
     /// <summary>
     /// The chunks in the file.
     /// </summary>
