@@ -18,7 +18,7 @@ SELECT
     groupItem.Name AS ModName,
     groupItem.Id AS ModGroupId
 FROM mdb_LoadoutItemWithTargetPath(Db=>db) as file
-JOIN loadouts.LoadoutItemEnabledState(db, loadoutId) as enabledState ON file.Id = enabledState.Id
+JOIN loadouts.LoadoutItemIsEnabled(db, loadoutId) as enabledState ON file.Id = enabledState.Id
 JOIN mdb_LoadoutItemGroup(Db=>db) as groupItem ON file.Parent = groupItem.Id
 WHERE file.TargetPath.Item1 = loadoutId
     AND file.TargetPath.Item2 = gameLocationId
