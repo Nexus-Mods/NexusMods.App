@@ -7,6 +7,12 @@
                    xmlns:local="clr-namespace:NexusMods.App.UI.Pages.Sorting"
                    mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                    x:Class="NexusMods.App.UI.Pages.Sorting.FileConflictsView">
-    Welcome to Avalonia!
+    
+    <TreeDataGrid
+        x:Name="TreeDataGrid"
+        CanUserResizeColumns="False"
+        CanUserSortColumns="False"
+        ShowColumnHeaders="True"/>
+
 </sdk:R3UserControl>
 
