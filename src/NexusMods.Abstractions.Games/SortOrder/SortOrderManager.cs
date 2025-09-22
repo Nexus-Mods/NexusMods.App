@@ -1,7 +1,9 @@
 using System.Collections.Frozen;
+using System.Reactive.Linq;
 using DynamicData;
 using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.MnemonicDB.Abstractions;
@@ -19,6 +21,7 @@ public class SortOrderManager : ISortOrderManager, IDisposable
     private readonly IServiceProvider _serviceProvider; 
     private readonly IConnection _connection;
     private IDisposable? _subscription;
+    private readonly ILogger<SortOrderManager> _logger;
     
     private FrozenDictionary<SortOrderVarietyId, ISortOrderVariety> _sortOrderVarieties;
 
@@ -27,6 +30,7 @@ public class SortOrderManager : ISortOrderManager, IDisposable
         _serviceProvider = serviceProvider;
         _connection = _serviceProvider.GetRequiredService<IConnection>();
         _sortOrderVarieties = FrozenDictionary<SortOrderVarietyId, ISortOrderVariety>.Empty;
+        _logger = _serviceProvider.GetRequiredService<ILogger<SortOrderManager>>();
     }
 
     /// <inheritdoc />
@@ -130,67 +134,36 @@ public class SortOrderManager : ISortOrderManager, IDisposable
             )
             .AddTo(compositeDisposable);
         
-        
-        // For each changed loadout, reconcile the sort orders for that loadout
+        // For each changed collection, reconcile the sort orders for that collection and for the parent loadout
         // TODO: Move query somewhere else
-        _connection.Query<(EntityId ChangedLoadout, ulong TxId)>($"""
-                                                 SELECT item.Loadout, MAX(d.T) as tx
-                                                 FROM mdb_LoadoutItem(Db=>{_connection}) item
-                                                 JOIN mdb_Loadout(Db=>{_connection}) loadout on item.Loadout = loadout.Id
-                                                 JOIN mdb_GameInstallMetadata(Db=>{_connection}) as install on loadout.Installation = install.Id
-                                                 LEFT JOIN mdb_Datoms() d ON d.E = item.Id
-                                                 WHERE install.GameId = {gameId.Value}
-                                                 GROUP BY item.Loadout
-                                                 """
-            )
-            .Observe(x => x.ChangedLoadout)
-            .ToObservable()
-            .SubscribeAwait(this, static async (changes, state, token) =>
-            {
-                foreach (var change in changes)
-                {
-                    if (change.Reason != ChangeReason.Update)
-                        continue;
-                    
-                    var changedLoadoutId = new LoadoutId(change.Key);
-                    var txId = change.Current.TxId;
-                    // TODO: This is likely wrong, we need to use this DB to get the loadout data, but the latest DB to get the sort order data
-
-                    await state.UpdateLoadOrders(changedLoadoutId, token: token);
-                }
-               
-            })
-            .AddTo(compositeDisposable);
-        
-        // For each changed collection, reconcile the sort orders for that collection
-        // TODO: Move query somewhere else
+        // TODO: listen to changes to Game files too
+        // TODO: this only checks for changes to items in collections, external changes is not covered
         _connection.Query<(EntityId ChangedCollection, EntityId LoaodutId, ulong TxId)>($"""
-                                                 SELECT collection.Id, collection.Loadout, MAX(d.T) as tx
-                                                 FROM mdb_CollectionGroup(Db=>{_connection}) collection
-                                                 JOIN mdb_LoadoutItemGroup(Db=>{_connection}) itemGroup on itemGroup.Parent = collection.Id
-                                                 JOIN mdb_LoadoutItem(Db=>{_connection}) item on item.Parent = itemGroup.Id
-                                                 JOIN mdb_Loadout(Db=>{_connection}) loadout on collection.Loadout = loadout.Id
-                                                 JOIN mdb_GameInstallMetadata(Db=>{_connection}) as install on loadout.Installation = install.Id
-                                                 LEFT JOIN mdb_Datoms() d ON d.E = item.Id OR d.E = itemGroup.Id OR d.E = collection.Id
-                                                 WHERE install.GameId = {gameId.Value}
-                                                 GROUP BY collection.Id, collection.Loadout
+                                                 SELECT * FROM sortorder.TrackCollectionAndLoadoutChanges({_connection}, {gameId.Value})
                                                  """
             )
             .Observe(x => x.ChangedCollection)
             .ToObservable()
             .SubscribeAwait(this, static async (changes, state, token) =>
             {
+                var loadouts = new HashSet<LoadoutId>();
                 foreach (var change in changes)
                 {
+                    loadouts.Add(change.Current.LoaodutId);
+                    
                     if (change.Reason != ChangeReason.Update)
                         continue;
                     
                     var loadoutId = change.Current.LoaodutId;
                     var collectionId = new CollectionGroupId(change.Key);
-
+                
                     await state.UpdateLoadOrders(loadoutId, collectionId, token: token);
                 }
-               
+                
+                foreach (var loadoutId in loadouts)
+                {
+                    await state.UpdateLoadOrders(loadoutId, token: token);
+                }
             })
             .AddTo(compositeDisposable);
         
