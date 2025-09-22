@@ -84,7 +84,6 @@ public class RedModSortOrderVariety : ASortOrderVariety<
         // TODO: Move query somewhere else
         // TODO: deduplicate common query code
         // TODO: This is looking up loadout data in the entire lodaout, but if the parent entity is a collection, should we limit the lookup to just that collection?
-        // TODO: This can return multiple mods for each FolderName, need to get out just one.
         var query = Connection.Query<(string FolderName, int SortIndex, EntityId ItemId, bool? IsEnabled, string? ModName, EntityId? ModGroupId)>($"""
             WITH matchingMods AS (
                 SELECT
