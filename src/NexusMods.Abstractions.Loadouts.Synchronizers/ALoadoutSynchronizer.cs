@@ -323,6 +323,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 Size = Size.From((ulong)span.Length),
                 LastModifiedTicks = 0,
             };
+            found.SourceItemType = LoadoutSourceItemType.Intrinsic;
         }
         
         // Remove deleted files. I'm not super happy with this requiring a full scan of

@@ -15,7 +15,6 @@ using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Games.CreationEngine.Abstractions;
-using NexusMods.Games.CreationEngine.Abstractions;
 using NexusMods.Games.CreationEngine.Emitters;
 using NexusMods.Games.CreationEngine.Installers;
 using NexusMods.Games.FOMOD;
@@ -30,12 +29,12 @@ public partial class SkyrimSE : AGame, ISteamGame, IGogGame, ICreationEngineGame
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly IDiagnosticEmitter[] _emitters;
-    private readonly IFileStore _fileStore;
+    private readonly IStreamSourceDispatcher _streamSource;
 
     public SkyrimSE(IServiceProvider provider) : base(provider)
     {
         _serviceProvider = provider;
-        _fileStore = provider.GetRequiredService<IFileStore>();
+        _streamSource = provider.GetRequiredService<IStreamSourceDispatcher>();
 
         _emitters =
         [
@@ -96,12 +95,12 @@ public partial class SkyrimSE : AGame, ISteamGame, IGogGame, ICreationEngineGame
     {
         var fileName = name?.FileName.ToString() ?? "unknown.esm";
         var key = ModKey.FromFileName(fileName);
-        await using var stream = await _fileStore.GetFileStream(hash);
-        var meta = ParsingMeta.Factory(BinaryReadParameters.Default, GameRelease.SkyrimSE, key, stream);
-        await using var mutagenStream = new MutagenBinaryReadStream(stream, meta);
+        await using var stream = await _streamSource.OpenAsync(hash);
+        var meta = ParsingMeta.Factory(BinaryReadParameters.Default, GameRelease.SkyrimSE, key, stream!);
+        await using var mutagenStream = new MutagenBinaryReadStream(stream!, meta);
         using var frame = new MutagenFrame(mutagenStream);
         return SkyrimMod.CreateFromBinary(frame, SkyrimRelease.SkyrimSE, EmptyGroupMask);
     }
 
-    public GamePath PluginsFile => new GamePath(LocationId.Game, "Data/SKSE/Plugins/SkyrimSE.ini");
+    public GamePath PluginsFile => new GamePath(LocationId.AppData, "Plugins.txt");
 }

@@ -15,7 +15,7 @@ public abstract class ACreationEngineSynchronizer : ALoadoutSynchronizer
     {
         _intrinsicFiles =
         [
-            new PluginsFile(game, provider.GetRequiredService<ISorter>(), provider.GetRequiredService<IFileStore>()),
+            new PluginsFile(game, provider.GetRequiredService<ISorter>()),
         ];
     }
 

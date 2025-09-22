@@ -630,7 +630,6 @@ public class NxFileStore : IFileStore, IReadOnlyStreamSource
         
         if (!_archivesByEntry.TryGetValue(hash, out var archive))
             return false;
-        
         archivePath = archive.ArchivePath;
         if (!archive.Entries.TryGetValue(hash, out fileEntry))
             throw new KeyNotFoundException("Missing file entry: " + hash.ToHex() + "this should never happen");
@@ -640,6 +639,9 @@ public class NxFileStore : IFileStore, IReadOnlyStreamSource
 #region IReadOnlyStreamSource
     public async ValueTask<Stream?> OpenAsync(Hash hash, CancellationToken cancellationToken = default)
     {
+        if (!(await HaveFile(hash)))
+            return null;
+        
         return await GetFileStream(hash, cancellationToken);
     }
 
