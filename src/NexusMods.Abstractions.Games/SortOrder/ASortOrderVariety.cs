@@ -189,19 +189,20 @@ public abstract class ASortOrderVariety<TKey, TSortableItem, TItemLoadoutData, T
     }
 
     /// <inheritdoc />
-    public virtual async ValueTask ReconcileSortOrder(SortOrderId sortOrderId, IDb? db = null, CancellationToken token = default)
+    public virtual async ValueTask ReconcileSortOrder(SortOrderId sortOrderId, IDb? referenceDb = null, CancellationToken token = default)
     {
         // If this is passed a specific database, don't retry the reconciliation using the most recent database.
-        var noRetry = db is not null; 
+        var noRetry = referenceDb is not null; 
         var retryCount = 0;
-        var dbToUse = db ?? Connection.Db;
 
         while (retryCount <= 3)
         {
-            var reconciledItems = ReconcileSortOrderCore(sortOrderId, dbToUse);
+            var refDb = referenceDb ?? Connection.Db;
             
-            var succeded = await TryPersistSortOrder(sortOrderId, reconciledItems.Select(tuple => tuple.SortedEntry).ToArray(), dbToUse, token);
-            if (succeded) return;
+            var reconciledItems = ReconcileSortOrderCore(sortOrderId, refDb);
+            
+            var succeeded = await TryPersistSortOrder(sortOrderId, reconciledItems.Select(tuple => tuple.SortedEntry).ToArray(), refDb, token);
+            if (succeeded) return;
         
             if (noRetry)
             {
@@ -303,17 +304,20 @@ public abstract class ASortOrderVariety<TKey, TSortableItem, TItemLoadoutData, T
         CancellationToken token = default);
     
     
-    protected virtual IReadOnlyList<(TSortedEntry SortedEntry, TItemLoadoutData ItemLoadoutData)> ReconcileSortOrderCore(SortOrderId sortOrderId, IDb dbToUse)
+    protected virtual IReadOnlyList<(TSortedEntry SortedEntry, TItemLoadoutData ItemLoadoutData)> ReconcileSortOrderCore(SortOrderId sortOrderId, IDb loadoutRevisionDb)
     {
-        var sortOrder = SortOrder.Load(dbToUse, sortOrderId);
+        // Get the most recent sort order data
+        var sortOrder = SortOrder.Load(loadoutRevisionDb.Connection.Db, sortOrderId);
         
         var collectionGroupId = sortOrder.ParentEntity.IsT1 ? 
             sortOrder.ParentEntity.AsT1 : 
             Optional<CollectionGroupId>.None;
         
-        var loadoutData = RetrieveLoadoutData(sortOrder.LoadoutId, collectionGroupId, dbToUse);
+        // Get the loadout data from the revision db
+        var loadoutData = RetrieveLoadoutData(sortOrder.LoadoutId, collectionGroupId, loadoutRevisionDb);
         
-        var currentSortOrder = RetrieveSortOrder(sortOrderId, dbToUse);
+        // Get the most recent sort order data
+        var currentSortOrder = RetrieveSortOrder(sortOrderId, loadoutRevisionDb.Connection.Db);
         
         var reconciledItems = Reconcile(currentSortOrder, loadoutData);
         return reconciledItems;
