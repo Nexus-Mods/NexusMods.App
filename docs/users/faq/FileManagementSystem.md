@@ -52,7 +52,7 @@ sure you aren't deleting a `.nx` archive needed by the app
 to the Nexus Mods app team.
   * Be sure to restart the app to check for the new hash database, as the app always checks at startup for updates
   * The issue should resolve in a few hours when the hash database updates.
-* **Q:** I'm trying to manage a game for the first time and I'm getting an error saying that the game is trying to back up files
+* **Q:** I'm trying to manage a game for the first time and I'm getting an error saying that the app is trying to back up files
   * If you have previously installed files in the game folder, the app will attempt to back them up to prevent data loss.
   * Go to your game folder (via GOG or Steam) and delete all the mod files.
   * Now try to manage the game
