@@ -227,6 +227,7 @@ public static class DownloadComponents
         public IReadOnlyBindableReactiveProperty<bool> CanPause { get; }
         public IReadOnlyBindableReactiveProperty<bool> CanResume { get; }
         public IReadOnlyBindableReactiveProperty<bool> CanCancel { get; }
+        public IReadOnlyBindableReactiveProperty<bool> IsCompleted { get; }
 
         public StatusComponent(
             Percent initialProgress,
@@ -249,6 +250,10 @@ public static class DownloadComponents
             CanCancel = statusObservable
                 .Select(static status => status is JobStatus.Created or JobStatus.Running or JobStatus.Paused)
                 .ToBindableReactiveProperty(initialStatus is JobStatus.Created or JobStatus.Running or JobStatus.Paused);
+
+            IsCompleted = statusObservable
+                .Select(static status => status == JobStatus.Completed)
+                .ToBindableReactiveProperty(initialStatus == JobStatus.Completed);
         }
 
         public int CompareTo(StatusComponent? other)
@@ -275,7 +280,7 @@ public static class DownloadComponents
             if (!_isDisposed)
             {
                 if (disposing)
-                    Disposable.Dispose(Progress, Status, PauseCommand, ResumeCommand, CancelCommand, CanPause, CanResume, CanCancel);
+                    Disposable.Dispose(Progress, Status, PauseCommand, ResumeCommand, CancelCommand, CanPause, CanResume, CanCancel, IsCompleted);
 
                 _isDisposed = true;
             }

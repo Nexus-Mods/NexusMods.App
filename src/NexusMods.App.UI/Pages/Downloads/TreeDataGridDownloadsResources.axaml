@@ -3,7 +3,8 @@
                     xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
                     xmlns:downloads="clr-namespace:NexusMods.App.UI.Pages.Downloads"
                     xmlns:abstractions="clr-namespace:NexusMods.Abstractions.Downloads;assembly=NexusMods.Abstractions.Downloads"
-                    xmlns:icons="clr-namespace:NexusMods.UI.Sdk.Icons;assembly=NexusMods.UI.Sdk">
+                    xmlns:icons="clr-namespace:NexusMods.UI.Sdk.Icons;assembly=NexusMods.UI.Sdk"
+                    xmlns:resources="clr-namespace:NexusMods.App.UI.Resources">
 
     <!-- Game column template -->
     <DataTemplate x:Key="{x:Static downloads:DownloadColumns+Game.ColumnTemplateResourceKey}">
@@ -90,10 +91,18 @@
                     <controls:ComponentTemplate.DataTemplate>
                         <DataTemplate DataType="{x:Type downloads:DownloadComponents+StatusComponent}">
                             <StackPanel Orientation="Horizontal" Spacing="8">
-                                <!-- Progress Bar -->
+                                <!-- Progress Bar (visible when not completed) -->
                                 <ProgressBar Value="{CompiledBinding Progress.Value}" 
                                              Classes="DownloadBar"
-                                             Minimum="0" Maximum="1" Width="120"  />
+                                             Minimum="0" Maximum="1" Width="120"
+                                             IsVisible="{CompiledBinding !IsCompleted.Value}" />
+                                
+                                <!-- Completed State (visible when completed) -->
+                                <StackPanel Orientation="Horizontal" Spacing="4" 
+                                           IsVisible="{CompiledBinding IsCompleted.Value}">
+                                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.CheckCircleOutline}" />
+                                    <TextBlock Text="{x:Static resources:Language.DownloadsView__Completed}" VerticalAlignment="Center" />
+                                </StackPanel>
                                 
                                 <!-- Action Buttons -->
                                 <StackPanel Orientation="Horizontal" Spacing="4">
