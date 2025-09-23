@@ -17,6 +17,7 @@ using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.UI.Sdk.Icons;
 using ReactiveUI;
+using R3;
 
 namespace NexusMods.App.UI.LeftMenu.Downloads;
 
@@ -92,7 +93,10 @@ public class DownloadsLeftMenuViewModel : AViewModel<IDownloadsLeftMenuViewModel
         };
 
         // Load game icon asynchronously
-        Observable.FromAsync(() => ImageHelper.LoadGameIconAsync((IGame)gameInstallation.Game, (int)ImageSizes.LeftMenuIcon.Width, logger))
+        R3.Observable.Return((IGame)gameInstallation.Game)
+            .SelectAwait((game, _) => ImageHelper.LoadGameIconAsync(game, (int)ImageSizes.LeftMenuIcon.Width, logger))
+            .AsSystemObservable()
+            .WhereNotNull()
             .ObserveOn(RxApp.MainThreadScheduler)
             .Subscribe(bitmap => viewModel.Icon = ImageHelper.CreateIconValueFromBitmap(bitmap, IconValues.FolderEditOutline));
 
