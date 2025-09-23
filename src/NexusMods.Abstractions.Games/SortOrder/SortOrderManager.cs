@@ -47,8 +47,21 @@ public class SortOrderManager : ISortOrderManager, IDisposable
             await sortOrderVariety.ReconcileSortOrder(sortOrderId, token: token);
         }
     }
+    
+    protected async ValueTask CreateSortOrders(LoadoutId loadoutId, Optional<CollectionGroupId> collectionGroupId = default, CancellationToken token = default)
+    {
+        var parentEntity = collectionGroupId.HasValue
+            ? OneOf<LoadoutId, CollectionGroupId>.FromT1(collectionGroupId.Value)
+            : OneOf<LoadoutId, CollectionGroupId>.FromT0(loadoutId);
+        
+        foreach (var sortOrderVariety in _sortOrderVarieties.Values)
+        {
+            // Create the sort order for each variety
+            _ = await sortOrderVariety.GetOrCreateSortOrderFor(loadoutId, parentEntity, token);
+        }
+    }
 
-    public async ValueTask DeleteSortOrders(LoadoutId loadoutId, Optional<CollectionGroupId> collectionGroupId = default, CancellationToken token = default)
+    protected async ValueTask DeleteSortOrders(LoadoutId loadoutId, Optional<CollectionGroupId> collectionGroupId = default, CancellationToken token = default)
     {
         var parentEntity = collectionGroupId.HasValue
             ? OneOf<LoadoutId, CollectionGroupId>.FromT1(collectionGroupId.Value)
@@ -107,7 +120,7 @@ public class SortOrderManager : ISortOrderManager, IDisposable
                             case ChangeReason.Add:
                                 // Create the sort order for this loadout
                                 // Might not be needed if the other subscription to loadout items handles it
-                                // await state.UpdateLoadOrders(loadoutId, token: token);
+                                await state.CreateSortOrders(loadoutId, token: token);
                                 break;
                             case ChangeReason.Update:
                                 // If loadout changes, we handle that in a separate subscription
@@ -141,7 +154,7 @@ public class SortOrderManager : ISortOrderManager, IDisposable
                             case ChangeReason.Add:
                                 // Create the sort order for this collection group
                                 // Might not be needed if the other subscription to loadout items handles it
-                                // await state.UpdateLoadOrders(loadoutId, parentEntity, token: token);
+                                await state.CreateSortOrders(loadoutId, parentEntity, token: token);
                                 break;
                             case ChangeReason.Update:
                                 // If collection group changes, we handle that in a separate subscription
