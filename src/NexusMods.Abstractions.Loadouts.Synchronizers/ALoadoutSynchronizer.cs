@@ -220,6 +220,36 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         return result;
     }
 
+    public Dictionary<LoadoutItemGroup.ReadOnly, LoadoutFile.ReadOnly[]> GetFileConflictsByParentGroup(Loadout.ReadOnly loadout, bool removeDuplicates = true)
+    {
+        var db = loadout.Db;
+        var query = Loadout.FileConflictsByParentGroupQuery(db, loadout, removeDuplicates: removeDuplicates);
+        var result = query.ToDictionary(row => LoadoutItemGroup.Load(db,row.GroupId), row =>
+        {
+            var items = row.Item2.Select(tuple =>
+            {
+                var (entityId, locationId, targetPath) = tuple;
+                var file = LoadoutFile.Load(db, entityId);
+                return file;
+            }).ToArray();
+
+            return items;
+        }, comparer: LoadoutItemGroupComparer.Instance);
+
+        return result;
+    }
+
+    private class LoadoutItemGroupComparer : IEqualityComparer<LoadoutItemGroup.ReadOnly>, IAlternateEqualityComparer<EntityId, LoadoutItemGroup.ReadOnly>
+    {
+        public static readonly IEqualityComparer<LoadoutItemGroup.ReadOnly> Instance = new LoadoutItemGroupComparer();
+
+        public bool Equals(LoadoutItemGroup.ReadOnly x, LoadoutItemGroup.ReadOnly y) => x.Id.Equals(y.Id);
+        public int GetHashCode(LoadoutItemGroup.ReadOnly item) => item.Id.GetHashCode();
+        public bool Equals(EntityId alternate, LoadoutItemGroup.ReadOnly other) => other.Id.Equals(alternate);
+        public int GetHashCode(EntityId alternate) => alternate.GetHashCode();
+        public LoadoutItemGroup.ReadOnly Create(EntityId alternate) => throw new NotSupportedException();
+    }
+    
     public Dictionary<GamePath, SyncNode> BuildSyncTree<T>(T latestDiskState, T previousDiskState, Loadout.ReadOnly loadout) where T : IEnumerable<PathPartPair>
     {
         var referenceDb = _fileHashService.Current;

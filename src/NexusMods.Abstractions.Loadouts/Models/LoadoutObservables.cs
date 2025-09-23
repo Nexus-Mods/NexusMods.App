@@ -59,4 +59,11 @@ public partial class Loadout
             $"SELECT * FROM loadouts.FileConflicts({db}, {loadoutId}, {removeDuplicates})"
         );
     }
+
+    public static Query<(EntityId GroupId, List<(EntityId Id, LocationId Location, RelativePath Path)>)> FileConflictsByParentGroupQuery(IDb db, LoadoutId loadoutId, bool removeDuplicates)
+    {
+        return db.Connection.Query<(EntityId GroupId, List<(EntityId Id, LocationId Location, RelativePath Path)>)>(
+            $"SELECT * FROM loadouts.FileConflictsByParentGroup({db}, {loadoutId}, {removeDuplicates})"
+        );
+    }
 }
