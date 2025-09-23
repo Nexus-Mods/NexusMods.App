@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Sorting;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Games.CreationEngine.Abstractions;
@@ -20,8 +21,8 @@ public abstract class ACreationEngineSynchronizer : ALoadoutSynchronizer
             {pluginsFile.Path, pluginsFile},
         };
     }
-
-    protected override Dictionary<GamePath, IIntrinsicFile> IntrinsicFiles => _intrinsicFiles;
+ 
+    protected override Dictionary<GamePath, IIntrinsicFile> IntrinsicFiles(Loadout.ReadOnly _) => _intrinsicFiles;
     
     public override bool IsIgnoredBackupPath(GamePath path)
     {

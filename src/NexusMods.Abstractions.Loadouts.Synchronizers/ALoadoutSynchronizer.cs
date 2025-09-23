@@ -335,7 +335,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         }
 
         // Add in the intrinsic files
-        foreach (var file in IntrinsicFiles.Values)
+        foreach (var file in IntrinsicFiles(loadout).Values)
         {
             ref var found = ref CollectionsMarshal.GetValueRefOrAddDefault(syncTree, file.Path, out var exists);
             if (exists)
@@ -650,6 +650,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
     private async Task ActionWriteIntrinsics(Dictionary<GamePath, SyncNode> syncTree, IGameLocationsRegister register, IMainTransaction tx, Loadout.ReadOnly loadout, SynchronizeLoadoutJob? job)
     {
+        var intrinsicFiles = IntrinsicFiles(loadout);
         foreach (var (path, node) in syncTree)
         {
             if (!node.Actions.HasFlag(Actions.WriteIntrinsic))
@@ -658,7 +659,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             if (node.SourceItemType != LoadoutSourceItemType.Intrinsic)
                 throw new Exception("WriteIntrinsic should only be called on intrinsic files");
 
-            var instance = IntrinsicFiles[path];
+            var instance = intrinsicFiles[path];
             var resolvedPath = register.GetResolvedPath(path);
             resolvedPath.Parent.CreateDirectory();
             await using var stream = resolvedPath.Create();
@@ -669,6 +670,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
     private async Task AdaptLoadout(Dictionary<GamePath, SyncNode> syncTree, IGameLocationsRegister register, Loadout.ReadOnly loadout, IMainTransaction tx)
     {
+        var intrinsicFiles = IntrinsicFiles(loadout);
         foreach (var (path, node) in syncTree)
         {
             if (!node.Actions.HasFlag(Actions.AdaptLoadout))
@@ -677,7 +679,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             if (node.SourceItemType != LoadoutSourceItemType.Intrinsic)
                 throw new Exception("AdaptLoadout should only be called on intrinsic files");
 
-            var instance = IntrinsicFiles[path];
+            var instance = intrinsicFiles[path];
             var resolvedPath = register.GetResolvedPath(path);
             await using var stream = resolvedPath.Read();
             await instance.Ingest(stream, loadout, syncTree, tx);
@@ -1930,11 +1932,14 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     }
 
     /// <summary>
-    /// Gets a list of files intrinsic to this game. Such as mod order files, preference files, etc.
+    /// Gets a set of files intrinsic to this game. Such as mod order files, preference files, etc.
     /// These files will not be backed up and will not be included in the loadout directly. Instead, they are
     /// generated at sync time by calling the implementations of the files themselves. 
     /// </summary>
-    protected virtual Dictionary<GamePath, IIntrinsicFile> IntrinsicFiles { get; } = new();
+    protected virtual Dictionary<GamePath, IIntrinsicFile> IntrinsicFiles(Loadout.ReadOnly loadout)
+    {
+        return new();
+    }
 
     private static string GetNewShortName(IDb db, GameInstallMetadataId installationId)
     {
