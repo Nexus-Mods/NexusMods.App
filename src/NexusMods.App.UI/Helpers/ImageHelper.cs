@@ -25,7 +25,7 @@ public static class ImageHelper
         try
         {
             await using var iconStream = await game.Icon.GetStreamAsync();
-            return Bitmap.DecodeToWidth(iconStream, width);;
+            return Bitmap.DecodeToWidth(iconStream, width);
         }
         catch (Exception ex)
         {
