@@ -41,7 +41,6 @@ public class DownloadsPageViewModel : APageViewModel<IDownloadsPageViewModel>, I
         var filter = context switch
         {
             AllDownloadsPageContext => DownloadsFilter.All(),
-            CompletedDownloadsPageContext => DownloadsFilter.Completed(),
             GameSpecificDownloadsPageContext g => DownloadsFilter.ForGame(g.GameId),
             _ => DownloadsFilter.Active(),
         };
@@ -56,7 +55,6 @@ public class DownloadsPageViewModel : APageViewModel<IDownloadsPageViewModel>, I
         (HeaderTitle, HeaderDescription) = context switch
         {
             AllDownloadsPageContext => (Language.DownloadsLeftMenu_AllDownloads, Language.DownloadsPage_AllDownloads_Description),
-            CompletedDownloadsPageContext => (Language.DownloadsLeftMenu_AllCompleted, Language.DownloadsPage_AllCompleted_Description),
             GameSpecificDownloadsPageContext g => (string.Format(Language.DownloadsLeftMenu_GameSpecificDownloads, downloadsDataProvider.ResolveGameName(g.GameId)), Language.DownloadsPage_GameSpecificDownloads_Description),
             _ => (Language.InProgressTitleTextBlock, Language.DownloadsPage_Default_Description)
         };

@@ -15,9 +15,6 @@ public record DownloadsPageContext : IPageFactoryContext;
 [JsonName("NexusMods.App.UI.Pages.Downloads.AllDownloadsPageContext")]
 public record AllDownloadsPageContext : DownloadsPageContext;
 
-[JsonName("NexusMods.App.UI.Pages.Downloads.CompletedDownloadsPageContext")]
-public record CompletedDownloadsPageContext : DownloadsPageContext;
-
 [JsonName("NexusMods.App.UI.Pages.Downloads.GameSpecificDownloadsPageContext")]
 public record GameSpecificDownloadsPageContext(GameId GameId) : DownloadsPageContext
 {

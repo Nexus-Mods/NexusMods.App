@@ -25,7 +25,6 @@ public class DownloadsLeftMenuViewModel : AViewModel<IDownloadsLeftMenuViewModel
 {
     public WorkspaceId WorkspaceId { get; }
     public ILeftMenuItemViewModel LeftMenuItemAllDownloads { get; }
-    public ILeftMenuItemViewModel LeftMenuItemAllCompleted { get; }
 
     private ReadOnlyObservableCollection<ILeftMenuItemViewModel> _leftMenuItemsPerGameDownloads = new([]);
     public ReadOnlyObservableCollection<ILeftMenuItemViewModel> LeftMenuItemsPerGameDownloads => _leftMenuItemsPerGameDownloads;
@@ -55,21 +54,6 @@ public class DownloadsLeftMenuViewModel : AViewModel<IDownloadsLeftMenuViewModel
         {
             Text = new StringComponent(Language.DownloadsLeftMenu_AllDownloads),
             Icon = IconValues.Download,
-        };
-
-        // All Completed menu item
-        LeftMenuItemAllCompleted = new LeftMenuItemViewModel(
-            workspaceController,
-            WorkspaceId,
-            new PageData
-            {
-                FactoryId = DownloadsPageFactory.StaticId,
-                Context = new CompletedDownloadsPageContext(), // TODO: Add completed filter context when implemented
-            }
-        )
-        {
-            Text = new StringComponent(Language.DownloadsLeftMenu_AllCompleted),
-            Icon = IconValues.CheckCircle,
         };
 
         // Per-game downloads (dynamic)
