@@ -48,6 +48,22 @@ public class SortOrderManager : ISortOrderManager, IDisposable
         }
     }
 
+    public async ValueTask DeleteSortOrders(LoadoutId loadoutId, Optional<CollectionGroupId> collectionGroupId = default, CancellationToken token = default)
+    {
+        var parentEntity = collectionGroupId.HasValue
+            ? OneOf<LoadoutId, CollectionGroupId>.FromT1(collectionGroupId.Value)
+            : OneOf<LoadoutId, CollectionGroupId>.FromT0(loadoutId);
+        
+        foreach (var sortOrderVariety in _sortOrderVarieties.Values)
+        {
+            // Delete the sort order for each variety
+            var sortOrderId = sortOrderVariety.GetSortOrderIdFor(parentEntity);
+            if (!sortOrderId.HasValue) continue;
+            
+            await sortOrderVariety.DeleteSortOrder(sortOrderId.Value, token: token);
+        }
+    }
+
     /// <inheritdoc />
     public IReadOnlyList<ISortOrderVariety> GetSortOrderVarieties()
     {
@@ -94,7 +110,7 @@ public class SortOrderManager : ISortOrderManager, IDisposable
                                 break;
                             case ChangeReason.Remove:
                                 // Remove the orphaned sort orders
-                                // TODO: Remove loadout sort order
+                                await state.DeleteSortOrders(loadoutId, token: token);
                                 break;
                         }
                     }
@@ -127,7 +143,7 @@ public class SortOrderManager : ISortOrderManager, IDisposable
                                 break;
                             case ChangeReason.Remove:
                                 // Remove the orphaned sort orders
-                                // TODO remove the collection sort order
+                                await state.DeleteSortOrders(loadoutId, parentEntity, token: token);
                                 break;
                         }
                     }

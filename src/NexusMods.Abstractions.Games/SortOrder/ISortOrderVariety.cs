@@ -100,7 +100,11 @@ public interface ISortOrderVariety
     [Pure]
     public ValueTask ReconcileSortOrder(SortOrderId sortOrderId, IDb? db = null, CancellationToken token = default);
 
-
+    /// <summary>
+    /// Deletes the SortOrder and all child SortOrderItems. 
+    /// </summary>
+    [Pure]
+    public ValueTask DeleteSortOrder(SortOrderId sortOrderId, CancellationToken token = default);
     
     /// <summary>
     /// Static metadata for the sort order type that can be accessed by derived classes for reuse

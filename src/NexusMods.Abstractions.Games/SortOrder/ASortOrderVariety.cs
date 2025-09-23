@@ -216,6 +216,30 @@ public abstract class ASortOrderVariety<TKey, TSortableItem, TItemLoadoutData, T
         _logger.LogError("Reconciliation of sort order {SortOrderId} failed after 4 attempts", sortOrderId);
     }
     
+    /// <inheritdoc />
+    public virtual async ValueTask DeleteSortOrder(SortOrderId sortOrderId, CancellationToken token = default)
+    {
+        using var tx = Connection.BeginTransaction();
+        
+        // Delete the items
+        foreach (var item in Connection.Db.Datoms(SortOrderItem.ParentSortOrder, sortOrderId))
+        {
+            tx.Delete(item.E, recursive: false);
+        }
+        
+        // Delete the sort order
+        tx.Delete(sortOrderId, recursive: false);
+        
+        try
+        {
+            await tx.Commit();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to delete sort order {SortOrderId}", sortOrderId);
+        }
+    }
+    
 
 #endregion public members
     
