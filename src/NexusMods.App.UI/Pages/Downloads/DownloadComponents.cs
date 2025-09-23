@@ -252,7 +252,7 @@ public static class DownloadComponents
     /// </summary>
     public sealed class StatusComponent : ReactiveR3Object, IItemModelComponent<StatusComponent>, IComparable<StatusComponent>
     {
-        public IReadOnlyBindableReactiveProperty<Percent> Progress { get; }
+        public IReadOnlyBindableReactiveProperty<double> Progress { get; }
         public IReadOnlyBindableReactiveProperty<JobStatus> Status { get; }
         
         // Commands
@@ -271,7 +271,7 @@ public static class DownloadComponents
             Observable<Percent> progressObservable,
             Observable<JobStatus> statusObservable)
         {
-            Progress = progressObservable.ToBindableReactiveProperty(initialProgress);
+            Progress = progressObservable.Select(p => p.Value).ToBindableReactiveProperty(initialProgress.Value);
             Status = statusObservable.ToBindableReactiveProperty(initialStatus);
 
             // Set up can-execute properties based on status  

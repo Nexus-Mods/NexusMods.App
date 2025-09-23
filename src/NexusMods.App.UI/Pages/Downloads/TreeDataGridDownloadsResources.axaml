@@ -91,7 +91,7 @@
                         <DataTemplate DataType="{x:Type downloads:DownloadComponents+StatusComponent}">
                             <StackPanel Orientation="Horizontal" Spacing="8">
                                 <!-- Progress Bar -->
-                                <ProgressBar Value="{Binding Progress.Value}" 
+                                <ProgressBar Value="{CompiledBinding Progress.Value}" 
                                              Classes="DownloadBar"
                                              Minimum="0" Maximum="1" Width="120"  />
                                 
