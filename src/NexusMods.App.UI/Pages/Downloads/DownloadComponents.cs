@@ -3,7 +3,6 @@ using Humanizer.Bytes;
 using NexusMods.Abstractions.Downloads;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.UI;
-using NexusMods.Abstractions.UI.Extensions;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Controls.Filters;
 using NexusMods.App.UI.Controls.TreeDataGrid.Filters;
@@ -13,49 +12,9 @@ using R3;
 
 namespace NexusMods.App.UI.Pages.Downloads;
 
-/*
- * DOWNLOADS UI COMPONENTS OVERVIEW
- * ================================
- * 
- * This file contains the reactive components used to display download data in the Downloads TreeDataGrid.
- * The Downloads UI consists of 5 main columns with the following structure:
- * 
- * COLUMNS & COMPONENTS:
- * 1. Name+Icon Column:
- *    - Uses DownloadColumns.Name.NameComponentKey (from this file)
- *    - Uses DownloadColumns.Name.ImageComponentKey (from this file)
- *    - Icon should show mod/download icon when available.
- * 
- * 2. Game Column:  
- *    - Uses DownloadComponents.GameComponent (defined in this file)
- *    - Shows game name and game icon
- * 
- * 3. Size Column:
- *    - Uses DownloadComponents.SizeProgressComponent (defined in this file)
- *    - Displays format: "15.6MB of 56MB" (downloaded of total)
- *    - No ETA calculations (removed per requirements)
- * 
- * 4. Speed Column:
- *    - Uses DownloadComponents.SpeedComponent (defined in this file)
- *    - Shows transfer rate: "5.2 MB/s" or "--" when inactive
- * 
- * 5. Status Column:
- *    - Uses DownloadComponents.StatusComponent (defined in this file)
- *    - Contains embedded controls: progress bar, pause/resume button, cancel button, kebab menu
- *    - All download actions consolidated into this single column
- * 
- * ADDITIONAL COMPONENTS:
- * - DownloadRef: Reference holder for DownloadInfo objects (defined as top-level in this file)
- * - Column definitions are in DownloadColumns.cs
- * 
- * REACTIVE ARCHITECTURE:
- * - All components use R3 reactive properties for real-time updates
- * - Subscribe to DownloadInfo property changes via ReactiveUI.WhenAnyValue()
- * - Proper disposal management with WhenActivated patterns
- */
-
 /// <summary>
-/// Component that holds a reference to the download information.
+/// DownloadRef: Reference holder for DownloadInfo objects
+/// - This component is static and never changes
 /// </summary>
 public sealed class DownloadRef(DownloadInfo download) : ReactiveR3Object, IItemModelComponent<DownloadRef>, IComparable<DownloadRef>
 {
@@ -72,16 +31,15 @@ public sealed class DownloadRef(DownloadInfo download) : ReactiveR3Object, IItem
 }
 
 /// <summary>
-/// Components for Downloads data display.
-/// </summary>
+    /// Components for Downloads data display.
+    /// </summary>
 public static class DownloadComponents
 {
     /// <summary>
-    /// Component that displays game name for each download.
+    /// GAME COLUMN COMPONENT
+    /// - Shows game name and game icon
+    /// - This is static, never changes.
     /// </summary>
-    /// <remarks>
-    ///     This is static, never changes.
-    /// </remarks>
     public sealed class GameComponent(string gameName) : ReactiveR3Object, IItemModelComponent<GameComponent>, IComparable<GameComponent>
     {
         public IReadOnlyBindableReactiveProperty<string> GameName { get; } = new BindableReactiveProperty<string>(gameName);
@@ -121,7 +79,9 @@ public static class DownloadComponents
     }
 
     /// <summary>
-    /// Component that displays download progress in "15.6 MB of 56 MB" format.
+    /// SIZE COLUMN COMPONENT
+    /// - Displays format: "15.6MB of 56MB" (downloaded of total)
+    /// - No ETA calculations (removed per requirements)
     /// </summary>
     public sealed class SizeProgressComponent : ReactiveR3Object, IItemModelComponent<SizeProgressComponent>, IComparable<SizeProgressComponent>
     {
@@ -189,7 +149,8 @@ public static class DownloadComponents
     }
 
     /// <summary>
-    /// Component that displays transfer rate as "5.2 MB/s" or "--" when inactive.
+    /// SPEED COLUMN COMPONENT
+    /// - Shows transfer rate: "5.2 MB/s" or "--" when inactive
     /// </summary>
     public sealed class SpeedComponent : ReactiveR3Object, IItemModelComponent<SpeedComponent>, IComparable<SpeedComponent>
     {
@@ -248,7 +209,9 @@ public static class DownloadComponents
     }
 
     /// <summary>
-    /// Component with embedded progress bar, pause/resume, cancel, and kebab menu.
+    /// STATUS COLUMN COMPONENT
+    /// - Contains embedded controls: progress bar, pause/resume button, cancel button, kebab menu
+    /// - All download actions consolidated into this single column
     /// </summary>
     public sealed class StatusComponent : ReactiveR3Object, IItemModelComponent<StatusComponent>, IComparable<StatusComponent>
     {

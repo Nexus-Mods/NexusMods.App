@@ -3,47 +3,17 @@ using NexusMods.App.UI.Extensions;
 
 namespace NexusMods.App.UI.Pages.Downloads;
 
-/*
- * DOWNLOADS COLUMN DEFINITIONS OVERVIEW  
- * ====================================
- * 
- * This file defines the column structure for the Downloads TreeDataGrid.
- * Each column implements ICompositeColumnDefinition<T> and maps to specific components.
- * 
- * COLUMN STRUCTURE (6 columns total):
- * 
- * 1. NAME+ICON COLUMN (defined here as DownloadColumns.Name):
- *    - Components: NameComponent + ImageComponent  
- *    - Shows download/mod name with icon
- * 
- * 2. GAME COLUMN (defined here as DownloadColumns.Game):
- *    - Maps to: DownloadComponents.GameComponent (from DownloadComponents.cs)
- *    - Shows: Game name + game icon
- *    - Sortable by game name alphabetically
- * 
- * 3. SIZE COLUMN (defined here as DownloadColumns.Size):  
- *    - Maps to: DownloadComponents.SizeProgressComponent (from DownloadComponents.cs)
- *    - Format: "15.6MB of 56MB" (downloaded of total)
- *    - Sortable by total file size
- * 
- * 4. SPEED COLUMN (defined here as DownloadColumns.Speed):
- *    - Maps to: DownloadComponents.SpeedComponent (from DownloadComponents.cs)  
- *    - Shows: Transfer rate "5.2 MB/s" or "--"
- *    - Sortable by current transfer rate
- * 
- * 5. STATUS COLUMN (defined here as DownloadColumns.Status):
- *    - Maps to: DownloadComponents.StatusComponent (from DownloadComponents.cs)
- *    - Contains: Progress bar + Pause/Resume + Cancel + Kebab menu
- *    - Consolidated all download actions into single column
- *    - Sortable by completion percentage (0% to 100%)
- */
-
 /// <summary>
 /// Defines column template resource keys and component keys for Downloads.
 /// </summary>
 public static class DownloadColumns
 {
-    /// <summary>Displays download name with thumbnail, sorted alphabetically by name.</summary>
+    /// <summary>
+    /// NAME+ICON COLUMN
+    /// - Components: NameComponent + ImageComponent  
+    /// - Shows download/mod name with icon
+    /// - Sorted alphabetically by name
+    /// </summary>
     public sealed class Name : ICompositeColumnDefinition<Name>
     {
         public static int Compare<TKey>(CompositeItemModel<TKey> a, CompositeItemModel<TKey> b) where TKey : notnull
@@ -61,7 +31,12 @@ public static class DownloadColumns
         public static string GetColumnTemplateResourceKey() => ColumnTemplateResourceKey;
     }
 
-    /// <summary>Displays game name with game icon, sorted alphabetically by name.</summary>
+    /// <summary>
+    /// GAME COLUMN
+    /// - Maps to: DownloadComponents.GameComponent (from DownloadComponents.cs)
+    /// - Shows: Game name + game icon
+    /// - Sortable by game name alphabetically
+    /// </summary>
     public sealed class Game : ICompositeColumnDefinition<Game>
     {
         public static int Compare<TKey>(CompositeItemModel<TKey> a, CompositeItemModel<TKey> b) where TKey : notnull
@@ -84,7 +59,12 @@ public static class DownloadColumns
         public static string GetColumnTemplateResourceKey() => ColumnTemplateResourceKey;
     }
 
-    /// <summary>Displays size as "15.6 MB of 56 MB" format, sorted by total file size.</summary>
+    /// <summary>
+    /// SIZE COLUMN
+    /// - Maps to: DownloadComponents.SizeProgressComponent (from DownloadComponents.cs)
+    /// - Format: "15.6MB of 56MB" (downloaded of total)
+    /// - Sortable by total file size
+    /// </summary>
     public sealed class Size : ICompositeColumnDefinition<Size>
     {
         public static int Compare<TKey>(CompositeItemModel<TKey> a, CompositeItemModel<TKey> b) where TKey : notnull
@@ -107,7 +87,12 @@ public static class DownloadColumns
         public static string GetColumnTemplateResourceKey() => ColumnTemplateResourceKey;
     }
 
-    /// <summary>Shows transfer rate as "5.2 MB/s" or "--" when inactive, sorted by speed.</summary>
+    /// <summary>
+    /// SPEED COLUMN
+    /// - Maps to: DownloadComponents.SpeedComponent (from DownloadComponents.cs)  
+    /// - Shows: Transfer rate "5.2 MB/s" or "--" when inactive
+    /// - Sortable by current transfer rate
+    /// </summary>
     public sealed class Speed : ICompositeColumnDefinition<Speed>
     {
         public static int Compare<TKey>(CompositeItemModel<TKey> a, CompositeItemModel<TKey> b) where TKey : notnull
@@ -130,7 +115,13 @@ public static class DownloadColumns
         public static string GetColumnTemplateResourceKey() => ColumnTemplateResourceKey;
     }
 
-    /// <summary>Contains progress bar, pause/resume, cancel buttons, and kebab menu, sorted by completion %.</summary>
+    /// <summary>
+    /// STATUS COLUMN
+    /// - Maps to: DownloadComponents.StatusComponent (from DownloadComponents.cs)
+    /// - Contains: Progress bar + Pause/Resume + Cancel + Kebab menu
+    /// - Consolidated all download actions into single column
+    /// - Sortable by completion percentage (0% to 100%)
+    /// </summary>
     public sealed class Status : ICompositeColumnDefinition<Status>
     {
         public static int Compare<TKey>(CompositeItemModel<TKey> a, CompositeItemModel<TKey> b) where TKey : notnull
