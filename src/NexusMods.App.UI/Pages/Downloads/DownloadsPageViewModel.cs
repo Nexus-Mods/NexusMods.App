@@ -40,7 +40,7 @@ public class DownloadsPageViewModel : APageViewModel<IDownloadsPageViewModel>, I
         // Create filter based on context
         var filter = context switch
         {
-            AllDownloadsPageContext => DownloadsFilter.Active(), // All Downloads page excludes completed downloads
+            AllDownloadsPageContext => DownloadsFilter.All(),
             CompletedDownloadsPageContext => DownloadsFilter.Completed(),
             GameSpecificDownloadsPageContext g => DownloadsFilter.ForGame(g.GameId),
             _ => DownloadsFilter.Active(),
