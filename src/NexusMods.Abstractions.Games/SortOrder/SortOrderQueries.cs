@@ -14,4 +14,13 @@ public static class SortOrderQueries
             )
             .Observe(x => x.ChangedCollection);
     }
+    
+    public static IObservable<IChangeSet<(EntityId ItemId, EntityId GroupId, EntityId CollectionId, EntityId LoadoutId), EntityId>> TrackLoadoutItemChanges(IConnection connection, GameId gameId)
+    {
+        return connection.Query<(EntityId ItemId, EntityId GroupId, EntityId CollectionId, EntityId LoadoutId)>($"""
+                                                 SELECT * FROM sortorder.TrackLoadoutItemChanges({connection}, {gameId.Value})
+                                                 """
+            )
+            .Observe(x => x.ItemId);
+    }
 }
