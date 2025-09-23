@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using System.Reactive.Linq;
+using DynamicData;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Downloads;
 using NexusMods.Abstractions.Games;
@@ -33,6 +34,8 @@ public class DownloadsPageViewModel : APageViewModel<IDownloadsPageViewModel>, I
     public Observable<bool> SelectionHasRunningItems { get; }
     public Observable<bool> SelectionHasPausedItems { get; }
     public Observable<bool> SelectionHasActiveItems { get; }
+    public Observable<bool> HasRunningItems { get; }
+    public Observable<bool> HasPausedItems { get; }
 
     public DownloadsPageViewModel(IWindowManager windowManager, IServiceProvider serviceProvider, DownloadsPageContext context) : base(windowManager)
     {
@@ -60,50 +63,62 @@ public class DownloadsPageViewModel : APageViewModel<IDownloadsPageViewModel>, I
             _ => (Language.InProgressTitleTextBlock, Language.DownloadsPage_Default_Description)
         };
 
-        // Commands
-        PauseAllCommand = new ReactiveCommand<Unit>(_ => downloadsService.PauseAll());
-        ResumeAllCommand = new ReactiveCommand<Unit>(_ => downloadsService.ResumeAll());
-        
-        var hasSelection = this.WhenAnyValue(vm => vm.SelectionCount)
-            .ToObservable()
-            .Select(count => count > 0);
-
         var runningCountChanges = downloadsService.GetDownloadsByStatus(JobStatus.Running)
             // NOTE(sewer): This is a hack.
             //
-            // We can't subscribe to DownloadComponents.StatusComponent directly because
-            // the JobStatus field there is derived from the model, like in 
-            // downloadsService.GetDownloadsByStatus(JobStatus.Running) . 
+            // When we pause/resume a selected item, there's a chance that GetDownloadsByStatus
+            // will fire before the status of the actual job changes. This means that the evaluation
+            // result will not be correct, so we need to delay for a short moment to make sure it is.
+            // 
+            // As far as workarounds go, we can't subscribe to DownloadComponents.StatusComponent directly because
+            // the JobStatus field there is derived from the model, i.e. also from GetDownloadsByStatus(JobStatus.Running)
+            //
             // We can't guarantee a specific execution order; so we wait with a small hack.
-            .Delay(TimeSpan.FromMilliseconds(100)) 
+            .Delay(TimeSpan.FromMilliseconds(64))
             .OnUI()
             .Select(_ => Unit.Default);
         
         // Create observables that track selection and status changes
-        var statusReevaluationTrigger = this.WhenAnyValue(vm => vm.SelectionCount)
+        var selectionStatusReevaluationTrigger = this.WhenAnyValue(vm => vm.SelectionCount)
             .Select(_ => Unit.Default)
             .Merge(runningCountChanges);
 
-        SelectionHasRunningItems = statusReevaluationTrigger
+        SelectionHasRunningItems = selectionStatusReevaluationTrigger
             .Select(_ => Adapter.SelectedModels
                 .Select(model => model.GetOptional<DownloadComponents.StatusComponent>(DownloadColumns.Status.ComponentKey))
                 .Where(opt => opt.HasValue)
                 .Any(opt => opt.Value.Status.Value == JobStatus.Running))
             .ToObservable();
         
-        SelectionHasPausedItems = statusReevaluationTrigger
+        SelectionHasPausedItems = selectionStatusReevaluationTrigger
             .Select(_ => Adapter.SelectedModels
                 .Select(model => model.GetOptional<DownloadComponents.StatusComponent>(DownloadColumns.Status.ComponentKey))
                 .Where(opt => opt.HasValue)
                 .Any(opt => opt.Value.Status.Value == JobStatus.Paused))
             .ToObservable();
         
-        SelectionHasActiveItems = statusReevaluationTrigger
+        SelectionHasActiveItems = selectionStatusReevaluationTrigger
             .Select(_ => Adapter.SelectedModels
                 .Select(model => model.GetOptional<DownloadComponents.StatusComponent>(DownloadColumns.Status.ComponentKey))
                 .Where(opt => opt.HasValue)
                 .Any(opt => opt.Value.Status.Value.IsActive()))
             .ToObservable();
+        
+        HasRunningItems = downloadsService.GetDownloadsByStatus(JobStatus.Running)
+            .QueryWhenChanged(items => items.Count > 0)
+            .OnUI()
+            .ToObservable()
+            .Prepend(false);
+        
+        HasPausedItems = downloadsService.GetDownloadsByStatus(JobStatus.Paused)
+            .QueryWhenChanged(items => items.Count > 0)
+            .OnUI()
+            .ToObservable()
+            .Prepend(false);
+
+        // Commands with CanExecute
+        PauseAllCommand = HasRunningItems.ToReactiveCommand<Unit>(_ => downloadsService.PauseAll());
+        ResumeAllCommand = HasPausedItems.ToReactiveCommand<Unit>(_ => downloadsService.ResumeAll());
         
         PauseSelectedCommand = SelectionHasRunningItems.ToReactiveCommand<Unit>(
             executeAsync: (_, _) =>

@@ -10,6 +10,8 @@ public interface IDownloadsPageViewModel : IPageViewModelInterface
     public Observable<bool> SelectionHasRunningItems { get; }
     public Observable<bool> SelectionHasPausedItems { get; }
     public Observable<bool> SelectionHasActiveItems { get; }
+    public Observable<bool> HasRunningItems { get; }
+    public Observable<bool> HasPausedItems { get; }
     public ReactiveCommand<Unit> PauseAllCommand { get; }
     public ReactiveCommand<Unit> ResumeAllCommand { get; }
     public ReactiveCommand<Unit> PauseSelectedCommand { get; }
