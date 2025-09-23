@@ -62,7 +62,7 @@
 
         <Style Selector="^ TextBlock">
             <Setter Property="Theme" Value="{StaticResource BodySMNormalTheme}" />
-            <Setter Property="HorizontalAlignment" Value="Left" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
             <Setter Property="VerticalAlignment" Value="Center" />
 
             <!-- LineHeight messes with text Alignment, this would be a workaround -->
@@ -70,9 +70,9 @@
         </Style>
 
         <Style Selector="^ LayoutTransformControl">
-            <Setter Property="HorizontalAlignment" Value="Left" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
             <Setter Property="VerticalAlignment" Value="Center" />
-            <Setter Property="Padding" Value="8,0,0,0" />
+            <Setter Property="Padding" Value="0" />
         </Style>
 
         <!-- Paused Download Bar Style -->
