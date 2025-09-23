@@ -66,7 +66,7 @@
                                              Fill="None"
                                              ShowIcon="Left"
                                              LeftIcon="{x:Static icons:IconValues.Pause}"
-                                             IsVisible="{Binding HasRunningItems^}" />
+                                             IsVisible="{Binding SelectionHasRunningItems^}" />
 
                     <controls:StandardButton x:Name="ResumeSelectedButton"
                                              Text=""
@@ -75,7 +75,7 @@
                                              Fill="None"
                                              ShowIcon="Left"
                                              LeftIcon="{x:Static icons:IconValues.PlayArrow}"
-                                             IsVisible="{Binding HasPausedItems^}" />
+                                             IsVisible="{Binding SelectionHasPausedItems^}" />
 
                     <controls:StandardButton x:Name="CancelSelectedButton"
                                              Text=""
@@ -84,7 +84,7 @@
                                              Fill="None"
                                              ShowIcon="Left"
                                              LeftIcon="{x:Static icons:IconValues.Close}"
-                                             IsVisible="{Binding HasActiveItems^}" />
+                                             IsVisible="{Binding SelectionHasActiveItems^}" />
                 </ItemsControl>
             </controls:Toolbar>
 

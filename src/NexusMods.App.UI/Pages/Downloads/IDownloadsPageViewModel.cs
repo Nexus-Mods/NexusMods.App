@@ -7,9 +7,9 @@ public interface IDownloadsPageViewModel : IPageViewModelInterface
 {
     public DownloadsTreeDataGridAdapter Adapter { get; }
     public int SelectionCount { get; }
-    public Observable<bool> HasRunningItems { get; }
-    public Observable<bool> HasPausedItems { get; }
-    public Observable<bool> HasActiveItems { get; }
+    public Observable<bool> SelectionHasRunningItems { get; }
+    public Observable<bool> SelectionHasPausedItems { get; }
+    public Observable<bool> SelectionHasActiveItems { get; }
     public ReactiveCommand<Unit> PauseAllCommand { get; }
     public ReactiveCommand<Unit> ResumeAllCommand { get; }
     public ReactiveCommand<Unit> PauseSelectedCommand { get; }

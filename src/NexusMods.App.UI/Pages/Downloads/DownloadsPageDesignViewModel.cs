@@ -19,9 +19,9 @@ public class DownloadsPageDesignViewModel : APageViewModel<IDownloadsPageViewMod
 {
     public DownloadsTreeDataGridAdapter Adapter { get; }
     public int SelectionCount => 0;
-    public Observable<bool> HasRunningItems { get; } = R3.Observable.Return(false);
-    public Observable<bool> HasPausedItems { get; } = R3.Observable.Return(false);
-    public Observable<bool> HasActiveItems { get; } = R3.Observable.Return(false);
+    public Observable<bool> SelectionHasRunningItems { get; } = R3.Observable.Return(false);
+    public Observable<bool> SelectionHasPausedItems { get; } = R3.Observable.Return(false);
+    public Observable<bool> SelectionHasActiveItems { get; } = R3.Observable.Return(false);
 
     public bool IsEmptyStateActive { get; set; } = false;
     public string HeaderTitle { get; } = Language.DownloadsLeftMenu_AllDownloads;

@@ -30,9 +30,9 @@ public class DownloadsPageViewModel : APageViewModel<IDownloadsPageViewModel>, I
     public ReactiveCommand<Unit> PauseSelectedCommand { get; }
     public ReactiveCommand<Unit> ResumeSelectedCommand { get; }
     public ReactiveCommand<Unit> CancelSelectedCommand { get; }
-    public Observable<bool> HasRunningItems { get; }
-    public Observable<bool> HasPausedItems { get; }
-    public Observable<bool> HasActiveItems { get; }
+    public Observable<bool> SelectionHasRunningItems { get; }
+    public Observable<bool> SelectionHasPausedItems { get; }
+    public Observable<bool> SelectionHasActiveItems { get; }
 
     public DownloadsPageViewModel(IWindowManager windowManager, IServiceProvider serviceProvider, DownloadsPageContext context) : base(windowManager)
     {
@@ -84,28 +84,28 @@ public class DownloadsPageViewModel : APageViewModel<IDownloadsPageViewModel>, I
             .Select(_ => Unit.Default)
             .Merge(runningCountChanges);
 
-        HasRunningItems = statusReevaluationTrigger
+        SelectionHasRunningItems = statusReevaluationTrigger
             .Select(_ => Adapter.SelectedModels
                 .Select(model => model.GetOptional<DownloadComponents.StatusComponent>(DownloadColumns.Status.ComponentKey))
                 .Where(opt => opt.HasValue)
                 .Any(opt => opt.Value.Status.Value == JobStatus.Running))
             .ToObservable();
         
-        HasPausedItems = statusReevaluationTrigger
+        SelectionHasPausedItems = statusReevaluationTrigger
             .Select(_ => Adapter.SelectedModels
                 .Select(model => model.GetOptional<DownloadComponents.StatusComponent>(DownloadColumns.Status.ComponentKey))
                 .Where(opt => opt.HasValue)
                 .Any(opt => opt.Value.Status.Value == JobStatus.Paused))
             .ToObservable();
         
-        HasActiveItems = statusReevaluationTrigger
+        SelectionHasActiveItems = statusReevaluationTrigger
             .Select(_ => Adapter.SelectedModels
                 .Select(model => model.GetOptional<DownloadComponents.StatusComponent>(DownloadColumns.Status.ComponentKey))
                 .Where(opt => opt.HasValue)
                 .Any(opt => opt.Value.Status.Value.IsActive()))
             .ToObservable();
         
-        PauseSelectedCommand = HasRunningItems.ToReactiveCommand<Unit>(
+        PauseSelectedCommand = SelectionHasRunningItems.ToReactiveCommand<Unit>(
             executeAsync: (_, _) =>
             {
                 foreach (var model in Adapter.SelectedModels)
@@ -125,7 +125,7 @@ public class DownloadsPageViewModel : APageViewModel<IDownloadsPageViewModel>, I
             configureAwait: false
         );
         
-        ResumeSelectedCommand = HasPausedItems.ToReactiveCommand<Unit>(
+        ResumeSelectedCommand = SelectionHasPausedItems.ToReactiveCommand<Unit>(
             executeAsync: (_, _) =>
             {
                 foreach (var model in Adapter.SelectedModels)
@@ -145,7 +145,7 @@ public class DownloadsPageViewModel : APageViewModel<IDownloadsPageViewModel>, I
             configureAwait: false
         );
 
-        CancelSelectedCommand = HasActiveItems.ToReactiveCommand<Unit>(
+        CancelSelectedCommand = SelectionHasActiveItems.ToReactiveCommand<Unit>(
             executeAsync: (_, _) =>
             {
                 foreach (var model in Adapter.SelectedModels)
