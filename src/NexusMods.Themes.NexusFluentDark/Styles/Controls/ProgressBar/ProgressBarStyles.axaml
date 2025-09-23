@@ -1,4 +1,4 @@
-﻿<Styles xmlns="https://github.com/avaloniaui"
+<Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <!-- Preview -->
@@ -73,6 +73,12 @@
             <Setter Property="HorizontalAlignment" Value="Left" />
             <Setter Property="VerticalAlignment" Value="Center" />
             <Setter Property="Padding" Value="8,0,0,0" />
+        </Style>
+
+        <!-- Paused Download Bar Style -->
+        <Style Selector="^.Paused">
+            <Setter Property="Foreground" Value="{StaticResource BrandNeutral600Brush}" />
+            <Setter Property="Background" Value="{StaticResource SurfaceHighBrush}" />
         </Style>
     </Style>
 

@@ -94,6 +94,7 @@
                                 <!-- Progress Bar (visible when not completed) -->
                                 <ProgressBar Value="{CompiledBinding Progress.Value}" 
                                              Classes="DownloadBar"
+                                             Classes.Paused="{CompiledBinding IsPaused.Value}"
                                              Minimum="0" Maximum="1" Width="120"
                                              IsVisible="{CompiledBinding !IsCompleted.Value}" />
                                 

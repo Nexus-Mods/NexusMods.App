@@ -217,6 +217,7 @@ public static class DownloadComponents
     {
         public IReadOnlyBindableReactiveProperty<double> Progress { get; }
         public IReadOnlyBindableReactiveProperty<JobStatus> Status { get; }
+        public IReadOnlyBindableReactiveProperty<bool> IsPaused { get; }
         
         // Commands
         public ReactiveCommand<Unit> PauseCommand { get; } = new();
@@ -237,6 +238,7 @@ public static class DownloadComponents
         {
             Progress = progressObservable.Select(p => p.Value).ToBindableReactiveProperty(initialProgress.Value);
             Status = statusObservable.ToBindableReactiveProperty(initialStatus);
+            IsPaused = statusObservable.Select(status => status == JobStatus.Paused).ToBindableReactiveProperty(initialStatus == JobStatus.Paused);
 
             // Set up can-execute properties based on status  
             CanPause = statusObservable
