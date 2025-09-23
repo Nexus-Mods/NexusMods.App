@@ -52,7 +52,7 @@ public enum DownloadsScope : byte
     Completed = 2,
     
     /// <summary>
-    /// Show active downloads for a specific game.
+    /// Show all downloads for a specific game.
     /// </summary>
     GameSpecific = 3,
 }
