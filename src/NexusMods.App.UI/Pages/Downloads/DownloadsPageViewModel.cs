@@ -32,6 +32,7 @@ public class DownloadsPageViewModel : APageViewModel<IDownloadsPageViewModel>, I
     public ReactiveCommand<Unit> CancelSelectedCommand { get; }
     public Observable<bool> HasRunningItems { get; }
     public Observable<bool> HasPausedItems { get; }
+    public Observable<bool> HasActiveItems { get; }
 
     public DownloadsPageViewModel(IWindowManager windowManager, IServiceProvider serviceProvider, DownloadsPageContext context) : base(windowManager)
     {
@@ -97,6 +98,13 @@ public class DownloadsPageViewModel : APageViewModel<IDownloadsPageViewModel>, I
                 .Any(opt => opt.Value.Status.Value == JobStatus.Paused))
             .ToObservable();
         
+        HasActiveItems = statusReevaluationTrigger
+            .Select(_ => Adapter.SelectedModels
+                .Select(model => model.GetOptional<DownloadComponents.StatusComponent>(DownloadColumns.Status.ComponentKey))
+                .Where(opt => opt.HasValue)
+                .Any(opt => opt.Value.Status.Value.IsActive()))
+            .ToObservable();
+        
         PauseSelectedCommand = HasRunningItems.ToReactiveCommand<Unit>(
             executeAsync: (_, _) =>
             {
@@ -137,13 +145,16 @@ public class DownloadsPageViewModel : APageViewModel<IDownloadsPageViewModel>, I
             configureAwait: false
         );
 
-        CancelSelectedCommand = hasSelection.ToReactiveCommand<Unit>(
+        CancelSelectedCommand = HasActiveItems.ToReactiveCommand<Unit>(
             executeAsync: (_, _) =>
             {
                 foreach (var model in Adapter.SelectedModels)
                 {
                     var downloadRef = model.GetOptional<DownloadRef>(DownloadColumns.DownloadRefComponentKey);
-                    if (downloadRef.HasValue)
+                    var statusComponent = model.GetOptional<DownloadComponents.StatusComponent>(DownloadColumns.Status.ComponentKey);
+                    
+                    // Only cancel downloads that are currently active (running or paused)
+                    if (downloadRef.HasValue && statusComponent.HasValue && statusComponent.Value.Status.Value.IsActive())
                         downloadsService.CancelDownload(downloadRef.Value.Download);
                 }
 

@@ -83,7 +83,8 @@
                                              Size="Toolbar"
                                              Fill="None"
                                              ShowIcon="Left"
-                                             LeftIcon="{x:Static icons:IconValues.Close}" />
+                                             LeftIcon="{x:Static icons:IconValues.Close}"
+                                             IsVisible="{Binding HasActiveItems^}" />
                 </ItemsControl>
             </controls:Toolbar>
 

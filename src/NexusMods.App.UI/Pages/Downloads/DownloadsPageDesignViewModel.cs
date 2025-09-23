@@ -21,7 +21,8 @@ public class DownloadsPageDesignViewModel : APageViewModel<IDownloadsPageViewMod
     public int SelectionCount => 0;
     public Observable<bool> HasRunningItems { get; } = R3.Observable.Return(false);
     public Observable<bool> HasPausedItems { get; } = R3.Observable.Return(false);
-    
+    public Observable<bool> HasActiveItems { get; } = R3.Observable.Return(false);
+
     public bool IsEmptyStateActive { get; set; } = false;
     public string HeaderTitle { get; } = Language.DownloadsLeftMenu_AllDownloads;
     public string HeaderDescription { get; } = Language.DownloadsPage_AllDownloads_Description;
