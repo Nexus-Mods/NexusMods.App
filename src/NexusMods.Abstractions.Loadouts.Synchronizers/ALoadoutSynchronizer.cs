@@ -333,6 +333,28 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 }
             }
         }
+
+        // Add in the intrinsic files
+        foreach (var file in IntrinsicFiles(loadout).Values)
+        {
+            ref var found = ref CollectionsMarshal.GetValueRefOrAddDefault(syncTree, file.Path, out var exists);
+            if (exists)
+            {
+                Logger.LogWarning("Found duplicate intrinsic file `{Path}` in Loadout {LoadoutName} for game {Game}", file.Path, loadout.Name, loadout.InstallationInstance.Game.Name);
+            }
+            found.SourceItemType = LoadoutSourceItemType.Intrinsic;
+            var stream = new MemoryStream();
+            file.Write(stream, loadout, syncTree);
+            stream.Position = 0;
+            var span = stream.GetBuffer().AsSpan(0, (int)stream.Length);
+            found.Loadout = new SyncNodePart()
+            {
+                Hash = span.xxHash3(),
+                Size = Size.From((ulong)span.Length),
+                LastModifiedTicks = 0,
+            };
+            found.SourceItemType = LoadoutSourceItemType.Intrinsic;
+        }
         
         // Remove deleted files. I'm not super happy with this requiring a full scan of
         // the loadout, but we have to somehow mark the deleted files and then delete them. 
@@ -526,7 +548,8 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 diskArchived: item.HaveDisk && HaveArchive(item.Disk.Hash),
                 prevArchived: item.HavePrevious && HaveArchive(item.Previous.Hash),
                 loadoutArchived: item.Loadout.Hash != Hash.Zero && HaveArchive(item.Loadout.Hash),
-                pathIsIgnored: IsIgnoredBackupPath(path));
+                pathIsIgnored: IsIgnoredBackupPath(path),
+                item.SourceItemType);
 
 
             item.Signature = signature;
@@ -560,6 +583,11 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                     job?.SetStatus("Adding external changes");
                     ActionIngestFromDisk(syncTree, loadout, tx, ref overridesGroup);
                     break;
+                
+                case Actions.AdaptLoadout:
+                    job?.SetStatus("Updating loadout");
+                    await AdaptLoadout(syncTree, register, loadout, tx);
+                    break;
 
                 case Actions.DeleteFromDisk:
                     job?.SetStatus("Deleting files");
@@ -569,6 +597,11 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 case Actions.ExtractToDisk:
                     job?.SetStatus("Extracting files");
                     await ActionExtractToDisk(syncTree, register, tx, gameMetadataId, job);
+                    break;
+                
+                case Actions.WriteIntrinsic:
+                    job?.SetStatus("Writing intrinsic files");
+                    await ActionWriteIntrinsics(syncTree, register, tx, loadout, job);
                     break;
 
                 case Actions.AddReifiedDelete:
@@ -583,7 +616,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 case Actions.WarnOfConflict:
                     WarnOfConflict(syncTree);
                     break;
-
+                
                 default:
                     throw new InvalidOperationException($"Unknown action: {action}");
             }
@@ -613,6 +646,45 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         
 
         return loadout;
+    }
+
+    private async Task ActionWriteIntrinsics(Dictionary<GamePath, SyncNode> syncTree, IGameLocationsRegister register, IMainTransaction tx, Loadout.ReadOnly loadout, SynchronizeLoadoutJob? job)
+    {
+        var intrinsicFiles = IntrinsicFiles(loadout);
+        foreach (var (path, node) in syncTree)
+        {
+            if (!node.Actions.HasFlag(Actions.WriteIntrinsic))
+                continue;
+            
+            if (node.SourceItemType != LoadoutSourceItemType.Intrinsic)
+                throw new Exception("WriteIntrinsic should only be called on intrinsic files");
+
+            var instance = intrinsicFiles[path];
+            var resolvedPath = register.GetResolvedPath(path);
+            resolvedPath.Parent.CreateDirectory();
+            await using var stream = resolvedPath.Create();
+            stream.SetLength(0);
+            await instance.Write(stream, loadout, syncTree);
+        }
+    }
+
+    private async Task AdaptLoadout(Dictionary<GamePath, SyncNode> syncTree, IGameLocationsRegister register, Loadout.ReadOnly loadout, IMainTransaction tx)
+    {
+        var intrinsicFiles = IntrinsicFiles(loadout);
+        foreach (var (path, node) in syncTree)
+        {
+            if (!node.Actions.HasFlag(Actions.AdaptLoadout))
+                continue;
+            
+            if (node.SourceItemType != LoadoutSourceItemType.Intrinsic)
+                throw new Exception("AdaptLoadout should only be called on intrinsic files");
+
+            var instance = intrinsicFiles[path];
+            var resolvedPath = register.GetResolvedPath(path);
+            await using var stream = resolvedPath.Read();
+            await instance.Ingest(stream, loadout, syncTree, tx);
+        }
+
     }
 
     private async ValueTask<Loadout.ReadOnly> ReprocessOverrides(Loadout.ReadOnly loadout)
@@ -738,6 +810,16 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
                 case Actions.BackupFile:
                     await ActionBackupNewFiles(gameInstallation, syncTree);
+                    break;
+                
+                case Actions.AdaptLoadout:
+                    if (ApplicationConstants.IsDebug && syncTree.Any(n => n.Value.Actions.HasFlag(Actions.AdaptLoadout)))
+                        throw new InvalidOperationException("Cannot adapt loadout when not in a loadout context");
+                    break;
+                
+                case Actions.WriteIntrinsic:
+                    if (ApplicationConstants.IsDebug && syncTree.Any(n => n.Value.Actions.HasFlag(Actions.AdaptLoadout)))
+                        throw new InvalidOperationException("Cannot adapt loadout when not in a loadout context");
                     break;
 
                 case Actions.IngestFromDisk:
@@ -1847,6 +1929,16 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         {
             return entityIdList.GetValueOrDefault(entityId, entityId);
         }
+    }
+
+    /// <summary>
+    /// Gets a set of files intrinsic to this game. Such as mod order files, preference files, etc.
+    /// These files will not be backed up and will not be included in the loadout directly. Instead, they are
+    /// generated at sync time by calling the implementations of the files themselves. 
+    /// </summary>
+    protected virtual Dictionary<GamePath, IIntrinsicFile> IntrinsicFiles(Loadout.ReadOnly loadout)
+    {
+        return new();
     }
 
     private static string GetNewShortName(IDb db, GameInstallMetadataId installationId)
