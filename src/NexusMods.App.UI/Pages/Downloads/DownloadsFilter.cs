@@ -28,7 +28,7 @@ public readonly record struct DownloadsFilter(DownloadsScope Scope, Optional<Gam
     /// <summary>
     /// Creates a filter for downloads from a specific game.
     /// </summary>
-    public static DownloadsFilter ForGame(GameId gameId) => new(DownloadsScope.GameSpecific, gameId);
+    public static DownloadsFilter ForGame(GameId gameId) => new(DownloadsScope.ActiveGameSpecific, gameId);
 }
 
 /// <summary>
@@ -52,7 +52,7 @@ public enum DownloadsScope : byte
     Completed = 2,
     
     /// <summary>
-    /// Show downloads for a specific game.
+    /// Show active downloads for a specific game.
     /// </summary>
-    GameSpecific = 3,
+    ActiveGameSpecific = 3,
 }

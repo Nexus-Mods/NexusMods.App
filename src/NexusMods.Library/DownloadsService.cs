@@ -124,6 +124,12 @@ public sealed class DownloadsService : IDownloadsService, IDisposable
         _downloadCache.Connect()
             .Filter(x => x.GameId.Equals(gameId));
     
+    public IObservable<IChangeSet<DownloadInfo, DownloadId>> GetActiveDownloadsForGame(GameId gameId) =>
+        _downloadCache.Connect()
+            .AutoRefresh(x => x.Status)
+            .Filter(x => x.GameId.Equals(gameId) && x.Status.IsActive())
+            .RefCount();
+    
     /// <summary>
     /// Helper method to resolve a <see cref="DownloadInfo.Id"/> ID to the underlying <see cref="HttpDownloadJob"/> ID.
     /// This is a temporary workaround until the job system properly delegates capabilities 

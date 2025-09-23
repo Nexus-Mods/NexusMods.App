@@ -192,13 +192,13 @@
         <value>{0} Downloads</value>
     </data>
     <data name="DownloadsPage_AllDownloads_Description" xml:space="preserve">
-        <value>Monitor your downloads.</value>
+        <value>Monitor your active downloads.</value>
     </data>
     <data name="DownloadsPage_AllCompleted_Description" xml:space="preserve">
         <value>View your completed downloads.</value>
     </data>
     <data name="DownloadsPage_GameSpecificDownloads_Description" xml:space="preserve">
-        <value>Monitor your downloads.</value>
+        <value>Monitor your active downloads.</value>
     </data>
     <data name="DownloadsPage_Default_Description" xml:space="preserve">
         <value>Manage your active and completed downloads</value>

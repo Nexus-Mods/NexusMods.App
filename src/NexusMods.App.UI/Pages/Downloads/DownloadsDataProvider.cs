@@ -38,7 +38,7 @@ public sealed class DownloadsDataProvider(IServiceProvider serviceProvider) : ID
             DownloadsScope.All => _downloadsService.AllDownloads,
             DownloadsScope.Active => _downloadsService.ActiveDownloads,
             DownloadsScope.Completed => _downloadsService.CompletedDownloads,
-            DownloadsScope.GameSpecific when filter.GameId.HasValue => _downloadsService.GetDownloadsForGame(filter.GameId.Value),
+            DownloadsScope.ActiveGameSpecific when filter.GameId.HasValue => _downloadsService.GetActiveDownloadsForGame(filter.GameId.Value),
             _ => throw new ArgumentException($"Invalid filter scope: {filter.Scope}")
         };
 
