@@ -4,6 +4,7 @@ using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Abstractions.Settings;
+using NexusMods.Backend;
 using NexusMods.CrossPlatform;
 using NexusMods.DataModel;
 using NexusMods.FileExtractor;
@@ -13,6 +14,7 @@ using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.HttpDownloader.Tests;
 using NexusMods.Paths;
 using NexusMods.Sdk;
+using NexusMods.Sdk.Settings;
 using NexusMods.Settings;
 using Xunit.DependencyInjection.Logging;
 
@@ -25,6 +27,7 @@ public class Startup
         services
             .AddSerializationAbstractions()
             .AddFileSystem()
+            .AddSettingsManagerOld()
             .AddSettingsManager()
             .AddHttpDownloader()
             .AddSingleton<TemporaryFileManager>()

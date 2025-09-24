@@ -3,6 +3,8 @@ using NexusMods.App.GarbageCollection.Nx;
 using NexusMods.Archives.Nx.Headers;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions.Nx.FileProviders;
+using NexusMods.Sdk;
+
 namespace NexusMods.App.GarbageCollection.DataModel;
 
 /// <summary>

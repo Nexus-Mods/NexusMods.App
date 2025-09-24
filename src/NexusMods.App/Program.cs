@@ -11,11 +11,12 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Logging;
 using NexusMods.Abstractions.Serialization;
-using NexusMods.Abstractions.Settings;
+using NexusMods.Sdk.Settings;
 using NexusMods.Abstractions.Telemetry;
 using NexusMods.App.Commandline;
 using NexusMods.App.UI;
 using NexusMods.App.UI.Settings;
+using NexusMods.Backend;
 using NexusMods.CrossPlatform;
 using NexusMods.CrossPlatform.Process;
 using NexusMods.DataModel;
@@ -284,7 +285,7 @@ public class Program
                 .AddSingleton(FileSystem.Shared)
                 .AddSettingsManager()
                 .AddSerializationAbstractions()
-                .AddSettingsStorageBackend<JsonStorageBackend>()
+                .AddStorageBackend<JsonStorageBackend>()
                 .AddSettings<TelemetrySettings>()
                 .AddSettings<LoggingSettings>()
                 .AddSettings<ExperimentalSettings>()

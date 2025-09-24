@@ -2,7 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
-using NexusMods.Abstractions.Settings;
+using NexusMods.Sdk.Settings;
 using NexusMods.Games.MountAndBlade2Bannerlord.Models;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;

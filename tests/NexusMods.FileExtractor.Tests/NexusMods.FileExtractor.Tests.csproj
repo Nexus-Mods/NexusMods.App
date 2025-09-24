@@ -4,6 +4,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\src\NexusMods.Backend\NexusMods.Backend.csproj" />
       <ProjectReference Include="..\..\src\NexusMods.FileExtractor\NexusMods.FileExtractor.csproj" />
       <ProjectReference Include="..\..\src\NexusMods.Settings\NexusMods.Settings.csproj" />
     </ItemGroup>

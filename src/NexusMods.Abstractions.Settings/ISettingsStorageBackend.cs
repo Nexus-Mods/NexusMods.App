@@ -6,6 +6,7 @@ namespace NexusMods.Abstractions.Settings;
 /// Base interface for storage backends.
 /// </summary>
 [PublicAPI]
+[Obsolete("Replaced with new settings API")]
 public interface IBaseSettingsStorageBackend
 {
     /// <summary>
@@ -19,6 +20,7 @@ public interface IBaseSettingsStorageBackend
 /// </summary>
 /// <seealso cref="IAsyncSettingsStorageBackend"/>
 [PublicAPI]
+[Obsolete("Replaced with new settings API")]
 public interface ISettingsStorageBackend : IBaseSettingsStorageBackend, IDisposable
 {
     /// <summary>
@@ -41,6 +43,7 @@ public interface ISettingsStorageBackend : IBaseSettingsStorageBackend, IDisposa
 /// </summary>
 /// <seealso cref="ISettingsStorageBackend"/>
 [PublicAPI]
+[Obsolete("Replaced with new settings API")]
 public interface IAsyncSettingsStorageBackend : IBaseSettingsStorageBackend, IAsyncDisposable
 {
     /// <summary>

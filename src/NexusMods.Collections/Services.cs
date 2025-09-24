@@ -1,8 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Collections;
-using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.NexusModsLibrary;
-using NexusMods.Abstractions.Settings;
+using NexusMods.Sdk.Settings;
 
 namespace NexusMods.Collections;
 

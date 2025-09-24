@@ -1,4 +1,4 @@
-using NexusMods.Abstractions.Settings;
+using NexusMods.Sdk.Settings;
 // ReSharper disable All
 
 namespace Examples.Settings;
@@ -14,23 +14,23 @@ file record MySettings : ISettings
     {
         // You can use the ISettingsBuilder to expose the properties defined in
         // this class in the UI.
-        return settingsBuilder.AddToUI<MySettings>(uiBuilder => uiBuilder
-             // You have to configure every property that you want to add to the UI individually.
-            .AddPropertyToUI(x => x.Name, propertyBuilder => propertyBuilder
+        return settingsBuilder.ConfigureProperty(
+            x => x.Name,
+            new PropertyOptions<MySettings, string>
+            {
                 // TODO: Sections
-                .AddToSection(SectionId.DefaultValue)
-                .WithDisplayName("Cool Name")
-                .WithDescription("This is a very cool name that you can change!")
-                // TODO: update this
-                .UseBooleanContainer()
+                Section = SectionId.DefaultValue,
+                DisplayName = "Cool Name",
+                DescriptionFactory = _ => "This is a very cool name that you can change!",
                 // Optionally, you can mark a property to require a restart if it changes.
                 // Example for this is changing the language or other major changes that
                 // can't be applied on the fly.
-                // You can define a custom message:
-                .RequiresRestart("Changing this very cool name requires a restart!")
-                // Or default to a generic message:
-                // .RequiresRestart()
-            )
+                RequiresRestart = true,
+                // You can define a custom message to show if the value gets changed:
+                RestartMessage = "Changing this very cool name requires a restart!"
+            },
+            // TODO: update this
+            new BooleanContainerOptions()
         );
     }
 }

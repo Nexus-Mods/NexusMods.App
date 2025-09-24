@@ -12,7 +12,8 @@ public static class ServiceExtensions
     /// <summary>
     /// Registers a settings type.
     /// </summary>
-    public static IServiceCollection AddSettings<T>(this IServiceCollection serviceCollection)
+    [Obsolete]
+    public static IServiceCollection AddSettingsOd<T>(this IServiceCollection serviceCollection)
         where T : class, ISettings, new()
     {
         return serviceCollection.AddSingleton(new SettingsTypeInformation(
@@ -25,6 +26,7 @@ public static class ServiceExtensions
     /// <summary>
     /// Registers a new settings section.
     /// </summary>
+    [Obsolete]
     public static IServiceCollection AddSettingsSection(this IServiceCollection serviceCollection, SettingsSectionSetup setup)
     {
         return serviceCollection.AddSingleton(setup);
@@ -37,6 +39,7 @@ public static class ServiceExtensions
     /// <param name="isDefault">
     /// Whether the backend should be registered as the default backend.
     /// </param>
+    [Obsolete]
     public static IServiceCollection AddSettingsStorageBackend<T>(
         this IServiceCollection serviceCollection,
         bool isDefault = false)
@@ -66,6 +69,7 @@ public static class ServiceExtensions
     /// will be invoked. This allows you to override any value and configure settings
     /// for tests.
     /// </remarks>
+    [Obsolete]
     public static IServiceCollection OverrideSettingsForTests<T>(
         this IServiceCollection serviceCollection,
         Func<T, T> overrideMethod)
@@ -79,6 +83,7 @@ public static class ServiceExtensions
     /// <summary>
     /// Use the JSON storage backend for this setting.
     /// </summary>
+    [Obsolete]
     public static void UseJson<T>(this ISettingsStorageBackendBuilder<T> builder)
         where T : class, ISettings, new()
     {

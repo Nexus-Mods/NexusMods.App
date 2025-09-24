@@ -6,7 +6,8 @@ namespace NexusMods.Settings;
 
 public static class Services
 {
-    public static IServiceCollection AddSettingsManager(this IServiceCollection serviceCollection)
+    [Obsolete("Replaced with new settings API")]
+    public static IServiceCollection AddSettingsManagerOld(this IServiceCollection serviceCollection)
     {
         return serviceCollection
             .AddSingleton<ISettingsManager, SettingsManager>()

@@ -475,12 +475,6 @@
         <Compile Update="Controls\MarkdownRenderer\MarkdownRendererViewModel.cs">
           <DependentUpon>IMarkdownRendererViewModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="Pages\Settings\SettingsPageDesignViewModel.cs">
-          <DependentUpon>ISettingsPageViewModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="Controls\Settings\SettingEntries\SettingEntryDesignViewModel.cs">
-          <DependentUpon>ISettingEntryViewModel.cs</DependentUpon>
-        </Compile>
         <Compile Update="Pages\Settings\SettingsPageViewModel.cs">
           <DependentUpon>ISettingsPageViewModel.cs</DependentUpon>
         </Compile>
@@ -730,9 +724,6 @@
           <DependentUpon>ILoadoutGroupFilesViewModel.cs</DependentUpon>
          </Compile>
         <Compile Update="Controls\Settings\SettingEntries\SettingInteractionControls\PathsList\SettingPathsViewModel.cs">
-          <DependentUpon>ISettingPathsViewModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="Controls\Settings\SettingEntries\SettingInteractionControls\PathsList\SettingPathsDesignViewModel.cs">
           <DependentUpon>ISettingPathsViewModel.cs</DependentUpon>
         </Compile>
         <Compile Update="Dialog\DialogStandardContentView.axaml.cs">

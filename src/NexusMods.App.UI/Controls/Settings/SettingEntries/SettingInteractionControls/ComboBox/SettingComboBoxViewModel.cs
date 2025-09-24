@@ -1,7 +1,9 @@
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using NexusMods.Abstractions.Settings;
+using JetBrains.Annotations;
 using NexusMods.Abstractions.UI;
+using NexusMods.Sdk.Settings;
+using NexusMods.UI.Sdk.Settings;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -9,8 +11,7 @@ namespace NexusMods.App.UI.Controls.Settings.SettingEntries;
 
 public class SettingComboBoxViewModel : AViewModel<ISettingComboBoxViewModel>, ISettingComboBoxViewModel
 {
-    public IValueContainer ValueContainer => SingleValueMultipleChoiceContainer;
-
+    public IPropertyValueContainer ValueContainer => SingleValueMultipleChoiceContainer;
     public SingleValueMultipleChoiceContainer SingleValueMultipleChoiceContainer { get; }
 
     public string[] DisplayItems { get; }
@@ -56,5 +57,21 @@ public class SettingComboBoxViewModel : AViewModel<ISettingComboBoxViewModel>, I
         }
 
         return -1;
+    }
+}
+
+[UsedImplicitly]
+public class SettingComboBoxFactory : IInteractionControlFactory<SingleValueMultipleChoiceContainerOptions>
+{
+    public IInteractionControl Create(IServiceProvider serviceProvider, ISettingsManager settingsManager, SingleValueMultipleChoiceContainerOptions containerOptions, PropertyConfig propertyConfig)
+    {
+        return new SettingComboBoxViewModel(
+            valueContainer: new SingleValueMultipleChoiceContainer(
+                value: propertyConfig.GetValue(settingsManager),
+                defaultValue: propertyConfig.GetDefaultValue(settingsManager),
+                config: propertyConfig,
+                options: containerOptions
+            )
+        );
     }
 }

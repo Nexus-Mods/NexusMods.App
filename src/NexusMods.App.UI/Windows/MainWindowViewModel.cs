@@ -12,7 +12,7 @@ using NexusMods.Abstractions.Logging;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
-using NexusMods.Abstractions.Settings;
+using NexusMods.Sdk.Settings;
 using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls.DevelopmentBuildBanner;
 using NexusMods.App.UI.Controls.Spine;

@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Linq.Expressions;
 using System.Reflection;
 using NexusMods.Abstractions.Settings;
+using NexusMods.Sdk;
 
 namespace NexusMods.Settings;
 

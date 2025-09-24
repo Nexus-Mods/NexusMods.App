@@ -6,6 +6,7 @@ namespace NexusMods.Abstractions.Settings;
 /// Represents a settings manager.
 /// </summary>
 [PublicAPI]
+[Obsolete("Replaced with new settings API")]
 public interface ISettingsManager
 {
     /// <summary>

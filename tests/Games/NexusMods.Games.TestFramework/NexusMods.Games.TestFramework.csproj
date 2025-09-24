@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <ItemGroup>
         <ProjectReference Include="..\..\..\src\NexusMods.Abstractions.GuidedInstallers\NexusMods.Abstractions.GuidedInstallers.csproj" />
+        <ProjectReference Include="..\..\..\src\NexusMods.Backend\NexusMods.Backend.csproj" />
         <ProjectReference Include="..\..\..\src\NexusMods.FileExtractor\NexusMods.FileExtractor.csproj" />
         <ProjectReference Include="..\..\..\src\NexusMods.Games.FOMOD\NexusMods.Games.FOMOD.csproj" />
         <ProjectReference Include="..\..\..\src\NexusMods.Games.RedEngine\NexusMods.Games.RedEngine.csproj" />

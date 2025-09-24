@@ -44,6 +44,21 @@
       <Compile Update="R3Window.cs">
         <DependentUpon>IR3View.cs</DependentUpon>
       </Compile>
+      <Compile Update="ReactiveR3Object.cs">
+        <DependentUpon>IReactiveR3Object.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Settings\APropertyValueContainer.cs">
+        <DependentUpon>IPropertyValueContainer.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Settings\SingleValueMultipleChoiceContainer.cs">
+        <DependentUpon>IPropertyValueContainer.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Settings\BooleanContainer.cs">
+        <DependentUpon>IPropertyValueContainer.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Settings\ConfigurablePathsContainer.cs">
+        <DependentUpon>IPropertyValueContainer.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
 
 </Project>

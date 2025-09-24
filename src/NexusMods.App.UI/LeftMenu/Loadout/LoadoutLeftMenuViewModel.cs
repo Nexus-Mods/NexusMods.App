@@ -11,7 +11,7 @@ using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
-using NexusMods.Abstractions.Settings;
+using NexusMods.Sdk.Settings;
 using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.LeftMenu.Items;

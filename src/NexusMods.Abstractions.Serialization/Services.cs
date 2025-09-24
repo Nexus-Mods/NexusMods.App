@@ -17,8 +17,6 @@ public static class Services
     /// </summary>
     public static IServiceCollection AddSerializationAbstractions(this IServiceCollection services)
     {
-        services.AddSettingsStorageBackend<JsonStorageBackend>();
-
         services.AddSingleton<JsonConverter, AbstractClassConverterFactory<IMetadata>>();
         services.AddSingleton<JsonConverter, EntityIdConverter>();
 

@@ -2,19 +2,8 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
 using R3;
-using ReactiveUI;
 
-namespace NexusMods.Abstractions.UI;
-
-[PublicAPI]
-public interface IReactiveR3Object : ReactiveUI.IReactiveObject, IDisposable
-{
-    Observable<bool> Activation { get; }
-    bool IsActivated { get; }
-    IDisposable Activate();
-    void Deactivate();
-    bool IsDisposed { get; }
-}
+namespace NexusMods.UI.Sdk;
 
 /// <summary>
 /// Base class using R3 with support for activation/deactivation,
@@ -98,11 +87,16 @@ public class ReactiveR3Object : IReactiveR3Object
     ///     The Name of the property which changed.
     ///     This is auto set via <see cref="CallerMemberNameAttribute"/> if invoking the property directly.
     /// </param>
-    protected void RaiseAndSetIfChanged<T>(ref T backingField, T newValue, [CallerMemberName] string? propertyName = null)
+    protected void RaiseAndSetIfChanged<T>(
+        ref T backingField,
+        T newValue,
+        IEqualityComparer<T>? equalityComparer = null,
+        [CallerMemberName] string? propertyName = null)
     {
+        var comparer = equalityComparer ?? EqualityComparer<T>.Default;
+
         // If they are equal, no action should be taken.
-        if (EqualityComparer<T>.Default.Equals(backingField, newValue))
-            return;
+        if (comparer.Equals(backingField, newValue)) return;
 
         if (propertyName is null)
             ArgumentNullException.ThrowIfNull(propertyName, nameof(propertyName));

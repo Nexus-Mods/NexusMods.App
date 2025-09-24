@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 using JetBrains.Annotations;
 using NexusMods.Paths;
 
-namespace NexusMods.Abstractions.Settings;
+namespace NexusMods.Sdk;
 
 /// <summary>
 /// Represents a configurable path. This is made up of a <see cref="KnownPath"/>

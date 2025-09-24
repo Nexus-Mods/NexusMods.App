@@ -22,6 +22,7 @@ using NexusMods.Abstractions.GameLocators.Stores.Origin;
 using NexusMods.Abstractions.Settings;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
+using NexusMods.Sdk.Settings;
 
 namespace NexusMods.StandardGameLocators;
 

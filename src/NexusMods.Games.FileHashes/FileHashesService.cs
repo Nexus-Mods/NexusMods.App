@@ -12,7 +12,7 @@ using NexusMods.Abstractions.Games.FileHashes.Models;
 using NexusMods.Abstractions.GOG.Values;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
-using NexusMods.Abstractions.Settings;
+using NexusMods.Sdk.Settings;
 using NexusMods.Abstractions.Steam.Values;
 using NexusMods.Games.FileHashes.DTOs;
 using NexusMods.Hashing.xxHash3;

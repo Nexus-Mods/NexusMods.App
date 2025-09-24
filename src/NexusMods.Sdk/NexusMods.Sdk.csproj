@@ -87,5 +87,14 @@
         <Compile Update="IO\IChunkedStreamSource.cs">
           <DependentUpon>ChunkedStream.cs</DependentUpon>
         </Compile>
+        <Compile Update="Settings\BooleanContainerOptions.cs">
+          <DependentUpon>IContainerOptions.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Settings\SingleValueMultipleChoiceContainerOptions.cs">
+          <DependentUpon>IContainerOptions.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Settings\ConfigurablePathsContainerOption.cs">
+          <DependentUpon>IContainerOptions.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 </Project>

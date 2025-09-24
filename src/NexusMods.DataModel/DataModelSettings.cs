@@ -1,7 +1,8 @@
 ﻿using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.Settings;
 using NexusMods.Paths;
+using NexusMods.Sdk;
+using NexusMods.Sdk.Settings;
 
 namespace NexusMods.DataModel;
 
@@ -33,19 +34,23 @@ public record DataModelSettings : ISettings
     {
         return settingsBuilder
             .ConfigureDefault(CreateDefault)
-            .ConfigureStorageBackend<DataModelSettings>(builder => builder.UseJson())
-            .AddToUI<DataModelSettings>(builder => builder
-                .AddPropertyToUI(x => x.ArchiveLocations, propertyBuilder => propertyBuilder
-                    .AddToSection(Sections.General)
-                    .WithDisplayName("Storage Location")
-                    .WithDescription(currentPath => $"""
+            .ConfigureBackend(StorageBackendOptions.Use(StorageBackends.Json))
+            .ConfigureProperty(
+                x => x.ArchiveLocations,
+                new PropertyOptions<DataModelSettings, ConfigurablePath[]>
+                {
+                    Section = Sections.General,
+                    DisplayName = "Storage Location",
+                    DescriptionFactory = currentPath => $"""
                           Mods and backups are stored in:  
                           **{currentPath[0].ToPath(FileSystem.Shared)}**
                           
                           *Important: Existing files won’t move automatically when you change storage location, you’ll need to move them manually.* [Need help?](https://nexus-mods.github.io/NexusMods.App/users/faq/MoveLibraryLocation/)
-                          """)
-                    .UseConfigurablePathsContainer()
-                    .RequiresRestart()));
+                          """,
+                    RequiresRestart = true,
+                },
+                new ConfigurablePathsContainerOption()
+            );
     }
 
     /// <summary>

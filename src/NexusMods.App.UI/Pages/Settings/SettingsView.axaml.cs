@@ -20,9 +20,6 @@ public partial class SettingsView : ReactiveUserControl<ISettingsPageViewModel>
                 this.BindCommand(ViewModel,viewModel => viewModel.CancelCommand,view => view.CancelButton)
                     .DisposeWith(d);
 
-                // this.BindCommand(ViewModel,viewModel => viewModel.CloseCommand,view => view.CloseButton)
-                //     .DisposeWith(d);
-
                 this.WhenAnyValue(
                     view => view.ViewModel!.SettingEntries,
                     view => view.ViewModel!.Sections
@@ -32,8 +29,8 @@ public partial class SettingsView : ReactiveUserControl<ISettingsPageViewModel>
 
                     var dict = sections.ToDictionary(x => x.Descriptor.Id);
                     var grouped = entries
-                        .OrderBy(x => x.PropertyUIDescriptor.DisplayName, StringComparer.OrdinalIgnoreCase)
-                        .GroupBy(x => x.PropertyUIDescriptor.SectionId)
+                        .OrderBy(x => x.Config.Options.DisplayName, StringComparer.OrdinalIgnoreCase)
+                        .GroupBy(x => x.Config.Options.Section)
                         .OrderByDescending(x => dict[x.Key].Descriptor.Priority);
 
                     var res = new List<IViewModelInterface>();

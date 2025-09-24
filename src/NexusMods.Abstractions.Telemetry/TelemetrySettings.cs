@@ -1,5 +1,5 @@
 using JetBrains.Annotations;
-using NexusMods.Abstractions.Settings;
+using NexusMods.Sdk.Settings;
 
 namespace NexusMods.Abstractions.Telemetry;
 
@@ -13,16 +13,18 @@ public record TelemetrySettings : ISettings
     public static ISettingsBuilder Configure(ISettingsBuilder settingsBuilder)
     {
         return settingsBuilder
-            .ConfigureStorageBackend<TelemetrySettings>(backend => backend.UseJson())
-            .AddToUI<TelemetrySettings>(builder => builder
-                .AddPropertyToUI(x => x.IsEnabled, propertyBuilder => propertyBuilder
-                    .AddToSection(Sections.Privacy)
-                    .WithDisplayName("Send diagnostic and usage data")
-                    .WithDescription("Help us improve the app by sending diagnostic and usage data to Nexus Mods.")
-                    .WithLink(Link)
-                    .UseBooleanContainer()
-                    .RequiresRestart()
-                )
-        );
+            .ConfigureBackend(StorageBackendOptions.Use(StorageBackends.Json))
+            .ConfigureProperty(
+                x => x.IsEnabled,
+                new PropertyOptions<TelemetrySettings, bool>
+                {
+                    Section = Sections.Privacy,
+                    DisplayName = "Send diagnostic and usage data",
+                    DescriptionFactory = _ => "Help us improve the app by sending diagnostic and usage data to Nexus Mods.",
+                    HelpLink = Link,
+                    RequiresRestart = true,
+                },
+                new BooleanContainerOptions()
+            );
     }
 }
