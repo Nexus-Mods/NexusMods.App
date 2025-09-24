@@ -15,6 +15,7 @@ using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Games.CreationEngine.Abstractions;
+using NexusMods.Games.CreationEngine.Abstractions;
 using NexusMods.Games.CreationEngine.Emitters;
 using NexusMods.Games.CreationEngine.Installers;
 using NexusMods.Games.FOMOD;
@@ -29,12 +30,12 @@ public partial class Fallout4 : AGame, ISteamGame, IGogGame, ICreationEngineGame
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly IDiagnosticEmitter[] _emitters;
-    private readonly IFileStore _fileStore;
+    private readonly IStreamSourceDispatcher _streamSource;
 
     public Fallout4(IServiceProvider provider) : base(provider)
     {
         _serviceProvider = provider;
-        _fileStore = provider.GetRequiredService<IFileStore>();
+        _streamSource = provider.GetRequiredService<IStreamSourceDispatcher>();
         
         _emitters =
         [
@@ -51,6 +52,7 @@ public partial class Fallout4 : AGame, ISteamGame, IGogGame, ICreationEngineGame
         return new Dictionary<LocationId, AbsolutePath>()
         {
             { LocationId.Game, installation.Path },
+            { LocationId.AppData, fileSystem.GetKnownPath(KnownPath.LocalApplicationDataDirectory) / "Fallout 4" },
         };
     }
 
@@ -59,7 +61,7 @@ public partial class Fallout4 : AGame, ISteamGame, IGogGame, ICreationEngineGame
         return [];
     }
 
-    protected override ILoadoutSynchronizer MakeSynchronizer(IServiceProvider provider) => new Fallout4Synchronizer(provider);
+    protected override ILoadoutSynchronizer MakeSynchronizer(IServiceProvider provider) => new Fallout4Synchronizer(provider, this);
 
     public override SupportType SupportType => SupportType.Unsupported;
     public IEnumerable<uint> SteamIds => [377160];
@@ -101,10 +103,12 @@ public partial class Fallout4 : AGame, ISteamGame, IGogGame, ICreationEngineGame
     {
         var fileName = name?.FileName.ToString() ?? "unknown.esm";
         var key = ModKey.FromFileName(fileName);
-        await using var stream = await _fileStore.GetFileStream(hash);
-        var meta = ParsingMeta.Factory(BinaryReadParameters.Default, GameRelease.Fallout4, key, stream);
-        await using var mutagenStream = new MutagenBinaryReadStream(stream, meta);
+        await using var stream = await _streamSource.OpenAsync(hash);
+        var meta = ParsingMeta.Factory(BinaryReadParameters.Default, GameRelease.Fallout4, key, stream!);
+        await using var mutagenStream = new MutagenBinaryReadStream(stream!, meta);
         using var frame = new MutagenFrame(mutagenStream);
         return Fallout4Mod.CreateFromBinary(frame, Fallout4Release.Fallout4, EmptyGroupMask);
     }
+
+    public GamePath PluginsFile => Fallout4KnownPaths.PluginsFile;
 }
