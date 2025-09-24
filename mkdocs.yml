@@ -94,6 +94,7 @@ nav:
       - Bannerlord: users/games/Bannerlord.md
     - Frequently Asked Questions: 
       - users/faq/index.md
+      - How the app manages files: users/faq/FileManagementSystem.md
       - How to find the log files: users/faq/LogFiles.md
       - Download/Login Issues: users/faq/NexusModsDownloads.md
       - Moving the Library: users/faq/MoveLibraryLocation.md
