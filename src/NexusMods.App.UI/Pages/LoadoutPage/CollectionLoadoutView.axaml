@@ -32,8 +32,10 @@
 
                     <controls:StandardButton.Flyout>
                         <MenuFlyout>
+                            <!-- Hidden for 0.17 release due to bug: https://github.com/Nexus-Mods/NexusMods.App/issues/3890 -->
                             <navigation:NavigationMenuItem Header="Make an editable local copy"
-                                                           x:Name="MakeEditableLocalCopy">
+                                                           x:Name="MakeEditableLocalCopy"
+                                                           IsVisible="False">
                                 <MenuItem.Icon>
                                     <icons:UnifiedIcon Size="16"
                                                        Value="{x:Static icons:IconValues.Copy}" />
