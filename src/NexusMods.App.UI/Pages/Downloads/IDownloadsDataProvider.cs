@@ -1,5 +1,7 @@
 using DynamicData;
 using NexusMods.Abstractions.Downloads;
+using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.App.UI.Controls;
 
 namespace NexusMods.App.UI.Pages.Downloads;
@@ -22,4 +24,11 @@ public interface IDownloadsDataProvider
     /// <param name="filter">The filter criteria for downloads.</param>
     /// <returns>Observable of download count.</returns>
     IObservable<int> CountDownloads(DownloadsFilter filter);
+    
+    /// <summary>
+    /// Resolves the name of a game based on its GameId.
+    /// </summary>
+    /// <param name="gameId">The GameId to resolve the name for.</param>
+    /// <returns>The name of the game or a default string if not found.</returns>
+    string ResolveGameName(GameId gameId);
 }

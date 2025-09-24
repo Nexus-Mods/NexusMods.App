@@ -1,4 +1,4 @@
-﻿<Styles xmlns="https://github.com/avaloniaui"
+<Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <!-- Preview -->
@@ -31,7 +31,7 @@
     <!-- Download ProgressBar -->
     <Style Selector="ProgressBar.DownloadBar">
         <Setter Property="ShowProgressText" Value="True" />
-        <Setter Property="Height" Value="24" />
+        <Setter Property="MinHeight" Value="28" />
         <Setter Property="Foreground" Value="{StaticResource InfoWeakBrush}" />
         <Setter Property="Background">
             <SolidColorBrush Color="{StaticResource InfoWeak}"
@@ -39,6 +39,10 @@
         </Setter>
 
         <Setter Property="CornerRadius" Value="{StaticResource Rounded-sm}" />
+        
+        <Setter Property="BorderBrush" Value="{StaticResource BrandInfo900Brush}" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="BackgroundSizing" Value="OuterBorderEdge" />
 
         <Style Selector="^ /template/ Border#PART_Indicator">
             <Setter Property="CornerRadius" Value="{StaticResource Rounded-none}" />
@@ -58,7 +62,7 @@
 
         <Style Selector="^ TextBlock">
             <Setter Property="Theme" Value="{StaticResource BodySMNormalTheme}" />
-            <Setter Property="HorizontalAlignment" Value="Left" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
             <Setter Property="VerticalAlignment" Value="Center" />
 
             <!-- LineHeight messes with text Alignment, this would be a workaround -->
@@ -66,9 +70,15 @@
         </Style>
 
         <Style Selector="^ LayoutTransformControl">
-            <Setter Property="HorizontalAlignment" Value="Left" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
             <Setter Property="VerticalAlignment" Value="Center" />
-            <Setter Property="Padding" Value="8,0,0,0" />
+            <Setter Property="Padding" Value="0" />
+        </Style>
+
+        <!-- Paused Download Bar Style -->
+        <Style Selector="^.Paused">
+            <Setter Property="Foreground" Value="{StaticResource BrandNeutral600Brush}" />
+            <Setter Property="Background" Value="{StaticResource SurfaceHighBrush}" />
         </Style>
     </Style>
 

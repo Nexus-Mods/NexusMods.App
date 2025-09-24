@@ -25,9 +25,6 @@
                 </ItemsControl.ItemsPanel>
             </ItemsControl>
 
-            <!-- completed downloads -->
-            <items:LeftMenuItemView x:Name="AllCompletedItem" />
-
         </StackPanel>
     </ScrollViewer>
 

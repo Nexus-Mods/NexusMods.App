@@ -124,28 +124,92 @@ public sealed class DownloadsService : IDownloadsService, IDisposable
         _downloadCache.Connect()
             .Filter(x => x.GameId.Equals(gameId));
     
+    public IObservable<IChangeSet<DownloadInfo, DownloadId>> GetActiveDownloadsForGame(GameId gameId) =>
+        _downloadCache.Connect()
+            .AutoRefresh(x => x.Status)
+            .Filter(x => x.GameId.Equals(gameId) && x.Status.IsActive())
+            .RefCount();
+    
+    /// <summary>
+    /// Helper method to resolve a <see cref="DownloadInfo.Id"/> ID to the underlying <see cref="HttpDownloadJob"/> ID.
+    /// This is a temporary workaround until the job system properly delegates capabilities 
+    /// (tracked in issue #3892).
+    /// </summary>
+    /// <param name="downloadInfo">The download info containing the NexusModsDownloadJob ID</param>
+    /// <returns>The ID of the underlying HttpDownloadJob if found, otherwise the original ID</returns>
+    private JobId ResolveToHttpDownloadJobId(DownloadInfo downloadInfo)
+    {
+        // Try to find the job in the job monitor
+        var job = _jobMonitor.Find(downloadInfo.Id);
+        if (job == null)
+            return downloadInfo.Id;
+        
+        // Try to cast the job definition to INexusModsDownloadJob and return inner HttpDownloadJob if possible.
+        if (job.Definition is INexusModsDownloadJob nexusJob)
+            return nexusJob.HttpDownloadJob.Job.Id;
+        
+        return downloadInfo.Id;
+    }
     
     // Control operations
     public void PauseDownload(DownloadInfo downloadInfo) 
     {
-        _jobMonitor.Pause(downloadInfo.Id);
+        try
+        {
+            // Note(sewer) Workaround for issue #3892: Resolve to the underlying HttpDownloadJob ID
+            var httpDownloadJobId = ResolveToHttpDownloadJobId(downloadInfo);
+            _jobMonitor.Pause(httpDownloadJobId);
+        }
+        catch (OperationCanceledException)
+        {
+            // Due to job cancellation, exception is expected.
+        }
     }
     
     public void ResumeDownload(DownloadInfo downloadInfo) 
     {
-        _jobMonitor.Resume(downloadInfo.Id);
+        try
+        {
+            // Note(sewer) Workaround for issue #3892: Resolve to the underlying HttpDownloadJob ID
+            var httpDownloadJobId = ResolveToHttpDownloadJobId(downloadInfo);
+            _jobMonitor.Resume(httpDownloadJobId);
+        }
+        catch (OperationCanceledException)
+        {
+            // Due to job cancellation, exception is expected.
+        }
     }
     
     public void CancelDownload(DownloadInfo downloadInfo) 
     {
-        _jobMonitor.Cancel(downloadInfo.Id);
+        try
+        {
+            // Note(sewer) Workaround for issue #3892: Resolve to the underlying HttpDownloadJob ID
+            var httpDownloadJobId = ResolveToHttpDownloadJobId(downloadInfo);
+            _jobMonitor.Cancel(httpDownloadJobId);
+        }
+        catch (OperationCanceledException)
+        {
+            // Due to job cancellation, exception is expected.
+        }
     }
     public void PauseAll()
     {
         foreach (var download in _downloadCache.Items)
         {
             if (download.Status == JobStatus.Running)
-                _jobMonitor.Pause(download.Id);
+            {
+                try
+                {
+                    // Note(sewer) Workaround for issue #3892: Resolve to the underlying HttpDownloadJob ID
+                    var httpDownloadJobId = ResolveToHttpDownloadJobId(download);
+                    _jobMonitor.Pause(httpDownloadJobId);
+                }
+                catch (OperationCanceledException)
+                {
+                    // Due to job cancellation, exception is expected.
+                }
+            }
         }
     }
 
@@ -154,14 +218,34 @@ public sealed class DownloadsService : IDownloadsService, IDisposable
         foreach (var download in _downloadCache.Items)
         {
             if (download.Status == JobStatus.Paused)
-                _jobMonitor.Resume(download.Id);
+            {
+                try
+                {
+                    // Note(sewer) Workaround for issue #3892: Resolve to the underlying HttpDownloadJob ID
+                    var httpDownloadJobId = ResolveToHttpDownloadJobId(download);
+                    _jobMonitor.Resume(httpDownloadJobId);
+                }
+                catch (OperationCanceledException)
+                {
+                    // Due to job cancellation, exception is expected.
+                }
+            }
         }
     }
     public void CancelRange(IEnumerable<DownloadInfo> downloads)
     {
         foreach (var download in downloads)
         {
-            _jobMonitor.Cancel(download.Id);
+            try
+            {
+                // Note(sewer) Workaround for issue #3892: Resolve to the underlying HttpDownloadJob ID
+                var httpDownloadJobId = ResolveToHttpDownloadJobId(download);
+                _jobMonitor.Cancel(httpDownloadJobId);
+            }
+            catch (OperationCanceledException)
+            {
+                // Due to job cancellation, exception is expected.
+            }
         }
     }
     

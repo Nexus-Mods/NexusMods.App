@@ -15,6 +15,7 @@
                 <ResourceInclude Source="avares://NexusMods.App.UI/Pages/LoadoutPage/TreeDataGridLoadoutResources.axaml" />
                 <ResourceInclude Source="avares://NexusMods.App.UI/Pages/LibraryPage/TreeDataGridLibraryResources.axaml" />
                 <ResourceInclude Source="avares://NexusMods.App.UI/Pages/CollectionDownload/TreeDataGridCollectionResources.axaml" />
+                <ResourceInclude Source="avares://NexusMods.App.UI/Pages/Downloads/TreeDataGridDownloadsResources.axaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

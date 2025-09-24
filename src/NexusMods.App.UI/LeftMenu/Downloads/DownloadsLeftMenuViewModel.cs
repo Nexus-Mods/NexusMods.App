@@ -17,6 +17,7 @@ using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.UI.Sdk.Icons;
 using ReactiveUI;
+using R3;
 
 namespace NexusMods.App.UI.LeftMenu.Downloads;
 
@@ -25,7 +26,6 @@ public class DownloadsLeftMenuViewModel : AViewModel<IDownloadsLeftMenuViewModel
 {
     public WorkspaceId WorkspaceId { get; }
     public ILeftMenuItemViewModel LeftMenuItemAllDownloads { get; }
-    public ILeftMenuItemViewModel LeftMenuItemAllCompleted { get; }
 
     private ReadOnlyObservableCollection<ILeftMenuItemViewModel> _leftMenuItemsPerGameDownloads = new([]);
     public ReadOnlyObservableCollection<ILeftMenuItemViewModel> LeftMenuItemsPerGameDownloads => _leftMenuItemsPerGameDownloads;
@@ -55,21 +55,6 @@ public class DownloadsLeftMenuViewModel : AViewModel<IDownloadsLeftMenuViewModel
         {
             Text = new StringComponent(Language.DownloadsLeftMenu_AllDownloads),
             Icon = IconValues.Download,
-        };
-
-        // All Completed menu item
-        LeftMenuItemAllCompleted = new LeftMenuItemViewModel(
-            workspaceController,
-            WorkspaceId,
-            new PageData
-            {
-                FactoryId = DownloadsPageFactory.StaticId,
-                Context = new CompletedDownloadsPageContext(), // TODO: Add completed filter context when implemented
-            }
-        )
-        {
-            Text = new StringComponent(Language.DownloadsLeftMenu_AllCompleted),
-            Icon = IconValues.CheckCircle,
         };
 
         // Per-game downloads (dynamic)
@@ -108,7 +93,10 @@ public class DownloadsLeftMenuViewModel : AViewModel<IDownloadsLeftMenuViewModel
         };
 
         // Load game icon asynchronously
-        Observable.FromAsync(() => ImageHelper.LoadGameIconAsync((IGame)gameInstallation.Game, (int)ImageSizes.LeftMenuIcon.Width, logger))
+        R3.Observable.Return((IGame)gameInstallation.Game)
+            .SelectAwait((game, _) => ImageHelper.LoadGameIconAsync(game, (int)ImageSizes.LeftMenuIcon.Width, logger))
+            .AsSystemObservable()
+            .WhereNotNull()
             .ObserveOn(RxApp.MainThreadScheduler)
             .Subscribe(bitmap => viewModel.Icon = ImageHelper.CreateIconValueFromBitmap(bitmap, IconValues.FolderEditOutline));
 

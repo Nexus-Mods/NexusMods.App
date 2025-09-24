@@ -20,12 +20,6 @@ public class DownloadsLeftMenuDesignViewModel : AViewModel<IDownloadsLeftMenuVie
 
     public ReadOnlyObservableCollection<ILeftMenuItemViewModel> LeftMenuItemsPerGameDownloads { get; }
 
-    public ILeftMenuItemViewModel LeftMenuItemAllCompleted { get; } = new LeftMenuItemDesignViewModel
-    {
-        Text = new StringComponent(Language.DownloadsLeftMenu_AllCompleted),
-        Icon = IconValues.CheckCircle,
-    };
-
     public DownloadsLeftMenuDesignViewModel()
     {
         var perGameItems = new[]

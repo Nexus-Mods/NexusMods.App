@@ -91,4 +91,11 @@ public interface IJobMonitor
     /// Resumes all active jobs
     /// </summary>
     void ResumeAll();
+    
+    /// <summary>
+    /// Finds a job by its ID
+    /// </summary>
+    /// <param name="jobId">The ID of the job to find</param>
+    /// <returns>The job with the specified ID, or null if not found</returns>
+    IJob? Find(JobId jobId);
 }

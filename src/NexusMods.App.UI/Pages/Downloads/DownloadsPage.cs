@@ -15,11 +15,13 @@ public record DownloadsPageContext : IPageFactoryContext;
 [JsonName("NexusMods.App.UI.Pages.Downloads.AllDownloadsPageContext")]
 public record AllDownloadsPageContext : DownloadsPageContext;
 
-[JsonName("NexusMods.App.UI.Pages.Downloads.CompletedDownloadsPageContext")]
-public record CompletedDownloadsPageContext : DownloadsPageContext;
-
 [JsonName("NexusMods.App.UI.Pages.Downloads.GameSpecificDownloadsPageContext")]
-public record GameSpecificDownloadsPageContext(GameId GameId) : DownloadsPageContext;
+public record GameSpecificDownloadsPageContext(GameId GameId) : DownloadsPageContext
+{
+    // Required for serialization, do not remove.
+    // ReSharper disable once UnusedMember.Global
+    public GameSpecificDownloadsPageContext() : this(GameId.DefaultValue) {}
+}
 
 [UsedImplicitly]
 public class DownloadsPageFactory(IServiceProvider serviceProvider) : APageFactory<IDownloadsPageViewModel, DownloadsPageContext>(serviceProvider)
@@ -31,7 +33,8 @@ public class DownloadsPageFactory(IServiceProvider serviceProvider) : APageFacto
     {
         return new DownloadsPageViewModel(
             ServiceProvider.GetRequiredService<IWindowManager>(),
-            ServiceProvider.GetRequiredService<IDownloadsService>()
+            ServiceProvider,
+            context
         );
     }
 }

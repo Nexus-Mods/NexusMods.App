@@ -305,6 +305,7 @@ public static class Services
             .AddSingleton<ILoadoutDataProvider, NexusModsDataProvider>()
             .AddSingleton<ILoadoutDataProvider, BundledDataProvider>()
             .AddSingleton<ILoadOrderDataProvider, LoadOrderDataProvider>()
+            .AddSingleton<IDownloadsDataProvider, DownloadsDataProvider>()
             .AddSingleton<IEventBus, EventBus>()
             .AddSingleton<IAvaloniaInterop, AvaloniaInterop>()
             .AddSingleton<UpdateChecker>()

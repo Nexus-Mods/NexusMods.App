@@ -1,0 +1,59 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:spinner="clr-namespace:NexusMods.App.UI.Controls.Spinner;assembly=NexusMods.App.UI"
+        xmlns:icons="clr-namespace:NexusMods.UI.Sdk.Icons;assembly=NexusMods.UI.Sdk">
+
+    <Style Selector="TreeDataGrid#TreeDataGridDownloads">
+
+        <!-- <Setter Property="Background" Value="DarkGreen"/> -->
+
+        <!-- ROWS -->
+
+        <Style Selector="^ TreeDataGridRow">
+
+            <!-- child row -->
+            <!-- <Setter Property="Background" Value="{StaticResource SurfaceLowBrush}" /> -->
+
+            <!-- parent row -->
+            <Style Selector="^.RootRow">
+                <!-- <Setter Property="Background" Value="DarkRed" /> -->
+            </Style>
+
+            <!-- CELLS -->
+
+            <!-- all of our cells will be a type of this -->
+            <Style Selector="^ TreeDataGridTemplateCell">
+                
+                <!-- download page -> size cell -->
+                <Style Selector="^.DownloadColumns_Size">
+                    <!-- <Setter Property="HorizontalAlignment" Value="Right" /> -->
+                </Style>
+                
+                <!-- download page -> status cell -->
+                <Style Selector="^.DownloadColumns_Status">
+                    <Setter Property="HorizontalAlignment" Value="Right" />
+
+                    <Style
+                        Selector="^ Border.DownloadColumns_Status_StatusComponent">
+                        <Setter Property="MinWidth" Value="120" />
+                       
+
+                        <!-- <Style Selector="^ > TextBlock"> -->
+                        <!--     <Setter Property="VerticalAlignment" Value="Center" /> -->
+                        <!--     <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" /> -->
+                        <!-- </Style> -->
+                    </Style>
+                </Style>
+
+                <!-- first cell of a row as it can expand -->
+                <Style Selector="^ TreeDataGridExpanderCell">
+                    <!-- <Setter Property="Background" Value="LightCoral" /> -->
+
+                    <Style Selector="^ TreeDataGridTemplateCell">
+                        <!-- <Setter Property="Background" Value="Coral" /> -->
+                    </Style>
+                </Style>
+            </Style>
+        </Style>
+    </Style>
+</Styles>
