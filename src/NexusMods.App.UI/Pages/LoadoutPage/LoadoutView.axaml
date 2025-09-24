@@ -268,7 +268,8 @@
                                       CanUserResizeColumns="True"
                                       CanUserSortColumns="True"
                                       Classes="MainListsStyling"
-                                      Margin="0 8 0 0" />
+                                      Margin="0 8 0 0" 
+                                      ContextFlyout="{StaticResource LoadoutItemMenuFlyout}"/>
                     </controls:EmptyState>
                 </Grid>
             </TabItem>
