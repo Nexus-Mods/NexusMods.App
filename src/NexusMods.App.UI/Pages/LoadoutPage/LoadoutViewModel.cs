@@ -476,12 +476,8 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
             }
         );
 
-        var numSortableItemProviders = loadout
-            .InstallationInstance
-            .GetGame()
-            .SortableItemProviderFactories.Length;
-
-        HasRulesSection = numSortableItemProviders > 0;
+        var numRulePages = RulesSectionViewModel.LoadOrderViewModels.Count;
+        HasRulesSection = numRulePages > 0;
 
         SelectedSubTab = selectedSubTab switch
         {
