@@ -1,7 +1,5 @@
 using DynamicData;
 using DynamicData.Kernel;
-using Microsoft.CodeAnalysis;
-using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Games.RedEngine.Cyberpunk2077.Extensions;
@@ -160,12 +158,12 @@ public class RedModSortOrderVariety : ASortOrderVariety<
         IDb startingDb,
         CancellationToken token = default)
     {
-        var persistentSortableEntries = startingDb.RetrieveRedModSortableEntries(sortOrderId);
+        var persistentSortOrderEntries = startingDb.RetrieveRedModSortableEntries(sortOrderId);
         
         token.ThrowIfCancellationRequested();
         
         // Remove outdated persistent items
-        foreach (var dbItem in persistentSortableEntries)
+        foreach (var dbItem in persistentSortOrderEntries)
         {
             var newItem = newOrder.FirstOrOptional(
                 newItem => newItem.Key.Key == dbItem.RedModFolderName
@@ -190,7 +188,7 @@ public class RedModSortOrderVariety : ASortOrderVariety<
         for (var i = 0; i < newOrder.Count; i++)
         {
             var newItem = newOrder[i];
-            if (persistentSortableEntries.Any(si => si.RedModFolderName == newItem.Key.Key))
+            if (persistentSortOrderEntries.Any(si => si.RedModFolderName == newItem.Key.Key))
                 continue;
 
             var newDbItem = new SortOrderItem.New(tx)
@@ -254,7 +252,7 @@ public class RedModSortOrderVariety : ASortOrderVariety<
             
             processedKeys.Add(sortedEntry.Key);
 
-            // Create sortable item from sorted entry and loadout data
+            // Create sort item data from sorted entry and loadout data
             results.Add((sortedEntry, loadoutItemData));
         }
     
