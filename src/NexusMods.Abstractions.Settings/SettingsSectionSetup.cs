@@ -31,4 +31,6 @@ public record SettingsSectionSetup
     /// Sections with a higher priority will be placed higher in the UI.
     /// </remarks>
     public ushort Priority { get; init; } = 1000;
+
+    public bool Hidden { get; init; }
 }

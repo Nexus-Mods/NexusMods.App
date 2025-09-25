@@ -49,6 +49,7 @@ internal partial class SettingsManager : ISettingsManager
                 Name = descriptor.Name,
                 Icon = descriptor.IconFunc(),
                 Priority = descriptor.Priority,
+                Hidden = descriptor.Hidden,
             })
             .ToArray(),
             mode: LazyThreadSafetyMode.ExecutionAndPublication

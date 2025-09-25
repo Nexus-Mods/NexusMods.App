@@ -12,4 +12,6 @@ internal record SettingsSectionDescriptor : ISettingsSectionDescriptor
     public required IconValue Icon { get; init; }
 
     public required ushort Priority { get; init; }
+
+    public required bool Hidden { get; init; }
 }

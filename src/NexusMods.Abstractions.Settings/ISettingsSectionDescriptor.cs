@@ -31,4 +31,6 @@ public interface ISettingsSectionDescriptor
     /// A section with a higher priority will be placed higher in the UI.
     /// </remarks>
     ushort Priority { get; }
+
+    bool Hidden { get; }
 }
