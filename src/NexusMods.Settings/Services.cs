@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Settings;
+using NexusMods.Sdk;
 using NexusMods.UI.Sdk.Icons;
 
 namespace NexusMods.Settings;
@@ -43,6 +44,7 @@ public static class Services
                 IconFunc = static () => IconValues.WarningAmber,
                 Name = "Experimental - Not currently supported",
                 Priority = ushort.MinValue,
+                Hidden = !ApplicationConstants.IsDebug,
             })
             .AddSettingsSection(new SettingsSectionSetup
             {

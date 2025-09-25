@@ -45,11 +45,12 @@ public class SettingsPageViewModel : APageViewModel<ISettingsPageViewModel>, ISe
         TabIcon = IconValues.CogOutline;
         TabTitle = Language.SettingsView_Title;
 
-        var descriptors = settingsManager.GetAllUIProperties();
-        var entryViewModels = descriptors.Select(CreateEntryViewModel).ToArray();
-
         var sections = settingsManager.GetAllSections();
-        var sectionViewModels = sections.Select(x => new SettingSectionViewModel(x)).ToArray();
+        var sectionViewModels = sections.Where(x => !x.Hidden).Select(x => new SettingSectionViewModel(x)).ToArray();
+        var hiddenSections = sections.Where(x => x.Hidden).Select(x => x.Id).ToHashSet();
+
+        var descriptors = settingsManager.GetAllUIProperties().Where(x => !hiddenSections.Contains(x.SectionId));
+        var entryViewModels = descriptors.Select(CreateEntryViewModel).ToArray();
 
         // ReSharper disable ArrangeObjectCreationWhenTypeNotEvident
         SettingEntries = new(new(entryViewModels));
