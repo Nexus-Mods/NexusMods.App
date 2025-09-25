@@ -82,9 +82,6 @@ public abstract class AGame : IGame
     /// <inheritdoc/>
     public virtual IDiagnosticEmitter[] DiagnosticEmitters { get; } = [];
 
-    /// <inheritdoc/>
-    public virtual ISortableItemProviderFactory[] SortableItemProviderFactories { get; } = [];
-
     /// <inheritdoc />
     public virtual ILoadoutSynchronizer Synchronizer => _synchronizer.Value;
     
