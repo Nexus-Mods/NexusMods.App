@@ -72,7 +72,7 @@ public class RedModSortOrderVariety : ASortOrderVariety<
         return redModSortOrder.AsSortOrder().SortOrderId;
     }
 
-    public override IObservable<IChangeSet<RedModReactiveSortItem, SortItemKey<string>>> GetSortableItemsChangeSet(SortOrderId sortOrderId)
+    public override IObservable<IChangeSet<RedModReactiveSortItem, SortItemKey<string>>> GetSortOrderItemsChangeSet(SortOrderId sortOrderId)
     {
         var sortOrder = Abstractions.Loadouts.SortOrder.Load(Connection.Db, sortOrderId);
         var parentEntity = sortOrder.ParentEntity.Match(
@@ -111,7 +111,7 @@ public class RedModSortOrderVariety : ASortOrderVariety<
         return result;
     }
 
-    public override IReadOnlyList<RedModReactiveSortItem> GetSortableItems(SortOrderId sortOrderId, IDb? db)
+    public override IReadOnlyList<RedModReactiveSortItem> GetSortOrderItems(SortOrderId sortOrderId, IDb? db)
     {
         var dbToUse = db ?? Connection.Db;
         var sortOrder = Abstractions.Loadouts.SortOrder.Load(dbToUse, sortOrderId);
@@ -141,6 +141,16 @@ public class RedModSortOrderVariety : ASortOrderVariety<
                 };
             }
         ).ToList();
+    }
+
+    /// <summary>
+    /// Method to get the order to pass to REDMod tool.
+    /// </summary>
+    public IReadOnlyList<string> GetRedModOrder(SortOrderId sortOrderId, IDb? db = null)
+    {
+        return GetSortOrderItems(sortOrderId, db)
+            .Select(item => item.Key.Key)
+            .ToList();
     }
 
     protected override void PersistSortOrderCore(

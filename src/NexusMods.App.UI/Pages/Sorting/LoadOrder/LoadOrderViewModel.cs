@@ -8,6 +8,7 @@ using DynamicData.Binding;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Settings;
 using NexusMods.Abstractions.UI;
 using NexusMods.Abstractions.UI.Extensions;
@@ -48,41 +49,47 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
     [UsedImplicitly]
     public LoadOrderViewModel(
         IServiceProvider serviceProvider,
-        ISortableItemProviderFactory itemProviderFactory,
-        ILoadoutSortableItemProvider provider)
+        ISortOrderVariety sortOrderVariety,
+        LoadoutId loadoutId)
     {
         var osInterop = serviceProvider.GetRequiredService<IOSInterop>();
         var settingsManager = serviceProvider.GetRequiredService<ISettingsManager>();
 
-        SortOrderName = itemProviderFactory.SortOrderUiMetadata.SortOrderName;
-        InfoAlertTitle = itemProviderFactory.SortOrderUiMetadata.OverrideInfoTitle;
-        InfoAlertBody = itemProviderFactory.SortOrderUiMetadata.OverrideInfoMessage;
-        TrophyToolTip = itemProviderFactory.SortOrderUiMetadata.WinnerIndexToolTip;
-        EmptyStateMessageTitle = itemProviderFactory.SortOrderUiMetadata.EmptyStateMessageTitle;
-        EmptyStateMessageContents = itemProviderFactory.SortOrderUiMetadata.EmptyStateMessageContents;
+        var optionalSortOrderId = sortOrderVariety.GetSortOrderIdFor(loadoutId);
+        if (!optionalSortOrderId.HasValue)
+            throw new InvalidOperationException($"No sort order found for loadout {loadoutId} and variety {sortOrderVariety.SortOrderVarietyId}");
+        var sortOrderId = optionalSortOrderId.Value;
+        
+        SortOrderName = sortOrderVariety.SortOrderUiMetadata.SortOrderName;
+        SortOrderName = sortOrderVariety.SortOrderUiMetadata.SortOrderName;
+        InfoAlertTitle = sortOrderVariety.SortOrderUiMetadata.OverrideInfoTitle;
+        InfoAlertBody = sortOrderVariety.SortOrderUiMetadata.OverrideInfoMessage;
+        TrophyToolTip = sortOrderVariety.SortOrderUiMetadata.WinnerIndexToolTip;
+        EmptyStateMessageTitle = sortOrderVariety.SortOrderUiMetadata.EmptyStateMessageTitle;
+        EmptyStateMessageContents = sortOrderVariety.SortOrderUiMetadata.EmptyStateMessageContents;
 
         // TODO: load these from settings
-        SortDirectionCurrent = itemProviderFactory.SortDirectionDefault;
+        SortDirectionCurrent = sortOrderVariety.SortDirectionDefault;
         IsAscending = SortDirectionCurrent == ListSortDirection.Ascending;
 
         IsWinnerTop = SortDirectionCurrent == ListSortDirection.Ascending &&
-                      itemProviderFactory.IndexOverrideBehavior == IndexOverrideBehavior.SmallerIndexWins;
+                      sortOrderVariety.IndexOverrideBehavior == IndexOverrideBehavior.SmallerIndexWins;
 
         var sortDirectionObservable = this.WhenAnyValue(vm => vm.SortDirectionCurrent)
             .Replay(1);
 
-        var adapter = new LoadOrderTreeDataGridAdapter(provider, sortDirectionObservable, serviceProvider);
+        var adapter = new LoadOrderTreeDataGridAdapter(sortOrderVariety, loadoutId, sortDirectionObservable, serviceProvider);
         Adapter = adapter;
         Adapter.ViewHierarchical.Value = true;
 
         // We have different alerts based on the type of load order, so we key in the SortOrderTypeId
-        AlertSettingsWrapper = new AlertSettingsWrapper(settingsManager, $"LoadOrder Alert Type:{itemProviderFactory.SortOrderTypeId}");
+        AlertSettingsWrapper = new AlertSettingsWrapper(settingsManager, $"LoadOrder Alert Type:{sortOrderVariety.SortOrderVarietyId}");
         
         ToggleAlertCommand = ReactiveCommand.Create(() => { AlertSettingsWrapper.ToggleAlert(); });
         
         LearnMoreAlertCommand = ReactiveCommand.CreateFromTask(async () =>
         {
-            await osInterop.OpenUrl(new Uri(itemProviderFactory.SortOrderUiMetadata.LearnMoreUrl));
+            await osInterop.OpenUrl(new Uri(sortOrderVariety.SortOrderUiMetadata.LearnMoreUrl));
         });
 
         SwitchSortDirectionCommand = ReactiveCommand.Create(() =>
@@ -105,7 +112,7 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
                     {
                         IsAscending = sortDirection == ListSortDirection.Ascending;
                         IsWinnerTop = IsAscending &&
-                                      itemProviderFactory.IndexOverrideBehavior == IndexOverrideBehavior.SmallerIndexWins;
+                                      sortOrderVariety.IndexOverrideBehavior == IndexOverrideBehavior.SmallerIndexWins;
                     })
                     .DisposeWith(d);
 
@@ -113,21 +120,20 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
                 adapter.MessageSubject
                     .SubscribeAwait(async (payload, cancellationToken) =>
                         {
-                            var (item, delta) = payload.Match(
+                            var (key, delta) = payload.Match(
                                 moveUpPayload =>
                                 {
                                     var deltaUp = SortDirectionCurrent == ListSortDirection.Ascending ? -1 : +1;
-                                    return (provider.GetSortableItem(moveUpPayload.Item.Key), deltaUp);
+                                    return (moveUpPayload.Item.Key, deltaUp);
                                 },
                                 moveDownPayload =>
                                 {
                                     var deltaDown = SortDirectionCurrent == ListSortDirection.Ascending ? +1 : -1;
-                                    return (provider.GetSortableItem(moveDownPayload.Item.Key), deltaDown);
+                                    return (moveDownPayload.Item.Key, deltaDown);
                                 }
                             );
                             
-                            if (!item.HasValue) return;
-                            await provider.SetRelativePosition(item.Value, delta, cancellationToken);
+                            await sortOrderVariety.MoveItemDelta(sortOrderId, key, delta, token: cancellationToken);
                         })
                     .DisposeWith(d);
 
@@ -150,16 +156,11 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
                             var (sourceModels, targetModel, eventArgs) = dragDropPayload;
                             
                             // Determine source items
-                            var sourceItems = sourceModels
-                                .Select(model => provider.GetSortableItem(model.Key))
-                                .Where(optionalItem => optionalItem.HasValue)
-                                .Select(optionalItem => optionalItem.Value)
-                                .ToArray();
-                            if (sourceItems.Length == 0) return;
+                            var keysToMove = sourceModels.Select(item => item.Key).ToArray();
+                            if (keysToMove.Length == 0) return;
 
                             // Determine target item
-                            var targetItem = provider.GetSortableItem(targetModel.Key);
-                            if (!targetItem.HasValue) return;
+                            var dropTargetKey = targetModel.Key;
                             
                             // Determine relative position
                             TargetRelativePosition relativePosition;
@@ -186,7 +187,7 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
                                     return;
                             }
                             
-                            await provider.MoveItemsTo(sourceItems, targetItem.Value, relativePosition, cancellationToken);
+                            await sortOrderVariety.MoveItems(sortOrderId, keysToMove, dropTargetKey, relativePosition, token: cancellationToken);
                         },
                         awaitOperation: AwaitOperation.Drop)
                     .DisposeWith(d);
@@ -208,7 +209,8 @@ public readonly record struct MoveDownCommandPayload(CompositeItemModel<ISortIte
 public class LoadOrderTreeDataGridAdapter : TreeDataGridAdapter<CompositeItemModel<ISortItemKey>, ISortItemKey>,
     ITreeDataGirdMessageAdapter<OneOf<MoveUpCommandPayload, MoveDownCommandPayload>>
 {
-    private readonly ILoadoutSortableItemProvider _sortableItemsProvider;
+    private readonly ISortOrderVariety _sortOrderVariety;
+    private readonly LoadoutId _loadoutId;
     private readonly ILoadOrderDataProvider[] _loadOrderDataProviders;
     private readonly R3.Observable<ListSortDirection> _sortDirectionObservable;
     private readonly System.Reactive.Subjects.Subject<IComparer<CompositeItemModel<ISortItemKey>>> _resortSubject = new(); 
@@ -217,11 +219,13 @@ public class LoadOrderTreeDataGridAdapter : TreeDataGridAdapter<CompositeItemMod
     public Subject<OneOf<MoveUpCommandPayload, MoveDownCommandPayload>> MessageSubject { get; } = new();
 
     public LoadOrderTreeDataGridAdapter(
-        ILoadoutSortableItemProvider sortableItemsProvider,
+        ISortOrderVariety sortOrderVariety,
+        LoadoutId loadoutId,
         IObservable<ListSortDirection> sortDirectionObservable,
         IServiceProvider serviceProvider)
     {
-        _sortableItemsProvider = sortableItemsProvider;
+        _loadoutId = loadoutId;
+        _sortOrderVariety = sortOrderVariety;
         _sortDirectionObservable = sortDirectionObservable.ToObservable();
 
         _loadOrderDataProviders = serviceProvider.GetServices<ILoadOrderDataProvider>().ToArray();
@@ -302,14 +306,14 @@ public class LoadOrderTreeDataGridAdapter : TreeDataGridAdapter<CompositeItemMod
     protected override IObservable<IChangeSet<CompositeItemModel<ISortItemKey>, ISortItemKey>> GetRootsObservable(bool viewHierarchical)
     {
         return _loadOrderDataProviders
-            .Select(x => x.ObserveLoadOrder(_sortableItemsProvider, _sortDirectionObservable))
+            .Select(x => x.ObserveLoadOrder(_sortOrderVariety, _loadoutId, _sortDirectionObservable))
             .MergeChangeSets();
     }
 
     protected override IColumn<CompositeItemModel<ISortItemKey>>[] CreateColumns(bool viewHierarchical)
     {
         var indexColumn = ColumnCreator.Create<ISortItemKey, LoadOrderColumns.IndexColumn>(
-            columnHeader: _sortableItemsProvider.ParentFactory.SortOrderUiMetadata.IndexColumnHeader,
+            columnHeader: _sortOrderVariety.SortOrderUiMetadata.IndexColumnHeader,
             canUserSortColumn: false,
             canUserResizeColumn: false
         );
@@ -320,7 +324,7 @@ public class LoadOrderTreeDataGridAdapter : TreeDataGridAdapter<CompositeItemMod
         [
             expanderColumn,
             ColumnCreator.Create<ISortItemKey, LoadOrderColumns.DisplayNameColumn>(
-                columnHeader: _sortableItemsProvider.ParentFactory.SortOrderUiMetadata.DisplayNameColumnHeader,
+                columnHeader: _sortOrderVariety.SortOrderUiMetadata.DisplayNameColumnHeader,
                 canUserSortColumn: false,
                 canUserResizeColumn: false
             ),

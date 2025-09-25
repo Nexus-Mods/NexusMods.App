@@ -76,10 +76,10 @@ public abstract class ASortOrderVariety<TKey, TSortableItem, TItemLoadoutData, T
         CancellationToken token = default);
 
     /// <inheritdoc />
-    public abstract IObservable<IChangeSet<TSortableItem, TKey>> GetSortableItemsChangeSet(SortOrderId sortOrderId);
+    public abstract IObservable<IChangeSet<TSortableItem, TKey>> GetSortOrderItemsChangeSet(SortOrderId sortOrderId);
 
     /// <inheritdoc />
-    public abstract IReadOnlyList<TSortableItem> GetSortableItems(SortOrderId sortOrderId, IDb? db);
+    public abstract IReadOnlyList<TSortableItem> GetSortOrderItems(SortOrderId sortOrderId, IDb? db);
 
     /// <inheritdoc />
     public async ValueTask MoveItems(
