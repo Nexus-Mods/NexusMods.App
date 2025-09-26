@@ -1,0 +1,50 @@
+<sdk:R3UserControl x:TypeArguments="local:IFileConflictsViewModel"
+                   xmlns="https://github.com/avaloniaui"
+                   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                   xmlns:sdk="clr-namespace:NexusMods.UI.Sdk;assembly=NexusMods.UI.Sdk"
+                   xmlns:local="clr-namespace:NexusMods.App.UI.Pages.Sorting"
+                   xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
+                   xmlns:abstractions="clr-namespace:NexusMods.MnemonicDB.Abstractions;assembly=NexusMods.MnemonicDB.Abstractions"
+                   mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+                   x:Class="NexusMods.App.UI.Pages.Sorting.FileConflictsView">
+    
+    <!-- Actions -->
+    <TreeDataGrid
+        x:Name="TreeDataGrid"
+        CanUserResizeColumns="False"
+        CanUserSortColumns="False"
+        ShowColumnHeaders="True">
+        
+        <TreeDataGrid.Resources>
+            <ResourceDictionary>
+                <DataTemplate x:Key="{x:Static local:FileConflictsColumns+Actions.ColumnTemplateResourceKey}">
+                    <DataTemplate.DataType>
+                        <x:Type TypeName="controls:CompositeItemModel" x:TypeArguments="abstractions:EntityId" />
+                    </DataTemplate.DataType>
+
+                    <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
+                        <controls:ComponentControl.ComponentTemplate>
+                            <controls:ComponentTemplate x:TypeArguments="local:FileConflictsComponents+ViewAction"
+                                                        ComponentKey="{x:Static local:FileConflictsColumns+Actions.ViewComponentKey}">
+                                <controls:ComponentTemplate.DataTemplate>
+                                    <DataTemplate DataType="{x:Type local:FileConflictsComponents+ViewAction}">
+                                        <controls:StandardButton Command="{CompiledBinding CommandViewConflicts}"
+                                                                 Text="View conflicts"
+                                                                 Size="Small"
+                                                                 Type="Tertiary"
+                                                                 Fill="Weak" />
+                                    </DataTemplate>
+                                </controls:ComponentTemplate.DataTemplate>
+                            </controls:ComponentTemplate>
+                        </controls:ComponentControl.ComponentTemplate>
+                    </controls:ComponentControl>
+                </DataTemplate>
+            </ResourceDictionary>
+        </TreeDataGrid.Resources>
+        
+    </TreeDataGrid>
+
+</sdk:R3UserControl>
+

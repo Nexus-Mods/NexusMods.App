@@ -51,6 +51,11 @@ public interface IGame : ILocatableGame
     public ILoadoutSynchronizer Synchronizer { get; }
     
     /// <summary>
+    /// The sort order manager for this game.
+    /// </summary>
+    public ISortOrderManager SortOrderManager { get; }
+    
+    /// <summary>
     /// Constructs a <see cref="GameInstallation"/> from the given <see cref="GameLocatorResult"/>, and a unique DB ID,
     /// also marks the installation was sourced from the given <see cref="IGameLocator"/>.
     /// </summary>

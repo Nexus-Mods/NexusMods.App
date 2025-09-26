@@ -790,6 +790,9 @@
            <DependentUpon>DownloadsPageView.axaml</DependentUpon>
            <SubType>Code</SubType>
         </Compile>
+        <Compile Update="Pages\Sorting\FileConflicts\FileConflictsViewModel.cs">
+          <DependentUpon>IFileConflictsViewModel.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>

@@ -60,6 +60,16 @@ public enum Signature : ushort
     /// True if the path is ignored, i.e. it is on a game-specific ignore list.
     /// </summary>
     PathIsIgnored = 1 << 9,
+    
+    /// <summary>
+    /// True if the item is a game file
+    /// </summary>
+    IsGameFile = 1 << 10,
+    
+    /// <summary>
+    /// True if the item is an intrinsic file, i.e. not from a mod or the game files
+    /// </summary>
+    IsIntrinsicFile = 1 << 11,
 }
 
 
@@ -72,7 +82,7 @@ public static class SignatureBuilder
     /// Builds the final <see cref="Signature"/> from the arguments.
     /// </summary>
     /// <returns></returns>
-    public static Signature Build(Optional<Hash> diskHash, Optional<Hash> prevHash, Optional<Hash> loadoutHash, bool diskArchived, bool prevArchived, bool loadoutArchived, bool pathIsIgnored)
+    public static Signature Build(Optional<Hash> diskHash, Optional<Hash> prevHash, Optional<Hash> loadoutHash, bool diskArchived, bool prevArchived, bool loadoutArchived, bool pathIsIgnored, LoadoutSourceItemType? sourceItemType)
     {
         var sig = Signature.Empty;
 
@@ -105,6 +115,12 @@ public static class SignatureBuilder
 
         if (pathIsIgnored)
             sig |= Signature.PathIsIgnored;
+        
+        if (sourceItemType.HasValue && sourceItemType.Value == LoadoutSourceItemType.Game)
+            sig |= Signature.IsGameFile;
+        
+        if (sourceItemType.HasValue && sourceItemType.Value == LoadoutSourceItemType.Intrinsic)
+            sig |= Signature.IsIntrinsicFile;
 
         return sig;
     }

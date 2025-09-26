@@ -26,6 +26,13 @@ public enum LoadoutSourceItemType : byte
     /// This is a deleted file
     /// </summary>
     Deleted,
+    
+    /// <summary>
+    /// A file intrinsic to the game. This file cannot be deleted, and will not show
+    /// up in the loadout as a file that can be manipluated. Instead the game provides
+    /// special handling for this file.
+    /// </summary>
+    Intrinsic,
 }
 
 public readonly record struct LoadoutSourceItem

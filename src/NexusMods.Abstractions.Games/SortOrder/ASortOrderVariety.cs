@@ -23,23 +23,17 @@ public abstract class ASortOrderVariety<TKey, TSortableItem, TItemLoadoutData, T
     where TItemLoadoutData : ISortItemLoadoutData<TKey>
     where TSortedEntry : ISortItemData<TKey>
 {
-    private readonly ILogger _logger;
+    private readonly ILogger<ASortOrderVariety<TKey, TSortableItem, TItemLoadoutData, TSortedEntry>> _logger;
     
     /// <summary>
     /// Database connection
     /// </summary>
     protected readonly IConnection Connection;
-    
-    /// <summary>
-    /// The game sort order manager that this variety belongs to.
-    /// </summary>
-    protected readonly ISortOrderManager Manager;
-    
-    protected ASortOrderVariety(IServiceProvider serviceProvider, ISortOrderManager manager)
+
+    protected ASortOrderVariety(IServiceProvider serviceProvider)
     {
         Connection = serviceProvider.GetRequiredService<IConnection>();
-        _logger = serviceProvider.GetRequiredService<ILogger>();
-        Manager = manager;
+        _logger = serviceProvider.GetRequiredService<ILogger<ASortOrderVariety<TKey, TSortableItem, TItemLoadoutData, TSortedEntry>>>();
     }
         
 #region public members
@@ -195,19 +189,20 @@ public abstract class ASortOrderVariety<TKey, TSortableItem, TItemLoadoutData, T
     }
 
     /// <inheritdoc />
-    public virtual async ValueTask ReconcileSortOrder(SortOrderId sortOrderId, IDb? db = null, CancellationToken token = default)
+    public virtual async ValueTask ReconcileSortOrder(SortOrderId sortOrderId, IDb? referenceDb = null, CancellationToken token = default)
     {
         // If this is passed a specific database, don't retry the reconciliation using the most recent database.
-        var noRetry = db is not null; 
+        var noRetry = referenceDb is not null; 
         var retryCount = 0;
-        var dbToUse = db ?? Connection.Db;
 
         while (retryCount <= 3)
         {
-            var reconciledItems = ReconcileSortOrderCore(sortOrderId, dbToUse);
+            var refDb = referenceDb ?? Connection.Db;
             
-            var succeded = await TryPersistSortOrder(sortOrderId, reconciledItems.Select(tuple => tuple.SortedEntry).ToArray(), dbToUse, token);
-            if (succeded) return;
+            var reconciledItems = ReconcileSortOrderCore(sortOrderId, refDb);
+            
+            var succeeded = await TryPersistSortOrder(sortOrderId, reconciledItems.Select(tuple => tuple.SortedEntry).ToArray(), refDb, token);
+            if (succeeded) return;
         
             if (noRetry)
             {
@@ -220,6 +215,30 @@ public abstract class ASortOrderVariety<TKey, TSortableItem, TItemLoadoutData, T
         }
         
         _logger.LogError("Reconciliation of sort order {SortOrderId} failed after 4 attempts", sortOrderId);
+    }
+    
+    /// <inheritdoc />
+    public virtual async ValueTask DeleteSortOrder(SortOrderId sortOrderId, CancellationToken token = default)
+    {
+        using var tx = Connection.BeginTransaction();
+        
+        // Delete the items
+        foreach (var item in Connection.Db.Datoms(SortOrderItem.ParentSortOrder, sortOrderId))
+        {
+            tx.Delete(item.E, recursive: false);
+        }
+        
+        // Delete the sort order
+        tx.Delete(sortOrderId, recursive: false);
+        
+        try
+        {
+            await tx.Commit();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to delete sort order {SortOrderId}", sortOrderId);
+        }
     }
     
 
@@ -285,17 +304,20 @@ public abstract class ASortOrderVariety<TKey, TSortableItem, TItemLoadoutData, T
         CancellationToken token = default);
     
     
-    protected virtual IReadOnlyList<(TSortedEntry SortedEntry, TItemLoadoutData ItemLoadoutData)> ReconcileSortOrderCore(SortOrderId sortOrderId, IDb dbToUse)
+    protected virtual IReadOnlyList<(TSortedEntry SortedEntry, TItemLoadoutData ItemLoadoutData)> ReconcileSortOrderCore(SortOrderId sortOrderId, IDb loadoutRevisionDb)
     {
-        var sortOrder = SortOrder.Load(dbToUse, sortOrderId);
+        // Get the most recent sort order data
+        var sortOrder = SortOrder.Load(loadoutRevisionDb.Connection.Db, sortOrderId);
         
         var collectionGroupId = sortOrder.ParentEntity.IsT1 ? 
             sortOrder.ParentEntity.AsT1 : 
             Optional<CollectionGroupId>.None;
         
-        var loadoutData = RetrieveLoadoutData(sortOrder.LoadoutId, collectionGroupId, dbToUse);
+        // Get the loadout data from the revision db
+        var loadoutData = RetrieveLoadoutData(sortOrder.LoadoutId, collectionGroupId, loadoutRevisionDb);
         
-        var currentSortOrder = RetrieveSortOrder(sortOrderId, dbToUse);
+        // Get the most recent sort order data
+        var currentSortOrder = RetrieveSortOrder(sortOrderId, loadoutRevisionDb.Connection.Db);
         
         var reconciledItems = Reconcile(currentSortOrder, loadoutData);
         return reconciledItems;
@@ -304,6 +326,7 @@ public abstract class ASortOrderVariety<TKey, TSortableItem, TItemLoadoutData, T
     /// <summary>
     /// Returns a collection of loadout-specific TItemLoadoutData for each relevant item found in the provided loadout/collection.
     /// These loadout data items are unsorted and do not have a sort index.
+    /// This already filters out duplicates, currently selecting the most recently added enabled item for each key.
     /// </summary>
     protected abstract IReadOnlyList<TItemLoadoutData> RetrieveLoadoutData(
         LoadoutId loadoutId,

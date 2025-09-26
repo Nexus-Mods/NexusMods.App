@@ -52,6 +52,16 @@ public readonly struct GamePath : IPath<GamePath>, IEquatable<GamePath>, ICompar
 
     /// <summary/>
     public static bool operator !=(GamePath a, GamePath b) => a.LocationId != b.LocationId || a.Path != b.Path;
+    
+    /// <summary>
+    /// Joins the current path with a relative path.
+    /// </summary>
+    public static GamePath operator /(GamePath a, RelativePath b) => new(a.LocationId, a.Path / b);
+    
+    /// <summary>
+    /// Joins the current path with a string.
+    /// </summary>
+    public static GamePath operator /(GamePath a, string b) => new(a.LocationId, a.Path / b);
 
     /// <inheritdoc />
     public override bool Equals(object? obj) => obj is GamePath other && Equals(other);

@@ -13,6 +13,7 @@ public static class Services
     public static IServiceCollection AddGames(this IServiceCollection services)
     {
         return services
-            .AddSortOrderItemModel();
+            .AddSortOrderItemModel()
+            .AddSortOrderQueriesSql();
     }
 }

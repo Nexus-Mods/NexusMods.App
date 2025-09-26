@@ -45,4 +45,10 @@ public static class DialogStandardButtons
         Id: ButtonDefinitionId.Cancel,
         ButtonAction: ButtonAction.Reject
     );
+
+    public static readonly DialogButtonDefinition Close = new(
+        Text: "Close",
+        Id: ButtonDefinitionId.Close,
+        ButtonAction.Reject
+    );
 }
