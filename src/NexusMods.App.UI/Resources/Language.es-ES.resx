@@ -1,0 +1,1274 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="Newsfeed" xml:space="preserve">
+        <value>Noticias</value>
+    </data>
+    <data name="MyGames" xml:space="preserve">
+        <value>Mis juegos</value>
+    </data>
+    <data name="BrowseGames" xml:space="preserve">
+        <value>Explorar juegos</value>
+    </data>
+
+    <data name="MetricsOptIn_OverlayTitle" xml:space="preserve">
+        <value>Datos de diagnóstico y uso</value>
+    </data>
+    <data name="MetricsOptIn_MainMessage" xml:space="preserve">
+        <value>Nos gustaría recopilar datos de diagnóstico y uso para mejorar el rendimiento y tu experiencia. Estos datos nos ayudan a identificar problemas, optimizar funciones y asegurar que la aplicación de Nexus Mods funcione mejor para todos.&#x0a;&#x0a;Tus datos serán procesados de acuerdo con nuestra Política de Privacidad. Puedes cambiar tu preferencia en cualquier momento en la configuración.&#x0a;&#x0a;¿Te gustaría habilitar la recopilación de datos?</value>
+    </data>
+    <data name="MetricsOptIn_ALLOW" xml:space="preserve">
+        <value>Permitir</value>
+    </data>
+    <data name="MetricsOptIn_DENY" xml:space="preserve">
+        <value>Denegar</value>
+    </data>
+
+    <data name="Updater_UPDATE" xml:space="preserve">
+        <value>Ver actualización</value>
+    </data>
+    <data name="Updater_UpdateAvailable" xml:space="preserve">
+        <value>Actualización disponible {0}</value>
+    </data>
+
+    <data name="Updater_GenericMessage" xml:space="preserve">
+        <value>Tu versión actual {0} puede actualizarse a la versión más reciente {1}. Asegúrate de cerrar completamente la aplicación antes de actualizar.</value>
+    </data>
+
+    <data name="Updater_UsePackageManager" xml:space="preserve">
+        <value>Puedes actualizar la aplicación usando el gestor de paquetes que utilizaste para instalar la aplicación.</value>
+    </data>
+    <data name="Updater_UseInnoSetup" xml:space="preserve">
+        <value>Puedes actualizar la aplicación descargando el instalador y ejecutándolo después de cerrar la aplicación.</value>
+    </data>
+    <data name="Updater_UseFlatpak" xml:space="preserve">
+        <value>Puedes actualizar la aplicación usando Flatpak.</value>
+    </data>
+
+
+    <data name="LoadoutGridView_AddMod_FilePicker_Title" xml:space="preserve">
+        <value>Por favor, selecciona un archivo de mod para instalar.</value>
+    </data>
+    <data name="LoadoutGridView_AddMod_FileType_Archive" xml:space="preserve">
+        <value>Archivo</value>
+    </data>
+    <data name="DownloadTaskViewModel_Version_Unknown" xml:space="preserve">
+        <value>Desconocida</value>
+    </data>
+    <data name="DownloadTaskViewModel_Field_Unknown" xml:space="preserve">
+        <value>Desconocido</value>
+    </data>
+    <data name="MessageBox_Button_Yes" xml:space="preserve">
+        <value>Sí</value>
+    </data>
+    <data name="MessageBox_Button_No" xml:space="preserve">
+        <value>No</value>
+    </data>
+    <data name="MessageBox_Button_Ok" xml:space="preserve">
+        <value>Aceptar</value>
+    </data>
+    <data name="CancelDownloadOverlayView_Description_download_will_be_cancelled" xml:space="preserve">
+        <value>{0} será cancelado y los archivos serán eliminados.</value>
+    </data>
+    <data name="CancelDownloadOverlayView_Title" xml:space="preserve">
+        <value>¿Cancelar y eliminar descargas?</value>
+    </data>
+    <data name="Helpers_GenerateHeader_NAME" xml:space="preserve">
+        <value>Nombre</value>
+    </data>
+    <data name="Helpers_GenerateHeader_VERSION" xml:space="preserve">
+        <value>Versión</value>
+    </data>
+    <data name="Helpers_GenerateHeader_CATEGORY" xml:space="preserve">
+        <value>Categoría</value>
+    </data>
+    <data name="Helpers_GenerateHeader_INSTALLED" xml:space="preserve">
+        <value>Instalado</value>
+    </data>
+    <data name="Helpers_GenerateHeader_MOD_NAME" xml:space="preserve">
+        <value>Nombre del mod</value>
+    </data>
+    <data name="Helpers_GenerateHeader_GAME" xml:space="preserve">
+        <value>Juego</value>
+    </data>
+    <data name="Helpers_GenerateHeader_SIZE" xml:space="preserve">
+        <value>Tamaño</value>
+    </data>
+    <data name="Helpers_GenerateHeader_STATUS" xml:space="preserve">
+        <value>Estado</value>
+    </data>
+    <data name="LaunchButtonViewModel_LaunchGame_RUNNING" xml:space="preserve">
+        <value>JUEGO EN EJECUCIÓN...</value>
+    </data>
+    <data name="LaunchButtonViewModel_LaunchGame_LAUNCH" xml:space="preserve">
+        <value>JUGAR</value>
+    </data>
+    <data name="LaunchButtonViewModel_LaunchGame_ToolTip" xml:space="preserve">
+        <value>Haz clic para iniciar el juego</value>
+    </data>
+    <data name="StringFormatters__SecondsRemaining_secs" xml:space="preserve">
+        <value>{0} seg</value>
+    </data>
+    <data name="StringFormatters__MinutesRemaining_mins" xml:space="preserve">
+        <value>{0} min</value>
+    </data>
+    <data name="StringFormatters__HoursRemaining__hours" xml:space="preserve">
+        <value>{0} horas</value>
+    </data>
+    <data name="StringFormatters__In_progress__numDownloads" xml:space="preserve">
+        <value> ({0})</value>
+    </data>
+    <data name="DownloadStatus_Idle" xml:space="preserve">
+        <value>Inactivo</value>
+    </data>
+    <data name="DownloadStatus_Progress" xml:space="preserve">
+        <value>Progreso</value>
+    </data>
+    <data name="Nexus_Premium_Status__Premium" xml:space="preserve">
+        <value>PREMIUM</value>
+    </data>
+    <data name="Nexus_Premium_Status__Free" xml:space="preserve">
+        <value>GRATUITO</value>
+    </data>
+    <data name="Nexus_Premium_Status__Supporter" xml:space="preserve">
+        <value>COLABORADOR</value>
+    </data>
+    <data name="SearchBox__Search" xml:space="preserve">
+        <value>Buscar</value>
+    </data>
+    <data name="SearchBox__Search_Watermark" xml:space="preserve">
+        <value>Buscar...</value>
+    </data>
+    <data name="TopBarActions__LOG_IN" xml:space="preserve">
+        <value>Iniciar sesión</value>
+    </data>
+    <data name="GameWidget__Add_game" xml:space="preserve">
+        <value>Agregar juego</value>
+    </data>
+    <data name="DownloadsView__DOWNLOADS" xml:space="preserve">
+        <value>Descargas</value>
+    </data>
+    <data name="DownloadsView__In_Progress" xml:space="preserve">
+        <value>En progreso</value>
+    </data>
+    <data name="DownloadsView__Completed" xml:space="preserve">
+        <value>Completadas</value>
+    </data>
+    <data name="DownloadsView__Download_history" xml:space="preserve">
+        <value>Historial de descargas</value>
+    </data>
+    <data name="DownloadsView_UnderDevelopment" xml:space="preserve">
+        <value>La página de Descargas está siendo renovada actualmente y será reemplazada en una actualización futura. Pedimos disculpas por las molestias.</value>
+    </data>
+    <data name="NexusLoginOverlayView__Please_Click_Authorize" xml:space="preserve">
+        <value>Por favor, haz clic en "Autorizar" en la página web</value>
+    </data>
+    <data name="NexusLoginOverlayView__BROWSER_DIDNT_OPEN" xml:space="preserve">
+        <value>¿No se abrió el navegador automáticamente?</value>
+    </data>
+    <data name="NexusLoginOverlayView_Please_copy_url" xml:space="preserve">
+        <value>Por favor, copia la siguiente URL en la ventana de tu navegador. Soportamos Chrome, Safari, Firefox y Edge.</value>
+    </data>
+    <data name="DownloadCompleted_COMPLETED" xml:space="preserve">
+        <value>Completadas</value>
+    </data>
+    <data name="DownloadCompleted_Clear_All" xml:space="preserve">
+        <value>Limpiar todo</value>
+    </data>
+    <data name="DownloadHistoryView__HISTORY" xml:space="preserve">
+        <value>Historial</value>
+    </data>
+    <data name="DownloadInProgressView__IN_PROGRESS" xml:space="preserve">
+        <value>En progreso</value>
+    </data>
+    <data name="DownloadInProgressView__Cancel" xml:space="preserve">
+        <value>Cancelar</value>
+    </data>
+    <data name="DownloadInProgressView__Pause" xml:space="preserve">
+        <value>Pausar</value>
+    </data>
+    <data name="DownloadInProgressView__Pause_All" xml:space="preserve">
+        <value>Pausar todo</value>
+    </data>
+    <data name="InProgressTitleTextBlock" xml:space="preserve">
+        <value>Descargas</value>
+    </data>
+    <data name="BoldMinutesRemainingTextBlock" xml:space="preserve">
+        <value>0 min</value>
+    </data>
+    <data name="MinutesRemainingTextBlock" xml:space="preserve">
+        <value>restantes</value>
+    </data>
+    <data name="InProgressView_InProgressView_Remaining" xml:space="preserve">
+        <value>restantes</value>
+    </data>
+    <data name="HomeView__We_found_games" xml:space="preserve">
+        <value>¡Encontramos juegos listos para modear!</value>
+    </data>
+    <data name="HomeView__CANT_SEE_YOUR_GAME" xml:space="preserve">
+        <value>¿No ves tu juego?</value>
+    </data>
+    <data name="HomeView__BROWSE_ALL_GAMES" xml:space="preserve">
+        <value>Explorar todos los juegos</value>
+    </data>
+    <data name="FileOriginPage_DeleteMod" xml:space="preserve">
+        <value>Eliminar</value>
+    </data>
+    <data name="FileOriginPage_AddMod" xml:space="preserve">
+        <value>Instalar</value>
+    </data>
+    <data name="FileOriginPage_AddModAdvanced" xml:space="preserve">
+        <value>Instalación avanzada</value>
+    </data>
+    <data name="MyGamesView__Ready_to_mod" xml:space="preserve">
+        <value>Juegos agregados</value>
+    </data>
+    <data name="MyGamesView__Detected_games" xml:space="preserve">
+        <value>Juegos compatibles</value>
+    </data>
+    <data name="MyGamesView__Page_Description" xml:space="preserve">
+        <value>Agrega juegos para comenzar</value>
+    </data>
+    <data name="Button_Manage" xml:space="preserve">
+        <value>Gestionar</value>
+    </data>
+    <data name="ProgressBar_ProgressTextFormat__Total_1_0" xml:space="preserve">
+        <value>Total {1:0}%</value>
+    </data>
+    <data name="DownloadStatusDesignViewModel_FormatStatus_Queued" xml:space="preserve">
+        <value>En cola</value>
+    </data>
+    <data name="DownloadStatusDesignViewModel_FormatStatus_Paused" xml:space="preserve">
+        <value>Pausado</value>
+    </data>
+    <data name="DownloadStatusDesignViewModel_FormatStatus_Downloading" xml:space="preserve">
+        <value>Descargando</value>
+    </data>
+    <data name="DownloadStatusDesignViewModel_FormatStatus_Installing" xml:space="preserve">
+        <value>Instalando</value>
+    </data>
+    <data name="DownloadStatusDesignViewModel_FormatStatus_Complete" xml:space="preserve">
+        <value>Completado</value>
+    </data>
+    <data name="DownloadStatusDesignViewModel_FormatStatus_Analyzing" xml:space="preserve">
+        <value>Analizando</value>
+    </data>
+    <data name="DownloadStatusDesignViewModel_Text_Queued_0_" xml:space="preserve">
+        <value>En cola 0%</value>
+    </data>
+    <data name="PanelTabHeaderViewModel_Title_New_Tab" xml:space="preserve">
+        <value>Nueva pestaña</value>
+    </data>
+    <data name="DownloadInProgressView__Resume" xml:space="preserve">
+        <value>Reanudar</value>
+    </data>
+    <data name="DownloadInProgressView__Resume_All" xml:space="preserve">
+        <value>Reanudar todo</value>
+    </data>
+    <data name="CancelDownloadOverlayView_Description__Download" xml:space="preserve">
+        <value>descarga</value>
+    </data>
+    <data name="CancelDownloadOverlayView_Description_downloads" xml:space="preserve">
+        <value>descargas</value>
+    </data>
+    <data name="InProgress_NoDownloadsTextBlock" xml:space="preserve">
+        <value>Sin descargas</value>
+    </data>
+    <data name="SpineDownloadButton_ToolTip" xml:space="preserve">
+        <value>Descargas</value>
+    </data>
+    <data name="SpineHomeButton_ToolTip_Home" xml:space="preserve">
+        <value>Inicio</value>
+    </data>
+    <data name="LoadoutViewPageTitle" xml:space="preserve">
+        <value>Todo</value>
+    </data>
+    <data name="Downloads_WorkspaceTitle" xml:space="preserve">
+        <value>Descargas</value>
+    </data>
+    <data name="HomeWorkspace_Title" xml:space="preserve">
+        <value>Inicio</value>
+    </data>
+    <data name="InProgressDownloadsPage_Title" xml:space="preserve">
+        <value>Descargas</value>
+    </data>
+    <data name="LoadoutGridView__View_Files" xml:space="preserve">
+        <value>Ver archivos del mod</value>
+    </data>
+    <data name="FileTreeNodeView__View" xml:space="preserve">
+        <value>Ver</value>
+    </data>
+    <data name="ViewModInfoPage_Title" xml:space="preserve">
+        <value>Información del mod</value>
+    </data>
+    <data name="ViewModFilesView_Location" xml:space="preserve">
+        <value>Ubicación:</value>
+    </data>
+    <data name="ViewModFilesView_Locations" xml:space="preserve">
+        <value>Ubicación:</value>
+    </data>
+    <data name="ApplyControlViewModel__ACTIVATE_LOADOUT" xml:space="preserve">
+        <value>Activar Loadout</value>
+    </data>
+    <data name="ApplyControlViewModel__ACTIVATE_AND_APPLY" xml:space="preserve">
+        <value>Activar y aplicar</value>
+    </data>
+    <data name="ApplyControlViewModel__APPLY" xml:space="preserve">
+        <value>APLICAR</value>
+    </data>
+    <data name="ApplyingControlView__ApplyingText" xml:space="preserve">
+        <value>Aplicando...</value>
+    </data>
+    <data name="Helpers_ERROR" xml:space="preserve">
+        <value>Error</value>
+    </data>
+    <data name="ErrorView_Title" xml:space="preserve">
+        <value>Algo salió mal</value>
+    </data>
+    <data name="ErrorView_MissingMod_Description" xml:space="preserve">
+        <value>El mod que intentas acceder ha sido eliminado o no se encuentra.</value>
+    </data>
+    <data name="ViewModInfoPage_NotFound_Title" xml:space="preserve">
+        <value>Mod no encontrado</value>
+    </data>
+    <data name="ErrorView_MissingMod_Subheader" xml:space="preserve">
+        <value>Mod no encontrado</value>
+    </data>
+    <data name="DiagnosticDetailsView_SeverityTitle_SUGGESTION" xml:space="preserve">
+        <value>Sugerencia</value>
+    </data>
+    <data name="DiagnosticDetailsView_SeverityTitle_WARNING" xml:space="preserve">
+        <value>Advertencia</value>
+    </data>
+    <data name="DiagnosticDetailsView_SeverityTitle_CRITICAL_ERROR" xml:space="preserve">
+        <value>Error crítico</value>
+    </data>
+    <data name="DiagnosticDetailsView_SeverityTitle_HIDDEN" xml:space="preserve">
+        <value>Oculto</value>
+    </data>
+    <data name="LoadoutLeftMenuViewModel_LoadoutLeftMenuViewModel_Diagnostics" xml:space="preserve">
+        <value>Chequeo de salud</value>
+    </data>
+    <data name="LoadoutLeftMenuViewModel_Diagnostics_ToolTip" xml:space="preserve">
+        <value>Revisa tu Loadout en busca de problemas y aprende cómo resolverlos si es necesario</value>
+        <comment>Review your Loadout for any issues and learn how to resolve them if needed</comment>
+    </data>
+    <data name="DiagnosticListView_DiagnosticListView_All" xml:space="preserve">
+        <value>Todo ({0})</value>
+        <comment>0 is placeholder for a number</comment>
+    </data>
+    <data name="DiagnosticListView_DiagnosticListView_Critical" xml:space="preserve">
+        <value>Críticos ({0})</value>
+        <comment>0 is placeholder for a number</comment>
+    </data>
+    <data name="DiagnosticListView_DiagnosticListView_Warnings" xml:space="preserve">
+        <value>Advertencias ({0})</value>
+        <comment>0 is placeholder for a number</comment>
+    </data>
+    <data name="DiagnosticListView_DiagnosticListView_Suggestions" xml:space="preserve">
+        <value>Sugerencias ({0})</value>
+        <comment>0 is placeholder for a number</comment>
+    </data>
+    <data name="DiagnosticListView_DiagnosticListView_There_are_no_diagnostics" xml:space="preserve">
+        <value>No hay diagnósticos</value>
+    </data>
+    <data name="IngestButtonTextBlock_Text" xml:space="preserve">
+        <value>Procesar</value>
+    </data>
+    <data name="ModFileTreeViewModel_StatusBar_Files__0__1" xml:space="preserve">
+        <value>Archivos: {0} ({1})</value>
+        <comment>{0} Represents a number, {1} represents a formatted size (e.g. 12GB)</comment>
+    </data>
+    <data name="Helpers_GenerateHeader_File_Count" xml:space="preserve">
+        <value>Número de archivos</value>
+    </data>
+    <data name="MyGamesView__NoGamesDetectedText" xml:space="preserve">
+        <value>Todos los juegos compatibles han sido agregados. No se detectaron juegos nuevos.</value>
+    </data>
+    <data name="MyGamesView__NoGamesManagedText" xml:space="preserve">
+        <value>Agrega juegos para comenzar a modear</value>
+    </data>
+    <data name="GameWidget__Adding_game" xml:space="preserve">
+        <value>Agregando...</value>
+    </data>
+    <data name="GameWidget__View" xml:space="preserve">
+        <value>Ver</value>
+    </data>
+    <data name="GameWidget__RemoveGame_ToolTip" xml:space="preserve">
+        <value>Elimina el juego y todos los mods instalados por la aplicación</value>
+        <comment>Removes the game and all mods installed by the app</comment>
+    </data>
+    <data name="GameWidget__Removing_game" xml:space="preserve">
+        <value>Eliminando...</value>
+    </data>
+    <data name="ApplyDiff_Refresh" xml:space="preserve">
+        <value>Actualizar</value>
+    </data>
+    <data name="Helpers_GenerateHeader_State" xml:space="preserve">
+        <value>ESTADO</value>
+    </data>
+    <data name="IFileTreeNodeViewModel_ToFormattedChangeState_Added" xml:space="preserve">
+        <value>Agregado</value>
+    </data>
+    <data name="IFileTreeNodeViewModel_ToFormattedChangeState_Modified" xml:space="preserve">
+        <value>Modificado</value>
+    </data>
+    <data name="IFileTreeNodeViewModel_ToFormattedChangeState_Contents_modified" xml:space="preserve">
+        <value>Contenido modificado</value>
+    </data>
+    <data name="IFileTreeNodeViewModel_ToFormattedChangeState_Removed" xml:space="preserve">
+        <value>Eliminado</value>
+    </data>
+    <data name="DiffTreeViewModel_StatusBar__File_Loadout_Disk" xml:space="preserve">
+        <value>Archivos: Loadout {0} ({1})  Disco {2} ({3})</value>
+        <comment>{0} and {2} are file counts, {1} and {3} are formatted file sizes </comment>
+    </data>
+    <data name="DiffTreeViewModel_StatusBar__Apply_changes" xml:space="preserve">
+        <value>Aplicar cambios: Agregando {0} Modificando {1} Eliminando {2}</value>
+        <comment>{0}, {1} and {2} are integer representing the file counts</comment>
+    </data>
+    <data name="DiffTreeViewModel_StatusBar__Data_to_process___0_" xml:space="preserve">
+        <value>Datos a procesar: {0}</value>
+        <comment>{0} is a formatted file size, representing the data to be processed </comment>
+    </data>
+    <data name="ApplyControlView_ViewApplyChanges" xml:space="preserve">
+        <value>Vista previa de cambios</value>
+    </data>
+    <data name="ApplyDiffViewModel_PageTitle" xml:space="preserve">
+        <value>Vista previa de cambios</value>
+    </data>
+    <data name="SettingsView_Title" xml:space="preserve">
+        <value>Configuración</value>
+    </data>
+    <data name="DialogButton_CANCEL" xml:space="preserve">
+        <value>Cancelar</value>
+    </data>
+    <data name="DialogButton_SAVE" xml:space="preserve">
+        <value>Guardar</value>
+    </data>
+    <data name="DialogButton_DELETE_MODS" xml:space="preserve">
+        <value>Eliminar mod(s)</value>
+    </data>
+    <data name="SettingEntryView_NeedRestartMessage" xml:space="preserve">
+        <value>La aplicación necesitará reiniciarse para aplicar esta configuración</value>
+    </data>
+    <data name="FileOriginsPage_AddButtonText" xml:space="preserve">
+        <value>Agregar</value>
+    </data>
+    <data name="DialogButton_Discard" xml:space="preserve">
+        <value>Descartar</value>
+    </data>
+    <data name="ChangelogPageViewModel_ChangelogPageViewModel_Changelog" xml:space="preserve">
+        <value>Registro de cambios</value>
+    </data>
+    <data name="DiagnosticListViewModel_DiagnosticListViewModel_Diagnostics" xml:space="preserve">
+        <value>Chequeo de salud</value>
+    </data>
+    <data name="LibraryPageTitle" xml:space="preserve">
+        <value>Biblioteca</value>
+    </data>
+    <data name="LibraryPageTitleToolTip" xml:space="preserve">
+        <value>Gestiona mods descargados y colecciones</value>
+        <comment>Manage downloaded mods and collections</comment>
+    </data>
+    <data name="LibraryPageDescription" xml:space="preserve">
+        <value>Gestiona tus mods descargados y colecciones. Instala, actualiza o agrega más.</value>
+    </data>
+    <data name="FileOriginsPageView_NameHeader" xml:space="preserve">
+        <value>Nombre del mod</value>
+    </data>
+    <data name="FileOriginsPageView_VersionHeader" xml:space="preserve">
+        <value>Versión</value>
+    </data>
+    <data name="FileOriginsPageView_SizeHeader" xml:space="preserve">
+        <value>Tamaño</value>
+    </data>
+    <data name="FileOriginsPageView_DownloadedHeader" xml:space="preserve">
+        <value>Descargado</value>
+    </data>
+    <data name="FileOriginsPageView_InstalledHeader" xml:space="preserve">
+        <value>Instalado</value>
+    </data>
+    <data name="FileOriginsPageView_ActionHeader" xml:space="preserve">
+        <value>Acción</value>
+    </data>
+    <data name="DownloadStatusDesignViewModel_FormatStatus_Cancelled" xml:space="preserve">
+        <value>Cancelado</value>
+    </data>
+    <data name="DownloadInProgressView__Clear" xml:space="preserve">
+        <value>Limpiar</value>
+    </data>
+    <data name="DownloadInProgressView__Clear_completed" xml:space="preserve">
+        <value>Limpiar completadas</value>
+    </data>
+    <data name="DownloadInProgressView__View_in_library" xml:space="preserve">
+        <value>Ver en biblioteca</value>
+    </data>
+    <data name="LoadoutGridView__Remove" xml:space="preserve">
+        <value>Desinstalar</value>
+    </data>
+    <data name="LoginMessageView_BodyTextBlock" xml:space="preserve">
+        <value>Para descargar mods fácilmente desde Nexus Mods necesitarás iniciar sesión con tu cuenta de Nexus Mods. Para agregar mods manualmente desde tu unidad, no necesitas iniciar sesión.</value>
+    </data>
+    <data name="LoginMessageView_Title" xml:space="preserve">
+        <value>Inicia sesión para comenzar</value>
+    </data>
+    <data name="FileOriginsPage_GetMods" xml:space="preserve">
+        <value>Obtener mods:</value>
+    </data>
+    <data name="FileOriginsPage_FromDrive" xml:space="preserve">
+        <value>Explorar unidad</value>
+    </data>
+    <data name="FileOriginsPage_FromNexusMods" xml:space="preserve">
+        <value>Explorar Nexus Mods</value>
+    </data>
+    <data name="FileOriginsPage_BrowseCollectionsNexusMods" xml:space="preserve">
+        <value>Explorar colecciones</value>
+    </data>
+    <data name="FileOriginsPage_ViewButtonText" xml:space="preserve">
+        <value>Ver</value>
+    </data>
+    <data name="AddPanelToolTip" xml:space="preserve">
+        <value>Agregar un panel para visualización en pantalla dividida</value>
+        <comment>Add a panel for split screen viewing</comment>
+    </data>
+    <data name="MaxPanelsAddedToolTip" xml:space="preserve">
+        <value>Máximo de paneles alcanzado</value>
+        <comment>Max panels reached</comment>
+    </data>
+    <data name="Panel_Add_tab_ToolTip" xml:space="preserve">
+        <value>Agregar pestaña</value>
+        <comment>Add tab</comment>
+    </data>
+    <data name="TopBar_MyProfile" xml:space="preserve">
+        <value>Mi perfil</value>
+    </data>
+    <data name="TopBar_SignOut" xml:space="preserve">
+        <value>Cerrar sesión</value>
+    </data>
+    <data name="TopBar_AccountSettings" xml:space="preserve">
+        <value>Configuración de cuenta</value>
+    </data>
+    <data name="TopBar_GetPremiumMenuItem" xml:space="preserve">
+        <value>Actualizar a Premium</value>
+    </data>
+    <data name="ViewChangelogMenuItem.Header" xml:space="preserve">
+        <value>Ver registro de cambios</value>
+    </data>
+    <data name="ViewAppLogsMenuItem.Header" xml:space="preserve">
+        <value>Ver registros de la aplicación</value>
+    </data>
+    <data name="ShowWelcomeMessageMenuItem.Header" xml:space="preserve">
+        <value>Acerca de</value>
+    </data>
+    <data name="OpenDiscordMenuItem.Header" xml:space="preserve">
+        <value>Discord</value>
+    </data>
+    <data name="OpenGitHubMenuItem.Header" xml:space="preserve">
+        <value>GitHub</value>
+    </data>
+    <data name="OpenForumsMenuItem.Header" xml:space="preserve">
+        <value>Foros de Nexus Mods</value>
+    </data>
+    <data name="OpenStatusPageMenuItem.Header" xml:space="preserve">
+        <value>Página de estado</value>
+    </data>
+    <data name="NavigationControl_NavigationControl_Open_in_new_tab" xml:space="preserve">
+        <value>Abrir en nueva pestaña</value>
+    </data>
+    <data name="NavigationControl_NavigationControl_Open_in_new_panel" xml:space="preserve">
+        <value>Abrir en nuevo panel</value>
+    </data>
+    <data name="TopBar_Help_ToolTip" xml:space="preserve">
+        <value>Ayuda y comentarios</value>
+        <comment>Help and feedback</comment>
+    </data>
+    <data name="Library_DeselectItemsButton_Text" xml:space="preserve">
+        <value>{0} seleccionados</value>
+    </data>
+    <data name="Library_DeselectItemsButton_ToolTip" xml:space="preserve">
+        <value>Limpia la selección. Ctrl+Clic selecciona/deselecciona elementos. Shift+Clic selecciona un rango.</value>
+        <comment>Clears the selection. Ctrl+Click selects/deselects items. Shift+Click selects a range.</comment>
+    </data>
+    <data name="Library_ViewChangelog_Text" xml:space="preserve">
+        <value>Ver registro de cambios</value>
+    </data>
+    <data name="Library_ViewModPage_Text" xml:space="preserve">
+        <value>Ver página del mod</value>
+    </data>
+    <data name="FileOriginPage_AddMod_ToolTip" xml:space="preserve">
+        <value>Instalar el/los mod(s) seleccionado(s) a este Loadout</value>
+        <comment>Install the selected mod(s) to this loadout</comment>
+    </data>
+    <data name="FileOriginPage_DeleteMod_ToolTip" xml:space="preserve">
+        <value>Eliminar permanentemente este mod</value>
+        <comment>Permanently delete this mod</comment>
+    </data>
+    <data name="FileOriginPage_AddModAdvanced_ToolTip" xml:space="preserve">
+        <value>Seleccionar archivos específicos de un mod para agregar a tu Loadout</value>
+        <comment>Select specific files from a mod to add to your loadout</comment>
+    </data>
+    <data name="ApplyControlView_ViewApplyChanges_ToolTip" xml:space="preserve">
+        <value>Ver los cambios que se aplicarán a la carpeta del juego</value>
+        <comment>View the changes that will be applied to your game folder</comment>
+    </data>
+    <data name="ApplyControlView_Apply_ToolTip" xml:space="preserve">
+        <value>Aplicar tus cambios a la carpeta del juego</value>
+        <comment>Apply your changes to the game folder</comment>
+    </data>
+    <data name="IFileTreeNodeViewModel_FormattedChangeStateToolTip_Added" xml:space="preserve">
+        <value>El archivo será agregado</value>
+        <comment>File will be added</comment>
+    </data>
+    <data name="IFileTreeNodeViewModel_FormattedChangeStateToolTip_ModifiedFile" xml:space="preserve">
+        <value>El archivo será modificado</value>
+        <comment>File will be modified</comment>
+    </data>
+    <data name="IFileTreeNodeViewModel_FormattedChangeStateToolTip_Removed" xml:space="preserve">
+        <value>El archivo será eliminado</value>
+        <comment>File will be removed</comment>
+    </data>
+    <data name="IFileTreeNodeViewModel_FormattedChangeStateToolTip_ModifiedFolder" xml:space="preserve">
+        <value>La carpeta contiene archivos modificados</value>
+        <comment>Folder contains modified files</comment>
+    </data>
+    <data name="InfoBanner_PrefixProperty_Did_you_know_" xml:space="preserve">
+        <value>¿Sabías que?</value>
+    </data>
+    <data name="NewTabPageInfoBannerText1" xml:space="preserve">
+        <value>Puedes agregar paneles para visualización en pantalla dividida seleccionando el</value>
+    </data>
+    <data name="NewTabPageInfoBannerText2" xml:space="preserve">
+        <value>botón en la barra de herramientas</value>
+    </data>
+    <data name="LoadoutGrid_EmptyModlistSubtitle_Add_from_library" xml:space="preserve">
+        <value>Instala tus mods desde la Biblioteca</value>
+    </data>
+    <data name="LoadoutGridViewModel_EmptyModlistTitleString" xml:space="preserve">
+        <value>No hay mods agregados a {0}</value>
+        <comment>{0} is the name of the currently managed game</comment>
+    </data>
+    <data name="EmptyLibraryTitleText" xml:space="preserve">
+        <value>No hay mods en tu Biblioteca</value>
+    </data>
+    <data name="FileOriginsPageViewModel_EmptyLibrarySubtitleText" xml:space="preserve">
+        <value>Descargar mods de {0} desde Nexus Mods</value>
+        <comment>{0} is the name of the currently managed game</comment>
+    </data>
+    <data name="DiagnosticListView.Page_Title" xml:space="preserve">
+        <value>Chequeo de salud</value>
+    </data>
+    <data name="DiagnosticListView.Page_Description" xml:space="preserve">
+        <value>Revisa tu Loadout en busca de problemas y aprende cómo resolverlos si es necesario</value>
+        <comment>Review your Loadout for any issues and learn how to resolve them if needed</comment>
+    </data>
+    <data name="DiagnosticListView.EmptyState.Header" xml:space="preserve">
+        <value>Tu Loadout pasó el chequeo de salud sin problemas</value>
+    </data>
+    <data name="DiagnosticListView.EmptyState.Subtitle" xml:space="preserve">
+        <value>Listo para jugar.</value>
+    </data>
+    <data name="LoadoutCardViewModel_CreationTimeConverter_Created__0_" xml:space="preserve">
+        <value>Creado {0}</value>
+        <comment>Where {0} is a humanized time (e.g. "Created 2 hours ago")</comment>
+    </data>
+    <data name="LoadoutCardViewModel_FormatLastAppliedTime_Last_applied__0_" xml:space="preserve">
+        <value>Aplicado por última vez: {0}</value>
+        <comment>Where {0} is a humanized time (e.g. "Last applied 2 hours ago")</comment>
+    </data>
+    <data name="LoadoutCardViewModel_FormatNumMods_Mods__0_" xml:space="preserve">
+        <value>Mods {0}</value>
+        <comment>Where {0} is the number of mods in a loadout</comment>
+    </data>
+    <data name="MyLoadoutsPageTitle" xml:space="preserve">
+        <value>Mis Loadouts</value>
+    </data>
+    <data name="MyLoadoutsPageDescriptionText" xml:space="preserve">
+        <value>Crea Loadouts de juego que contengan sus propias preferencias individuales de mods y configuraciones. Cambia entre Loadouts y aplica el que quieras usar.</value>
+    </data>
+    <data name="SettingsView_Description" xml:space="preserve">
+        <value>Gestiona tus preferencias.</value>
+    </data>
+    <data name="MyLoadoutsGameSectionHeading" xml:space="preserve">
+        <value>Loadouts de {0}</value>
+        <comment>Where {0} is the name of the game</comment>
+    </data>
+    <data name="CreateNewLoadoutCarViewTexBlock" xml:space="preserve">
+        <value>Crear nuevo</value>
+    </data>
+    <data name="LoadoutCardViewCurrentlyAppliedTextBlock" xml:space="preserve">
+        <value>Actualmente aplicado</value>
+    </data>
+    <data name="LoadoutCardViewCreateCopyButton" xml:space="preserve">
+        <value>Crear copia</value>
+    </data>
+    <data name="LoadoutCardViewDeletingText" xml:space="preserve">
+        <value>Eliminando...</value>
+    </data>
+    <data name="LoadoutCardViewCreatingText" xml:space="preserve">
+        <value>Creando...</value>
+    </data>
+    <data name="MyLoadoutsEmptyState_Subtitle" xml:space="preserve">
+        <value>Los Loadouts te permiten cambiar entre varios estilos de juego personalizando cada uno con diferentes mods y configuraciones.</value>
+    </data>
+    <data name="MyLoadoutsEmptyState_Header" xml:space="preserve">
+        <value>Necesitas agregar un juego antes de usar Loadouts</value>
+    </data>
+    <data name="LibraryItemDeleteConfirmation_Title" xml:space="preserve">
+        <value>Eliminar mod(s) permanentemente</value>
+    </data>
+
+    <data name="LibraryItemDeleteConfirmation_HeaderQuestion" xml:space="preserve">
+        <value>Eliminar estos mods los quita permanentemente de la aplicación:</value>
+    </data>
+
+    <data name="LibraryItemDeleteConfirmation_UsedBy" xml:space="preserve">
+        <value>Usado por {0}:</value>
+    </data>
+
+    <data name="LibraryItemDeleteConfirmation_UsedByWithLoadout" xml:space="preserve">
+        <value>Usado por {0} - {1}:</value>
+    </data>
+
+    <data name="LibraryItemDeleteConfirmation_DeleteModsButton" xml:space="preserve">
+        <value>Eliminar mod(s)</value>
+    </data>
+
+    <data name="Updated_ViewUninstallDocs" xml:space="preserve">
+        <value>Cómo desinstalar la aplicación de Nexus Mods</value>
+    </data>
+    <data name="HumanizedDateTime_Never" xml:space="preserve">
+        <value>Nunca</value>
+    </data>
+    <data name="ApplyControlView__ApplyingToolTip" xml:space="preserve">
+        <value>Aplicando cambios al juego</value>
+        <comment>Applying changes to the game</comment>
+    </data>
+    <data name="LoadoutCard_DeleteLoadoutToolTip" xml:space="preserve">
+        <value>Eliminar Loadout</value>
+        <comment>Delete Loadout</comment>
+    </data>
+    <data name="LoadoutView_Title_Installed_Mods" xml:space="preserve">
+        <value>Todo ({0})</value>
+    </data>
+    <data name="LoadoutView_Title_Installed_Mods_ToolTip" xml:space="preserve">
+        <value>Ver y gestionar todos los mods instalados</value>
+        <comment>View and manage all installed mods</comment>
+    </data>
+    <data name="ErrorGameAlreadyRunning_Title" xml:space="preserve">
+        <value>El juego está ejecutándose actualmente</value>
+    </data>
+    <data name="ErrorGameAlreadyRunning_Description" xml:space="preserve">
+        <value>Parece que {0} ya se está ejecutando.
+Para aplicar cambios o iniciar el juego nuevamente, por favor cierra el juego primero.</value>
+    </data>
+    <data name="FileOriginPage_SwitchView" xml:space="preserve">
+        <value>Cambiar vista</value>
+    </data>
+    <data name="FileOriginPage_SwitchView_ToolTip" xml:space="preserve">
+        <value>Mostrar u ocultar grupos de páginas de mods</value>
+        <comment>Show or hide mod page groups</comment>
+    </data>
+    <data name="FileOriginsPage_FromDrive_ToolTip" xml:space="preserve">
+        <value>Importar un mod desde tu ordenador</value>
+        <comment>Import a mod from your computer</comment>
+    </data>
+    <data name="FileOriginsPage_FromNexus_ToolTip" xml:space="preserve">
+        <value>Abrir Nexus Mods</value>
+        <comment>Open Nexus Mods</comment>
+    </data>
+    <data name="FileOriginsPage_CheckForUpdates_ToolTip" xml:space="preserve">
+        <value>Comprobar en Nexus Mods si hay actualizaciones disponibles de archivos de mods</value>
+        <comment>Check Nexus Mods for available mod file updates</comment>
+    </data>
+    <data name="TopBar_Forward_ToolTip" xml:space="preserve">
+        <value>Adelante</value>
+        <comment>Forward</comment>
+    </data>
+    <data name="TopBar_Back_ToolTip" xml:space="preserve">
+        <value>Atrás</value>
+        <comment>Back</comment>
+    </data>
+    <data name="TopBar_GiveFeedback_ToolTip" xml:space="preserve">
+        <value>Haz clic para dar tu opinión y ayudarnos a mejorar.</value>
+        <comment>Click to give feedback and help us improve.</comment>
+    </data>
+    <data name="TopBarActions__LOG_IN_ToolTip" xml:space="preserve">
+        <value>Conecta tu cuenta de Nexus Mods</value>
+        <comment>Connect your Nexus Mods account</comment>
+    </data>
+    <data name="LoadoutGridView__Remove_ToolTip" xml:space="preserve">
+        <value>Desinstalar el/los mod(s) seleccionado(s) de este Loadout</value>
+        <comment>Uninstall the selected mod(s) from this loadout</comment>
+    </data>
+    <data name="LoadoutGridView__View_Files_ToolTip" xml:space="preserve">
+        <value>Ver archivos contenidos en este mod</value>
+        <comment>View files contained within this mod</comment>
+    </data>
+    <data name="CollectionDownloadViewModel_Ready_to_install" xml:space="preserve">
+        <value>Todos los mods requeridos descargados. Listo para instalar.</value>
+    </data>
+    <data name="CollectionDownloadViewModel_Num_required_mods_downloaded" xml:space="preserve">
+        <value>{0} de {1} mods requeridos descargados. Completa las descargas para instalar.</value>
+    </data>
+    <data name="FileOriginPage_UpdateAll" xml:space="preserve">
+        <value>Actualizar todo</value>
+    </data>
+    <data name="LeftMenu_Label_Installed_Mods" xml:space="preserve">
+        <value>Instalados</value>
+    </data>
+    <data name="LeftMenu_Label_Utilities" xml:space="preserve">
+        <value>Utilidades</value>
+    </data>
+    <data name="CollectionDownloadViewModel_CollectionDownloadViewModel_Ready_to_play___All_required_mods_installed"
+          xml:space="preserve">
+        <value>Listo para jugar - Todos los mods requeridos instalados</value>
+    </data>
+    <data name="LibraryItemButtonUpdate_Single" xml:space="preserve">
+        <value>Descargar actualización</value>
+    </data>
+    <data name="LibraryItemButtonUpdate_CounterInBracket" xml:space="preserve">
+        <value>Descargar actualización ({0})</value>
+    </data>
+    <data name="LibraryItemButtonUpdate_All" xml:space="preserve">
+        <value>Descargar todo</value>
+    </data>
+    <data name="LoadoutView_Title_Installed_Mods_Default" xml:space="preserve">
+        <value>Todo</value>
+    </data>
+    <data name="LoadoutLeftMenuViewModel_External_Changes" xml:space="preserve">
+        <value>Cambios externos</value>
+    </data>
+    <data name="LoadoutLeftMenuViewModel_External_Changes_ToolTip" xml:space="preserve">
+        <value>Revisa, elimina o restaura cambios realizados fuera de la aplicación.</value>
+        <comment>Review, remove, or restore changes made outside the app.</comment>
+    </data>
+    <data name="CollectionDownloadViewModel_DownloadRequired" xml:space="preserve">
+        <value>Descargar todo automáticamente</value>
+    </data>
+    <data name="CollectionDownloadViewModel_InstallCollection" xml:space="preserve">
+        <value>Instalar colección</value>
+    </data>
+    <data name="CollectionDownloadViewModel_ViewCollection" xml:space="preserve">
+        <value>Ver colección instalada</value>
+    </data>
+    <data name="CollectionDownloadViewModel_UpdateCollection" xml:space="preserve">
+        <value>Actualizar a la revisión {0}</value>
+    </data>
+    <data name="CollectionDownloadViewModel_DownloadOptional" xml:space="preserve">
+        <value>Descargar todos los opcionales automáticamente</value>
+    </data>
+    <data name="CollectionDownloadViewModel_InstallOptional" xml:space="preserve">
+        <value>Instalar todos los opcionales</value>
+    </data>
+
+    <data name="RemoveGameOverlayView_Title" xml:space="preserve">
+        <value>Eliminando {0}</value>
+    </data>
+    <data name="RemoveGameOverlayView_Description" xml:space="preserve">
+        <value>Eliminar desinstalará todos los mods y colecciones para {0}, pero tus mods descargados permanecerán. Si vuelves a agregar el juego, esos mods seguirán estando disponibles en tu Biblioteca.</value>
+    </data>
+    <data name="RemoveGameOverlayView_ToggleDescription" xml:space="preserve">
+        <value>También eliminar {0} mods descargados y {1} colecciones para {2}.</value>
+    </data>
+    <data name="RemoveGameOverlayView_CancelButton" xml:space="preserve">
+        <value>Cancelar</value>
+    </data>
+    <data name="RemoveGameOverlayView_RemoveButton" xml:space="preserve">
+        <value>Eliminar juego y mods</value>
+    </data>
+    <data name="RemoveGameOverlayView_RemoveButton_AlsoDelete" xml:space="preserve">
+        <value>Eliminar juego y borrar mods</value>
+    </data>
+
+    <data name="ManualDownloadRequiredOverlayView_InfoTitle" xml:space="preserve">
+        <value>Descarga manual requerida</value>
+    </data>
+    <data name="ManualDownloadRequiredOverlayView_InfoDescription" xml:space="preserve">
+        <value>Esta colección requiere archivo(s) de mod específicos de sitios web de terceros para estar completa. Sigue estos pasos para proceder con la descarga manual:</value>
+    </data>
+    <data name="ManualDownloadRequiredOverlayView_InfoStep1" xml:space="preserve">
+        <value>Haz clic en el botón 'Abrir navegador' de abajo para navegar al sitio web requerido.</value>
+    </data>
+    <data name="ManualDownloadRequiredOverlayView_InfoStep2" xml:space="preserve">
+        <value>Localiza y descarga el archivo del mod '{0}' (Tamaño del archivo: {1})</value>
+    </data>
+    <data name="ManualDownloadRequiredOverlayView_InfoStep3" xml:space="preserve">
+        <value>Vuelve a esta ventana modal y agrega el/los archivo(s) descargado(s) usando el botón 'Agregar archivo'.</value>
+    </data>
+    <data name="ManualDownloadRequiredOverlayView_InfoInstructionsDescription" xml:space="preserve">
+        <value>El curador de la colección ha proporcionado las siguientes instrucciones adicionales:</value>
+    </data>
+
+    <data name="ManualDownloadRequiredOverlayView_CheckingTitle" xml:space="preserve">
+        <value>Verificando archivo agregado</value>
+    </data>
+    <data name="ManualDownloadRequiredOverlayView_CheckingText" xml:space="preserve">
+        <value>Por favor espera mientras verificamos el archivo agregado.</value>
+    </data>
+
+    <data name="ManualDownloadRequiredOverlayView_ErrorTitle" xml:space="preserve">
+        <value>Archivo de mod incorrecto agregado</value>
+    </data>
+    <data name="ManualDownloadRequiredOverlayView_ErrorStep1" xml:space="preserve">
+        <value>Por favor verifica que agregaste el archivo y versión correctos.</value>
+    </data>
+    <data name="ManualDownloadRequiredOverlayView_ErrorStep2" xml:space="preserve">
+        <value>Para orientación, revisa la pestaña 'Instrucciones adicionales' que puede incluir más detalles sobre el archivo y versión requeridos.</value>
+    </data>
+    <data name="ManualDownloadRequiredOverlayView_ErrorStep3" xml:space="preserve">
+        <value>Si no puedes encontrar el archivo correcto, considera reportar el problema al curador de la colección como un posible error.</value>
+    </data>
+    <data name="ManualDownloadRequiredOverlayView_ErrorReportBugText" xml:space="preserve">
+        <value>Reportar error</value>
+    </data>
+
+    <data name="CollectionComponents_ExternalDownloadAction_ToolTip" xml:space="preserve">
+        <value>Intenta la descarga automática del mod de terceros. Se proporcionará una opción manual si la descarga automática no es posible.</value>
+        <comment>Attempts automatic download of third-party mod. A manual option will be provided if automatic download is not possible.</comment>
+    </data>
+    <data name="CollectionComponents_ManualDownloadAction_ToolTip" xml:space="preserve">
+        <value>Descarga automática no disponible. Haz clic para abrir el sitio de terceros para descargar y agregar el mod manualmente.</value>
+        <comment>Automatic download not available. Click to open the third-party site to download and add the mod manually.</comment>
+    </data>
+
+    <data name="CollectionDownloadViewModel_Toggle_ToolTip" xml:space="preserve">
+        <value>Activar agrega esta colección al juego y la carga. Desactivar la deja fuera.</value>
+        <comment>Toggle on adds this collection to the game and loads it. Toggle off leaves it out.</comment>
+    </data>
+
+    <data name="CollectionDownloadViewModel_StatsMods_ToolTip" xml:space="preserve">
+        <value>Mods</value>
+        <comment>Mods</comment>
+    </data>
+    <data name="CollectionDownloadViewModel_StatsEndorsements_ToolTip" xml:space="preserve">
+        <value>Respaldos</value>
+        <comment>Endorsements</comment>
+    </data>
+    <data name="CollectionDownloadViewModel_StatsDownloads_ToolTip" xml:space="preserve">
+        <value>Descargas</value>
+        <comment>Downloads</comment>
+    </data>
+    <data name="CollectionDownloadViewModel_StatsSize_ToolTip" xml:space="preserve">
+        <value>Tamaño</value>
+        <comment>Size</comment>
+    </data>
+    <data name="CollectionDownloadViewModel_StatsRating_ToolTip" xml:space="preserve">
+        <value>Valoración de éxito</value>
+        <comment>Success Rating</comment>
+    </data>
+    <data name="ManageGameWarning_Title" xml:space="preserve">
+        <value>Gestionar este juego afectará los mods existentes</value>
+    </data>
+    <data name="ManageGameWarning_Desc1" xml:space="preserve">
+        <value>Si tienes mods existentes, serán detectados y se podrán usar junto con la aplicación en la página 'Cambios externos'. Sin embargo, si más tarde dejas de gestionar este juego o desinstalas la aplicación, esos mods serán eliminados permanentemente de la carpeta del juego.</value>
+    </data>
+    <data name="ManageGameWarning_Desc2" xml:space="preserve">
+        <value>Para conservar cualquier mod que quieras guardar, por favor haz una copia de seguridad antes de continuar.</value>
+    </data>
+    <data name="ManageGameWarning_Cancel" xml:space="preserve">
+        <value>Cancelar</value>
+    </data>
+    <data name="ManageGameWarning_Continue" xml:space="preserve">
+        <value>Continuar</value>
+    </data>
+
+    <data name="UpgradeToPremiumView_Title" xml:space="preserve">
+        <value>Hazte Premium para descargas de colecciones con un clic</value>
+    </data>
+    <data name="UpgradeToPremiumView_Desc1" xml:space="preserve">
+        <value>Descarga toda esta colección automáticamente, a máxima velocidad, sin salir de la aplicación.</value>
+    </data>
+
+    <data name="UpgradeToPremiumView_Desc2" xml:space="preserve">
+        <value>Con Premium también obtienes:</value>
+    </data>
+    <data name="UpgradeToPremiumView_Bullet0" xml:space="preserve">
+        <value>Actualizaciones de mods sin interrupciones en la aplicación, sin sitios web ni descargas manuales.</value>
+    </data>
+    <data name="UpgradeToPremiumView_Bullet1" xml:space="preserve">
+        <value>Velocidades de descarga sin límites</value>
+    </data>
+    <data name="UpgradeToPremiumView_Bullet2" xml:space="preserve">
+        <value>Sin anuncios de por vida, incluso si cancelas más tarde</value>
+    </data>
+    <data name="UpgradeToPremiumView_Bullet3" xml:space="preserve">
+        <value>Apoya a los creadores - Premium ayuda a recompensar a los autores de mods</value>
+    </data>
+
+    <data name="UpgradeToPremiumView_CancelButton" xml:space="preserve">
+        <value>Cancelar</value>
+    </data>
+    <data name="UpgradeToPremiumView_LearnMoreButton" xml:space="preserve">
+        <value>Más información</value>
+    </data>
+    <data name="UpgradeToPremiumView_UpgradeButton" xml:space="preserve">
+        <value>Actualizar a Premium</value>
+    </data>
+    <data name="LibraryComponents_InstallAction_ButtonText_Installed" xml:space="preserve">
+        <value>Instalado</value>
+    </data>
+    <data name="LibraryComponents_InstallAction_ButtonText_Install" xml:space="preserve">
+        <value>Instalar</value>
+    </data>
+    <data name="CollectionComponents_DownloadAction_ButtonText_Downloaded" xml:space="preserve">
+        <value>Descargado</value>
+    </data>
+    <data name="CollectionComponents_DownloadAction_ButtonText_Downloading" xml:space="preserve">
+        <value>Descargando</value>
+    </data>
+    <data name="CollectionComponents_DownloadAction_ButtonText_Download" xml:space="preserve">
+        <value>Descargar</value>
+    </data>
+    <data name="CollectionComponents_ExternalDownloadAction_ButtonText_ThirdPartyDownload" xml:space="preserve">
+        <value>Descarga de terceros</value>
+    </data>
+    <data name="CollectionComponents_ManualDownloadAction_ButtonText_ManualDownload" xml:space="preserve">
+        <value>Descarga manual</value>
+    </data>
+    <data name="Library_HideUpdates" xml:space="preserve">
+        <value>Ocultar actualizaciones ({0})</value>
+    </data>
+    <data name="Library_ShowUpdates" xml:space="preserve">
+        <value>Mostrar actualizaciones ({0})</value>
+    </data>
+    <data name="Library_Update" xml:space="preserve">
+        <value>Actualizar ({0})</value>
+    </data>
+    <data name="Library_UpdateAndKeepOldMod" xml:space="preserve">
+        <value>Actualizar y mantener mod antiguo ({0})</value>
+    </data>
+    <data name="Dialog_ReplaceNotSupported_Title" xml:space="preserve">
+        <value>Actualización manual requerida</value>
+    </data>
+    <data name="Dialog_ReplaceNotSupported_Text" xml:space="preserve">
+        <value>Actualizar y reemplazar aún no es compatible para usuarios gratuitos en esta versión de la aplicación.
+
+Haz clic en **Aceptar** para visitar la página del mod para actualización manual.</value>
+    </data>
+    <data name="Library_Update_SomeInstallsFailed_Title" xml:space="preserve">
+        <value>Algunas actualizaciones de mods fallaron al instalar</value>
+    </data>
+    <data name="Library_Update_SomeInstallsFailed_Description" xml:space="preserve">
+        <value>Las siguientes actualizaciones de mods no pudieron instalarse:
+
+{0}
+
+¿Mantener los archivos descargados en tu biblioteca por si quieres reintentar la instalación más tarde?</value>
+    </data>
+    <data name="Library_Update_SomeInstallsFailed_DeleteFiles" xml:space="preserve">
+        <value>Eliminar actualizaciones fallidas</value>
+    </data>
+    <data name="Library_Update_SomeInstallsFailed_KeepFiles" xml:space="preserve">
+        <value>Mantener actualizaciones fallidas</value>
+    </data>
+    <data name="Library_Update_InstalledInMultipleCollections_Title" xml:space="preserve">
+        <value>Actualizando mods instalados en múltiples colecciones</value>
+    </data>
+    <data name="Library_Update_InstalledInMultipleCollections_Cancel" xml:space="preserve">
+        <value>Cancelar</value>
+    </data>
+    <data name="Library_Update_InstalledInMultipleCollections_Ok" xml:space="preserve">
+        <value>Actualizar en {0} colección(es)</value>
+    </data>
+    <data name="Library_Update_InstalledInMultipleCollections_Description1" xml:space="preserve">
+        <value>La actualización se aplicará a todas las colecciones locales donde el mod está instalado:</value>
+    </data>
+    <data name="Library_Update_InstalledInMultipleCollections_Description2" xml:space="preserve">
+        <value>Las colecciones de Nexus Mods a las que estés suscrito no se verán afectadas.</value>
+    </data>
+    <data name="Library_UpdateMod_ToolTip" xml:space="preserve">
+        <value>Actualizar mod</value>
+        <comment>Update mod</comment>
+    </data>
+    <data name="Menu_MoreOptions_ToolTip" xml:space="preserve">
+        <value>Más opciones</value>
+        <comment>More options</comment>
+    </data>
+    <data name="Library_UpdateModAndReplace_ToolTip" xml:space="preserve">
+        <value>Actualizar mod y reemplazar la versión antigua</value>
+        <comment>Update mod and replace the old version</comment>
+    </data>
+    <data name="PremiumDialog_UpdateTitle" xml:space="preserve">
+        <value>Hazte Premium para actualizaciones de mods con un clic</value>
+    </data>
+    <data name="PremiumDialog_UpdateDescription" xml:space="preserve">
+        <value>Sin navegador, sin descargas manuales. Los usuarios Premium también obtienen:
+
+• Descarga colecciones completas con un clic
+• Velocidades de descarga sin límites
+• ¡Sin anuncios de por vida, incluso si te das de baja después de 1 mes!</value>
+    </data>
+    <data name="PremiumDialog_UpdateHeading" xml:space="preserve">
+        <value>Actualiza todos tus mods, o mods individuales, con un clic.</value>
+    </data>
+    <data name="PremiumDialog_UpdateManuallyButton" xml:space="preserve">
+        <value>Actualizar mods manualmente</value>
+    </data>
+    <data name="DialogPremiumCollection_DialogTitle" xml:space="preserve">
+        <value>Desbloquea colecciones de 1 clic con Premium</value>
+    </data>
+    <data name="DialogPremiumCollection_UpgradeToPremium" xml:space="preserve">
+        <value>Desbloquear descarga automática</value>
+    </data>
+    <data name="DialogPremiumCollection_LearnMore" xml:space="preserve">
+        <value>Más información</value>
+    </data>
+    <data name="DialogPremiumCollection_Cancel" xml:space="preserve">
+        <value>Continuar con instalación manual</value>
+    </data>
+
+    <data name="PremiumDialog_GoPremiumButton" xml:space="preserve">
+        <value>Hazte Premium</value>
+    </data>
+
+    <data name="Library_Update_SomeDownloadsFailed_Title" xml:space="preserve">
+        <value>Algunas actualizaciones de mods fallaron al descargar</value>
+    </data>
+    <data name="Library_Update_SomeDownloadsFailed_Description" xml:space="preserve">
+        <value>Las siguientes actualizaciones de mods no pudieron descargarse:
+
+{0}</value>
+    </data>
+    <data name="Library_Update_SomeDownloadsFailed_Option_Cancel" xml:space="preserve">
+        <value>Cancelar</value>
+    </data>
+    <data name="Library_Update_SomeDownloadsFailed_Option_Retry" xml:space="preserve">
+        <value>Reintentar descargas fallidas</value>
+    </data>
+    <data name="Loadout_Dialog_CollectionPublished_FirstPublish_Listed" xml:space="preserve">
+        <value>"{0}" ha sido publicada como listada. Aparecerá en los resultados de búsqueda y puede ser destacada.</value>
+    </data>
+    <data name="Loadout_Dialog_CollectionPublished_FirstPublish_Unlisted" xml:space="preserve">
+        <value>"{0}" ha sido publicada como no listada. Solo las personas con el enlace pueden verla.</value>
+    </data>
+    <data name="Loadout_Dialog_CollectionPublished_FirstPublish_Help" xml:space="preserve">
+        <value>Puedes cambiar la visibilidad de tu colección en cualquier momento en la configuración de la colección.</value>
+    </data>
+    <data name="Loadout_Dialog_CollectionPublished_Revision" xml:space="preserve">
+        <value>"{0}" ha sido publicada.</value>
+    </data>
+    <data name="Loadout_Dialog_CollectionPublished_Revision_Help" xml:space="preserve">
+        <value>Te recomendamos que actualices el registro de cambios de esta revisión para que los usuarios puedan descubrir qué hay de nuevo.</value>
+    </data>
+
+    <data name="Loadout_Dialog_ShareCollection_UnlistedTitle" xml:space="preserve">
+        <value>No listada - Recomendada para compartir con amigos</value>
+    </data>
+    <data name="Loadout_Dialog_ShareCollection_UnlistedExplanation" xml:space="preserve">
+        <value>Solo las personas con el enlace pueden ver. No se muestra en búsqueda ni destacada.</value>
+    </data>
+    <data name="Loadout_Dialog_ShareCollection_ListedTitle" xml:space="preserve">
+        <value>Listada - Visible públicamente en Nexus Mods</value>
+    </data>
+    <data name="Loadout_Dialog_ShareCollection_ListedExplanation" xml:space="preserve">
+        <value>Cualquiera puede encontrar esto en búsqueda o verlo destacado en Nexus Mods.</value>
+    </data>
+    <data name="Loadout_Dialog_ShareCollection_ChangeVisibilityMessage" xml:space="preserve">
+        <value>Puedes cambiar la visibilidad en cualquier momento en la configuración de tu colección.</value>
+    </data>
+    <data name="Library_DeleteItem_Text" xml:space="preserve">
+        <value>Eliminar</value>
+    </data>
+    <data name="ToastNotification_Settings_saved" xml:space="preserve">
+        <value>Configuración guardada</value>
+    </data>
+    <data name="ToastNotification_Signed_in_successfully" xml:space="preserve">
+        <value>Sesión iniciada correctamente</value>
+    </data>
+    <data name="ToastNotification_Items_deleted" xml:space="preserve">
+        <value>Mod eliminado</value>
+    </data>
+    <data name="ToastNotification_Mods_removed" xml:space="preserve">
+        <value>Mod desinstalado</value>
+    </data>
+    <data name="ToastNotification_Installed_to__0_" xml:space="preserve">
+        <value>Instalado en {0}</value>
+    </data>
+    <data name="ToastNotification_Applied__0__successfully" xml:space="preserve">
+        <value>Loadout aplicado correctamente</value>
+    </data>
+    <data name="ToastNotification_Collection_removed" xml:space="preserve">
+        <value>Colección eliminada</value>
+    </data>
+    <data name="ToastNotification_Collection_deleted" xml:space="preserve">
+        <value>Colección borrada</value>
+    </data>
+    <data name="ToastNotification_Collection_installed" xml:space="preserve">
+        <value>Colección instalada</value>
+    </data>
+    <data name="ToastNotification_Draft_revision_uploaded_successfully" xml:space="preserve">
+        <value>Revisión borrador subida correctamente</value>
+    </data>
+    <data name="ToastNotification_Mod_updated____0_" xml:space="preserve">
+        <value>Mod actualizado - {0}</value>
+    </data>
+    <data name="ToastNotification_Adding_collection____0_" xml:space="preserve">
+        <value>Colección agregada correctamente - {0}</value>
+    </data>
+    <data name="ToastNotification_Mod_Download_started" xml:space="preserve">
+        <value>Descarga de mod iniciada</value>
+    </data>
+    <data name="ToastNotification_Mod_Download_Completed____0_" xml:space="preserve">
+        <value>Descarga de mod completada - {0}</value>
+    </data>
+    <data name="ToastNotification_Adding_new_Collection_to_Library" xml:space="preserve">
+        <value>Agregando nueva colección a la Biblioteca</value>
+    </data>
+    <data name="ToastNotification_Collection_Add_failed___0__is_not_a_managed_game" xml:space="preserve">
+        <value>Error al agregar colección: la aplicación no está gestionando {0}</value>
+    </data>
+    <data name="ToastNotification_Collection_Add_failed__An_unknown_error_occurred" xml:space="preserve">
+        <value>Error al agregar colección</value>
+    </data>
+    <data name="ToastNotification_Download_failed__User_is_not_logged_in" xml:space="preserve">
+        <value>Descarga fallida: no has iniciado sesión en Nexus Mods</value>
+    </data>
+    <data name="ToastNotification_Download_skipped__file_already_exists____0__" xml:space="preserve">
+        <value>Descarga omitida: el archivo ya existe - {0} </value>
+    </data>
+    <data name="ToastNotification_Download_failed__game_is_not_managed____0_" xml:space="preserve">
+        <value>Descarga fallida: la aplicación no está gestionando {0}</value>
+    </data>
+    <data name="ToastNotification_Download_failed__An_unknown_error_occurred" xml:space="preserve">
+        <value>Descarga fallida</value>
+    </data>
+    <data name="ToastNotification_Uploading_new_collection_revision___" xml:space="preserve">
+        <value>Subiendo nueva revisión de colección...</value>
+    </data>
+    <data name="ToastNotification_Collection_status_changed_to__0__" xml:space="preserve">
+        <value>Estado de colección cambiado a {0} </value>
+    </data>
+    <data name="CollectionStatus_Listed" xml:space="preserve">
+        <value>Listada</value>
+    </data>
+    <data name="CollectionStatus_Unlisted" xml:space="preserve">
+        <value>No listada</value>
+    </data>
+    <data name="ToastNotification_Uploading_draft_collection_revision___" xml:space="preserve">
+        <value>Subiendo revisión borrador de colección...</value>
+    </data>
+    <data name="Loadout_UninstallItem_Menu_Text" xml:space="preserve">
+        <value>Desinstalar</value>
+    </data>
+    <data name="Loadout_UninstallItem_Menu_Text__Uninstall_read_only" xml:space="preserve">
+        <value>Desinstalar solo lectura</value>
+    </data>
+</root>

@@ -1,0 +1,143 @@
+<root>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="Footer_CANCEL" xml:space="preserve">
+        <value>Cancelar</value>
+    </data>
+    <data name="Footer_INSTALL" xml:space="preserve">
+        <value>Instalar</value>
+    </data>
+    <data name="OverlayHeaderText_Advanced_Installer" xml:space="preserve">
+        <value>Instalador avanzado</value>
+    </data>
+    <data name="InstallerNameText" xml:space="preserve">
+        <value>Instalador manual avanzado de mods</value>
+    </data>
+    <data name="SubHeadingText_Please_select_files" xml:space="preserve">
+        <value>Por favor, selecciona los archivos a instalar y dónde deben ser instalados.</value>
+    </data>
+    <data name="ModContentTitle_MOD_CONTENT" xml:space="preserve">
+        <value>CONTENIDO DEL MOD</value>
+    </data>
+    <data name="ModContentSubHeading_Files_with_no" xml:space="preserve">
+        <value>Los archivos sin ubicación seleccionada no serán instalados.</value>
+    </data>
+    <data name="CreateFolderButton_Create_new_folder" xml:space="preserve">
+        <value>Crear nueva carpeta</value>
+    </data>
+    <data name="NewFilePill_NEW" xml:space="preserve">
+        <value>NUEVO</value>
+    </data>
+    <data name="Pill_DUPE_FOLDER" xml:space="preserve">
+        <value>CARPETA DUPLICADA</value>
+    </data>
+    <data name="Pill_FOLDER_MERGED" xml:space="preserve">
+        <value>CARPETA FUSIONADA</value>
+    </data>
+    <data name="SelectLocationButton_Select_location" xml:space="preserve">
+        <value>Seleccionar ubicación</value>
+    </data>
+    <data name="SelectButton_Select" xml:space="preserve">
+        <value>Seleccionar</value>
+    </data>
+    <data name="DeleteCreatedFolderButton_Delete" xml:space="preserve">
+        <value>Eliminar</value>
+    </data>
+    <data name="CancelCreateFolderButton_Cancel" xml:space="preserve">
+        <value>Cancelar</value>
+    </data>
+    <data name="SaveCreatedFolderButton_Save" xml:space="preserve">
+        <value>Guardar</value>
+    </data>
+    <data name="EmptyPreviewText_Select_files_to_install" xml:space="preserve">
+        <value>Selecciona qué archivos instalar del archivo del mod en la izquierda.</value>
+    </data>
+    <data name="SelectLocationHeaderText_SELECT_INSTALL_LOCATION" xml:space="preserve">
+        <value>SELECCIONAR UBICACIÓN DE INSTALACIÓN</value>
+    </data>
+    <data name="SelectLocationSubHeadingText_Select_where_to" xml:space="preserve">
+        <value>Selecciona dónde instalar el archivo/carpeta del mod.</value>
+    </data>
+    <data name="SuggestedHeaderText_SUGGESTED" xml:space="preserve">
+        <value>SUGERIDAS</value>
+    </data>
+    <data name="AllFoldersAreaHeaderText_ALL_FOLDERS" xml:space="preserve">
+        <value>TODAS LAS CARPETAS</value>
+    </data>
+    <data name="AllFoldersAreaSubHeaderText_Select_from_full" xml:space="preserve">
+        <value>Seleccionar de la estructura completa de carpetas</value>
+    </data>
+    <data name="FileTree_ALL_MOD_FILES" xml:space="preserve">
+        <value>Todos los archivos del mod</value>
+    </data>
+    <data name="PreviewHeader_INSTALL_LOCATION_PREVIEW" xml:space="preserve">
+        <value>VISTA PREVIA DE UBICACIÓN DE INSTALACIÓN</value>
+    </data>
+    <data name="PreviewSubHeading_Files_labelled_as_new" xml:space="preserve">
+        <value>Los archivos/carpetas etiquetados como "Nuevo" serán instalados/agregados.</value>
+    </data>
+    <data name="UnsupportedModHeader_Unsupported_mod" xml:space="preserve">
+        <value>Mod no compatible</value>
+    </data>
+    <data name="UnsupportedTitleTextBlock_This_mod_is_not_supported" xml:space="preserve">
+        <value>Este mod no es compatible</value>
+    </data>
+    <data name="UnsupportedDescriptionTextBlock_This_mod_is_structured" xml:space="preserve">
+        <value>Este mod está estructurado de una manera no reconocida, o contiene tipos de archivos no reconocidos, por lo que no puede ser instalado automáticamente.</value>
+    </data>
+    <data name="ExtraDescriptionTextBlock_If_you_are_confident" xml:space="preserve">
+        <value>Si estás seguro de que este mod es seguro, y sabes dónde necesitan ser instalados los archivos, puedes intentar una instalación manual avanzada.</value>
+    </data>
+    <data name="UnsupportedOverlayFooter_ADVANCED_INSTALL" xml:space="preserve">
+        <value>Instalación avanzada</value>
+    </data>
+    <data name="UnsupportedOverlayFooter_CLOSE" xml:space="preserve">
+        <value>Cerrar</value>
+    </data>
+    <data name="TreeEntryView_FileNameTextBlock_All_mod_files" xml:space="preserve">
+        <value>Todos los archivos del mod</value>
+    </data>
+    <data name="TreeEntryView_InstallRoundedButtonTextBlock_Install_all" xml:space="preserve">
+        <value>Instalar todo</value>
+    </data>
+    <data name="TreeEntryView_InstallRoundedButtonTextBlock_Install_folder" xml:space="preserve">
+        <value>Instalar carpeta</value>
+    </data>
+    <data name="TreeEntryView_InstallRoundedButtonTextBlock_Install" xml:space="preserve">
+        <value>Instalar</value>
+    </data>
+    <data name="TreeEntryView_IncludeTransitionButtonTextBlock_Include_folder" xml:space="preserve">
+        <value>Incluir carpeta</value>
+    </data>
+    <data name="TreeEntryView_IncludeTransitionButtonTextBlock_Include_with_folder" xml:space="preserve">
+        <value>Incluir con carpeta</value>
+    </data>
+    <data name="TreeEntryView_IncludedRemoveButtonTextBlock_Included_folder" xml:space="preserve">
+        <value>Carpeta incluida</value>
+    </data>
+    <data name="TreeEntryView_IncludedRemoveButtonTextBlock_Included_with_folder" xml:space="preserve">
+        <value>Incluida con carpeta</value>
+    </data>
+    <data name="TreeEntryView_IncludeTransitionButtonTextBlock_Include" xml:space="preserve">
+        <value>Incluir</value>
+    </data>
+    <data name="TreeEntryView_IncludedRemoveButtonTextBlock_Included" xml:space="preserve">
+        <value>Incluido</value>
+    </data>
+    <data name="AdvancedInstaller_Manual_Mod" xml:space="preserve">
+        <value>Mod manual</value>
+    </data>
+    <data name="SelectLocationViewModel_SuggestedLocationsSubtitle" xml:space="preserve">
+        <value>Los mods de {0} se instalan normalmente en las siguientes carpetas del juego.</value>
+    </data>
+</root>
