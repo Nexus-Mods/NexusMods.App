@@ -3,12 +3,14 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using DynamicData;
 using DynamicData.Binding;
+using DynamicData.Kernel;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Helpers;
@@ -48,7 +50,7 @@ public class DownloadsLeftMenuViewModel : AViewModel<IDownloadsLeftMenuViewModel
             new PageData
             {
                 FactoryId = DownloadsPageFactory.StaticId,
-                Context = new AllDownloadsPageContext(),
+                Context = new DownloadsPageContext { GameScope = Optional<GameId>.None },
             }
         )
         {
@@ -78,14 +80,13 @@ public class DownloadsLeftMenuViewModel : AViewModel<IDownloadsLeftMenuViewModel
         WorkspaceId workspaceId,
         ILogger<DownloadsLeftMenuViewModel> logger)
     {
-        // TODO: Replace with proper game-specific context when per-game filtering is implemented
         var viewModel = new LeftMenuItemViewModel(
             workspaceController,
             workspaceId,
             new PageData
             {
                 FactoryId = DownloadsPageFactory.StaticId,
-                Context = new GameSpecificDownloadsPageContext(gameInstallation.Game.GameId), // TODO: Add game filter context
+                Context = new DownloadsPageContext { GameScope = gameInstallation.Game.GameId },
             }
         )
         {

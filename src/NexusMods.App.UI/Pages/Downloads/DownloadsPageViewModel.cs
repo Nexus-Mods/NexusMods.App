@@ -42,12 +42,9 @@ public class DownloadsPageViewModel : APageViewModel<IDownloadsPageViewModel>, I
         var downloadsService = serviceProvider.GetRequiredService<IDownloadsService>();
 
         // Create filter based on context
-        var filter = context switch
-        {
-            AllDownloadsPageContext => DownloadsFilter.All(),
-            GameSpecificDownloadsPageContext g => DownloadsFilter.ForGame(g.GameId),
-            _ => DownloadsFilter.Active(),
-        };
+        var filter = context.GameScope.HasValue
+            ? DownloadsFilter.ForGame(context.GameScope.Value)
+            : DownloadsFilter.All();
 
         var downloadsDataProvider = serviceProvider.GetRequiredService<IDownloadsDataProvider>();
         Adapter = new DownloadsTreeDataGridAdapter(downloadsDataProvider, filter);
@@ -56,12 +53,9 @@ public class DownloadsPageViewModel : APageViewModel<IDownloadsPageViewModel>, I
         TabIcon = IconValues.PictogramDownload;
         
         // Set header title and description based on context
-        (HeaderTitle, HeaderDescription) = context switch
-        {
-            AllDownloadsPageContext => (Language.DownloadsLeftMenu_AllDownloads, Language.DownloadsPage_AllDownloads_Description),
-            GameSpecificDownloadsPageContext g => (string.Format(Language.DownloadsLeftMenu_GameSpecificDownloads, downloadsDataProvider.ResolveGameName(g.GameId)), Language.DownloadsPage_GameSpecificDownloads_Description),
-            _ => (Language.InProgressTitleTextBlock, Language.DownloadsPage_Default_Description),
-        };
+        (HeaderTitle, HeaderDescription) = context.GameScope.HasValue
+            ? (string.Format(Language.DownloadsLeftMenu_GameSpecificDownloads, downloadsDataProvider.ResolveGameName(context.GameScope.Value)), Language.DownloadsPage_GameSpecificDownloads_Description)
+            : (Language.DownloadsLeftMenu_AllDownloads, Language.DownloadsPage_AllDownloads_Description);
 
         this.WhenActivated(disposables =>
         {
@@ -137,46 +131,38 @@ public class DownloadsPageViewModel : APageViewModel<IDownloadsPageViewModel>, I
                 .ToObservable();
             
             // Create context-aware observables for running and paused items
-            HasRunningItems = context switch
-            {
-                GameSpecificDownloadsPageContext g => downloadsService.GetRunningDownloadsForGame(g.GameId)
+            HasRunningItems = context.GameScope.HasValue
+                ? downloadsService.GetRunningDownloadsForGame(context.GameScope.Value)
                     .QueryWhenChanged(items => items.Count > 0)
                     .OnUI()
                     .ToObservable()
-                    .Prepend(false),
-                _ => downloadsService.GetDownloadsByStatus(JobStatus.Running)
+                    .Prepend(false)
+                : downloadsService.GetDownloadsByStatus(JobStatus.Running)
                     .QueryWhenChanged(items => items.Count > 0)
                     .OnUI()
                     .ToObservable()
-                    .Prepend(false),
-            };
+                    .Prepend(false);
             
-            HasPausedItems = context switch
-            {
-                GameSpecificDownloadsPageContext g => downloadsService.GetPausedDownloadsForGame(g.GameId)
+            HasPausedItems = context.GameScope.HasValue
+                ? downloadsService.GetPausedDownloadsForGame(context.GameScope.Value)
                     .QueryWhenChanged(items => items.Count > 0)
                     .OnUI()
                     .ToObservable()
-                    .Prepend(false),
-                _ => downloadsService.GetDownloadsByStatus(JobStatus.Paused)
+                    .Prepend(false)
+                : downloadsService.GetDownloadsByStatus(JobStatus.Paused)
                     .QueryWhenChanged(items => items.Count > 0)
                     .OnUI()
                     .ToObservable()
-                    .Prepend(false),
-            };
+                    .Prepend(false);
 
             // Commands with CanExecute - context-aware implementation
-            PauseAllCommand = context switch
-            {
-                GameSpecificDownloadsPageContext g => HasRunningItems.ToReactiveCommand<Unit>(_ => downloadsService.PauseAllForGame(g.GameId)).AddTo(disposables),
-                _ => HasRunningItems.ToReactiveCommand<Unit>(_ => downloadsService.PauseAll()).AddTo(disposables),
-            };
+            PauseAllCommand = context.GameScope.HasValue
+                ? HasRunningItems.ToReactiveCommand<Unit>(_ => downloadsService.PauseAllForGame(context.GameScope.Value)).AddTo(disposables)
+                : HasRunningItems.ToReactiveCommand<Unit>(_ => downloadsService.PauseAll()).AddTo(disposables);
             
-            ResumeAllCommand = context switch
-            {
-                GameSpecificDownloadsPageContext g => HasPausedItems.ToReactiveCommand<Unit>(_ => downloadsService.ResumeAllForGame(g.GameId)).AddTo(disposables),
-                _ => HasPausedItems.ToReactiveCommand<Unit>(_ => downloadsService.ResumeAll()).AddTo(disposables),
-            };
+            ResumeAllCommand = context.GameScope.HasValue
+                ? HasPausedItems.ToReactiveCommand<Unit>(_ => downloadsService.ResumeAllForGame(context.GameScope.Value)).AddTo(disposables)
+                : HasPausedItems.ToReactiveCommand<Unit>(_ => downloadsService.ResumeAll()).AddTo(disposables);
             
             PauseSelectedCommand = SelectionHasRunningItems.ToReactiveCommand<Unit>(
                 executeAsync: (_, _) =>
