@@ -32,17 +32,14 @@ public class DownloadsLeftMenuViewModel : AViewModel<IDownloadsLeftMenuViewModel
     private ReadOnlyObservableCollection<ILeftMenuItemViewModel> _leftMenuItemsPerGameDownloads = new([]);
     public ReadOnlyObservableCollection<ILeftMenuItemViewModel> LeftMenuItemsPerGameDownloads => _leftMenuItemsPerGameDownloads;
 
-    private readonly ILogger<DownloadsLeftMenuViewModel> _logger;
-    private readonly IConnection _connection;
-
     public DownloadsLeftMenuViewModel(
         WorkspaceId workspaceId,
         IWorkspaceController workspaceController,
         IServiceProvider serviceProvider)
     {
         WorkspaceId = workspaceId;
-        _logger = serviceProvider.GetRequiredService<ILogger<DownloadsLeftMenuViewModel>>();
-        _connection = serviceProvider.GetRequiredService<IConnection>();
+        var logger = serviceProvider.GetRequiredService<ILogger<DownloadsLeftMenuViewModel>>();
+        var connection = serviceProvider.GetRequiredService<IConnection>();
 
         // All Downloads menu item
         LeftMenuItemAllDownloads = new LeftMenuItemViewModel(
@@ -62,11 +59,11 @@ public class DownloadsLeftMenuViewModel : AViewModel<IDownloadsLeftMenuViewModel
         // Per-game downloads (dynamic)
         this.WhenActivated(disposable =>
         {
-            NexusMods.Abstractions.Loadouts.Loadout.ObserveAll(_connection)
+            NexusMods.Abstractions.Loadouts.Loadout.ObserveAll(connection)
                 .Filter(loadout => loadout.IsVisible())
                 .Group(loadout => loadout.InstallationInstance.GameMetadataId)
                 .Transform(group => group.Cache.Items.First().InstallationInstance)
-                .Transform(gameInstallation => CreatePerGameDownloadItem(gameInstallation, workspaceController, workspaceId, _logger))
+                .Transform(gameInstallation => CreatePerGameDownloadItem(gameInstallation, workspaceController, workspaceId, logger))
                 .DisposeMany()
                 .OnUI()
                 .Bind(out _leftMenuItemsPerGameDownloads)
