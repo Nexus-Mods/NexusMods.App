@@ -9,6 +9,9 @@ using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 
 namespace NexusMods.DataModel.Synchronizer.DbFunctions;
 
+/// <summary>
+/// A Table function that lists all intrinsic files for all loadouts. 
+/// </summary>
 public class IntrinsicFiles : ATableFunction
 {
     private readonly Lazy<IConnection> _connection;
