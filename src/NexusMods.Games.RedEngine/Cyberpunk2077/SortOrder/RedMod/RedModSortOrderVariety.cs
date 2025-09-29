@@ -259,7 +259,20 @@ public class RedModSortOrderVariety : ASortOrderVariety<
         // Add any remaining loadout items that were not in the source sorted entries
         var itemsToAdd = loadoutItemsDict.Values
             .Where(item => !processedKeys.Contains(item.Key))
-            .OrderByDescending(item => item.ModGroupId.Value.Value)
+            .Order(Comparer<SortItemLoadoutData<SortItemKey<string>>>.Create((a, b) =>
+            {
+                // Sort by ModGroupId ascending (higher is newer), then by Key ascending
+                return (a, b) switch
+                {
+                    (a: { ModGroupId: { HasValue: true } }, b: { ModGroupId: { HasValue: true } }) => a.ModGroupId.Value.Value.CompareTo(b.ModGroupId.Value.Value) != 0
+                        ? a.ModGroupId.Value.Value.CompareTo(b.ModGroupId.Value.Value)
+                        : string.Compare(a.Key.Key, b.Key.Key, StringComparison.OrdinalIgnoreCase),
+                    (a: { ModGroupId: { HasValue: true } }, b: { ModGroupId: { HasValue: false } }) => 1,
+                    (a: { ModGroupId: { HasValue: false } }, b: { ModGroupId: { HasValue: true } }) => -1,
+                    (a: { ModGroupId: { HasValue: false } }, b: { ModGroupId: { HasValue: false } }) => string.Compare(a.Key.Key, b.Key.Key, StringComparison.OrdinalIgnoreCase),
+                };
+
+            })) 
             .Select(loadoutItemData => (
                 new SortItemData<SortItemKey<string>>(loadoutItemData.Key, 0), // SortIndex will be updated later
                 loadoutItemData
