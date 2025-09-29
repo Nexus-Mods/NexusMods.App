@@ -125,8 +125,7 @@ public sealed class DownloadsService : IDownloadsService, IDisposable
     
     public IObservable<IChangeSet<DownloadInfo, DownloadId>> GetActiveDownloadsForGame(GameId gameId) =>
         _downloadCache.Connect()
-            .AutoRefreshOnObservable(item => item.Status.AsObservable().AsSystemObservable())
-            .Filter(x => x.GameId.Value.Equals(gameId) && x.Status.Value.IsActive())
+            .FilterOnObservable(x => x.Status.AsObservable().Select(status => x.GameId.Value.Equals(gameId) && status.IsActive()).AsSystemObservable())
             .RefCount();
     
     /// <summary>
