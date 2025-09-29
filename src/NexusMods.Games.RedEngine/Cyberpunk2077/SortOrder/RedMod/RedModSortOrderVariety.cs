@@ -1,11 +1,14 @@
 using DynamicData;
 using DynamicData.Kernel;
+using Microsoft.CodeAnalysis;
+using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Games.RedEngine.Cyberpunk2077.Extensions;
 using NexusMods.Games.RedEngine.Cyberpunk2077.Models;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
+using NexusMods.Paths;
 using OneOf;
 
 namespace NexusMods.Games.RedEngine.Cyberpunk2077.SortOrder;
@@ -20,7 +23,7 @@ public class RedModSortOrderVariety : ASortOrderVariety<
     
     public override SortOrderVarietyId SortOrderVarietyId => StaticVarietyId;
 
-    public RedModSortOrderVariety(IServiceProvider serviceProvider, ISortOrderManager manager) : base(serviceProvider, manager) { }
+    public RedModSortOrderVariety(IServiceProvider serviceProvider) : base(serviceProvider) { }
     
     public override SortOrderUiMetadata SortOrderUiMetadata { get; } = new()
     {
@@ -71,13 +74,73 @@ public class RedModSortOrderVariety : ASortOrderVariety<
 
     public override IObservable<IChangeSet<RedModReactiveSortItem, SortItemKey<string>>> GetSortableItemsChangeSet(SortOrderId sortOrderId)
     {
-        throw new NotImplementedException();
+        var sortOrder = Abstractions.Loadouts.SortOrder.Load(Connection.Db, sortOrderId);
+        var parentEntity = sortOrder.ParentEntity.Match(
+            loadoutId => loadoutId.Value,
+            collectionGroupId => collectionGroupId.Value
+        );
+        var loadoutId = sortOrder.LoadoutId;
+        
+        // TODO: This is looking up loadout data in the entire lodaout, but if the parent entity is a collection, should we limit the lookup to just that collection?
+        // TODO: Use better system to determine winner rather than modGroupId
+        var result = RedModExtensions.ObserveRedModSortOrder(Connection, sortOrderId, loadoutId)
+            .Transform(row =>
+                {
+                    var model = new RedModReactiveSortItem(
+                        row.SortIndex,
+                        RelativePath.FromUnsanitizedInput(row.FolderName),
+                        modName: row.ModName ?? row.FolderName,
+                        isActive: row.IsEnabled ?? false
+                    );
+
+                    if (row.ModGroupId == null) return model;
+                    
+                    model.ModGroupId = LoadoutItemGroupId.From(row.ModGroupId.Value);
+                    var loadoutData = new SortItemLoadoutData<SortItemKey<string>>(
+                        model.Key,
+                        model.IsActive,
+                        model.ModName,
+                        model.ModGroupId
+                    );
+                    model.LoadoutData = loadoutData;
+                    
+                    return model;
+                }
+            );
+        
+        return result;
     }
 
     public override IReadOnlyList<RedModReactiveSortItem> GetSortableItems(SortOrderId sortOrderId, IDb? db)
     {
-        throw new NotImplementedException();
-        // Make sure to use the correct db for the query
+        var dbToUse = db ?? Connection.Db;
+        var sortOrder = Abstractions.Loadouts.SortOrder.Load(dbToUse, sortOrderId);
+        var optionalCollection = sortOrder.ParentEntity.Match(
+            loadoutId => DynamicData.Kernel.Optional<CollectionGroupId>.None,
+            collectionGroupId => DynamicData.Kernel.Optional<CollectionGroupId>.Create(collectionGroupId)
+        );
+        
+        var sortingData = RetrieveSortOrder(sortOrderId, dbToUse);
+        var loadoutData = RetrieveLoadoutData(sortOrder.LoadoutId, optionalCollection,  dbToUse);
+        
+        // This reconcile currently removes sort items that are not in the loadout, maybe that isn't desired?
+        // TODO: Consider showing items that are missing loadout data instead.
+        var reconciled = Reconcile(sortingData, loadoutData);
+
+        return reconciled.Select(tuple =>
+            {
+                return new RedModReactiveSortItem(
+                    tuple.SortedEntry.SortIndex,
+                    RelativePath.FromUnsanitizedInput(tuple.SortedEntry.Key.Key),
+                    tuple.ItemLoadoutData.ModName,
+                    tuple.ItemLoadoutData.IsEnabled
+                )
+                {
+                    ModGroupId = tuple.ItemLoadoutData.ModGroupId,
+                    LoadoutData = tuple.ItemLoadoutData,
+                };
+            }
+        ).ToList();
     }
 
     protected override void PersistSortOrderCore(
@@ -139,23 +202,26 @@ public class RedModSortOrderVariety : ASortOrderVariety<
     /// <inheritdoc />
     protected override IReadOnlyList<SortItemData<SortItemKey<string>>> RetrieveSortOrder(SortOrderId sortOrderEntityId, IDb dbToUse)
     {
-        return dbToUse.RetrieveRedModSortableEntries(sortOrderEntityId)
-            .Select(redModSortableEntry =>
-                {
-                    var sortableEntry = redModSortableEntry.AsSortOrderItem();
-                    return new SortItemData<SortItemKey<string>>(
-                        new SortItemKey<string>(redModSortableEntry.RedModFolderName.Path),
-                        sortableEntry.SortIndex
-                    );
-                }
-            )
-            .ToList();
+        return RedModExtensions.RetrieveRedModSortOrderItems(dbToUse, sortOrderEntityId);
     }
     
     /// <inheritdoc />
-    protected override IReadOnlyList<SortItemLoadoutData<SortItemKey<string>>> RetrieveLoadoutData(LoadoutId loadoutId, Optional<CollectionGroupId> collectionGroupId, IDb? db)
+    protected override IReadOnlyList<SortItemLoadoutData<SortItemKey<string>>> RetrieveLoadoutData(LoadoutId loadoutId, DynamicData.Kernel.Optional<CollectionGroupId> collectionGroupId, IDb? db)
     {
-        throw new NotImplementedException();
+        var dbToUse = db ?? Connection.Db;
+        
+        // TODO: Move query somewhere else
+        // TODO: Update ranking logic to use better criteria than most recently created ModGroupId
+        var result = RedModExtensions.RetrieveWinningRedModsInLoadout(dbToUse, loadoutId)
+        .Select(row => new SortItemLoadoutData<SortItemKey<string>>(
+            new SortItemKey<string>(row.FolderName),
+            row.IsEnabled,
+            row.ModName,
+            row.ModGroupId == 0 ? DynamicData.Kernel.Optional<LoadoutItemGroupId>.None : LoadoutItemGroupId.From(row.Item4)
+        ))
+        .ToList();
+        
+        return result;
     }
 
     /// <inheritdoc />
@@ -185,7 +251,7 @@ public class RedModSortOrderVariety : ASortOrderVariety<
         // Add any remaining loadout items that were not in the source sorted entries
         var itemsToAdd = loadoutItemsDict.Values
             .Where(item => !processedKeys.Contains(item.Key))
-            .OrderByDescending(item => item.ModGroupId)
+            .OrderByDescending(item => item.ModGroupId.Value.Value)
             .Select(loadoutItemData => (
                 new SortItemData<SortItemKey<string>>(loadoutItemData.Key, 0), // SortIndex will be updated later
                 loadoutItemData
