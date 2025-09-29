@@ -60,7 +60,7 @@ public sealed class DownloadsDataProvider(IServiceProvider serviceProvider) : ID
         // Add name component (Name+Icon column)
         model.Add(DownloadColumns.Name.NameComponentKey, new NameComponent(
             initialValue: download.Name,
-            valueObservable: download.WhenAnyValue(x => x.Name).OnUI().ToObservable()));
+            valueObservable: download.WhenAnyValue(x => x.Name).ToObservable()));
 
         // Add icon component for Name+Icon column
         model.Add(DownloadColumns.Name.ImageComponentKey, CreateIconComponent(download));
@@ -73,20 +73,20 @@ public sealed class DownloadsDataProvider(IServiceProvider serviceProvider) : ID
         model.Add(DownloadColumns.Size.ComponentKey, new DownloadComponents.SizeProgressComponent(
             initialDownloaded: download.DownloadedBytes,
             initialTotal: download.FileSize,
-            downloadedObservable: download.WhenAnyValue(x => x.DownloadedBytes).OnUI().ToObservable(),
-            totalObservable: download.WhenAnyValue(x => x.FileSize).OnUI().ToObservable()));
+            downloadedObservable: download.WhenAnyValue(x => x.DownloadedBytes).ToObservable(),
+            totalObservable: download.WhenAnyValue(x => x.FileSize).ToObservable()));
 
         // Add speed component (Speed column)
         model.Add(DownloadColumns.Speed.ComponentKey, new DownloadComponents.SpeedComponent(
             initialTransferRate: download.TransferRate,
-            transferRateObservable: download.WhenAnyValue(x => x.TransferRate).OnUI().ToObservable()));
+            transferRateObservable: download.WhenAnyValue(x => x.TransferRate).ToObservable()));
 
         // Add status component with embedded actions (Status column)
         model.Add(DownloadColumns.Status.ComponentKey, new DownloadComponents.StatusComponent(
             initialProgress: download.Progress,
             initialStatus: download.Status,
-            progressObservable: download.WhenAnyValue(x => x.Progress).OnUI().ToObservable(),
-            statusObservable: download.WhenAnyValue(x => x.Status).OnUI().ToObservable()));
+            progressObservable: download.WhenAnyValue(x => x.Progress).ToObservable(),
+            statusObservable: download.WhenAnyValue(x => x.Status).ToObservable()));
 
         // Add download reference component
         model.Add(DownloadColumns.DownloadRefComponentKey, new DownloadRef(download));
