@@ -39,19 +39,17 @@ CREATE TYPE file_hashes.Stores AS ENUM ('GOG', 'Steam');
 
 -- gets all the loadouts, locatorids, and stores
 CREATE MACRO file_hashes.loadout_locatorids(db) AS TABLE
-SELECT install.Store::Stores, loadout.id Loadout, unnest(locatorIds) AS LocatorId
+SELECT install.Store::file_hashes.Stores Store, loadout.id Loadout, unnest(locatorIds) AS LocatorId
 FROM MDB_LOADOUT(Db=>db) loadout
-         LEFT JOIN MDB_GAMEINSTALLMETADATA(Db=>db) install on loadout.Installation = install.id  
+         LEFT JOIN MDB_GAMEINSTALLMETADATA(Db=>db) install on loadout.Installation = install.id;  
     
 -- gets all the paths and hashes of game files for steam loadouts
 CREATE OR REPLACE MACRO file_hashes.steam_loadout_files(db) AS TABLE
-SELECT files.Loadout, PathRel.Path, hashRel.xxHash3 Hash, hashRel.Size FROM
+SELECT files.Loadout, files.FileId PathId FROM
     (SELECT Loadout, ManifestId, unnest(Files) FileId
      FROM file_hashes.loadout_locatorids(db) locators
               LEFT JOIN HASHES_STEAMMANIFEST(Db=>db) manifest ON manifest.ManifestId = locators.LocatorID::UBIGINT
-     WHERE locators.Store = 'Steam') files
-        LEFT JOIN HASHES_PATHHASHRELATION() pathrel on files.FileId = pathrel.Id
-        LEFT JOIN HASHES_HASHRELATION() hashrel on pathrel.Hash = hashrel.Id
+     WHERE locators.Store = 'Steam') files;
 
 
 -- gets all the paths and hashes of game files for gog loadouts
@@ -76,13 +74,19 @@ WITH
   files AS (SELECT Loadout, unnest(manifest.Files) File
             FROM manifests
             LEFT JOIN HASHES_GOGMANIFEST() manifest ON manifests.Manifest = manifest.Id)
-SELECT files.Loadout, pathrel.Path, hashrel.XxHash3 Hash, hashrel.Size 
-    FROM files
-    LEFT JOIN HASHES_PATHHASHRELATION() pathrel ON pathrel.Id = files.File
-    LEFT JOIN HASHES_HASHRELATION() hashrel ON hashrel.Id = pathrel.Hash
+SELECT files.Loadout, files.File PathId FROM files;
 
 -- gets all the paths and hashes for game files in loadouts
 CREATE MACRO file_hashes.loadout_files(db) AS TABLE
-SELECT Loadout, Path, Hash, Size FROM file_hashes.gog_loadout_files(db)
-UNION
-SELECT Loadout, Path, Hash, Size FROM file_hashes.steam_loadout_files(db)
+WITH 
+       relations AS (SELECT pathRel.Id, pathRel.Path, hashRel.xxHash3 Hash, hashRel.Size 
+                  FROM hashes_PathHashRelation() pathRel
+                  INNER JOIN hashes_hashrelation() hashRel ON pathRel.Hash = hashRel.Id),
+       files AS (SELECT Loadout, PathId FROM file_hashes.gog_loadout_files(db)
+              UNION
+              SELECT Loadout, PathId FROM file_hashes.steam_loadout_files(db))
+SELECT files.Loadout, relations.Path, relations.Hash, relations.Size FROM files
+INNER JOIN relations ON files.PathId = relations.Id;
+
+       
+       

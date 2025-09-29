@@ -14,7 +14,10 @@ using NexusMods.DataModel.SchemaVersions;
 using NexusMods.DataModel.Settings;
 using NexusMods.DataModel.Sorting;
 using NexusMods.DataModel.Synchronizer;
+using NexusMods.DataModel.Synchronizer.DbFunctions;
 using NexusMods.DataModel.Undo;
+using NexusMods.Games.FileHashes;
+using NexusMods.HyperDuck;
 using NexusMods.HyperDuck.Adaptor.Impls.ValueAdaptor;
 using NexusMods.MnemonicDB;
 using NexusMods.MnemonicDB.Abstractions;
@@ -40,6 +43,8 @@ public static class Services
         coll.AddMigrations();
 
         coll.AddAmbientQueriesSql();
+        coll.AddSynchronizerSql();
+        coll.AddSingleton<ATableFunction, IntrinsicFiles>();
         coll.AddValueAdaptor<ushort, LocationId>(LocationId.From);
 
         // Settings
