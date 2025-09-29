@@ -57,6 +57,65 @@ public class DownloadsPageViewModel : APageViewModel<IDownloadsPageViewModel>, I
             ? (string.Format(Language.DownloadsLeftMenu_GameSpecificDownloads, downloadsDataProvider.ResolveGameName(context.GameScope.Value)), Language.DownloadsPage_GameSpecificDownloads_Description)
             : (Language.DownloadsLeftMenu_AllDownloads, Language.DownloadsPage_AllDownloads_Description);
 
+        // Create observables and commands
+        var runningCountChanges = downloadsService.GetDownloadsByStatus(JobStatus.Running)
+            // NOTE(sewer): This is a hack.
+            // Explanation: https://github.com/Nexus-Mods/NexusMods.App/pull/3898#discussion_r2387773402
+            .Delay(TimeSpan.FromMilliseconds(64))
+            .OnUI()
+            .Select(_ => Unit.Default);
+        
+        // Create observables that track selection and status changes
+        var selectionStatusReevaluationTrigger = this.WhenAnyValue(vm => vm.SelectionCount)
+            .Select(_ => Unit.Default)
+            .Merge(runningCountChanges);
+
+        SelectionHasRunningItems = selectionStatusReevaluationTrigger
+            .Select(_ => Adapter.SelectedModels
+                .Select(model => model.GetOptional<DownloadComponents.StatusComponent>(DownloadColumns.Status.ComponentKey))
+                .Where(opt => opt.HasValue)
+                .Any(opt => opt.Value.Status.Value == JobStatus.Running))
+            .ToObservable();
+        
+        SelectionHasPausedItems = selectionStatusReevaluationTrigger
+            .Select(_ => Adapter.SelectedModels
+                .Select(model => model.GetOptional<DownloadComponents.StatusComponent>(DownloadColumns.Status.ComponentKey))
+                .Where(opt => opt.HasValue)
+                .Any(opt => opt.Value.Status.Value == JobStatus.Paused))
+            .ToObservable();
+        
+        SelectionHasActiveItems = selectionStatusReevaluationTrigger
+            .Select(_ => Adapter.SelectedModels
+                .Select(model => model.GetOptional<DownloadComponents.StatusComponent>(DownloadColumns.Status.ComponentKey))
+                .Where(opt => opt.HasValue)
+                .Any(opt => opt.Value.Status.Value.IsActive()))
+            .ToObservable();
+        
+        // Create context-aware observables for running and paused items
+        HasRunningItems = context.GameScope.HasValue
+            ? downloadsService.GetRunningDownloadsForGame(context.GameScope.Value)
+                .QueryWhenChanged(items => items.Count > 0)
+                .OnUI()
+                .ToObservable()
+                .Prepend(false)
+            : downloadsService.GetDownloadsByStatus(JobStatus.Running)
+                .QueryWhenChanged(items => items.Count > 0)
+                .OnUI()
+                .ToObservable()
+                .Prepend(false);
+        
+        HasPausedItems = context.GameScope.HasValue
+            ? downloadsService.GetPausedDownloadsForGame(context.GameScope.Value)
+                .QueryWhenChanged(items => items.Count > 0)
+                .OnUI()
+                .ToObservable()
+                .Prepend(false)
+            : downloadsService.GetDownloadsByStatus(JobStatus.Paused)
+                .QueryWhenChanged(items => items.Count > 0)
+                .OnUI()
+                .ToObservable()
+                .Prepend(false);
+
         this.WhenActivated(disposables =>
         {
             Adapter.Activate().AddTo(disposables);
@@ -95,65 +154,6 @@ public class DownloadsPageViewModel : APageViewModel<IDownloadsPageViewModel>, I
                     );
                 }
             ).AddTo(disposables);
-
-            // Create observables and commands
-            var runningCountChanges = downloadsService.GetDownloadsByStatus(JobStatus.Running)
-                // NOTE(sewer): This is a hack.
-                // Explanation: https://github.com/Nexus-Mods/NexusMods.App/pull/3898#discussion_r2387773402
-                .Delay(TimeSpan.FromMilliseconds(64))
-                .OnUI()
-                .Select(_ => Unit.Default);
-            
-            // Create observables that track selection and status changes
-            var selectionStatusReevaluationTrigger = this.WhenAnyValue(vm => vm.SelectionCount)
-                .Select(_ => Unit.Default)
-                .Merge(runningCountChanges);
-
-            SelectionHasRunningItems = selectionStatusReevaluationTrigger
-                .Select(_ => Adapter.SelectedModels
-                    .Select(model => model.GetOptional<DownloadComponents.StatusComponent>(DownloadColumns.Status.ComponentKey))
-                    .Where(opt => opt.HasValue)
-                    .Any(opt => opt.Value.Status.Value == JobStatus.Running))
-                .ToObservable();
-            
-            SelectionHasPausedItems = selectionStatusReevaluationTrigger
-                .Select(_ => Adapter.SelectedModels
-                    .Select(model => model.GetOptional<DownloadComponents.StatusComponent>(DownloadColumns.Status.ComponentKey))
-                    .Where(opt => opt.HasValue)
-                    .Any(opt => opt.Value.Status.Value == JobStatus.Paused))
-                .ToObservable();
-            
-            SelectionHasActiveItems = selectionStatusReevaluationTrigger
-                .Select(_ => Adapter.SelectedModels
-                    .Select(model => model.GetOptional<DownloadComponents.StatusComponent>(DownloadColumns.Status.ComponentKey))
-                    .Where(opt => opt.HasValue)
-                    .Any(opt => opt.Value.Status.Value.IsActive()))
-                .ToObservable();
-            
-            // Create context-aware observables for running and paused items
-            HasRunningItems = context.GameScope.HasValue
-                ? downloadsService.GetRunningDownloadsForGame(context.GameScope.Value)
-                    .QueryWhenChanged(items => items.Count > 0)
-                    .OnUI()
-                    .ToObservable()
-                    .Prepend(false)
-                : downloadsService.GetDownloadsByStatus(JobStatus.Running)
-                    .QueryWhenChanged(items => items.Count > 0)
-                    .OnUI()
-                    .ToObservable()
-                    .Prepend(false);
-            
-            HasPausedItems = context.GameScope.HasValue
-                ? downloadsService.GetPausedDownloadsForGame(context.GameScope.Value)
-                    .QueryWhenChanged(items => items.Count > 0)
-                    .OnUI()
-                    .ToObservable()
-                    .Prepend(false)
-                : downloadsService.GetDownloadsByStatus(JobStatus.Paused)
-                    .QueryWhenChanged(items => items.Count > 0)
-                    .OnUI()
-                    .ToObservable()
-                    .Prepend(false);
 
             // Commands with CanExecute - context-aware implementation
             PauseAllCommand = context.GameScope.HasValue
