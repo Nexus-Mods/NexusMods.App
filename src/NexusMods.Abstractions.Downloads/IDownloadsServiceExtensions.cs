@@ -2,6 +2,8 @@ using System.Reactive.Linq;
 using DynamicData;
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Jobs;
+using R3;
+using Observable = System.Reactive.Linq.Observable;
 
 namespace NexusMods.Abstractions.Downloads;
 
@@ -22,7 +24,7 @@ public static class IDownloadsServiceExtensions
             {
                 if (items.Count == 0) return Percent.Zero;
                 
-                var totalProgress = items.Items.Sum(x => x.Progress.Value);
+                var totalProgress = items.Items.Sum(x => x.Progress.Value.Value);
                 return Percent.CreateClamped(totalProgress / items.Count);
             });
     }
@@ -53,8 +55,8 @@ public static class IDownloadsServiceExtensions
         JobStatus status)
     {
         return service.AllDownloads
-            .AutoRefresh(x => x.Status)
-            .Filter(x => x.Status == status);
+            .AutoRefreshOnObservable(item => item.Status.AsObservable().AsSystemObservable())
+            .Filter(x => x.Status.Value == status);
     }
     
     /// <summary>

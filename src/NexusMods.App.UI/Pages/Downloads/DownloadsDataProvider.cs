@@ -59,34 +59,34 @@ public sealed class DownloadsDataProvider(IServiceProvider serviceProvider) : ID
 
         // Add name component (Name+Icon column)
         model.Add(DownloadColumns.Name.NameComponentKey, new NameComponent(
-            initialValue: download.Name,
-            valueObservable: download.WhenAnyValue(x => x.Name).ToObservable()));
+            initialValue: download.Name.Value,
+            valueObservable: download.Name.AsObservable()));
 
         // Add icon component for Name+Icon column
         model.Add(DownloadColumns.Name.ImageComponentKey, CreateIconComponent(download));
 
         // Add game component
         model.Add(DownloadColumns.Game.ComponentKey, new DownloadComponents.GameComponent(
-            gameName: ResolveGameName(download.GameId)));
+            gameName: ResolveGameName(download.GameId.Value)));
 
         // Add size progress component (Size column)
         model.Add(DownloadColumns.Size.ComponentKey, new DownloadComponents.SizeProgressComponent(
-            initialDownloaded: download.DownloadedBytes,
-            initialTotal: download.FileSize,
-            downloadedObservable: download.WhenAnyValue(x => x.DownloadedBytes).ToObservable(),
-            totalObservable: download.WhenAnyValue(x => x.FileSize).ToObservable()));
+            initialDownloaded: download.DownloadedBytes.Value,
+            initialTotal: download.FileSize.Value,
+            downloadedObservable: download.DownloadedBytes.AsObservable(),
+            totalObservable: download.FileSize.AsObservable()));
 
         // Add speed component (Speed column)
         model.Add(DownloadColumns.Speed.ComponentKey, new DownloadComponents.SpeedComponent(
-            initialTransferRate: download.TransferRate,
-            transferRateObservable: download.WhenAnyValue(x => x.TransferRate).ToObservable()));
+            initialTransferRate: download.TransferRate.Value,
+            transferRateObservable: download.TransferRate.AsObservable()));
 
         // Add status component with embedded actions (Status column)
         model.Add(DownloadColumns.Status.ComponentKey, new DownloadComponents.StatusComponent(
-            initialProgress: download.Progress,
-            initialStatus: download.Status,
-            progressObservable: download.WhenAnyValue(x => x.Progress).ToObservable(),
-            statusObservable: download.WhenAnyValue(x => x.Status).ToObservable()));
+            initialProgress: download.Progress.Value,
+            initialStatus: download.Status.Value,
+            progressObservable: download.Progress.AsObservable(),
+            statusObservable: download.Status.AsObservable()));
 
         // Add download reference component
         model.Add(DownloadColumns.DownloadRefComponentKey, new DownloadRef(download));
@@ -106,7 +106,7 @@ public sealed class DownloadsDataProvider(IServiceProvider serviceProvider) : ID
         try
         {
             // Try to load FileMetadata from the database
-            var fileMetadata = NexusModsFileMetadata.Load(_connection.Db, download.FileMetadataId);
+            var fileMetadata = NexusModsFileMetadata.Load(_connection.Db, download.FileMetadataId.Value);
             
             // Check if the loaded metadata is valid
             if (fileMetadata.IsValid())
