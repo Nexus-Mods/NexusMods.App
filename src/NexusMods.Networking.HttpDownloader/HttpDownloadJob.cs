@@ -194,6 +194,10 @@ public record HttpDownloadJob : IJobDefinitionWithStart<HttpDownloadJob, Absolut
         {
             await response.Content.CopyToAsync(outputStream, context.CancellationToken);
         }
+        catch (TaskCanceledException)
+        {
+            throw;
+        }
         catch (Exception e)
         {
             Logger.LogWarning(e, "Exception while downloading from `{PageUri}`, downloaded `{DownloadedBytes}` from `{TotalBytes}` bytes", DownloadPageUri, outputStream.Position, outputStream.Length);
