@@ -63,9 +63,19 @@ public interface IDownloadsService
     void PauseAll();
     
     /// <summary>
+    /// Pauses all active downloads for a specific game.
+    /// </summary>
+    void PauseAllForGame(GameId gameId);
+    
+    /// <summary>
     /// Resumes all paused downloads.
     /// </summary>
     void ResumeAll();
+    
+    /// <summary>
+    /// Resumes all paused downloads for a specific game.
+    /// </summary>
+    void ResumeAllForGame(GameId gameId);
     
     /// <summary>
     /// Cancels selected downloads.

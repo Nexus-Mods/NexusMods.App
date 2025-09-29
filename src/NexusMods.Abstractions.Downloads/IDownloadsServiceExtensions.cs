@@ -2,6 +2,7 @@ using System.Reactive.Linq;
 using DynamicData;
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Jobs;
+using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using R3;
 using Observable = System.Reactive.Linq.Observable;
 
@@ -55,8 +56,7 @@ public static class IDownloadsServiceExtensions
         JobStatus status)
     {
         return service.AllDownloads
-            .AutoRefreshOnObservable(item => item.Status.AsObservable().AsSystemObservable())
-            .Filter(x => x.Status.Value == status);
+            .FilterOnObservable(x => x.Status.AsObservable().Select(s => s == status).AsSystemObservable());
     }
     
     /// <summary>
@@ -65,5 +65,37 @@ public static class IDownloadsServiceExtensions
     public static IObservable<IChangeSet<DownloadInfo, DownloadId>> FailedDownloads(this IDownloadsService service)
     {
         return service.GetDownloadsByStatus(JobStatus.Failed);
+    }
+
+    /// <summary>
+    /// Gets downloads for a specific game that match a specific status.
+    /// </summary>
+    public static IObservable<IChangeSet<DownloadInfo, DownloadId>> GetDownloadsByStatusForGame(
+        this IDownloadsService service,
+        JobStatus status,
+        GameId gameId)
+    {
+        return service.GetDownloadsForGame(gameId)
+            .FilterOnObservable(x => x.Status.AsObservable().Select(s => s == status).AsSystemObservable());
+    }
+
+    /// <summary>
+    /// Gets running downloads for a specific game.
+    /// </summary>
+    public static IObservable<IChangeSet<DownloadInfo, DownloadId>> GetRunningDownloadsForGame(
+        this IDownloadsService service,
+        GameId gameId)
+    {
+        return service.GetDownloadsByStatusForGame(JobStatus.Running, gameId);
+    }
+
+    /// <summary>
+    /// Gets paused downloads for a specific game.
+    /// </summary>
+    public static IObservable<IChangeSet<DownloadInfo, DownloadId>> GetPausedDownloadsForGame(
+        this IDownloadsService service,
+        GameId gameId)
+    {
+        return service.GetDownloadsByStatusForGame(JobStatus.Paused, gameId);
     }
 }

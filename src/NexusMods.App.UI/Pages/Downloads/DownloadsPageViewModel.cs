@@ -60,7 +60,7 @@ public class DownloadsPageViewModel : APageViewModel<IDownloadsPageViewModel>, I
         {
             AllDownloadsPageContext => (Language.DownloadsLeftMenu_AllDownloads, Language.DownloadsPage_AllDownloads_Description),
             GameSpecificDownloadsPageContext g => (string.Format(Language.DownloadsLeftMenu_GameSpecificDownloads, downloadsDataProvider.ResolveGameName(g.GameId)), Language.DownloadsPage_GameSpecificDownloads_Description),
-            _ => (Language.InProgressTitleTextBlock, Language.DownloadsPage_Default_Description)
+            _ => (Language.InProgressTitleTextBlock, Language.DownloadsPage_Default_Description),
         };
 
         this.WhenActivated(disposables =>
@@ -136,21 +136,47 @@ public class DownloadsPageViewModel : APageViewModel<IDownloadsPageViewModel>, I
                     .Any(opt => opt.Value.Status.Value.IsActive()))
                 .ToObservable();
             
-            HasRunningItems = downloadsService.GetDownloadsByStatus(JobStatus.Running)
-                .QueryWhenChanged(items => items.Count > 0)
-                .OnUI()
-                .ToObservable()
-                .Prepend(false);
+            // Create context-aware observables for running and paused items
+            HasRunningItems = context switch
+            {
+                GameSpecificDownloadsPageContext g => downloadsService.GetRunningDownloadsForGame(g.GameId)
+                    .QueryWhenChanged(items => items.Count > 0)
+                    .OnUI()
+                    .ToObservable()
+                    .Prepend(false),
+                _ => downloadsService.GetDownloadsByStatus(JobStatus.Running)
+                    .QueryWhenChanged(items => items.Count > 0)
+                    .OnUI()
+                    .ToObservable()
+                    .Prepend(false),
+            };
             
-            HasPausedItems = downloadsService.GetDownloadsByStatus(JobStatus.Paused)
-                .QueryWhenChanged(items => items.Count > 0)
-                .OnUI()
-                .ToObservable()
-                .Prepend(false);
+            HasPausedItems = context switch
+            {
+                GameSpecificDownloadsPageContext g => downloadsService.GetPausedDownloadsForGame(g.GameId)
+                    .QueryWhenChanged(items => items.Count > 0)
+                    .OnUI()
+                    .ToObservable()
+                    .Prepend(false),
+                _ => downloadsService.GetDownloadsByStatus(JobStatus.Paused)
+                    .QueryWhenChanged(items => items.Count > 0)
+                    .OnUI()
+                    .ToObservable()
+                    .Prepend(false),
+            };
 
-            // Commands with CanExecute
-            PauseAllCommand = HasRunningItems.ToReactiveCommand<Unit>(_ => downloadsService.PauseAll()).AddTo(disposables);
-            ResumeAllCommand = HasPausedItems.ToReactiveCommand<Unit>(_ => downloadsService.ResumeAll()).AddTo(disposables);
+            // Commands with CanExecute - context-aware implementation
+            PauseAllCommand = context switch
+            {
+                GameSpecificDownloadsPageContext g => HasRunningItems.ToReactiveCommand<Unit>(_ => downloadsService.PauseAllForGame(g.GameId)).AddTo(disposables),
+                _ => HasRunningItems.ToReactiveCommand<Unit>(_ => downloadsService.PauseAll()).AddTo(disposables),
+            };
+            
+            ResumeAllCommand = context switch
+            {
+                GameSpecificDownloadsPageContext g => HasPausedItems.ToReactiveCommand<Unit>(_ => downloadsService.ResumeAllForGame(g.GameId)).AddTo(disposables),
+                _ => HasPausedItems.ToReactiveCommand<Unit>(_ => downloadsService.ResumeAll()).AddTo(disposables),
+            };
             
             PauseSelectedCommand = SelectionHasRunningItems.ToReactiveCommand<Unit>(
                 executeAsync: (_, _) =>
