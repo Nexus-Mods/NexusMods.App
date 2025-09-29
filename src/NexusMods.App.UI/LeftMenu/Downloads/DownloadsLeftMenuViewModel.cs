@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Helpers;
@@ -15,6 +16,7 @@ using NexusMods.App.UI.LeftMenu.Items;
 using NexusMods.App.UI.Pages.Downloads;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.UI.Sdk.Icons;
 using ReactiveUI;
 using R3;
@@ -31,6 +33,7 @@ public class DownloadsLeftMenuViewModel : AViewModel<IDownloadsLeftMenuViewModel
     public ReadOnlyObservableCollection<ILeftMenuItemViewModel> LeftMenuItemsPerGameDownloads => _leftMenuItemsPerGameDownloads;
 
     private readonly ILogger<DownloadsLeftMenuViewModel> _logger;
+    private readonly IConnection _connection;
 
     public DownloadsLeftMenuViewModel(
         WorkspaceId workspaceId,
@@ -39,6 +42,7 @@ public class DownloadsLeftMenuViewModel : AViewModel<IDownloadsLeftMenuViewModel
     {
         WorkspaceId = workspaceId;
         _logger = serviceProvider.GetRequiredService<ILogger<DownloadsLeftMenuViewModel>>();
+        _connection = serviceProvider.GetRequiredService<IConnection>();
 
         var gameRegistry = serviceProvider.GetRequiredService<IGameRegistry>();
 
@@ -62,6 +66,7 @@ public class DownloadsLeftMenuViewModel : AViewModel<IDownloadsLeftMenuViewModel
         {
             gameRegistry.InstalledGames
                 .ToObservableChangeSet()
+                .FilterOnObservable(gameInstallation => IsManagedGameObservable(gameInstallation, _connection))
                 .Transform(gameInstallation => CreatePerGameDownloadItem(gameInstallation, workspaceController, workspaceId, _logger))
                 .DisposeMany()
                 .OnUI()
@@ -101,5 +106,13 @@ public class DownloadsLeftMenuViewModel : AViewModel<IDownloadsLeftMenuViewModel
             .Subscribe(bitmap => viewModel.Icon = ImageHelper.CreateIconValueFromBitmap(bitmap, IconValues.FolderEditOutline));
 
         return viewModel;
+    }
+
+    private static IObservable<bool> IsManagedGameObservable(GameInstallation installation, IConnection connection)
+    {
+        return NexusMods.Abstractions.Loadouts.Loadout.ObserveAll(connection)
+            .Filter(l => l.IsVisible() && l.InstallationInstance.GameMetadataId == installation.GameMetadataId)
+            .Count()
+            .Select(c => c > 0);
     }
 }
