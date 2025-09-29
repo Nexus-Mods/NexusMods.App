@@ -65,15 +65,7 @@ public class DownloadsPageViewModel : APageViewModel<IDownloadsPageViewModel>, I
 
         var runningCountChanges = downloadsService.GetDownloadsByStatus(JobStatus.Running)
             // NOTE(sewer): This is a hack.
-            //
-            // When we pause/resume a selected item, there's a chance that GetDownloadsByStatus
-            // will fire before the status of the actual job changes. This means that the evaluation
-            // result will not be correct, so we need to delay for a short moment to make sure it is.
-            // 
-            // As far as workarounds go, we can't subscribe to DownloadComponents.StatusComponent directly because
-            // the JobStatus field there is derived from the model, i.e. also from GetDownloadsByStatus(JobStatus.Running)
-            //
-            // We can't guarantee a specific execution order; so we wait with a small hack.
+            // Explanation: https://github.com/Nexus-Mods/NexusMods.App/pull/3898#discussion_r2387773402
             .Delay(TimeSpan.FromMilliseconds(64))
             .OnUI()
             .Select(_ => Unit.Default);
