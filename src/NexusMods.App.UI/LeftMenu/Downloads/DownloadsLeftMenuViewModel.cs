@@ -44,8 +44,6 @@ public class DownloadsLeftMenuViewModel : AViewModel<IDownloadsLeftMenuViewModel
         _logger = serviceProvider.GetRequiredService<ILogger<DownloadsLeftMenuViewModel>>();
         _connection = serviceProvider.GetRequiredService<IConnection>();
 
-        var gameRegistry = serviceProvider.GetRequiredService<IGameRegistry>();
-
         // All Downloads menu item
         LeftMenuItemAllDownloads = new LeftMenuItemViewModel(
             workspaceController,
@@ -64,9 +62,10 @@ public class DownloadsLeftMenuViewModel : AViewModel<IDownloadsLeftMenuViewModel
         // Per-game downloads (dynamic)
         this.WhenActivated(disposable =>
         {
-            gameRegistry.InstalledGames
-                .ToObservableChangeSet()
-                .FilterOnObservable(gameInstallation => IsManagedGameObservable(gameInstallation, _connection))
+            NexusMods.Abstractions.Loadouts.Loadout.ObserveAll(_connection)
+                .Filter(loadout => loadout.IsVisible())
+                .Group(loadout => loadout.InstallationInstance.GameMetadataId)
+                .Transform(group => group.Cache.Items.First().InstallationInstance)
                 .Transform(gameInstallation => CreatePerGameDownloadItem(gameInstallation, workspaceController, workspaceId, _logger))
                 .DisposeMany()
                 .OnUI()
@@ -108,11 +107,5 @@ public class DownloadsLeftMenuViewModel : AViewModel<IDownloadsLeftMenuViewModel
         return viewModel;
     }
 
-    private static IObservable<bool> IsManagedGameObservable(GameInstallation installation, IConnection connection)
-    {
-        return NexusMods.Abstractions.Loadouts.Loadout.ObserveAll(connection)
-            .Filter(l => l.IsVisible() && l.InstallationInstance.GameMetadataId == installation.GameMetadataId)
-            .Count()
-            .Select(c => c > 0);
-    }
+
 }
