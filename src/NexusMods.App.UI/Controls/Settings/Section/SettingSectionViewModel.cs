@@ -1,4 +1,3 @@
-using NexusMods.Abstractions.Settings;
 using NexusMods.Abstractions.UI;
 using NexusMods.UI.Sdk.Settings;
 

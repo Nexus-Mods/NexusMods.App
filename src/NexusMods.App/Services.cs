@@ -33,7 +33,6 @@ using NexusMods.Paths;
 using NexusMods.ProxyConsole;
 using NexusMods.Sdk.ProxyConsole;
 using NexusMods.Sdk.Settings;
-using NexusMods.Settings;
 using NexusMods.SingleProcess;
 using NexusMods.StandardGameLocators;
 using NexusMods.Telemetry;

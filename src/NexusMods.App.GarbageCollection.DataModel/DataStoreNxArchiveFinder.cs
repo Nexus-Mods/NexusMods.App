@@ -1,4 +1,3 @@
-using NexusMods.Abstractions.Settings;
 using NexusMods.App.GarbageCollection.Nx;
 using NexusMods.Archives.Nx.Headers;
 using NexusMods.Paths;

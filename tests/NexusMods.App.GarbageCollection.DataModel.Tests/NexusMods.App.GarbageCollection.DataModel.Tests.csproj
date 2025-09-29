@@ -5,7 +5,6 @@
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\..\src\NexusMods.App.GarbageCollection.DataModel\NexusMods.App.GarbageCollection.DataModel.csproj"/>
-        <ProjectReference Include="..\..\src\NexusMods.Settings\NexusMods.Settings.csproj" />
         <ProjectReference Include="..\Games\NexusMods.Games.TestFramework\NexusMods.Games.TestFramework.csproj" />
         <ProjectReference Include="..\NexusMods.StandardGameLocators.TestHelpers\NexusMods.StandardGameLocators.TestHelpers.csproj" />
     </ItemGroup>

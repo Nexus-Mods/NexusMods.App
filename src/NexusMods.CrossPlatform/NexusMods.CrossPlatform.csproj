@@ -73,8 +73,4 @@
       <ProjectReference Include="..\NexusMods.Abstractions.Settings\NexusMods.Abstractions.Settings.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <ProjectReference Include="..\NexusMods.Abstractions.Settings\NexusMods.Abstractions.Settings.csproj" />
-    </ItemGroup>
-
 </Project>

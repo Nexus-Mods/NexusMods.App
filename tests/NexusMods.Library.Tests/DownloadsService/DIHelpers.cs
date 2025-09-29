@@ -7,7 +7,6 @@ using NexusMods.DataModel;
 using NexusMods.Jobs;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Paths;
-using NexusMods.Settings;
 
 namespace NexusMods.Library.Tests.DownloadsService;
 

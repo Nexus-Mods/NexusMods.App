@@ -2,7 +2,6 @@ using System.Reactive.Disposables;
 using Avalonia.Platform.Storage;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.Settings;
 using NexusMods.Abstractions.UI;
 using NexusMods.CrossPlatform.Process;
 using NexusMods.Sdk;

@@ -5,11 +5,11 @@ using Avalonia.Media.Imaging;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
-using NexusMods.Abstractions.Settings;
 using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Helpers;
 using NexusMods.CrossPlatform.Process;
+using NexusMods.Sdk.Settings;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 

@@ -3,7 +3,6 @@ using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Sdk.Hashes;
 using NexusMods.Abstractions.Serialization.Json;
-using NexusMods.Abstractions.Settings;
 
 namespace NexusMods.Abstractions.Serialization;
 

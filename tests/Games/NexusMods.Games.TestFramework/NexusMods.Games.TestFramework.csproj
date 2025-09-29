@@ -13,7 +13,6 @@
         <ProjectReference Include="..\..\..\src\NexusMods.Games.FileHashes\NexusMods.Games.FileHashes.csproj" />
         <ProjectReference Include="..\..\..\src\NexusMods.Jobs\NexusMods.Jobs.csproj" />
         <ProjectReference Include="..\..\..\src\NexusMods.Library\NexusMods.Library.csproj" />
-        <ProjectReference Include="..\..\..\src\NexusMods.Settings\NexusMods.Settings.csproj" />
         <ProjectReference Include="..\..\NexusMods.StandardGameLocators.TestHelpers\NexusMods.StandardGameLocators.TestHelpers.csproj" />
     </ItemGroup>
 

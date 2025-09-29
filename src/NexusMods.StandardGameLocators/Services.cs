@@ -19,7 +19,6 @@ using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.GameLocators.Stores.EGS;
 using NexusMods.Abstractions.GameLocators.Stores.GOG;
 using NexusMods.Abstractions.GameLocators.Stores.Origin;
-using NexusMods.Abstractions.Settings;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using NexusMods.Sdk.Settings;
