@@ -91,19 +91,15 @@ public class RedModDeployTool : ITool
     {
         // TODO: this currently uses the loadout sort order, change this to use the "Active" sort order,
         // once we support switching between collection and loadout sort orders
-        var parentEntity = OneOf.OneOf<LoadoutId, CollectionGroupId>.FromT0(loadout.LoadoutId);
+        var collectionId = Optional.None<CollectionGroupId>();
         
-        var sortOrderId = _redModSortOrderVariety.GetSortOrderIdFor(parentEntity);
         var output = string.Empty;
-        if (sortOrderId.HasValue)
-        {
-            // Note(AL12rs): this will get the Load Order for the specific revision of the DB of loadout, which might not be the latest
-            var order = _redModSortOrderVariety.GetRedModOrder(sortOrderId.Value, loadout.Db);
-            
-            // NOTE(erri120): redmod only accepts CRLR line breaks, everything else breaks the program
-            // and results in getting errors like `Non-existant mod selected`
-            output = order.Count > 0 ? string.Join("\r\n", order) : string.Empty;
-        }
+        // Note(AL12rs): this will get the Load Order for the specific revision of the DB of loadout, which might not be the latest
+        var order = _redModSortOrderVariety.GetRedModOrder(loadout, collectionId, loadout.Db);
+        
+        // NOTE(erri120): redmod only accepts CRLR line breaks, everything else breaks the program
+        // and results in getting errors like `Non-existant mod selected`
+        output = order.Count > 0 ? string.Join("\r\n", order) : string.Empty;
         
         await loadorderFilePath.WriteAllTextAsync(output);
     }

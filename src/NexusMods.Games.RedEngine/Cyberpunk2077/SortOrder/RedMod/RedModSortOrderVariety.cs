@@ -144,9 +144,43 @@ public class RedModSortOrderVariety : ASortOrderVariety<
     /// <summary>
     /// Method to get the order to pass to REDMod tool.
     /// </summary>
-    public IReadOnlyList<string> GetRedModOrder(SortOrderId sortOrderId, IDb? db = null)
+    public IReadOnlyList<string> GetRedModOrder(LoadoutId loadoutId, Optional<CollectionGroupId> collectionGroupId, IDb? db = null)
     {
-        return GetSortOrderItems(sortOrderId, db)
+        var parentEntity = collectionGroupId.HasValue
+            ? OneOf<LoadoutId, CollectionGroupId>.FromT1(collectionGroupId.Value)
+            : OneOf<LoadoutId, CollectionGroupId>.FromT0(loadoutId);
+        
+        var sortOrderId = GetSortOrderIdFor(parentEntity, db);
+        if (sortOrderId.HasValue)
+        {
+            // Return the reconciled order as list of redmod folder names
+            return GetSortOrderItems(sortOrderId.Value, db)
+                .Select(item => item.Key.Key)
+                .ToList();
+        }
+        
+        // There is no SortOrder for this loadout/collection in this Db revision,
+        // so we just return the RedMods in the loadout, sorted by ModGroupId and FolderName
+        var loadoutData = RetrieveLoadoutData(loadoutId, collectionGroupId, db);
+            
+        var reconciled = Reconcile([], loadoutData);
+
+        var result = reconciled.Select(tuple =>
+            {
+                return new RedModReactiveSortItem(
+                    tuple.SortedEntry.SortIndex,
+                    RelativePath.FromUnsanitizedInput(tuple.SortedEntry.Key.Key),
+                    tuple.ItemLoadoutData.ModName,
+                    tuple.ItemLoadoutData.IsEnabled
+                )
+                {
+                    ModGroupId = tuple.ItemLoadoutData.ModGroupId,
+                    LoadoutData = tuple.ItemLoadoutData,
+                };
+            }
+        ).ToList();
+            
+        return result
             .Select(item => item.Key.Key)
             .ToList();
     }
@@ -261,11 +295,11 @@ public class RedModSortOrderVariety : ASortOrderVariety<
             .Where(item => !processedKeys.Contains(item.Key))
             .Order(Comparer<SortItemLoadoutData<SortItemKey<string>>>.Create((a, b) =>
             {
-                // Sort by ModGroupId ascending (higher is newer), then by Key ascending
+                // Sort by ModGroupId descending (newer items in first position), then by Key ascending
                 return (a, b) switch
                 {
-                    (a: { ModGroupId: { HasValue: true } }, b: { ModGroupId: { HasValue: true } }) => a.ModGroupId.Value.Value.CompareTo(b.ModGroupId.Value.Value) != 0
-                        ? a.ModGroupId.Value.Value.CompareTo(b.ModGroupId.Value.Value)
+                    (a: { ModGroupId: { HasValue: true } }, b: { ModGroupId: { HasValue: true } }) => b.ModGroupId.Value.Value.CompareTo(a.ModGroupId.Value.Value) != 0
+                        ? b.ModGroupId.Value.Value.CompareTo(a.ModGroupId.Value.Value)
                         : string.Compare(a.Key.Key, b.Key.Key, StringComparison.OrdinalIgnoreCase),
                     (a: { ModGroupId: { HasValue: true } }, b: { ModGroupId: { HasValue: false } }) => 1,
                     (a: { ModGroupId: { HasValue: false } }, b: { ModGroupId: { HasValue: true } }) => -1,

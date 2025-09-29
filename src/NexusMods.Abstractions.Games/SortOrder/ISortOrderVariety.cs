@@ -47,7 +47,7 @@ public interface ISortOrderVariety
     /// Returns the SortOrderId for this variety for the given parent entity.
     /// </summary>
     [Pure]
-    public Optional<SortOrderId> GetSortOrderIdFor(OneOf<LoadoutId, CollectionGroupId> parentEntity);
+    public Optional<SortOrderId> GetSortOrderIdFor(OneOf<LoadoutId, CollectionGroupId> parentEntity, IDb? db = null);
     
     /// <summary>
     /// Returns the SortOrderId for the given loadout, parent entity and variety.

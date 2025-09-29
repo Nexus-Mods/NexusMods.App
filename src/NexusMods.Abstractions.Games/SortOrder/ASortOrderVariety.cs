@@ -51,9 +51,11 @@ public abstract class ASortOrderVariety<TKey, TReactiveSortItem, TItemLoadoutDat
     public virtual IndexOverrideBehavior IndexOverrideBehavior => IndexOverrideBehavior.GreaterIndexWins;
 
     /// <inheritdoc />
-    public Optional<SortOrderId> GetSortOrderIdFor(OneOf<LoadoutId, CollectionGroupId> parentEntity)
+    public Optional<SortOrderId> GetSortOrderIdFor(OneOf<LoadoutId, CollectionGroupId> parentEntity, IDb? db = null)
     {
-        var entities = SortOrder.FindByParentEntity(Connection.Db, parentEntity)
+        var dbToUse = db ?? Connection.Db;
+        
+        var entities = SortOrder.FindByParentEntity(dbToUse, parentEntity)
             .Where(e => e.SortOrderTypeId == SortOrderVarietyId.Value)
             .ToArray();
         
