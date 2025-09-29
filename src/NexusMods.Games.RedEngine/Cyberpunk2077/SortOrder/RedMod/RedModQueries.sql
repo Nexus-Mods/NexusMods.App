@@ -42,7 +42,8 @@ FROM (
                         ) AS ranking
          FROM redmod.LoadoutRedModGroups(db, loadoutId, gameLocationId) AS matchingMods
      ) ranked
-WHERE ranking = 1;
+WHERE ranking = 1
+ORDER BY ModGroupId ASC, ModFolderName ASC;
 
 
 -- Return the RedMod Sort Order for a given loadout including the loadout data
