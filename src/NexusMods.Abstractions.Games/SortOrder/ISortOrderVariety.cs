@@ -78,7 +78,7 @@ public interface ISortOrderVariety
     /// Validity and outcome of the move may depend on game-specific logic, so only some or none of the items may be moved.
     /// </summary>
     [Pure]
-    public ValueTask MoveItems(
+    public Task MoveItems(
         SortOrderId sortOrderId,
         ISortItemKey[] itemsToMove,
         ISortItemKey dropTargetItem,
@@ -92,7 +92,7 @@ public interface ISortOrderVariety
     /// <param name="sourceItem">Key of the item to move</param>
     /// <param name="delta">positive or negative index delta</param>
     [Pure]
-    public ValueTask MoveItemDelta(SortOrderId sortOrderId, ISortItemKey sourceItem, int delta, IDb? db = null, CancellationToken token = default);
+    public Task MoveItemDelta(SortOrderId sortOrderId, ISortItemKey sourceItem, int delta, IDb? db = null, CancellationToken token = default);
     
     /// <summary>
     /// Reconcile the SortOrder with the latest data from the Db, adding or removing items as necessary.
@@ -151,7 +151,7 @@ public interface ISortOrderVariety<TKey, TItem> : ISortOrderVariety
     
     /// <inheritdoc/>
     [Pure]
-    ValueTask ISortOrderVariety.MoveItems(
+    Task ISortOrderVariety.MoveItems(
         SortOrderId sortOrderId,
         ISortItemKey[] itemsToMove,
         ISortItemKey dropTargetItem,
@@ -162,7 +162,7 @@ public interface ISortOrderVariety<TKey, TItem> : ISortOrderVariety
     
     /// <inheritdoc cref="ISortOrderVariety.MoveItems"/>
     [Pure]
-    ValueTask MoveItems(
+    Task MoveItems(
         SortOrderId sortOrderId,
         TKey[] itemsToMove,
         TKey dropTargetItem,
@@ -172,10 +172,10 @@ public interface ISortOrderVariety<TKey, TItem> : ISortOrderVariety
     
     /// <inheritdoc/>
     [Pure]
-    ValueTask ISortOrderVariety.MoveItemDelta(SortOrderId sortOrderId, ISortItemKey sourceItem, int delta, IDb? db, CancellationToken token) =>
+    Task ISortOrderVariety.MoveItemDelta(SortOrderId sortOrderId, ISortItemKey sourceItem, int delta, IDb? db, CancellationToken token) =>
         MoveItemDelta(sortOrderId, (TKey)sourceItem, delta, db, token);
 
     /// <inheritdoc cref="ISortOrderVariety.MoveItemDelta"/>
     [Pure]
-    ValueTask MoveItemDelta(SortOrderId sortOrderId, TKey sourceItem, int delta, IDb? db = null, CancellationToken token = default);
+    Task MoveItemDelta(SortOrderId sortOrderId, TKey sourceItem, int delta, IDb? db = null, CancellationToken token = default);
 }

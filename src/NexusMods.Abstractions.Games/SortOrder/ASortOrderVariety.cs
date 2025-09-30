@@ -84,7 +84,7 @@ public abstract class ASortOrderVariety<TKey, TReactiveSortItem, TItemLoadoutDat
     public abstract IReadOnlyList<TReactiveSortItem> GetSortOrderItems(SortOrderId sortOrderId, IDb? db);
 
     /// <inheritdoc />
-    public async ValueTask MoveItems(
+    public async Task MoveItems(
         SortOrderId sortOrderId,
         TKey[] itemsToMove,
         TKey dropTargetItem,
@@ -148,7 +148,7 @@ public abstract class ASortOrderVariety<TKey, TReactiveSortItem, TItemLoadoutDat
     }
 
     /// <inheritdoc />
-    public async ValueTask MoveItemDelta(SortOrderId sortOrderId, TKey sourceItem, int delta, IDb? db = null, CancellationToken token = default)
+    public async Task MoveItemDelta(SortOrderId sortOrderId, TKey sourceItem, int delta, IDb? db = null, CancellationToken token = default)
     {
         var dbToUse = db ?? Connection.Db;
         
