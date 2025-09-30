@@ -128,6 +128,17 @@ public sealed class JobMonitor : IJobMonitor, IDisposable
             ExecuteJob(job.AsContext()); // Restart execution
         }
     }
+    
+    /// <summary>
+    /// Finds a job by its ID
+    /// </summary>
+    /// <param name="jobId">The ID of the job to find</param>
+    /// <returns>The job with the specified ID, or null if not found</returns>
+    public IJob? Find(JobId jobId)
+    {
+        var job = _allJobs.Lookup(jobId);
+        return job.HasValue ? job.Value : null;
+    }
 
     /// <summary>
     /// Executes a job with proper lifecycle management (used for both initial start and resume)
