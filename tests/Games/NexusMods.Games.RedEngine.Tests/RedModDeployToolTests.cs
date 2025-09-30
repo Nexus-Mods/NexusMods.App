@@ -8,6 +8,7 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Games.RedEngine.Cyberpunk2077;
 using NexusMods.Games.RedEngine.Cyberpunk2077.SortOrder;
 using NexusMods.Games.TestFramework;
+using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 using NexusMods.Paths;
 using OneOf;
 using R3;
@@ -36,6 +37,40 @@ public class RedModDeployToolTests : ACyberpunkIsolatedGameTest<Cyberpunk2077Gam
         await Verify(await WriteLoadoutFile(loadout));
     }
     
+    [Fact]
+    public async Task LoadorderFileDoesNotContainDisabledMods()
+    {
+        // Ensure the SortOrderManager is created and subscribed to loadout changes
+        _ = InitAndGetSortOrderManager();
+        var redModSortOrderVariety = ServiceProvider.GetRequiredService<RedModSortOrderVariety>();
+        var loadout = await CreateLoadout();
+        
+        loadout = await AddRedMods(loadout);
+        await Task.Delay(TimeSpan.FromSeconds(2));
+
+        var optionalSortOrderId = redModSortOrderVariety.GetSortOrderIdFor(loadout.LoadoutId);
+        optionalSortOrderId.HasValue.Should().BeTrue("RedModSortOrderVariety should have a SortOrderId for the loadout");
+        var sortOrderId = optionalSortOrderId.Value;
+        
+        var sortOrder = redModSortOrderVariety.GetSortOrderItems(sortOrderId, Connection.Db);
+        
+        var driverMod = sortOrder.Single(g => g.DisplayName == "Driver_Shotguns").ModGroupId;
+        driverMod.HasValue.Should().BeTrue("Driver_Shotguns mod should have a ModGroupId");
+        var driverModGroupId = driverMod.Value;
+        
+        // Find the Driver_Shotguns mod
+        var modToDisable = LoadoutItemGroup.All(Connection.Db).Single(g => g.LoadoutItemGroupId == driverModGroupId);
+        
+        // Disable the mod
+        using var tx = Connection.BeginTransaction();
+        tx.Add(modToDisable.Id, LoadoutItem.Disabled, Null.Instance);
+        await tx.Commit();
+        
+        // Give some time for the SortOrderManager to process the change
+        await Task.Delay(TimeSpan.FromSeconds(2)); 
+        
+        await Verify(await WriteLoadoutFile(loadout));
+    }
 
     [Theory]
     [InlineData("Driver_Shotguns", 0)]
@@ -215,7 +250,7 @@ public class RedModDeployToolTests : ACyberpunkIsolatedGameTest<Cyberpunk2077Gam
             File.Copy(sourcePath.ToString(), copyPath.ToString(), overwrite: true);
 
             var libraryArchive = await RegisterLocalArchive(copyPath);
-            await LibraryService.InstallItem(libraryArchive.AsLibraryFile().AsLibraryItem(), loadout);
+            var result = await LibraryService.InstallItem(libraryArchive.AsLibraryFile().AsLibraryItem(), loadout);
         }
 
         loadout = loadout.Rebase();
