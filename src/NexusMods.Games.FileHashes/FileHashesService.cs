@@ -194,7 +194,7 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable, IHost
             return;
         }
 
-        if (latestReleaseManifest is null || existingDatabases[0].CreationTime >= latestReleaseManifest.CreatedAt)
+        if (latestReleaseManifest is null || existingDatabases[0].CreationTime.ToUnixTimeSeconds() >= latestReleaseManifest.CreatedAt.ToUnixTimeSeconds())
         {
             _currentDb = OpenDb(existingDatabases[0]);
             return;
