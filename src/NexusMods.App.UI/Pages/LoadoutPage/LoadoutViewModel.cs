@@ -476,8 +476,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
             }
         );
 
-        var numRulePages = RulesSectionViewModel.LoadOrderViewModels.Count;
-        HasRulesSection = numRulePages > 0;
+        HasRulesSection = true;
 
         SelectedSubTab = selectedSubTab switch
         {

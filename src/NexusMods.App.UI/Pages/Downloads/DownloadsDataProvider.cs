@@ -5,6 +5,7 @@ using DynamicData.Binding;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Downloads;
+using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
@@ -57,37 +58,35 @@ public sealed class DownloadsDataProvider(IServiceProvider serviceProvider) : ID
         var model = new CompositeItemModel<DownloadId>(download.Id);
 
         // Add name component (Name+Icon column)
-        model.Add(SharedColumns.Name.NameComponentKey, new NameComponent(
-            initialValue: download.Name,
-            valueObservable: download.WhenAnyValue(x => x.Name).ToObservable()));
+        model.Add(DownloadColumns.Name.NameComponentKey, new NameComponent(
+            initialValue: download.Name.Value,
+            valueObservable: download.Name.AsObservable()));
 
         // Add icon component for Name+Icon column
-        model.Add(SharedColumns.Name.ImageComponentKey, CreateIconComponent(download));
+        model.Add(DownloadColumns.Name.ImageComponentKey, CreateIconComponent(download));
 
         // Add game component
         model.Add(DownloadColumns.Game.ComponentKey, new DownloadComponents.GameComponent(
-            gameName: ResolveGameNameInitial(download.GameId)));
+            gameName: ResolveGameName(download.GameId.Value)));
 
         // Add size progress component (Size column)
         model.Add(DownloadColumns.Size.ComponentKey, new DownloadComponents.SizeProgressComponent(
-            initialDownloaded: download.DownloadedBytes,
-            initialTotal: download.FileSize,
-            downloadedObservable: download.WhenAnyValue(x => x.DownloadedBytes).ToObservable(),
-            totalObservable: download.WhenAnyValue(x => x.FileSize).ToObservable()));
+            initialDownloaded: download.DownloadedBytes.Value,
+            initialTotal: download.FileSize.Value,
+            downloadedObservable: download.DownloadedBytes.AsObservable(),
+            totalObservable: download.FileSize.AsObservable()));
 
         // Add speed component (Speed column)
         model.Add(DownloadColumns.Speed.ComponentKey, new DownloadComponents.SpeedComponent(
-            initialTransferRate: download.TransferRate,
-            transferRateObservable: download.WhenAnyValue(x => x.TransferRate).ToObservable()));
+            initialTransferRate: download.TransferRate.Value,
+            transferRateObservable: download.TransferRate.AsObservable()));
 
         // Add status component with embedded actions (Status column)
         model.Add(DownloadColumns.Status.ComponentKey, new DownloadComponents.StatusComponent(
-            downloadsService: _downloadsService,
-            downloadInfo: download,
-            initialProgress: download.Progress,
-            initialStatus: download.Status,
-            progressObservable: download.WhenAnyValue(x => x.Progress).ToObservable(),
-            statusObservable: download.WhenAnyValue(x => x.Status).ToObservable()));
+            initialProgress: download.Progress.Value,
+            initialStatus: download.Status.Value,
+            progressObservable: download.Progress.AsObservable(),
+            statusObservable: download.Status.AsObservable()));
 
         // Add download reference component
         model.Add(DownloadColumns.DownloadRefComponentKey, new DownloadRef(download));
@@ -95,21 +94,11 @@ public sealed class DownloadsDataProvider(IServiceProvider serviceProvider) : ID
         return model;
     }
 
-    private static string ResolveGameNameInitial(GameId gameId)
-    {
-        // Return a default value since we can't access the registry synchronously
-        return Language.Downloads_UnknownGame;
-    }
-
-    private Observable<string> ResolveGameNameObservable(GameId gameId)
+    public string ResolveGameName(GameId gameId)
     {
         return _gameRegistry.InstalledGames
-            .ToObservableChangeSet()
-            .Transform(game => game.Game)
-            .Filter(game => game.GameId.Equals(gameId))
-            .QueryWhenChanged(query => query.FirstOrDefault()?.Name ?? Language.Downloads_UnknownGame)
-            .ToObservable()
-            .Prepend(Language.Downloads_UnknownGame);
+            .FirstOrDefault(g => g.Game.GameId.Equals(gameId))?.Game.Name 
+            ?? Language.Downloads_UnknownGame;
     }
 
     private ImageComponent CreateIconComponent(DownloadInfo download)
@@ -117,7 +106,7 @@ public sealed class DownloadsDataProvider(IServiceProvider serviceProvider) : ID
         try
         {
             // Try to load FileMetadata from the database
-            var fileMetadata = NexusModsFileMetadata.Load(_connection.Db, download.FileMetadataId);
+            var fileMetadata = NexusModsFileMetadata.Load(_connection.Db, download.FileMetadataId.Value);
             
             // Check if the loaded metadata is valid
             if (fileMetadata.IsValid())

@@ -1,3 +1,13 @@
+# v0.17.2 2025-09-29
+This update brings a smoother, more reliable experience along with some exciting quality-of-life improvements. We’ve tidied up a few behind-the-scenes issues and introduced tools to help you keep your game folders clean and organized. You’ll also notice a more informative Library, early glimpses of the upcoming Downloads page, some handy new menus, plus performance boosts to keep everything running fast and responsive.
+
+- General bug fixes including erroneously backing up game folder. 
+- The Nexus Mods App now detects if your game folder is not in a base state and gives you the option to clean it. (#3323)
+- Downloads page placeholder: While full functionality isn't quite here yet, clicking the button in the bottom left will now open the downloads area with placeholder text. We look forward to showing you more soon.
+- Library improvements: You'll now find a new Collection column showing you what collections your mod is installed into, with an icon that show if the collection is installed or in progress. (#3786)
+- Kebab menus are now in place in Loadout and Installed Collections pages as well as to the Library. (#3743)
+- Performance improvements. (#3761)
+
 # v0.16.4 2025-09-04
 HOTFIX : reworked the Nexus Mods login code. Caches are invalidated sooner and in a more predictable manner. This fixes an issue where users would not see their new premium status appear after subscribing. Also fixes an issue where users would appear to lose their premium status after the app was active for a few hours. 
 

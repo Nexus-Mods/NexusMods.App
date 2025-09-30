@@ -120,7 +120,7 @@ public sealed class LoginManager : IDisposable, ILoginManager
         var cachedValue = _cachedUserInfo.Get();
         if (cachedValue is not null) return cachedValue;
 
-        using var _ = _verifySemaphore.WaitDisposable(cancellationToken);
+        using var _ = await _verifySemaphore.WaitAsyncDisposable(cancellationToken);
         cachedValue = _cachedUserInfo.Get();
         if (cachedValue is not null) return cachedValue;
 

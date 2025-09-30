@@ -13,7 +13,7 @@ public partial class SortingSelectionView : ReactiveUserControl<ISortingSelectio
         this.WhenActivated(disposables =>
             {
                 this.OneWayBind(ViewModel,
-                        vm => vm.LoadOrderViewModels,
+                        vm => vm.ViewModels,
                         v => v.SortOrdersTabControl.ItemsSource
                     )
                     .DisposeWith(disposables);

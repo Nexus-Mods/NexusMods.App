@@ -6,6 +6,7 @@ using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls.Navigation;
+using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Pages.LoadoutPage;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
@@ -19,8 +20,7 @@ public class SortingSelectionViewModel : AViewModel<ISortingSelectionViewModel>,
 {
     private readonly LoadoutId _loadoutId;
     private readonly IConnection _connection;
-    public ReadOnlyObservableCollection<ILoadOrderViewModel> LoadOrderViewModels { get; }
-    
+    public IViewModelInterface[] ViewModels { get; }
     private readonly BindableReactiveProperty<bool> _canEdit = new (true);
     public IReadOnlyBindableReactiveProperty<bool> CanEdit => _canEdit;
     
@@ -32,14 +32,16 @@ public class SortingSelectionViewModel : AViewModel<ISortingSelectionViewModel>,
         _connection = serviceProvider.GetRequiredService<IConnection>();
         
         var loadout = Loadout.Load(_connection.Db, _loadoutId);
-
+        
         var sortingManager = loadout.InstallationInstance.GetGame().SortOrderManager;
         var sortOrderVarieties = sortingManager.GetSortOrderVarieties();
         
-        var enumerable = sortOrderVarieties.Select(ILoadOrderViewModel (sortOrderVariety) => 
+        var rulesViewModels = sortOrderVarieties.Select(IViewModelInterface (sortOrderVariety) => 
             new LoadOrderViewModel(serviceProvider, sortOrderVariety, loadoutId)
-        );
-        LoadOrderViewModels = new ReadOnlyObservableCollection<ILoadOrderViewModel>(new ObservableCollection<ILoadOrderViewModel>(enumerable));
+        ).ToList();
+
+        rulesViewModels.Add(new FileConflictsViewModel(serviceProvider, windowManager, loadoutId));
+        ViewModels = rulesViewModels.ToArray();
         
         OpenAllModsLoadoutPageCommand = new ReactiveCommand<NavigationInformation>(info =>
             {
