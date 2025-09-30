@@ -60,8 +60,8 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
 
     protected readonly NexusApiClient NexusNexusApiClient;
     protected ILoadoutSynchronizer Synchronizer => GameInstallation.GetGame().Synchronizer;
-    protected ISortOrderManager SortOrderManager => GameInstallation.GetGame().SortOrderManager;
     protected ISynchronizerService SynchronizerService;
+    protected ISortOrderManager GetSortOrderManager() => GameInstallation.GetGame().SortOrderManager;
     
     private bool _gameFilesWritten = false;
     private readonly IHost _host;
