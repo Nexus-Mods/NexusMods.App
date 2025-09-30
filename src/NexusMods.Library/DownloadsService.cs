@@ -11,6 +11,7 @@ using NexusMods.Paths;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.App.UI.Resources;
+using R3;
 using ReactiveUI;
 
 namespace NexusMods.Library;
@@ -22,7 +23,7 @@ public sealed class DownloadsService : IDownloadsService, IDisposable
 {
     private readonly IJobMonitor _jobMonitor;
     private readonly IConnection _connection;
-    private readonly CompositeDisposable _disposables = new();
+    private readonly System.Reactive.Disposables.CompositeDisposable _disposables = new();
     
     private readonly SourceCache<DownloadInfo, DownloadId> _downloadCache = new(x => x.Id);
     
@@ -107,14 +108,12 @@ public sealed class DownloadsService : IDownloadsService, IDisposable
     // Observable properties implementation
     public IObservable<IChangeSet<DownloadInfo, DownloadId>> ActiveDownloads => 
         _downloadCache.Connect()
-            .AutoRefresh(x => x.Status)
-            .Filter(x => x.Status.IsActive())
+            .FilterOnObservable(x => x.Status.AsObservable().Select(status => status.IsActive()).AsSystemObservable())
             .RefCount();
     
     public IObservable<IChangeSet<DownloadInfo, DownloadId>> CompletedDownloads =>
         _downloadCache.Connect()
-            .AutoRefresh(x => x.Status)
-            .Filter(x => x.Status == JobStatus.Completed)
+            .FilterOnObservable(x => x.Status.AsObservable().Select(status => status == JobStatus.Completed).AsSystemObservable())
             .RefCount();
     
     public IObservable<IChangeSet<DownloadInfo, DownloadId>> AllDownloads =>
@@ -122,47 +121,79 @@ public sealed class DownloadsService : IDownloadsService, IDisposable
     
     public IObservable<IChangeSet<DownloadInfo, DownloadId>> GetDownloadsForGame(GameId gameId) =>
         _downloadCache.Connect()
-            .Filter(x => x.GameId.Equals(gameId));
+            .Filter(x => x.GameId.Value.Equals(gameId));
     
+    public IObservable<IChangeSet<DownloadInfo, DownloadId>> GetActiveDownloadsForGame(GameId gameId) =>
+        _downloadCache.Connect()
+            .FilterOnObservable(x => x.Status.AsObservable().Select(status => x.GameId.Value.Equals(gameId) && status.IsActive()).AsSystemObservable())
+            .RefCount();
+    
+    /// <summary>
+    /// Helper method to resolve a <see cref="DownloadInfo.Id"/> ID to the underlying <see cref="HttpDownloadJob"/> ID.
+    /// This is a temporary workaround until the job system properly delegates capabilities 
+    /// (tracked in issue #3892).
+    /// </summary>
+    /// <param name="downloadInfo">The download info containing the NexusModsDownloadJob ID</param>
+    /// <returns>The ID of the underlying HttpDownloadJob if found, otherwise the original ID</returns>
+    private JobId ResolveToHttpDownloadJobId(DownloadInfo downloadInfo)
+    {
+        // Try to find the job in the job monitor
+        var job = _jobMonitor.Find(downloadInfo.Id);
+        if (job == null)
+            return downloadInfo.Id;
+        
+        // Try to cast the job definition to INexusModsDownloadJob and return inner HttpDownloadJob if possible.
+        if (job.Definition is INexusModsDownloadJob nexusJob)
+            return nexusJob.HttpDownloadJob.Job.Id;
+        
+        return downloadInfo.Id;
+    }
     
     // Control operations
-    public void PauseDownload(DownloadInfo downloadInfo) 
-    {
-        _jobMonitor.Pause(downloadInfo.Id);
-    }
     
-    public void ResumeDownload(DownloadInfo downloadInfo) 
-    {
-        _jobMonitor.Resume(downloadInfo.Id);
-    }
+    // Note(sewer) Workaround for issue #3892: Resolve to the underlying HttpDownloadJob ID
+    public void PauseDownload(DownloadInfo downloadInfo) => _jobMonitor.Pause(ResolveToHttpDownloadJobId(downloadInfo));
     
-    public void CancelDownload(DownloadInfo downloadInfo) 
-    {
-        _jobMonitor.Cancel(downloadInfo.Id);
-    }
+    // Note(sewer) Workaround for issue #3892: Resolve to the underlying HttpDownloadJob ID
+    public void ResumeDownload(DownloadInfo downloadInfo) => _jobMonitor.Resume(ResolveToHttpDownloadJobId(downloadInfo));
+    
+    // Note(sewer) Workaround for issue #3892: Resolve to the underlying HttpDownloadJob ID
+    public void CancelDownload(DownloadInfo downloadInfo) => _jobMonitor.Cancel(ResolveToHttpDownloadJobId(downloadInfo));
+    // Note(sewer) Workaround for issue #3892: Resolve to the underlying HttpDownloadJob ID
     public void PauseAll()
     {
-        foreach (var download in _downloadCache.Items)
-        {
-            if (download.Status == JobStatus.Running)
-                _jobMonitor.Pause(download.Id);
-        }
+        foreach (var download in _downloadCache.Items.Where(d => d.Status.Value == JobStatus.Running))
+            _jobMonitor.Pause(ResolveToHttpDownloadJobId(download));
     }
 
+    // Note(sewer) Workaround for issue #3892: Resolve to the underlying HttpDownloadJob ID
+    public void PauseAllForGame(GameId gameId)
+    {
+        foreach (var download in _downloadCache.Items.Where(d => 
+            d.Status.Value == JobStatus.Running && d.GameId.Value.Equals(gameId)))
+            _jobMonitor.Pause(ResolveToHttpDownloadJobId(download));
+    }
+
+    // Note(sewer) Workaround for issue #3892: Resolve to the underlying HttpDownloadJob ID
     public void ResumeAll()
     {
-        foreach (var download in _downloadCache.Items)
-        {
-            if (download.Status == JobStatus.Paused)
-                _jobMonitor.Resume(download.Id);
-        }
+        foreach (var download in _downloadCache.Items.Where(d => d.Status.Value == JobStatus.Paused))
+            _jobMonitor.Resume(ResolveToHttpDownloadJobId(download));
     }
+
+    // Note(sewer) Workaround for issue #3892: Resolve to the underlying HttpDownloadJob ID
+    public void ResumeAllForGame(GameId gameId)
+    {
+        foreach (var download in _downloadCache.Items.Where(d => 
+            d.Status.Value == JobStatus.Paused && d.GameId.Value.Equals(gameId)))
+            _jobMonitor.Resume(ResolveToHttpDownloadJobId(download));
+    }
+    
+    // Note(sewer) Workaround for issue #3892: Resolve to the underlying HttpDownloadJob ID
     public void CancelRange(IEnumerable<DownloadInfo> downloads)
     {
         foreach (var download in downloads)
-        {
-            _jobMonitor.Cancel(download.Id);
-        }
+            _jobMonitor.Cancel(ResolveToHttpDownloadJobId(download));
     }
     
     private DownloadInfo CreateDownloadInfo(INexusModsDownloadJob nexusJob, JobId currentId)
@@ -172,12 +203,14 @@ public sealed class DownloadsService : IDownloadsService, IDisposable
         var info = new DownloadInfo 
         { 
             Id = currentId,
-            GameId = nexusJob.FileMetadata.Uid.GameId,
-            Name = ExtractName(nexusJob),
-            DownloadPageUri = httpJobDefinition.DownloadPageUri,
-            FileMetadataId = nexusJob.FileMetadata.Id,
-            // FileSize, Progress, DownloadedBytes, TransferRate, Status, CompletedAt are set by observable subscriptions
         };
+        
+        // Set initial values using internal methods
+        info.SetGameId(nexusJob.FileMetadata.Uid.GameId);
+        info.SetName(ExtractName(nexusJob));
+        info.SetDownloadPageUri(httpJobDefinition.DownloadPageUri);
+        info.SetFileMetadataId(nexusJob.FileMetadata.Id);
+        // FileSize, Progress, DownloadedBytes, TransferRate, Status, CompletedAt are set by observable subscriptions
         
         return info;
     }
@@ -187,21 +220,21 @@ public sealed class DownloadsService : IDownloadsService, IDisposable
         // Ensure we don't have existing subscriptions for this job
         downloadInfo.Subscriptions?.Dispose();
         
-        var jobDisposables = new CompositeDisposable();
+        var jobDisposables = new System.Reactive.Disposables.CompositeDisposable();
         
         // Subscribe to progress changes
         httpDownloadJob.ObservableProgress
-            .Subscribe(progress => downloadInfo.Progress = progress.HasValue ? progress.Value : Percent.Zero)
+            .Subscribe(progress => downloadInfo.SetProgress(progress.HasValue ? progress.Value : Percent.Zero))
             .DisposeWith(jobDisposables);
         
         // Subscribe to rate of progress changes
         httpDownloadJob.ObservableRateOfProgress
-            .Subscribe(rateOfProgress => downloadInfo.TransferRate = Size.FromLong((long)(rateOfProgress.HasValue ? rateOfProgress.Value : 0)))
+            .Subscribe(rateOfProgress => downloadInfo.SetTransferRate(Size.FromLong((long)(rateOfProgress.HasValue ? rateOfProgress.Value : 0))))
             .DisposeWith(jobDisposables);
         
         // Subscribe to status changes
         httpDownloadJob.ObservableStatus
-            .Subscribe(status => downloadInfo.Status = status)
+            .Subscribe(status => downloadInfo.SetStatus(status))
             .DisposeWith(jobDisposables);
         
         // Subscribe to reactive properties from IHttpDownloadState
@@ -210,12 +243,12 @@ public sealed class DownloadsService : IDownloadsService, IDisposable
         
         // Subscribe to ContentLength changes (FileSize)
         state.WhenAnyValue(x => x.ContentLength)
-            .Subscribe(contentLength => downloadInfo.FileSize = contentLength.HasValue ? contentLength.Value : Size.From(0))
+            .Subscribe(contentLength => downloadInfo.SetFileSize(contentLength.HasValue ? contentLength.Value : Size.From(0)))
             .DisposeWith(jobDisposables);
 
         // Subscribe to TotalBytesDownloaded changes (DownloadedBytes)
         state.WhenAnyValue(x => x.TotalBytesDownloaded)
-            .Subscribe(totalBytes => downloadInfo.DownloadedBytes = totalBytes)
+            .Subscribe(totalBytes => downloadInfo.SetDownloadedBytes(totalBytes))
             .DisposeWith(jobDisposables);
         
         // Store the subscription for later disposal
@@ -225,10 +258,10 @@ public sealed class DownloadsService : IDownloadsService, IDisposable
     private static void MarkJobAsCompleted(DownloadInfo downloadInfo)
     {
         // Reset transient properties that are only relevant for active downloads
-        downloadInfo.TransferRate = Size.From(0);
+        downloadInfo.SetTransferRate(Size.From(0));
         
         // Set completion timestamp
-        downloadInfo.CompletedAt = DateTimeOffset.UtcNow;
+        downloadInfo.SetCompletedAt(DateTimeOffset.UtcNow);
         
         // Keep Progress at 100% and other completed state
     }
@@ -261,13 +294,13 @@ public sealed class DownloadsService : IDownloadsService, IDisposable
     public Optional<LibraryFile.ReadOnly> ResolveLibraryFile(DownloadInfo downloadInfo)
     {
         // Only resolve for completed downloads
-        if (downloadInfo.Status != JobStatus.Completed)
+        if (downloadInfo.Status.Value != JobStatus.Completed)
             return Optional<LibraryFile.ReadOnly>.None;
         
         try
         {
             // Retrieve the FileMetadata from the database using the stored EntityId
-            var fileMetadata = new NexusModsFileMetadata.ReadOnly(_connection.Db, downloadInfo.FileMetadataId);
+            var fileMetadata = new NexusModsFileMetadata.ReadOnly(_connection.Db, downloadInfo.FileMetadataId.Value);
             
             // Find library items that match this file metadata
             var libraryItems = NexusModsLibraryItem.FindByFileMetadata(_connection.Db, fileMetadata);

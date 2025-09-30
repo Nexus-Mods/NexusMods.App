@@ -118,11 +118,12 @@ internal class InstallLoadoutItemJob : IJobDefinitionWithStart<InstallLoadoutIte
             var isSupported = installer.IsSupportedLibraryItem(LibraryItem);
             if (!isSupported) continue;
 
-            var transaction = context.Definition.Transaction;
-            var loadoutGroup = new LoadoutItemGroup.New(transaction, out var groupId)
+            using var subTransaction = context.Definition.Transaction.CreateSubTransaction();
+            
+            var loadoutGroup = new LoadoutItemGroup.New(subTransaction, out var groupId)
             {
                 IsGroup = true,
-                LoadoutItem = new LoadoutItem.New(transaction, groupId)
+                LoadoutItem = new LoadoutItem.New(subTransaction, groupId)
                 {
                     Name = LibraryItem.Name,
                     LoadoutId = LoadoutId,
@@ -133,16 +134,16 @@ internal class InstallLoadoutItemJob : IJobDefinitionWithStart<InstallLoadoutIte
             // TODO(erri120): add safeguards to only allow groups to be added to the parent groups
             try
             {
-                var result = await installer.ExecuteAsync(LibraryItem, loadoutGroup, transaction, loadout, context.CancellationToken);
+                var result = await installer.ExecuteAsync(LibraryItem, loadoutGroup, subTransaction, loadout, context.CancellationToken);
                 if (result.IsNotSupported(out var reason))
                 {
                     if (Logger.IsEnabled(LogLevel.Trace) && !string.IsNullOrEmpty(reason))
                         Logger.LogTrace("Installer doesn't support library item `{LibraryItem}` because \"{Reason}\"", LibraryItem.Name, reason);
-
                     continue;
                 }
 
                 Debug.Assert(result.IsSuccess);
+                subTransaction.CommitToParent();
                 return loadoutGroup;
             }
             catch (OperationCanceledException ex)

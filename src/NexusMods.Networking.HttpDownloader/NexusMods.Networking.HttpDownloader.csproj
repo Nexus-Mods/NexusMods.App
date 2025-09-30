@@ -4,6 +4,7 @@
 
     <ItemGroup>
         <PackageReference Include="Polly" />
+        <PackageReference Include="ReactiveUI.Fody" />
         <ProjectReference Include="..\NexusMods.Abstractions.Cli\NexusMods.Abstractions.Cli.csproj" />
         <ProjectReference Include="..\NexusMods.Abstractions.HttpDownloads\NexusMods.Abstractions.HttpDownloads.csproj" />
         <ProjectReference Include="..\NexusMods.Abstractions.Jobs\NexusMods.Abstractions.Jobs.csproj" />

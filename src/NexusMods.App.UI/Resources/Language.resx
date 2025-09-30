@@ -191,6 +191,18 @@
     <data name="DownloadsLeftMenu_GameSpecificDownloads" xml:space="preserve">
         <value>{0} Downloads</value>
     </data>
+    <data name="DownloadsPage_AllDownloads_Description" xml:space="preserve">
+        <value>Monitor your downloads.</value>
+    </data>
+    <data name="DownloadsPage_AllCompleted_Description" xml:space="preserve">
+        <value>View your completed downloads.</value>
+    </data>
+    <data name="DownloadsPage_GameSpecificDownloads_Description" xml:space="preserve">
+        <value>Monitor your downloads.</value>
+    </data>
+    <data name="DownloadsPage_Default_Description" xml:space="preserve">
+        <value>Manage your active and completed downloads</value>
+    </data>
     <data name="NexusLoginOverlayView__Please_Click_Authorize" xml:space="preserve">
         <value>Please click "Authorise" on the website</value>
     </data>
