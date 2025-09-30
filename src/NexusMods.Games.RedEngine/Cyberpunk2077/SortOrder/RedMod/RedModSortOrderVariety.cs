@@ -153,8 +153,9 @@ public class RedModSortOrderVariety : ASortOrderVariety<
         var sortOrderId = GetSortOrderIdFor(parentEntity, db);
         if (sortOrderId.HasValue)
         {
-            // Return the reconciled order as list of redmod folder names
+            // Return the reconciled order as list of redmod folder names, excluding disabled items
             return GetSortOrderItems(sortOrderId.Value, db)
+                .Where(item => item.LoadoutData?.IsEnabled == true) 
                 .Select(item => item.Key.Key)
                 .ToList();
         }
@@ -180,7 +181,9 @@ public class RedModSortOrderVariety : ASortOrderVariety<
             }
         ).ToList();
             
+        // Return the list of redmod folder names, excluding disabled items
         return result
+            .Where(item => item.LoadoutData?.IsEnabled == true)
             .Select(item => item.Key.Key)
             .ToList();
     }
