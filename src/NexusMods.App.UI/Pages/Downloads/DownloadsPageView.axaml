@@ -10,38 +10,100 @@
     xmlns:icons="clr-namespace:NexusMods.UI.Sdk.Icons;assembly=NexusMods.UI.Sdk"
     xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
     xmlns:pageHeader="clr-namespace:NexusMods.App.UI.Controls.PageHeader"
+    xmlns:search="clr-namespace:NexusMods.App.UI.Controls.Search"
     mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="450"
     x:Class="NexusMods.App.UI.Pages.Downloads.DownloadsPageView"
     Background="{StaticResource SurfaceTransparentBrush}">
     <!-- Background set to ensure that clicks anywhere on the page are correctly registered and bring focus to it -->
 
+    <Design.DataContext>
+        <local:DownloadsPageDesignViewModel />
+    </Design.DataContext>
+
     <Grid RowDefinitions="Auto, *">
 
         <pageHeader:PageHeader Grid.Row="0"
-                               Title="{x:Static resources:Language.Downloads_WorkspaceTitle}"
-                               Description="Manage your active and completed downloads"
+                               Title="{Binding HeaderTitle}"
+                               Description="{Binding HeaderDescription}"
                                Icon="{x:Static icons:IconValues.PictogramDownload}"
                                Margin="24 24 24 0" />
 
         <!-- Content area with toolbar and main content -->
         <Grid Grid.Row="1" RowDefinitions="Auto, *" Margin="0,16,0,0">
 
-            <!-- Toolbar placeholder -->
-            <controls:Toolbar Grid.Row="0" Margin="24,12, 24, 0">
-                <!-- TODO: Add toolbar buttons -->
+            <!-- Toolbar with command 'all' buttons -->
+
+            <controls:Toolbar Margin="24, 0">
                 <ItemsControl>
+                    <search:SearchControl x:Name="SearchControl"
+                                          PageName="Downloads"
+                                          ButtonSize="Toolbar" />
+                </ItemsControl>
+
+                <ItemsControl>
+                    <controls:StandardButton x:Name="PauseAllButton"
+                                             Text="Pause all"
+                                             Type="Tertiary"
+                                             Size="Toolbar"
+                                             Fill="None"
+                                             ShowIcon="Left"
+                                             LeftIcon="{x:Static icons:IconValues.Pause}" />
+
+                    <controls:StandardButton x:Name="ResumeAllButton"
+                                             Text="Resume all"
+                                             Type="Tertiary"
+                                             Size="Toolbar"
+                                             Fill="None"
+                                             ShowIcon="Left"
+                                             LeftIcon="{x:Static icons:IconValues.PlayArrow}" />
+                </ItemsControl>
+
+                <ItemsControl>
+                    <controls:StandardButton x:Name="PauseSelectedButton"
+                                             Text=""
+                                             Type="Tertiary"
+                                             Size="Toolbar"
+                                             Fill="None"
+                                             ShowIcon="Left"
+                                             LeftIcon="{x:Static icons:IconValues.Pause}"
+                                             IsVisible="{Binding SelectionHasRunningItems^}" />
+
+                    <controls:StandardButton x:Name="ResumeSelectedButton"
+                                             Text=""
+                                             Type="Tertiary"
+                                             Size="Toolbar"
+                                             Fill="None"
+                                             ShowIcon="Left"
+                                             LeftIcon="{x:Static icons:IconValues.PlayArrow}"
+                                             IsVisible="{Binding SelectionHasPausedItems^}" />
+
+                    <controls:StandardButton x:Name="CancelSelectedButton"
+                                             Text=""
+                                             Type="Tertiary"
+                                             Size="Toolbar"
+                                             Fill="None"
+                                             ShowIcon="Left"
+                                             LeftIcon="{x:Static icons:IconValues.Close}"
+                                             IsVisible="{Binding SelectionHasActiveItems^}" />
                 </ItemsControl>
             </controls:Toolbar>
 
-            <!-- Main content with empty state -->
+            <!-- Main content with TreeDataGrid -->
             <controls:EmptyState Grid.Row="1"
                                  IsActive="{Binding IsEmptyStateActive}"
                                  Header="{x:Static resources:Language.InProgress_NoDownloadsTextBlock}">
                 <controls:EmptyState.Subtitle>
                     <StackPanel Orientation="Vertical" Spacing="16">
-                        <TextBlock Text="Download management will be available in the next update." />
+                        <TextBlock Text="No downloads are currently active." />
                     </StackPanel>
                 </controls:EmptyState.Subtitle>
+
+                <TreeDataGrid x:Name="TreeDataGridDownloads"
+                              ShowColumnHeaders="True"
+                              CanUserResizeColumns="True"
+                              CanUserSortColumns="True"
+                              Classes="MainListsStyling"
+                              Margin="0 8 0 0" />
             </controls:EmptyState>
 
         </Grid>

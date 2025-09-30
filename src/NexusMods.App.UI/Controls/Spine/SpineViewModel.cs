@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls.LoadoutBadge;
 using NexusMods.App.UI.Controls.Navigation;
@@ -290,7 +291,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
         workspaceController.ChangeOrCreateWorkspaceByContext<DownloadsContext>(() => new PageData
             {
                 FactoryId = DownloadsPageFactory.StaticId,
-                Context = new AllDownloadsPageContext()
+                Context = new DownloadsPageContext { GameScope = Optional<GameId>.None }
             }
         );
     }

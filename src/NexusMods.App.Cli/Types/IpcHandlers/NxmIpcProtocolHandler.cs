@@ -15,6 +15,7 @@ using NexusMods.Networking.NexusWebApi;
 using NexusMods.Networking.NexusWebApi.Auth;
 using NexusMods.Paths;
 using NexusMods.Sdk;
+using System.Threading.Tasks;
 
 namespace NexusMods.CLI.Types.IpcHandlers;
 
@@ -192,6 +193,13 @@ public class NxmIpcProtocolHandler : IIpcProtocolHandler
             libraryFile = await library.AddDownload(downloadJob);
             
             _eventBus.Send(new CliMessages.ModDownloadSucceeded(libraryFile.Value.AsLibraryItem()));
+        }
+        catch (TaskCanceledException)
+        {
+            // User-initiated cancellation should not be treated as an error
+            _logger.LogInformation("Mod download cancelled by user for {Game}/{ModId}/{FileId}", modUrl.Game, modUrl.ModId, modUrl.FileId);
+            // Don't rethrow TaskCanceledException for user-initiated cancellations
+            // Don't send ModDownloadFailed event for user-initiated cancellations
         }
         catch (Exception e)
         {

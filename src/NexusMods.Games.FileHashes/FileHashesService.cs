@@ -184,7 +184,7 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable, IHost
             if (embeddedDatabaseInfo.HasValue)
             {
                 existingDatabases = ExistingDBs().ToArray();
-                Debug.Assert(existingDatabases.Length == 1);
+                Debug.Assert(existingDatabases.Length == 1, $"should've only a single database but found {existingDatabases.Length}");
             }
         }
 
@@ -194,7 +194,7 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable, IHost
             return;
         }
 
-        if (latestReleaseManifest is null || existingDatabases[0].CreationTime >= latestReleaseManifest.CreatedAt)
+        if (latestReleaseManifest is null || existingDatabases[0].CreationTime.ToUnixTimeSeconds() >= latestReleaseManifest.CreatedAt.ToUnixTimeSeconds())
         {
             _currentDb = OpenDb(existingDatabases[0]);
             return;
