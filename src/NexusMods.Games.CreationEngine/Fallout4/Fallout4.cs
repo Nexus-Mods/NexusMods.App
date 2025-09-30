@@ -52,7 +52,8 @@ public partial class Fallout4 : AGame, ISteamGame, IGogGame, ICreationEngineGame
         return new Dictionary<LocationId, AbsolutePath>()
         {
             { LocationId.Game, installation.Path },
-            { LocationId.AppData, fileSystem.GetKnownPath(KnownPath.LocalApplicationDataDirectory) / "Fallout 4" },
+            { LocationId.AppData, fileSystem.GetKnownPath(KnownPath.LocalApplicationDataDirectory) / "Fallout4" },
+            { LocationId.Preferences, fileSystem.GetKnownPath(KnownPath.MyGamesDirectory) / "Fallout4"},
         };
     }
 
@@ -61,7 +62,16 @@ public partial class Fallout4 : AGame, ISteamGame, IGogGame, ICreationEngineGame
         return [];
     }
 
-    protected override ILoadoutSynchronizer MakeSynchronizer(IServiceProvider provider) => new Fallout4Synchronizer(provider, this);
+    protected override ILoadoutSynchronizer MakeSynchronizer(IServiceProvider provider)
+    {
+        RelativePath[] iniFiles =
+        [
+            "Fallout4.ini",
+            "Fallout4Prefs.ini",
+            "Fallout4Custom.ini",
+        ];
+        return new Fallout4Synchronizer(provider, this, iniFiles);
+    }
 
     public override SupportType SupportType => SupportType.Unsupported;
     public IEnumerable<uint> SteamIds => [377160];

@@ -60,7 +60,16 @@ public partial class SkyrimSE : AGame, ISteamGame, IGogGame, ICreationEngineGame
         return [];
     }
 
-    protected override ILoadoutSynchronizer MakeSynchronizer(IServiceProvider provider) => new SkyrimSESynchronizer(provider, this);
+    protected override ILoadoutSynchronizer MakeSynchronizer(IServiceProvider provider)
+    {
+        RelativePath[] iniFiles =
+        [
+            "Skyrim.ini",
+            "SkyrimCustom.ini",
+            "SkyrimPrefs.ini",
+        ];
+        return new SkyrimSESynchronizer(provider, this, iniFiles);
+    }
 
     public override SupportType SupportType => SupportType.Unsupported;
     public IEnumerable<uint> SteamIds => [489830];
