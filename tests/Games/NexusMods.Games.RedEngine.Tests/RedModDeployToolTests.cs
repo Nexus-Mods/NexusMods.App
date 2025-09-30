@@ -49,7 +49,8 @@ public class RedModDeployToolTests : ACyberpunkIsolatedGameTest<Cyberpunk2077Gam
             var loadout = await CreateLoadout();
             
             // Ensure the SortOrderManager is created and subscribed to loadout changes
-            var sortOrderManager = SortOrderManager;
+            var sortOrderManager = GetSortOrderManager();
+            
             var redModSortOrderVariety = ServiceProvider.GetRequiredService<RedModSortOrderVariety>();
         
             // NOTE(Al12rs): Correctness of test depends also on order of mods added to the loadout,
@@ -60,7 +61,7 @@ public class RedModDeployToolTests : ACyberpunkIsolatedGameTest<Cyberpunk2077Gam
             using var cts1 = new CancellationTokenSource(TimeSpan.FromSeconds(30));
             
             // ensure sort order is updated with the latest loadout changes
-            await SortOrderManager.UpdateLoadOrders(loadout.LoadoutId, token: cts1.Token);
+            await sortOrderManager.UpdateLoadOrders(loadout.LoadoutId, token: cts1.Token);
             
             loadout = loadout.Rebase();
             
