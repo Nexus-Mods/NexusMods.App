@@ -9,6 +9,7 @@ using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Paths;
+using System.Threading.Tasks;
 
 namespace NexusMods.Networking.NexusWebApi;
 
@@ -42,6 +43,12 @@ public class NexusModsDownloadJob : INexusModsDownloadJob, IJobDefinitionWithSta
         try
         {
             return await HttpDownloadJob;
+        }
+        catch (TaskCanceledException)
+        {
+            // Propagate cancellation so upstream jobs (e.g. AddDownloadJob) can abort follow-up actions.
+            Logger.LogInformation("Download cancelled by user for file `{GameId}/{ModId}/{FileId}`", FileMetadata.Uid.GameId, FileMetadata.ModPage.Uid.ModId, FileMetadata.Uid.FileId);
+            throw;
         }
         catch (Exception e)
         {
