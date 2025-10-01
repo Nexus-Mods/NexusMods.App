@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using FomodInstaller.Utils.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Settings;
 using NexusMods.Abstractions.Diagnostics;
@@ -16,7 +17,6 @@ using NexusMods.DataModel.Sorting;
 using NexusMods.DataModel.Synchronizer;
 using NexusMods.DataModel.Synchronizer.DbFunctions;
 using NexusMods.DataModel.Undo;
-using NexusMods.Games.FileHashes;
 using NexusMods.HyperDuck;
 using NexusMods.HyperDuck.Adaptor.Impls.ValueAdaptor;
 using NexusMods.MnemonicDB;
@@ -45,6 +45,7 @@ public static class Services
         coll.AddAmbientQueriesSql();
         coll.AddSynchronizerSql();
         coll.AddSingleton<ATableFunction, IntrinsicFiles>();
+        coll.AddSingleton<AScalarFunction, FNV1aHashScalar>();
         coll.AddValueAdaptor<ushort, LocationId>(LocationId.From);
 
         // Settings

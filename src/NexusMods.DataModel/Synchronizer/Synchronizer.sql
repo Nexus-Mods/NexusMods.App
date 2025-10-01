@@ -35,7 +35,7 @@ WHERE not item.Disabled;
 CREATE MACRO synchronizer.WinningFiles(db) as TABLE
 WITH 
    allFiles AS (-- Game files on Layer 0
-                SELECT Loadout, NULL Id, {Location: 57681, Path: Path} Path, Hash, Size, 'Game'::synchronizer.ItemType ItemType, 0 Layer 
+                SELECT Loadout, NULL Id, {Location: nma_fnv1a_hash_short('Game'), Path: Path} Path, Hash, Size, 'Game'::synchronizer.ItemType ItemType, 0 Layer 
                 FROM file_hashes.loadout_files(db)
                 UNION
                 -- Loadout files on Layer 1
