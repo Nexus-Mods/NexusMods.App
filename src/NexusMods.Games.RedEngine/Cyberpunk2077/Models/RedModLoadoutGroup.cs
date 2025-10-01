@@ -18,18 +18,4 @@ public partial class RedModLoadoutGroup : IModelDefinition
     public static readonly ReferenceAttribute<RedModInfoFile> RedModInfoFile = new(Namespace, nameof(RedModInfoFile));
 }
 
-public static class RedModLoadoutItemGroupExtensions 
-{
-    
-    public static bool IsEnabled(this RedModLoadoutGroup.ReadOnly grp)
-    {
-        return grp.AsLoadoutItemGroup().AsLoadoutItem().IsEnabled();
-    }
-
-    public static RelativePath RedModFolder(this RedModLoadoutGroup.ReadOnly group)
-    {
-        var redModInfoFile = group.RedModInfoFile.AsLoadoutFile().AsLoadoutItemWithTargetPath().TargetPath.Item3;
-        return redModInfoFile.Parent.FileName;
-    }
-}
 
