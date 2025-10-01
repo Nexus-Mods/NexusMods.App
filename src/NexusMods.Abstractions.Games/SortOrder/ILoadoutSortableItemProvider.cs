@@ -106,19 +106,3 @@ public interface ILoadoutSortableItemProvider<TItem, TKey> : ILoadoutSortableIte
     /// <inheritdoc cref="ILoadoutSortableItemProvider.RefreshSortOrder"/>
     new Task<IReadOnlyList<TItem>> RefreshSortOrder(CancellationToken token, IDb? loadoutDb = null);
 }
-
-/// <summary>
-/// The position items should be moved to, relative to the target item in ascending index order.
-/// </summary>
-public enum TargetRelativePosition
-{
-    /// <summary>
-    /// Items should be moved to be before the target item in ascending index order
-    /// </summary>
-    BeforeTarget,
-    
-    /// <summary>
-    /// Items should be moved to be after the target item in ascending index order
-    /// </summary>
-    AfterTarget,
-}
