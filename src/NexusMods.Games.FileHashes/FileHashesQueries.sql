@@ -48,7 +48,7 @@ CREATE OR REPLACE MACRO file_hashes.steam_loadout_files(db) AS TABLE
 SELECT files.Loadout, files.FileId PathId FROM
     (SELECT Loadout, ManifestId, unnest(Files) FileId
      FROM file_hashes.loadout_locatorids(db) locators
-              LEFT JOIN HASHES_STEAMMANIFEST(Db=>db) manifest ON manifest.ManifestId = locators.LocatorID::UBIGINT
+              LEFT JOIN MDB_STEAMMANIFEST(DbName=>'hashes') manifest ON manifest.ManifestId = locators.LocatorID::UBIGINT
      WHERE locators.Store = 'Steam') files;
 
 
@@ -59,10 +59,10 @@ WITH
                  FROM file_hashes.loadout_locatorids(db) locators
                  WHERE locators.Store = 'GOG'), 
   builds AS (SELECT Loadout, BuildId, ProductId BaseProductId, unnest(build.Depots) DepotId
-             FROM HASHES_GOGBUILD() build
+             FROM MDB_GOGBUILD(DBName=>"hashes") build
              INNER JOIN locatorIds ON build.BuildId = locatorIds.LocatorId),
   validDepots AS (SELECT Id, ProductId, Manifest 
-                  FROM HASHES_GOGDEPOT() 
+                  FROM MDB_GOGDEPOT(DBName=>"hashes") 
                   WHERE Languages == [] OR 'en-US' in Languages),
   manifests AS (SELECT builds.Loadout, validDepots.Manifest 
                 FROM validDepots 
@@ -73,15 +73,15 @@ WITH
                 INNER JOIN locatorIds ON validDepots.ProductId = LocatorIds.LocatorId),
   files AS (SELECT Loadout, unnest(manifest.Files) File
             FROM manifests
-            LEFT JOIN HASHES_GOGMANIFEST() manifest ON manifests.Manifest = manifest.Id)
+            LEFT JOIN MDB_GOGMANIFEST(DBName=>"hashes") manifest ON manifests.Manifest = manifest.Id)
 SELECT files.Loadout, files.File PathId FROM files;
 
 -- gets all the paths and hashes for game files in loadouts
 CREATE MACRO file_hashes.loadout_files(db) AS TABLE
 WITH 
        relations AS (SELECT pathRel.Id, pathRel.Path, hashRel.xxHash3 Hash, hashRel.Size 
-                  FROM hashes_PathHashRelation() pathRel
-                  INNER JOIN hashes_hashrelation() hashRel ON pathRel.Hash = hashRel.Id),
+                  FROM MDB_PathHashRelation(DBName=>"hashes") pathRel
+                  INNER JOIN MDB_hashrelation(DBName=>"hashes") hashRel ON pathRel.Hash = hashRel.Id),
        files AS (SELECT Loadout, PathId FROM file_hashes.gog_loadout_files(db)
               UNION
               SELECT Loadout, PathId FROM file_hashes.steam_loadout_files(db))

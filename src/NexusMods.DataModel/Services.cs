@@ -28,6 +28,8 @@ using NexusMods.Sdk;
 using NexusMods.Sdk.FileStore;
 using NexusMods.Sdk.Resources;
 
+using IFileSystem = NexusMods.Paths.IFileSystem;
+
 namespace NexusMods.DataModel;
 
 /// <summary/>
