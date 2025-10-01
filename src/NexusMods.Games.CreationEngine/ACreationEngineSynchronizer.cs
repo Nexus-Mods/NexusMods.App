@@ -14,8 +14,11 @@ namespace NexusMods.Games.CreationEngine;
 public abstract class ACreationEngineSynchronizer : ALoadoutSynchronizer
 {
     private Dictionary<GamePath, IIntrinsicFile> _intrinsicFiles;
-    protected ACreationEngineSynchronizer(IServiceProvider provider, ICreationEngineGame game, RelativePath[] iniFiles) : base(provider)
+    private GamePath _savesPath;
+    
+    protected ACreationEngineSynchronizer(IServiceProvider provider, ICreationEngineGame game, RelativePath[] iniFiles, GamePath savesPath) : base(provider)
     {
+        _savesPath = savesPath;
         var pluginsFile = new PluginsFile(provider.GetRequiredService<ILogger<PluginsFile>>(), game, provider.GetRequiredService<ISorter>());
         _intrinsicFiles = new Dictionary<GamePath, IIntrinsicFile>()
         {
@@ -30,7 +33,12 @@ public abstract class ACreationEngineSynchronizer : ALoadoutSynchronizer
     }
  
     protected override Dictionary<GamePath, IIntrinsicFile> IntrinsicFiles(Loadout.ReadOnly _) => _intrinsicFiles;
-    
+
+    protected override bool ShouldIgnorePathWhenIndexing(GamePath path)
+    {
+        return !path.InFolder(_savesPath);
+    }
+
     public override bool IsIgnoredBackupPath(GamePath path)
     {
         // Don't backup BSA files by default

@@ -52,6 +52,7 @@ public partial class SkyrimSE : AGame, ISteamGame, IGogGame, ICreationEngineGame
         {
             { LocationId.Game, installation.Path },
             { LocationId.AppData, fileSystem.GetKnownPath(KnownPath.LocalApplicationDataDirectory) / "Skyrim Special Edition" },
+            { LocationId.Preferences, fileSystem.GetKnownPath(KnownPath.MyGamesDirectory) / "Skyrim Special Edition" },
         };
     }
 
@@ -68,7 +69,8 @@ public partial class SkyrimSE : AGame, ISteamGame, IGogGame, ICreationEngineGame
             "SkyrimCustom.ini",
             "SkyrimPrefs.ini",
         ];
-        return new SkyrimSESynchronizer(provider, this, iniFiles);
+        var savesPath = new GamePath(LocationId.Preferences, "Saves");
+        return new SkyrimSESynchronizer(provider, this, iniFiles, savesPath);
     }
 
     public override SupportType SupportType => SupportType.Unsupported;

@@ -70,7 +70,8 @@ public partial class Fallout4 : AGame, ISteamGame, IGogGame, ICreationEngineGame
             "Fallout4Prefs.ini",
             "Fallout4Custom.ini",
         ];
-        return new Fallout4Synchronizer(provider, this, iniFiles);
+        var savesPath = new GamePath(LocationId.Preferences, "Saves");
+        return new Fallout4Synchronizer(provider, this, iniFiles, savesPath);
     }
 
     public override SupportType SupportType => SupportType.Unsupported;
@@ -111,13 +112,22 @@ public partial class Fallout4 : AGame, ISteamGame, IGogGame, ICreationEngineGame
     private static readonly GroupMask EmptyGroupMask = new(false);
     public async ValueTask<IMod?> ParsePlugin(Hash hash, RelativePath? name = null)
     {
-        var fileName = name?.FileName.ToString() ?? "unknown.esm";
-        var key = ModKey.FromFileName(fileName);
-        await using var stream = await _streamSource.OpenAsync(hash);
-        var meta = ParsingMeta.Factory(BinaryReadParameters.Default, GameRelease.Fallout4, key, stream!);
-        await using var mutagenStream = new MutagenBinaryReadStream(stream!, meta);
-        using var frame = new MutagenFrame(mutagenStream);
-        return Fallout4Mod.CreateFromBinary(frame, Fallout4Release.Fallout4, EmptyGroupMask);
+        try
+        {
+            var fileName = name?.FileName.ToString() ?? "unknown.esm";
+            var key = ModKey.FromFileName(fileName);
+            await using var stream = await _streamSource.OpenAsync(hash);
+            var meta = ParsingMeta.Factory(BinaryReadParameters.Default, GameRelease.Fallout4, key,
+                stream!
+            );
+            await using var mutagenStream = new MutagenBinaryReadStream(stream!, meta);
+            using var frame = new MutagenFrame(mutagenStream);
+            return Fallout4Mod.CreateFromBinary(frame, Fallout4Release.Fallout4, EmptyGroupMask);
+        }
+        catch (Exception e)
+        {
+            return null;
+        }
     }
 
     public GamePath PluginsFile => Fallout4KnownPaths.PluginsFile;

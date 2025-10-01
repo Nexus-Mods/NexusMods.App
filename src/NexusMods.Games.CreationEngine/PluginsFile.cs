@@ -40,7 +40,9 @@ public class PluginsFile : IIntrinsicFile
             .Where(p => p.Value.HaveLoadout)
             .ToAsyncEnumerable()
             .SelectAwait(MakeMetadata)
-            .ToDictionaryAsync(x => x.ModKey);
+            .Where(x => x != null)
+            .Select(x => x!.Value)
+            .ToDictionaryAsync(x => x!.ModKey);
 
         if (plugins.Count == 0)
             return;
@@ -109,7 +111,7 @@ public class PluginsFile : IIntrinsicFile
         return metadata.ModKey;
     }
 
-    private async ValueTask<Metadata> MakeMetadata(KeyValuePair<GamePath, SyncNode> arg)
+    private async ValueTask<Metadata?> MakeMetadata(KeyValuePair<GamePath, SyncNode> arg)
     {
         var relPath = arg.Key.Path.FileName;
         Hash hash;
@@ -122,6 +124,8 @@ public class PluginsFile : IIntrinsicFile
             hash = syncNode.Disk.Hash;
         
         var modHeader = await _game.ParsePlugin(hash, relPath);
+        if (modHeader == null)
+            return null;
         return new Metadata(relPath, modHeader!.ModKey, hash, modHeader);
     }
     
