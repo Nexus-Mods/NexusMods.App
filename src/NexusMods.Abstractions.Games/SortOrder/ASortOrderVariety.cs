@@ -353,7 +353,7 @@ public abstract class ASortOrderVariety<TKey, TReactiveSortItem, TItemLoadoutDat
         
         foreach (var maxId in maxIds)
         {
-            if (maxId < maxTxId)
+            if (maxId > maxTxId)
                 maxTxId = maxId;
         }
         return maxTxId;
