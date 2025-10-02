@@ -1,4 +1,5 @@
 using System.Reflection;
+using Avalonia.Controls.Converters;
 using CliWrap;
 using DynamicData.Kernel;
 using Microsoft.Extensions.Logging;
@@ -23,14 +24,14 @@ public class RedModDeployTool : ITool
     private readonly GameToolRunner _toolRunner;
     private readonly TemporaryFileManager _temporaryFileManager;
     private readonly ILogger _logger;
-    private readonly RedModSortableItemProviderFactory _sortableItemProviderFactory;
+    private readonly RedModSortOrderVariety _redModSortOrderVariety;
 
-    public RedModDeployTool(GameToolRunner toolRunner, TemporaryFileManager temporaryFileManager, ILogger<RedModDeployTool> logger, RedModSortableItemProviderFactory sortableItemProviderFactory)
+    public RedModDeployTool(GameToolRunner toolRunner, TemporaryFileManager temporaryFileManager, ILogger<RedModDeployTool> logger, RedModSortOrderVariety sortOrderVariety)
     {
         _logger = logger;
         _toolRunner = toolRunner;
         _temporaryFileManager = temporaryFileManager;
-        _sortableItemProviderFactory = sortableItemProviderFactory;
+        _redModSortOrderVariety = sortOrderVariety;
     }
     
     public IEnumerable<GameId> GameIds => [Cyberpunk2077.Cyberpunk2077Game.GameIdStatic];
@@ -88,14 +89,18 @@ public class RedModDeployTool : ITool
 
     internal async Task WriteLoadOrderFile(AbsolutePath loadorderFilePath, Loadout.ReadOnly loadout)
     {
-        var provider = (RedModSortableItemProvider)_sortableItemProviderFactory.GetLoadoutSortableItemProvider(loadout);
-        // Note: this will get the Load Order for the specific revision of the DB of loadout, which might not be the latest
-        var order = provider.GetRedModOrder(db: loadout.Db);
-
+        // TODO: this currently uses the loadout sort order, change this to use the "Active" sort order,
+        // once we support switching between collection and loadout sort orders
+        var collectionId = Optional.None<CollectionGroupId>();
+        
+        var output = string.Empty;
+        // Note(AL12rs): this will get the Load Order for the specific revision of the DB of loadout, which might not be the latest
+        var order = _redModSortOrderVariety.GetRedModOrder(loadout, collectionId, loadout.Db);
+        
         // NOTE(erri120): redmod only accepts CRLR line breaks, everything else breaks the program
         // and results in getting errors like `Non-existant mod selected`
-        var output = order.Count > 0 ? string.Join("\r\n", order) : string.Empty;
-
+        output = order.Count > 0 ? string.Join("\r\n", order) : string.Empty;
+        
         await loadorderFilePath.WriteAllTextAsync(output);
     }
     public string Name => "RedMod Deploy";
