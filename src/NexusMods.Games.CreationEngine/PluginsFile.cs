@@ -35,6 +35,7 @@ public class PluginsFile : IIntrinsicFile
     
     public async Task Write(Stream stream, Loadout.ReadOnly loadout, Dictionary<GamePath, SyncNode> syncTree)
     {
+        /*
         var plugins = await syncTree
             .Where(p => p.Key.Parent == KnownPaths.Data && KnownCEExtensions.PluginFiles.Contains(p.Key.Extension))
             .Where(p => p.Value.HaveLoadout)
@@ -58,6 +59,8 @@ public class PluginsFile : IIntrinsicFile
         }
 
         await sw.FlushAsync();
+        */
+        
     }
 
     private static IReadOnlyList<ISortRule<Metadata, ModKey>> RuleCreator(Metadata metadata, Dictionary<ModKey, Metadata> allPlugins)

@@ -5,6 +5,7 @@
         <ProjectReference Include="..\NexusMods.Abstractions.Telemetry\NexusMods.Abstractions.Telemetry.csproj" />
         <ProjectReference Include="..\NexusMods.Games.Generic\NexusMods.Games.Generic.csproj" />
         <ProjectReference Include="..\NexusMods.App.Generators.Diagnostics\NexusMods.App.Generators.Diagnostics.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+        <PackageReference Include="NexusMods.MnemonicDB.SourceGenerator" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     </ItemGroup>
     <ItemGroup>
       <None Remove="Resources\SkyrimSE\thumbnail.webp" />
@@ -21,4 +22,8 @@
       <PackageReference Include="Mutagen.Bethesda.Skyrim" />
     </ItemGroup>
 
+    <ItemGroup>
+        <AdditionalFiles Include="**\*.sql" />
+        <UpToDateCheckInput Include="**\*.sql"/>
+    </ItemGroup>
 </Project>
