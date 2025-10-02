@@ -1133,6 +1133,10 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     public virtual async Task<Loadout.ReadOnly> Synchronize(Loadout.ReadOnly loadout, SynchronizeLoadoutJob? job = null)
     {
         loadout = loadout.Rebase();
+        
+        // Update locator IDs before building the sync tree
+        loadout = await UpdateLocatorIds(loadout);
+        
         // If we are swapping loadouts, then we need to synchronize the previous loadout first to ingest
         // any changes, then we can apply the new loadout.
         if (GameInstallMetadata.LastSyncedLoadout.TryGetValue(loadout.Installation, out var lastAppliedId) && lastAppliedId != loadout.Id)
@@ -1145,10 +1149,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 return loadout.Rebase();
             }
         }
-
-        // Update locator IDs before building the sync tree
-        loadout = await UpdateLocatorIds(loadout);
-
+        
         job?.SetStatus("Collecting files");
         var tree = await BuildSyncTree(loadout);
         ProcessSyncTree(tree);
