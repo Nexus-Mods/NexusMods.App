@@ -201,25 +201,55 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         return newOverrides.Id;
     }
 
-    public Dictionary<GamePath, OneOf<LoadoutFile.ReadOnly, DeletedFile.ReadOnly>[]> GetFileConflicts(Loadout.ReadOnly loadout, bool removeDuplicates = true)
+    public Dictionary<GamePath, FileConflictGroup> GetFileConflicts(Loadout.ReadOnly loadout, bool removeDuplicates = true)
     {
         var db = loadout.Db;
         var query = Loadout.FileConflictsQuery(db, loadout, removeDuplicates: removeDuplicates);
         var result = query.ToDictionary(row => new GamePath(row.Location, row.Path), row =>
         {
-            var files = row.Item3.Select(tuple =>
+            var items = row.Item3.Select(tuple =>
             {
-                var (entityId, isDeleted) = tuple;
-                if (isDeleted) return DeletedFile.Load(db, entityId);
-                return OneOf<LoadoutFile.ReadOnly, DeletedFile.ReadOnly>.FromT0(LoadoutFile.Load(db, entityId));
+                var (entityId, isEnabled, isDeleted) = tuple;
+                OneOf<LoadoutFile.ReadOnly, DeletedFile.ReadOnly> file = isDeleted ? DeletedFile.Load(db, entityId) : LoadoutFile.Load(db, entityId);
+                return new FileConflictItem(isEnabled, file);
             }).ToArray();
 
-            return files;
+            return new FileConflictGroup(new GamePath(row.Location, row.Path), items);
         });
 
         return result;
     }
 
+    public Dictionary<LoadoutItemGroup.ReadOnly, LoadoutFile.ReadOnly[]> GetFileConflictsByParentGroup(Loadout.ReadOnly loadout, bool removeDuplicates = true)
+    {
+        var db = loadout.Db;
+        var query = Loadout.FileConflictsByParentGroupQuery(db, loadout, removeDuplicates: removeDuplicates);
+        var result = query.ToDictionary(row => LoadoutItemGroup.Load(db,row.GroupId), row =>
+        {
+            var items = row.Item2.Select(tuple =>
+            {
+                var (entityId, locationId, targetPath) = tuple;
+                var file = LoadoutFile.Load(db, entityId);
+                return file;
+            }).ToArray();
+
+            return items;
+        }, comparer: LoadoutItemGroupComparer.Instance);
+
+        return result;
+    }
+
+    private class LoadoutItemGroupComparer : IEqualityComparer<LoadoutItemGroup.ReadOnly>, IAlternateEqualityComparer<EntityId, LoadoutItemGroup.ReadOnly>
+    {
+        public static readonly IEqualityComparer<LoadoutItemGroup.ReadOnly> Instance = new LoadoutItemGroupComparer();
+
+        public bool Equals(LoadoutItemGroup.ReadOnly x, LoadoutItemGroup.ReadOnly y) => x.Id.Equals(y.Id);
+        public int GetHashCode(LoadoutItemGroup.ReadOnly item) => item.Id.GetHashCode();
+        public bool Equals(EntityId alternate, LoadoutItemGroup.ReadOnly other) => other.Id.Equals(alternate);
+        public int GetHashCode(EntityId alternate) => alternate.GetHashCode();
+        public LoadoutItemGroup.ReadOnly Create(EntityId alternate) => throw new NotSupportedException();
+    }
+    
     public Dictionary<GamePath, SyncNode> BuildSyncTree<T>(T latestDiskState, T previousDiskState, Loadout.ReadOnly loadout) where T : IEnumerable<PathPartPair>
     {
         var referenceDb = _fileHashService.Current;
@@ -249,8 +279,8 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 SourceItemType = LoadoutSourceItemType.Game,
             };
         }
-        
-        foreach (var loadoutItem in Loadout.EnabledLoadoutItemWithTargetPathInLoadoutQuery(loadout.Db, loadout.Id))
+
+        foreach (var loadoutItem in Loadout.LoadoutFileMetadataQuery(loadout.Db, loadout.Id, onlyEnabled: true))
         {
             if (loadoutItem.Path.Path == null)
                 throw new InvalidOperationException("Path is null");
@@ -302,6 +332,28 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                     existing.SourceItemType = sourceItemType;
                 }
             }
+        }
+
+        // Add in the intrinsic files
+        foreach (var file in IntrinsicFiles(loadout).Values)
+        {
+            ref var found = ref CollectionsMarshal.GetValueRefOrAddDefault(syncTree, file.Path, out var exists);
+            if (exists)
+            {
+                Logger.LogWarning("Found duplicate intrinsic file `{Path}` in Loadout {LoadoutName} for game {Game}", file.Path, loadout.Name, loadout.InstallationInstance.Game.Name);
+            }
+            found.SourceItemType = LoadoutSourceItemType.Intrinsic;
+            var stream = new MemoryStream();
+            file.Write(stream, loadout, syncTree);
+            stream.Position = 0;
+            var span = stream.GetBuffer().AsSpan(0, (int)stream.Length);
+            found.Loadout = new SyncNodePart()
+            {
+                Hash = span.xxHash3(),
+                Size = Size.From((ulong)span.Length),
+                LastModifiedTicks = 0,
+            };
+            found.SourceItemType = LoadoutSourceItemType.Intrinsic;
         }
         
         // Remove deleted files. I'm not super happy with this requiring a full scan of
@@ -496,7 +548,8 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 diskArchived: item.HaveDisk && HaveArchive(item.Disk.Hash),
                 prevArchived: item.HavePrevious && HaveArchive(item.Previous.Hash),
                 loadoutArchived: item.Loadout.Hash != Hash.Zero && HaveArchive(item.Loadout.Hash),
-                pathIsIgnored: IsIgnoredBackupPath(path));
+                pathIsIgnored: IsIgnoredBackupPath(path),
+                item.SourceItemType);
 
 
             item.Signature = signature;
@@ -530,6 +583,11 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                     job?.SetStatus("Adding external changes");
                     ActionIngestFromDisk(syncTree, loadout, tx, ref overridesGroup);
                     break;
+                
+                case Actions.AdaptLoadout:
+                    job?.SetStatus("Updating loadout");
+                    await AdaptLoadout(syncTree, register, loadout, tx);
+                    break;
 
                 case Actions.DeleteFromDisk:
                     job?.SetStatus("Deleting files");
@@ -539,6 +597,11 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 case Actions.ExtractToDisk:
                     job?.SetStatus("Extracting files");
                     await ActionExtractToDisk(syncTree, register, tx, gameMetadataId, job);
+                    break;
+                
+                case Actions.WriteIntrinsic:
+                    job?.SetStatus("Writing intrinsic files");
+                    await ActionWriteIntrinsics(syncTree, register, tx, loadout, job);
                     break;
 
                 case Actions.AddReifiedDelete:
@@ -553,7 +616,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 case Actions.WarnOfConflict:
                     WarnOfConflict(syncTree);
                     break;
-
+                
                 default:
                     throw new InvalidOperationException($"Unknown action: {action}");
             }
@@ -583,6 +646,45 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         
 
         return loadout;
+    }
+
+    private async Task ActionWriteIntrinsics(Dictionary<GamePath, SyncNode> syncTree, IGameLocationsRegister register, IMainTransaction tx, Loadout.ReadOnly loadout, SynchronizeLoadoutJob? job)
+    {
+        var intrinsicFiles = IntrinsicFiles(loadout);
+        foreach (var (path, node) in syncTree)
+        {
+            if (!node.Actions.HasFlag(Actions.WriteIntrinsic))
+                continue;
+            
+            if (node.SourceItemType != LoadoutSourceItemType.Intrinsic)
+                throw new Exception("WriteIntrinsic should only be called on intrinsic files");
+
+            var instance = intrinsicFiles[path];
+            var resolvedPath = register.GetResolvedPath(path);
+            resolvedPath.Parent.CreateDirectory();
+            await using var stream = resolvedPath.Create();
+            stream.SetLength(0);
+            await instance.Write(stream, loadout, syncTree);
+        }
+    }
+
+    private async Task AdaptLoadout(Dictionary<GamePath, SyncNode> syncTree, IGameLocationsRegister register, Loadout.ReadOnly loadout, IMainTransaction tx)
+    {
+        var intrinsicFiles = IntrinsicFiles(loadout);
+        foreach (var (path, node) in syncTree)
+        {
+            if (!node.Actions.HasFlag(Actions.AdaptLoadout))
+                continue;
+            
+            if (node.SourceItemType != LoadoutSourceItemType.Intrinsic)
+                throw new Exception("AdaptLoadout should only be called on intrinsic files");
+
+            var instance = intrinsicFiles[path];
+            var resolvedPath = register.GetResolvedPath(path);
+            await using var stream = resolvedPath.Read();
+            await instance.Ingest(stream, loadout, syncTree, tx);
+        }
+
     }
 
     private async ValueTask<Loadout.ReadOnly> ReprocessOverrides(Loadout.ReadOnly loadout)
@@ -708,6 +810,16 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
                 case Actions.BackupFile:
                     await ActionBackupNewFiles(gameInstallation, syncTree);
+                    break;
+                
+                case Actions.AdaptLoadout:
+                    if (ApplicationConstants.IsDebug && syncTree.Any(n => n.Value.Actions.HasFlag(Actions.AdaptLoadout)))
+                        throw new InvalidOperationException("Cannot adapt loadout when not in a loadout context");
+                    break;
+                
+                case Actions.WriteIntrinsic:
+                    if (ApplicationConstants.IsDebug && syncTree.Any(n => n.Value.Actions.HasFlag(Actions.AdaptLoadout)))
+                        throw new InvalidOperationException("Cannot adapt loadout when not in a loadout context");
                     break;
 
                 case Actions.IngestFromDisk:
@@ -1817,6 +1929,16 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         {
             return entityIdList.GetValueOrDefault(entityId, entityId);
         }
+    }
+
+    /// <summary>
+    /// Gets a set of files intrinsic to this game. Such as mod order files, preference files, etc.
+    /// These files will not be backed up and will not be included in the loadout directly. Instead, they are
+    /// generated at sync time by calling the implementations of the files themselves. 
+    /// </summary>
+    protected virtual Dictionary<GamePath, IIntrinsicFile> IntrinsicFiles(Loadout.ReadOnly loadout)
+    {
+        return new();
     }
 
     private static string GetNewShortName(IDb db, GameInstallMetadataId installationId)

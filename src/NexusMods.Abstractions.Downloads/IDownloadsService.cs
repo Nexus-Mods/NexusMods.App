@@ -36,6 +36,11 @@ public interface IDownloadsService
     /// </summary>
     IObservable<IChangeSet<DownloadInfo, DownloadId>> GetDownloadsForGame(GameId gameId);
     
+    /// <summary>
+    /// Get active downloads filtered by game.
+    /// </summary>
+    IObservable<IChangeSet<DownloadInfo, DownloadId>> GetActiveDownloadsForGame(GameId gameId);
+    
     
     /// <summary>
     /// Pauses a specific download.
@@ -58,9 +63,19 @@ public interface IDownloadsService
     void PauseAll();
     
     /// <summary>
+    /// Pauses all active downloads for a specific game.
+    /// </summary>
+    void PauseAllForGame(GameId gameId);
+    
+    /// <summary>
     /// Resumes all paused downloads.
     /// </summary>
     void ResumeAll();
+    
+    /// <summary>
+    /// Resumes all paused downloads for a specific game.
+    /// </summary>
+    void ResumeAllForGame(GameId gameId);
     
     /// <summary>
     /// Cancels selected downloads.
