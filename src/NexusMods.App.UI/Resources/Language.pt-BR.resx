@@ -1306,4 +1306,286 @@ Manter os arquivos baixados na sua biblioteca caso queira tentar instalar novame
     <data name="processtime_leveluppercasetrue_logger_messagewithexceptiontrue" xml:space="preserve">
       <value>${processtime} [${level:uppercase=true}] (${logger}) ${message:withexception=true}</value>
     </data>
+<data name="DownloadsLeftMenu_AllDownloads" xml:space="preserve">
+    <value>Todos os Downloads</value>
+</data>
+<data name="DownloadsLeftMenu_AllCompleted" xml:space="preserve">
+    <value>Todos Concluídos</value>
+</data>
+<data name="DownloadsLeftMenu_GameSpecificDownloads" xml:space="preserve">
+    <value>Downloads de {0}</value>
+</data>
+<data name="DownloadsPage_AllDownloads_Description" xml:space="preserve">
+    <value>Acompanhe seus downloads.</value>
+</data>
+<data name="DownloadsPage_AllCompleted_Description" xml:space="preserve">
+    <value>Veja seus downloads concluídos.</value>
+</data>
+<data name="DownloadsPage_GameSpecificDownloads_Description" xml:space="preserve">
+    <value>Acompanhe seus downloads.</value>
+</data>
+<data name="DownloadsPage_Default_Description" xml:space="preserve">
+    <value>Gerencie seus downloads ativos e concluídos</value>
+</data>
+<data name="LibraryPageDescription" xml:space="preserve">
+    <value>Gerencie seus mods e coleções baixados. Instale, atualize ou adicione mais.</value>
+</data>
+<data name="FileOriginsPage_BrowseCollectionsNexusMods" xml:space="preserve">
+    <value>Procurar Coleções</value>
+</data>
+<data name="Library_DeselectItemsButton_Text" xml:space="preserve">
+    <value>{0} selecionado(s)</value>
+</data>
+<data name="Library_DeselectItemsButton_ToolTip" xml:space="preserve">
+    <value>Limpa a seleção. Ctrl+Clique seleciona/des-seleciona itens. Shift+Clique seleciona um intervalo.</value>
+</data>
+<data name="Library_ViewChangelog_Text" xml:space="preserve">
+    <value>Ver registro de alterações</value>
+</data>
+<data name="Library_ViewModPage_Text" xml:space="preserve">
+    <value>Ver página do mod</value>
+</data>
+<data name="UpgradeToPremiumView_Bullet0" xml:space="preserve">
+    <value>Atualizações de mods integradas ao aplicativo, sem sites ou downloads manuais.</value>
+</data>
+<data name="LeftMenu_Label_Installed_Mods" xml:space="preserve">
+    <value>Instalados</value>
+</data>
+<data name="LoadoutView_Title_Installed_Mods_Default" xml:space="preserve">
+    <value>Todos</value>
+</data>
+<data name="CollectionDownloadViewModel_DownloadRequired" xml:space="preserve">
+    <value>Baixar tudo automaticamente</value>
+</data>
+<data name="CollectionDownloadViewModel_DownloadOptional" xml:space="preserve">
+    <value>Baixar tudo opcional automaticamente</value>
+</data>
+<data name="CollectionDownloadViewModel_InstallOptional" xml:space="preserve">
+    <value>Instalar tudo opcional</value>
+</data>
+<data name="CollectionDownloadViewModel_Toggle_ToolTip" xml:space="preserve">
+    <value>Ativar inclui esta coleção no jogo e a carrega. Desativar a deixa de fora.</value>
+</data>
+<data name="Library_HideUpdates" xml:space="preserve">
+    <value>Ocultar atualizações ({0})</value>
+</data>
+<data name="Library_ShowUpdates" xml:space="preserve">
+    <value>Mostrar atualizações ({0})</value>
+</data>
+<data name="Library_Update" xml:space="preserve">
+    <value>Atualizar ({0})</value>
+</data>
+<data name="Library_UpdateAndKeepOldMod" xml:space="preserve">
+    <value>Atualizar e manter mod antigo ({0})</value>
+</data>
+<data name="Dialog_ReplaceNotSupported_Title" xml:space="preserve">
+    <value>Atualização Manual Necessária</value>
+</data>
+<data name="Dialog_ReplaceNotSupported_Text" xml:space="preserve">
+    <value>Atualizar e Substituir ainda não é suportado para usuários gratuitos nesta versão do aplicativo.
+Clique em **OK** para visitar a página do mod para atualização manual.</value>
+</data>
+<data name="Library_Update_SomeInstallsFailed_Title" xml:space="preserve">
+    <value>Falha na instalação de algumas atualizações de mods</value>
+</data>
+<data name="Library_Update_SomeInstallsFailed_Description" xml:space="preserve">
+    <value>As seguintes atualizações de mods não puderam ser instaladas:
+{0}
+Manter os arquivos baixados na sua biblioteca caso queira tentar instalar novamente mais tarde?</value>
+</data>
+<data name="Library_Update_SomeInstallsFailed_DeleteFiles" xml:space="preserve">
+    <value>Excluir atualizações com falha</value>
+</data>
+<data name="Library_Update_SomeInstallsFailed_KeepFiles" xml:space="preserve">
+    <value>Manter atualizações com falha</value>
+</data>
+<data name="Library_Update_InstalledInMultipleCollections_Title" xml:space="preserve">
+    <value>Atualizando mods instalados em múltiplas coleções</value>
+</data>
+<data name="Library_Update_InstalledInMultipleCollections_Cancel" xml:space="preserve">
+    <value>Cancelar</value>
+</data>
+<data name="Library_Update_InstalledInMultipleCollections_Ok" xml:space="preserve">
+    <value>Atualizar em {0} coleção(ões)</value>
+</data>
+<data name="Library_Update_InstalledInMultipleCollections_Description1" xml:space="preserve">
+    <value>A atualização será aplicada a todas as coleções locais onde o mod está instalado:</value>
+</data>
+<data name="Library_Update_InstalledInMultipleCollections_Description2" xml:space="preserve">
+    <value>As coleções do Nexus Mods nas quais você está inscrito não serão afetadas.</value>
+</data>
+<data name="Library_UpdateMod_ToolTip" xml:space="preserve">
+    <value>Atualizar mod</value>
+</data>
+<data name="Menu_MoreOptions_ToolTip" xml:space="preserve">
+    <value>Mais opções</value>
+</data>
+<data name="Library_UpdateModAndReplace_ToolTip" xml:space="preserve">
+    <value>Atualizar mod e substituir a versão antiga</value>
+</data>
+<data name="PremiumDialog_UpdateTitle" xml:space="preserve">
+    <value>Seja Premium para atualizações de mods com um clique</value>
+</data>
+<data name="PremiumDialog_UpdateDescription" xml:space="preserve">
+    <value>Sem navegador, sem downloads manuais. Usuários Premium também recebem:
+• Baixar coleções inteiras com um clique
+• Velocidades de download sem limites
+• Sem anúncios para sempre, mesmo que você cancele após 1 mês!</value>
+</data>
+<data name="PremiumDialog_UpdateHeading" xml:space="preserve">
+    <value>Atualize todos os seus mods ou mods individuais com um clique.</value>
+</data>
+<data name="PremiumDialog_UpdateManuallyButton" xml:space="preserve">
+    <value>Atualizar mods manualmente</value>
+</data>
+<data name="DialogPremiumCollection_DialogTitle" xml:space="preserve">
+    <value>Desbloqueie coleções com 1 clique com o Premium</value>
+</data>
+<data name="DialogPremiumCollection_UpgradeToPremium" xml:space="preserve">
+    <value>Desbloquear Download Automático</value>
+</data>
+<data name="DialogPremiumCollection_LearnMore" xml:space="preserve">
+    <value>Saiba mais</value>
+</data>
+<data name="DialogPremiumCollection_Cancel" xml:space="preserve">
+    <value>Continuar com instalação manual</value>
+</data>
+<data name="PremiumDialog_GoPremiumButton" xml:space="preserve">
+    <value>Seja Premium</value>
+</data>
+<data name="Library_Update_SomeDownloadsFailed_Title" xml:space="preserve">
+    <value>Falha no download de algumas atualizações de mods</value>
+</data>
+<data name="Library_Update_SomeDownloadsFailed_Description" xml:space="preserve">
+    <value>As seguintes atualizações de mods não puderam ser baixadas:
+{0}</value>
+</data>
+<data name="Library_Update_SomeDownloadsFailed_Option_Cancel" xml:space="preserve">
+    <value>Cancelar</value>
+</data>
+<data name="Library_Update_SomeDownloadsFailed_Option_Retry" xml:space="preserve">
+    <value>Tentar novamente downloads com falha</value>
+</data>
+<data name="Loadout_Dialog_CollectionPublished_FirstPublish_Listed" xml:space="preserve">
+    <value>"{0}" foi publicado como listado. Ele aparecerá nos resultados de pesquisa e poderá ser destacado.</value>
+</data>
+<data name="Loadout_Dialog_CollectionPublished_FirstPublish_Unlisted" xml:space="preserve">
+    <value>"{0}" foi publicado como não listado. Apenas pessoas com o link podem visualizá-lo.</value>
+</data>
+<data name="Loadout_Dialog_CollectionPublished_FirstPublish_Help" xml:space="preserve">
+    <value>Você pode alterar a visibilidade da sua coleção a qualquer momento nas configurações da coleção.</value>
+</data>
+<data name="Loadout_Dialog_CollectionPublished_Revision" xml:space="preserve">
+    <value>"{0}" foi publicado.</value>
+</data>
+<data name="Loadout_Dialog_CollectionPublished_Revision_Help" xml:space="preserve">
+    <value>Recomendamos que você atualize o registro de alterações desta revisão para que os usuários saibam o que há de novo.</value>
+</data>
+<data name="Loadout_Dialog_ShareCollection_UnlistedTitle" xml:space="preserve">
+    <value>Não listado - Recomendado para Compartilhar com Amigos</value>
+</data>
+<data name="Loadout_Dialog_ShareCollection_UnlistedExplanation" xml:space="preserve">
+    <value>Apenas pessoas com o link podem visualizar. Não aparece em pesquisas nem em destaques.</value>
+</data>
+<data name="Loadout_Dialog_ShareCollection_ListedTitle" xml:space="preserve">
+    <value>Listado - Visível Publicamente no Nexus Mods</value>
+</data>
+<data name="Loadout_Dialog_ShareCollection_ListedExplanation" xml:space="preserve">
+    <value>Qualquer pessoa pode encontrá-lo em pesquisas ou vê-lo destacado no Nexus Mods.</value>
+</data>
+<data name="Loadout_Dialog_ShareCollection_ChangeVisibilityMessage" xml:space="preserve">
+    <value>Você pode alterar a visibilidade a qualquer momento nas configurações da sua coleção.</value>
+</data>
+<data name="Library_DeleteItem_Text" xml:space="preserve">
+    <value>Excluir</value>
+</data>
+<data name="ToastNotification_Items_deleted" xml:space="preserve">
+    <value>Mod excluído</value>
+</data>
+<data name="ToastNotification_Mods_removed" xml:space="preserve">
+    <value>Mod desinstalado</value>
+</data>
+<data name="ToastNotification_Collection_removed" xml:space="preserve">
+    <value>Coleção removida</value>
+</data>
+<data name="ToastNotification_Collection_deleted" xml:space="preserve">
+    <value>Coleção excluída</value>
+</data>
+<data name="ToastNotification_Collection_installed" xml:space="preserve">
+    <value>Coleção instalada</value>
+</data>
+<data name="ToastNotification_Draft_revision_uploaded_successfully" xml:space="preserve">
+    <value>Rascunho de revisão enviado com sucesso</value>
+</data>
+<data name="ToastNotification_Mod_updated____0_" xml:space="preserve">
+    <value>Mod atualizado - {0}</value>
+</data>
+<data name="ToastNotification_Adding_collection____0_" xml:space="preserve">
+    <value>Coleção adicionada com sucesso - {0}</value>
+</data>
+<data name="ToastNotification_Mod_Download_started" xml:space="preserve">
+    <value>Download do mod iniciado</value>
+</data>
+<data name="ToastNotification_Mod_Download_Completed____0_" xml:space="preserve">
+    <value>Download do mod concluído - {0}</value>
+</data>
+<data name="ToastNotification_Adding_new_Collection_to_Library" xml:space="preserve">
+    <value>Adicionando nova Coleção à Biblioteca</value>
+</data>
+<data name="ToastNotification_Collection_Add_failed___0__is_not_a_managed_game" xml:space="preserve">
+    <value>Falha ao adicionar Coleção: o aplicativo não está gerenciando {0}</value>
+</data>
+<data name="ToastNotification_Collection_Add_failed__An_unknown_error_occurred" xml:space="preserve">
+    <value>Falha ao adicionar Coleção</value>
+</data>
+<data name="ToastNotification_Download_failed__User_is_not_logged_in" xml:space="preserve">
+    <value>Falha no download: não está logado no Nexus Mods</value>
+</data>
+<data name="ToastNotification_Download_skipped__file_already_exists____0__" xml:space="preserve">
+    <value>Download ignorado: arquivo já existe - {0} </value>
+</data>
+<data name="ToastNotification_Download_failed__game_is_not_managed____0_" xml:space="preserve">
+    <value>Falha no download: o aplicativo não está gerenciando {0}</value>
+</data>
+<data name="ToastNotification_Download_failed__An_unknown_error_occurred" xml:space="preserve">
+    <value>Falha no download</value>
+</data>
+<data name="ToastNotification_Uploading_new_collection_revision___" xml:space="preserve">
+    <value>Enviando nova Revisão da Coleção...</value>
+</data>
+<data name="ToastNotification_Collection_status_changed_to__0__" xml:space="preserve">
+    <value>Status da coleção alterado para {0} </value>
+</data>
+<data name="CollectionStatus_Listed" xml:space="preserve">
+    <value>Listado</value>
+</data>
+<data name="CollectionStatus_Unlisted" xml:space="preserve">
+    <value>Não listado</value>
+</data>
+<data name="ToastNotification_Uploading_draft_collection_revision___" xml:space="preserve">
+    <value>Enviando rascunho da Revisão da Coleção...</value>
+</data>
+<data name="Loadout_UninstallItem_Menu_Text" xml:space="preserve">
+    <value>Desinstalar</value>
+</data>
+<data name="Loadout_UninstallItem_Menu_Text__Uninstall_read_only" xml:space="preserve">
+    <value>Desinstalar somente leitura</value>
+</data>
+<data name="Downloads_SizeProgress_Of" xml:space="preserve">
+    <value> de </value>
+    <comment>Usado na exibição do progresso de tamanho: "15,6 MB de 56 MB"</comment>
+</data>
+<data name="Downloads_Speed_Inactive" xml:space="preserve">
+    <value>--</value>
+    <comment>Exibido quando a velocidade de download está inativa ou zero</comment>
+</data>
+<data name="Downloads_UnknownGame" xml:space="preserve">
+    <value>Jogo Desconhecido</value>
+</data>
+<data name="Downloads_UnknownDownload" xml:space="preserve">
+    <value>Download Desconhecido</value>
+</data>
+<data name="GameWidget_VersionUnknown" xml:space="preserve">
+    <value>Versão: Desconhecida</value>
+</data>
 </root>
