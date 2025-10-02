@@ -1,12 +1,12 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.NexusModsLibrary;
-using NexusMods.Abstractions.Settings;
+using NexusMods.Sdk.Settings;
+using NexusMods.Backend;
 using NexusMods.DataModel;
 using NexusMods.Jobs;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Paths;
-using NexusMods.Settings;
 
 namespace NexusMods.Library.Tests.DownloadsService;
 

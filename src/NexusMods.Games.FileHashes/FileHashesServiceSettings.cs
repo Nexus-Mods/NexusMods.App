@@ -1,7 +1,8 @@
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.Settings;
+using NexusMods.Sdk.Settings;
 using NexusMods.Paths;
+using NexusMods.Sdk;
 
 namespace NexusMods.Games.FileHashes;
 
@@ -36,7 +37,7 @@ public record FileHashesServiceSettings : ISettings
     {
         return settingsBuilder
             .ConfigureDefault(CreateDefault)
-            .ConfigureStorageBackend<FileHashesServiceSettings>(builder => builder.Disable());
+            .ConfigureBackend(StorageBackendOptions.Use(StorageBackends.Json));
     }
 
     /// <summary>

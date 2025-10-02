@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Serialization;
-using NexusMods.Abstractions.Settings;
+using NexusMods.Backend;
 using NexusMods.CrossPlatform;
 using NexusMods.DataModel;
 using NexusMods.FileExtractor;
@@ -13,7 +13,7 @@ using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.HttpDownloader.Tests;
 using NexusMods.Paths;
 using NexusMods.Sdk;
-using NexusMods.Settings;
+using NexusMods.Sdk.Settings;
 using Xunit.DependencyInjection.Logging;
 
 namespace NexusMods.Networking.NexusWebApi.Tests;

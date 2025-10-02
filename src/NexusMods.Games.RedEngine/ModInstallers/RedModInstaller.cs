@@ -6,7 +6,6 @@ using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Games.RedEngine.Cyberpunk2077.Models;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
@@ -74,49 +73,22 @@ public class RedModInstaller : ALibraryArchiveInstaller
         {
             var modFolder = file.Parent();
             var parentName = modFolder!.Segment();
-            
-            var loadoutItem = new LoadoutItem.New(tx)
-            {
-                LoadoutId = loadout.Id,
-                Name = infoJson.Name,
-                ParentId = loadoutGroup.Id,
-            };
-            
-            var groupItem = new LoadoutItemGroup.New(tx, loadoutItem.Id)
-            {
-                LoadoutItem = loadoutItem,
-                IsGroup = true,
-            };
 
- 
-            RedModInfoFile.New redModInfoFile = null!;
+            var foundManifest = false;
             
             foreach (var childNode in modFolder!.GetFiles().OrderBy(f => f.Item.Path))
             {
                 var relativePath = childNode.Item.Path.RelativeTo(modFolder!.Item.Path);
                 var joinedPath = Mods.Join(parentName).Join(relativePath);
                 
-                var newFile = childNode.ToLoadoutFile(loadout.Id, groupItem.Id, tx, new GamePath(LocationId.Game, joinedPath));
+                var newFile = childNode.ToLoadoutFile(loadout.Id, loadoutGroup.Id, tx, new GamePath(LocationId.Game, joinedPath));
 
                 if (file.Item.Path == childNode.Item.Path)
-                {
-                    redModInfoFile = new RedModInfoFile.New(tx, newFile.Id)
-                    {
-                        Name = infoJson.Name,
-                        Version = infoJson.Version,
-                        LoadoutFile = newFile,
-                    };
-                }
+                    foundManifest = true;
             }
             
-            if (redModInfoFile == null)
+            if (foundManifest == false)
                 throw new InvalidOperationException("Failed to find the info.json file in the mod archive, this should never happen");
-            
-            var redModItem = new RedModLoadoutGroup.New(tx, loadoutItem.Id)
-            {
-                LoadoutItemGroup = groupItem,
-                RedModInfoFileId = redModInfoFile.Id,
-            };
         }
 
         return new Success();

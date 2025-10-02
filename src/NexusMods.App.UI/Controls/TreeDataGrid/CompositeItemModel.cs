@@ -6,6 +6,7 @@ using JetBrains.Annotations;
 using NexusMods.Abstractions.UI;
 using NexusMods.Abstractions.UI.Extensions;
 using NexusMods.App.UI.Converters;
+using NexusMods.UI.Sdk;
 using ObservableCollections;
 using R3;
 

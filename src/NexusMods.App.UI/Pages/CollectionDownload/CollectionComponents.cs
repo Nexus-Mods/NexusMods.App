@@ -9,6 +9,7 @@ using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Pages.LibraryPage;
 using NexusMods.App.UI.Resources;
 using NexusMods.MnemonicDB.Abstractions.Models;
+using NexusMods.UI.Sdk;
 using R3;
 
 namespace NexusMods.App.UI.Pages.CollectionDownload;

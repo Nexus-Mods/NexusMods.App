@@ -1,4 +1,4 @@
-using NexusMods.Abstractions.Settings;
+using NexusMods.Sdk.Settings;
 
 namespace NexusMods.Collections;
 
@@ -19,16 +19,18 @@ public class DownloadSettings : ISettings
 
     public static ISettingsBuilder Configure(ISettingsBuilder settingsBuilder)
     {
-        return settingsBuilder.AddToUI<DownloadSettings>(builder => builder
-            .AddPropertyToUI(x => x.MaxParallelDownloads, propertyBuilder => propertyBuilder
-                .AddToSection(Sections.General)
-                .WithDisplayName("Max Parallel Downloads")
-                .WithDescription("Set the maximum number of downloads that can happen in parallel when downloading collections")
-                .UseSingleValueMultipleChoiceContainer(
-                    valueComparer: EqualityComparer<int>.Default,
-                    allowedValues: Enumerable.Range(start: 1, Math.Max(Environment.ProcessorCount, 16)).ToArray(),
-                    valueToDisplayString: static i => i.ToString()
-                )
+        return settingsBuilder.ConfigureProperty(
+            x => x.MaxParallelDownloads,
+            new PropertyOptions<DownloadSettings,int>
+            {
+                Section = Sections.General,
+                DisplayName = "Max Parallel Downloads",
+                DescriptionFactory = _ => "Set the maximum number of downloads that can happen in parallel when downloading collections",
+            },
+            SingleValueMultipleChoiceContainerOptions.Create<int>(
+                valueComparer: EqualityComparer<int>.Default,
+                allowedValues: Enumerable.Range(start: 1, Math.Max(Environment.ProcessorCount, 16)).ToArray(),
+                valueToDisplayString: static i => i.ToString()
             )
         );
     }

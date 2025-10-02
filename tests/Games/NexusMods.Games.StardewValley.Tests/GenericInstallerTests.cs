@@ -87,55 +87,6 @@ public class GenericInstallerTests : ALibraryArchiveInstallerTests<GenericInstal
         var numManifests = groupFiles.Count(static loadoutItem => SMAPIManifestLoadoutFile.Load(loadoutItem.Db, loadoutItem.Id).IsValid());
         numManifests.Should().Be(expectedManifestCount);
 
-        await VerifyGroup(libraryArchive, group, modId, fileId);
-    }
-
-    private static IEnumerable<LoadoutFile.ReadOnly> GetFiles(LoadoutItemGroup.ReadOnly group)
-    {
-        foreach (var loadoutItem in group.Children)
-        {
-            loadoutItem.TryGetAsLoadoutItemWithTargetPath(out var targetPath).Should().BeTrue();
-            targetPath.IsValid().Should().BeTrue();
-
-            targetPath.TryGetAsLoadoutFile(out var loadoutFile).Should().BeTrue();
-            loadoutFile.IsValid().Should().BeTrue();
-
-            yield return loadoutFile;
-        }
-    }
-
-    private static async Task VerifyGroup(LibraryArchive.ReadOnly libraryArchive, LoadoutItemGroup.ReadOnly group, uint modId, uint fileId, [CallerFilePath] string sourceFile = "")
-    {
-        var sb = new StringBuilder();
-
-        var paths = GetFiles(group)
-            .Select(file =>
-            {
-                libraryArchive.Children
-                    .Where(x => x.AsLibraryFile().Hash == file.Hash)
-                    .TryGetFirst(x => x.Path.FileName == file.AsLoadoutItemWithTargetPath().TargetPath.Item3.FileName, out var libraryArchiveFileEntry)
-                    .Should().BeTrue();
-
-                libraryArchiveFileEntry.AsLibraryFile().Size.Value.Should().Be(file.Size.Value);
-                libraryArchiveFileEntry.IsValid().Should().BeTrue();
-                return (libraryArchiveFileEntry, file.AsLoadoutItemWithTargetPath().TargetPath);
-            })
-            .OrderBy(static targetPath => targetPath.Item2.Item2)
-            .ThenBy(static targetPath => targetPath.Item2.Item3)
-            .ToArray();
-
-        foreach (var tuple in paths)
-        {
-            var (libraryArchiveFileEntry, targetPath) = tuple;
-            var (_, locationId, path) = targetPath;
-            var gamePath = new GamePath(locationId, path);
-
-            sb.AppendLine($"{libraryArchiveFileEntry.AsLibraryFile().Hash} - {libraryArchiveFileEntry.AsLibraryFile().Size}: {libraryArchiveFileEntry.Path} -> {gamePath}");
-        }
-
-        var result = sb.ToString();
-
-        // ReSharper disable once ExplicitCallerInfoArgument
-        await Verify(result, sourceFile: sourceFile).UseParameters(modId, fileId);
+        await VerifyGroup(libraryArchive, group).UseParameters(modId, fileId);
     }
 }

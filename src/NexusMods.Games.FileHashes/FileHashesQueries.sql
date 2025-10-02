@@ -6,11 +6,11 @@ CREATE SCHEMA IF NOT EXISTS file_hashes;
 CREATE MACRO file_hashes.resolve_gog_build(GameMetadataId, DefaultLanguage := 'en-US') AS TABLE
 SELECT build.BuildId, ANY_VALUE(build.ProductId) AS BuildProductId, COUNT(*) matching_files, ANY_VALUE(build."version"), list_distinct(LIST(depot.ProductId)) ProductIds
 FROM MDB_DISKSTATEENTRY() entry
-         LEFT JOIN HASHES_HASHRELATION() hashrel on entry.Hash = hashRel.xxHash3
-         LEFT JOIN HASHES_PATHHASHRELATION() pathrel on pathrel.Path = entry.Path.Item3 AND pathrel.Hash = hashrel.Id
-         LEFT JOIN (SELECT Id, unnest(Files) FileId FROM HASHES_GOGMANIFEST()) manifest on pathRel.Id = manifest.FileId
-         LEFT JOIN HASHES_GOGDEPOT() depot on depot.Manifest = Manifest.Id
-         LEFT JOIN (SELECT Id, unnest(depots) depot, ProductId, buildId, "version" FROM HASHES_GOGBUILD()) build on depot.Id = build.Depot
+         LEFT JOIN MDB_HASHRELATION(DBName=>"hashes") hashrel on entry.Hash = hashRel.xxHash3
+         LEFT JOIN MDB_PATHHASHRELATION(DBName=>"hashes") pathrel on pathrel.Path = entry.Path.Item3 AND pathrel.Hash = hashrel.Id
+         LEFT JOIN (SELECT Id, unnest(Files) FileId FROM MDB_GOGMANIFEST(DBName=>"hashes")) manifest on pathRel.Id = manifest.FileId
+         LEFT JOIN MDB_GOGDEPOT(DBName=>"hashes") depot on depot.Manifest = Manifest.Id
+         LEFT JOIN (SELECT Id, unnest(depots) depot, ProductId, buildId, "version" FROM MDB_GOGBUILD(DBName=>"hashes")) build on depot.Id = build.Depot
 WHERE entry.Game = GameMetadataId
 AND DefaultLanguage in depot.Languages
 GROUP BY build.BuildId
@@ -20,9 +20,9 @@ ORDER BY COUNT(*) DESC;
 CREATE MACRO file_hashes.resolve_steam_manifests(GameMetadataId) AS TABLE
 SELECT ANY_VALUE(steam.depotId) DepotId, COUNT(*) matching_count, ANY_VALUE(steam.AppId) AppId, ANY_VALUE(steam.ManifestId)
 FROM MDB_DISKSTATEENTRY() entry
-         LEFT JOIN HASHES_HASHRELATION() hashrel on entry.Hash = hashRel.xxHash3
-         LEFT JOIN HASHES_PATHHASHRELATION() pathrel on pathrel.Path = entry.Path.Item3 AND pathrel.Hash = hashrel.Id
-         LEFT JOIN (SELECT AppId, ManifestId, DepotId, unnest(Files) File FROM HASHES_STEAMMANIFEST()) steam on steam.File = pathrel.Id
+         LEFT JOIN MDB_HASHRELATION(DBName=>"hashes") hashrel on entry.Hash = hashRel.xxHash3
+         LEFT JOIN MDB_PATHHASHRELATION(DBName=>"hashes") pathrel on pathrel.Path = entry.Path.Item3 AND pathrel.Hash = hashrel.Id
+         LEFT JOIN (SELECT AppId, ManifestId, DepotId, unnest(Files) File FROM MDB_STEAMMANIFEST(DBName=>"hashes")) steam on steam.File = pathrel.Id
 WHERE entry.Game = GameMetadataId
 GROUP BY steam.ManifestId
 ORDER BY COUNT(*) DESC;

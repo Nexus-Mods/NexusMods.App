@@ -30,20 +30,19 @@ public class SortingSelectionViewModel : AViewModel<ISortingSelectionViewModel>,
     {
         _loadoutId = loadoutId;
         _connection = serviceProvider.GetRequiredService<IConnection>();
-
+        
         var loadout = Loadout.Load(_connection.Db, _loadoutId);
-        var sortableItemProviders = loadout
-            .InstallationInstance
-            .GetGame()
-            .SortableItemProviderFactories;
+        
+        var sortingManager = loadout.InstallationInstance.GetGame().SortOrderManager;
+        var sortOrderVarieties = sortingManager.GetSortOrderVarieties();
+        
+        var rulesViewModels = sortOrderVarieties.Select(IViewModelInterface (sortOrderVariety) => 
+            new LoadOrderViewModel(serviceProvider, sortOrderVariety, loadoutId)
+        ).ToList();
 
-        var viewModels = sortableItemProviders
-            .Select(IViewModelInterface (providerFactory) => new LoadOrderViewModel(serviceProvider, providerFactory, providerFactory.GetLoadoutSortableItemProvider(loadout)))
-            .ToList();
-
-        viewModels.Add(new FileConflictsViewModel(serviceProvider, windowManager, loadoutId));
-        ViewModels = viewModels.ToArray();
-
+        rulesViewModels.Add(new FileConflictsViewModel(serviceProvider, windowManager, loadoutId));
+        ViewModels = rulesViewModels.ToArray();
+        
         OpenAllModsLoadoutPageCommand = new ReactiveCommand<NavigationInformation>(info =>
             {
                 var pageData = new PageData

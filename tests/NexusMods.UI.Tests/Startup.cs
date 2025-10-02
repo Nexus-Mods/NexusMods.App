@@ -1,11 +1,11 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.Settings;
 using NexusMods.App;
 using NexusMods.DataModel;
 using NexusMods.Games.RedEngine.Cyberpunk2077;
 using NexusMods.Paths;
 using NexusMods.Sdk;
+using NexusMods.Sdk.Settings;
 using NexusMods.StandardGameLocators.TestHelpers;
 using NexusMods.UI.Tests.Framework;
 using Xunit.DependencyInjection.Logging;

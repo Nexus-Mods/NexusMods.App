@@ -1,7 +1,8 @@
 ﻿using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.Settings;
 using NexusMods.Paths;
+using NexusMods.Sdk;
+using NexusMods.Sdk.Settings;
 
 namespace NexusMods.Abstractions.FileExtractor;
 
@@ -21,7 +22,7 @@ public record FileExtractorSettings : ISettings
     {
         return settingsBuilder
             .ConfigureDefault(CreateDefault)
-            .ConfigureStorageBackend<FileExtractorSettings>(builder => builder.Disable());
+            .ConfigureBackend(StorageBackendOptions.Disable);
     }
 
     /// <summary>

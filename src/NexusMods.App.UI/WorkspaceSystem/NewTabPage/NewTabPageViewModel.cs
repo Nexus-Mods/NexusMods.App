@@ -5,7 +5,7 @@ using System.Reactive.Linq;
 using DynamicData;
 using DynamicData.Binding;
 using JetBrains.Annotations;
-using NexusMods.Abstractions.Settings;
+using NexusMods.Sdk.Settings;
 using NexusMods.App.UI.Controls.Alerts;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;

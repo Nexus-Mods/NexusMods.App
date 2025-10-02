@@ -12,8 +12,8 @@
     <ProjectReference Include="../../src/NexusMods.Networking.HttpDownloader/NexusMods.Networking.HttpDownloader.csproj" />
     <ProjectReference Include="../../src/NexusMods.Abstractions.HttpDownloads/NexusMods.Abstractions.HttpDownloads.csproj" />
     <ProjectReference Include="../../src/NexusMods.Abstractions.NexusModsLibrary/NexusMods.Abstractions.NexusModsLibrary.csproj" />
+    <ProjectReference Include="..\..\src\NexusMods.Backend\NexusMods.Backend.csproj" />
     <ProjectReference Include="..\..\src\NexusMods.DataModel\NexusMods.DataModel.csproj" />
-    <ProjectReference Include="..\..\src\NexusMods.Settings\NexusMods.Settings.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Xunit.DependencyInjection" />
