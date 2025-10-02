@@ -1942,7 +1942,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     /// These files will not be backed up and will not be included in the loadout directly. Instead, they are
     /// generated at sync time by calling the implementations of the files themselves. 
     /// </summary>
-    protected virtual Dictionary<GamePath, IIntrinsicFile> IntrinsicFiles(Loadout.ReadOnly loadout)
+    public virtual Dictionary<GamePath, IIntrinsicFile> IntrinsicFiles(Loadout.ReadOnly loadout)
     {
         return new();
     }

@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using FomodInstaller.Utils.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Sdk.Settings;
 using NexusMods.Abstractions.Diagnostics;
@@ -13,7 +14,9 @@ using NexusMods.DataModel.JsonConverters;
 using NexusMods.DataModel.SchemaVersions;
 using NexusMods.DataModel.Sorting;
 using NexusMods.DataModel.Synchronizer;
+using NexusMods.DataModel.Synchronizer.DbFunctions;
 using NexusMods.DataModel.Undo;
+using NexusMods.HyperDuck;
 using NexusMods.HyperDuck.Adaptor.Impls.ValueAdaptor;
 using NexusMods.MnemonicDB;
 using NexusMods.MnemonicDB.Abstractions;
@@ -23,6 +26,8 @@ using NexusMods.Paths;
 using NexusMods.Sdk;
 using NexusMods.Sdk.FileStore;
 using NexusMods.Sdk.Resources;
+
+using IFileSystem = NexusMods.Paths.IFileSystem;
 
 namespace NexusMods.DataModel;
 
@@ -39,6 +44,9 @@ public static class Services
         coll.AddMigrations();
 
         coll.AddAmbientQueriesSql();
+        coll.AddSynchronizerSql();
+        coll.AddSingleton<ATableFunction, IntrinsicFiles>();
+        coll.AddSingleton<AScalarFunction, FNV1aHashScalar>();
         coll.AddValueAdaptor<ushort, LocationId>(LocationId.From);
 
         // Settings

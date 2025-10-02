@@ -16,7 +16,6 @@
     <ProjectReference Include="..\..\src\NexusMods.DataModel\NexusMods.DataModel.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Xunit.DependencyInjection" />
     <PackageReference Include="Microsoft.Extensions.Hosting" />
     <PackageReference Include="NexusMods.MnemonicDB" />
   </ItemGroup>

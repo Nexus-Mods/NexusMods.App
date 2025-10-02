@@ -20,8 +20,7 @@ public readonly partial struct LocationId
     /// <exception cref="InvalidOperationException"></exception>
     public static LocationId From(string value)
     {
-        var hash = FNV1aHash.Hash(value);
-        var mixed = (ushort) ((hash >> 16) ^ (hash & 0xFFFF));
+        var mixed = FNV1aHash.MixToShort(FNV1aHash.Hash(value));
         if (_cache.TryGetValue(mixed, out var existing))
         {
             if (existing != value)
