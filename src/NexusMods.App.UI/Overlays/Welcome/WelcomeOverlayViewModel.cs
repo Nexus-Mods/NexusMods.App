@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.NexusWebApi;
-using NexusMods.Abstractions.Settings;
+using NexusMods.Sdk.Settings;
 using NexusMods.Abstractions.Telemetry;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Settings;

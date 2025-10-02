@@ -8,6 +8,7 @@ using NexusMods.App.UI.Controls.Filters;
 using NexusMods.App.UI.Controls.TreeDataGrid.Filters;
 using NexusMods.App.UI.Resources;
 using NexusMods.Paths;
+using NexusMods.UI.Sdk;
 using R3;
 
 namespace NexusMods.App.UI.Pages.Downloads;

@@ -64,7 +64,9 @@ using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceAttachments;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Paths;
+using NexusMods.Sdk.Settings;
 using NexusMods.UI.Sdk;
+using NexusMods.UI.Sdk.Settings;
 using ReactiveUI;
 using ImageButton = NexusMods.App.UI.Controls.Spine.Buttons.Image.ImageButton;
 using NexusLoginOverlayView = NexusMods.App.UI.Overlays.Login.NexusLoginOverlayView;
@@ -293,6 +295,9 @@ public static class Services
 
             // Settings
             .AddUISettings()
+            .AddSingleton<IInteractionControlFactory<SingleValueMultipleChoiceContainerOptions>, SettingComboBoxFactory>()
+            .AddSingleton<IInteractionControlFactory<BooleanContainerOptions>, SettingToggleFactory>()
+            .AddSingleton<IInteractionControlFactory<ConfigurablePathsContainerOption>, SettingPathsFactory>()
 
             // Other
             .AddSingleton<InjectedViewLocator>()

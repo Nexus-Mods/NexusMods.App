@@ -1,13 +1,13 @@
-using NexusMods.Abstractions.Settings;
 using NexusMods.Abstractions.UI;
+using NexusMods.UI.Sdk.Settings;
 
 namespace NexusMods.App.UI.Controls.Settings.Section;
 
 public class SettingSectionViewModel : AViewModel<ISettingSectionViewModel>, ISettingSectionViewModel
 {
-    public ISettingsSectionDescriptor Descriptor { get; }
+    public SectionDescriptor Descriptor { get; }
 
-    public SettingSectionViewModel(ISettingsSectionDescriptor descriptor)
+    public SettingSectionViewModel(SectionDescriptor descriptor)
     {
         Descriptor = descriptor;
     }

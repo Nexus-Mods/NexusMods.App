@@ -1,8 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.Settings;
+using NexusMods.Backend;
 using NexusMods.CrossPlatform;
 using NexusMods.Paths;
-using NexusMods.Settings;
+using NexusMods.Sdk.Settings;
 
 namespace NexusMods.FileExtractor.Tests;
 

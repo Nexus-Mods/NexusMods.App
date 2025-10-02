@@ -1,9 +1,9 @@
 using Avalonia.Platform.Storage;
-using NexusMods.Abstractions.Settings;
+using NexusMods.UI.Sdk.Settings;
 
 namespace NexusMods.App.UI.Controls.Settings.SettingEntries.PathsList;
 
-public interface ISettingPathsViewModel : ISettingInteractionControl
+public interface ISettingPathsViewModel : IInteractionControl
 {
     ConfigurablePathsContainer ConfigurablePathsContainer { get; }
 

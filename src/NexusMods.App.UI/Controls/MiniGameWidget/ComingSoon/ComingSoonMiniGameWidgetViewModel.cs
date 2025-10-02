@@ -1,8 +1,8 @@
 using System.Reactive;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.Settings;
 using NexusMods.Abstractions.UI;
 using NexusMods.CrossPlatform.Process;
+using NexusMods.Sdk.Settings;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.Controls.MiniGameWidget.ComingSoon;

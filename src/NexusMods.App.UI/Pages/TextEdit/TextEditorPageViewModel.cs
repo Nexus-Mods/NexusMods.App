@@ -9,7 +9,7 @@ using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.Settings;
+using NexusMods.Sdk.Settings;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Settings;
 using NexusMods.App.UI.Windows;
@@ -24,6 +24,7 @@ using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using TextMateSharp.Grammars;
 using Hash = NexusMods.Hashing.xxHash3.Hash;
+using ObservableExtensions = R3.ObservableExtensions;
 
 namespace NexusMods.App.UI.Pages.TextEdit;
 
@@ -148,8 +149,7 @@ public class TextEditorPageViewModel : APageViewModel<ITextEditorPageViewModel>,
                 })
                 .DisposeWith(disposables);
 
-            settingsManager
-                .GetChanges<TextEditorSettings>()
+            ObservableExtensions.AsSystemObservable(settingsManager.GetChanges<TextEditorSettings>(prependCurrent: false))
                 .OnUI()
                 .SubscribeWithErrorLogging(settings =>
                 {

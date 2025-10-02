@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.Settings;
+using NexusMods.Sdk.Settings;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.GC;
@@ -11,7 +11,6 @@ using NexusMods.DataModel.CommandLine.Verbs;
 using NexusMods.DataModel.Diagnostics;
 using NexusMods.DataModel.JsonConverters;
 using NexusMods.DataModel.SchemaVersions;
-using NexusMods.DataModel.Settings;
 using NexusMods.DataModel.Sorting;
 using NexusMods.DataModel.Synchronizer;
 using NexusMods.DataModel.Undo;
@@ -44,8 +43,6 @@ public static class Services
 
         // Settings
         coll.AddSettings<DataModelSettings>();
-        coll.AddSettingsStorageBackend<MnemonicDBSettingsBackend>(isDefault: true);
-        coll.AddAttributeCollection(typeof(Setting));
 
         coll.AddSingleton<DatomStoreSettings>(sp =>
             {

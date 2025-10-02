@@ -1,9 +1,9 @@
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.Settings;
 using NexusMods.Paths;
 using NexusMods.Sdk;
+using NexusMods.Sdk.Settings;
 
 namespace NexusMods.CrossPlatform;
 
@@ -65,40 +65,51 @@ public record LoggingSettings : ISettings
     {
         return settingsBuilder
             .ConfigureDefault(serviceProvider => CreateDefault(serviceProvider.GetRequiredService<IFileSystem>().OS))
-            .ConfigureStorageBackend<LoggingSettings>(builder => builder.UseJson())
-            .AddToUI<LoggingSettings>(builder => builder
-                .AddPropertyToUI(x => x.MinimumLevel, propertyBuilder => propertyBuilder
-                    .AddToSection(Sections.General)
-                    .WithDisplayName("Minimum logging level")
-                    .WithDescription("Sets the minimum logging level. Recommended: Debug")
-                    .UseSingleValueMultipleChoiceContainer(
-                        valueComparer: EqualityComparer<LogLevel>.Default,
-                        allowedValues: [
-                            LogLevel.Information,
-                            LogLevel.Debug,
-                            LogLevel.Trace,
-                        ],
-                        valueToDisplayString: static logLevel => logLevel.ToString()
-                    )
-                    .RequiresRestart()
+            .ConfigureBackend(StorageBackendOptions.Use(StorageBackends.Json))
+            .ConfigureProperty(
+                x => x.MinimumLevel,
+                new PropertyOptions<LoggingSettings, LogLevel>
+                {
+                    Section = Sections.General,
+                    DisplayName = "Minimum logging level",
+                    DescriptionFactory = _ => "Sets the minimum logging level. Recommended: Debug",
+                    RequiresRestart = true,
+                },
+                SingleValueMultipleChoiceContainerOptions.Create(
+                    valueComparer: EqualityComparer<LogLevel>.Default,
+                    allowedValues:
+                    [
+                        LogLevel.Information,
+                        LogLevel.Debug,
+                        LogLevel.Trace,
+                    ],
+                    valueToDisplayString: static logLevel => logLevel.ToString()
                 )
-                .AddPropertyToUI(x => x.LogToConsole, propertyBuilder => propertyBuilder
-                    .AddToSection(Sections.DeveloperTools)
-                    .WithDisplayName("Log to console")
-                    .WithDescription("Enables the ConsoleTarget (stdout) for all loggers.")
-                    .UseBooleanContainer()
-                    .RequiresRestart()
-                )
-                .AddPropertyToUI(x => x.ShowExceptions, propertyBuilder => propertyBuilder
-                    .AddToSection(Sections.DeveloperTools)
-                    .WithDisplayName("Show exception modal")
-                    .WithDescription("Enables the exception modal.")
-                    .UseBooleanContainer()
-                    .RequiresRestart()
-                )
+            )
+            .ConfigureProperty(
+                x => x.LogToConsole,
+                new PropertyOptions<LoggingSettings, bool>
+                {
+                    Section = Sections.DeveloperTools,
+                    DisplayName = "Log to console",
+                    DescriptionFactory = _ => "Enables the ConsoleTarget (stdout) for all loggers.",
+                    RequiresRestart = true,
+                },
+                new BooleanContainerOptions()
+            )
+            .ConfigureProperty(
+                x => x.ShowExceptions,
+                new PropertyOptions<LoggingSettings, bool>
+                {
+                    Section = Sections.DeveloperTools,
+                    DisplayName = "Show exception modal",
+                    DescriptionFactory = _ => "Enables the exception modal.",
+                    RequiresRestart = true,
+                },
+                new BooleanContainerOptions()
             );
     }
-    
+
     public static AbsolutePath GetLogBaseFolder(IOSInformation os, IFileSystem fs)
     {
         var baseKnownPath = BaseKnownPath(os);

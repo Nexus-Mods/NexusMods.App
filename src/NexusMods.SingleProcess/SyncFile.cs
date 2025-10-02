@@ -1,6 +1,6 @@
 using System.Diagnostics;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.Settings;
+using NexusMods.Sdk.Settings;
 
 namespace NexusMods.SingleProcess;
 

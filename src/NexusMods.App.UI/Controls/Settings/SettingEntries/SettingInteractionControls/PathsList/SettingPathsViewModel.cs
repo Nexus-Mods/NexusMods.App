@@ -1,20 +1,25 @@
 using System.Reactive.Disposables;
-using System.Reactive.Linq;
 using Avalonia.Platform.Storage;
-using NexusMods.Abstractions.Settings;
+using JetBrains.Annotations;
+using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.UI;
 using NexusMods.CrossPlatform.Process;
+using NexusMods.Sdk;
+using NexusMods.Sdk.Settings;
+using NexusMods.UI.Sdk.Settings;
 using R3;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
+using ConfigurablePathsContainer = NexusMods.UI.Sdk.Settings.ConfigurablePathsContainer;
 using Disposable = R3.Disposable;
+using ISettingsManager = NexusMods.Sdk.Settings.ISettingsManager;
 using ReactiveCommand = R3.ReactiveCommand;
 
 namespace NexusMods.App.UI.Controls.Settings.SettingEntries.PathsList;
 
 public class SettingPathsViewModel : AViewModel<ISettingPathsViewModel>, ISettingPathsViewModel
 {
-    public IValueContainer ValueContainer => ConfigurablePathsContainer;
+    public IPropertyValueContainer ValueContainer => ConfigurablePathsContainer;
     public ConfigurablePathsContainer ConfigurablePathsContainer { get; }
     [Reactive] public bool HasChanged { get; private set; }
 
@@ -52,3 +57,24 @@ public class SettingPathsViewModel : AViewModel<ISettingPathsViewModel>, ISettin
         });
     }
 }
+
+[UsedImplicitly]
+public class SettingPathsFactory : IInteractionControlFactory<ConfigurablePathsContainerOption>
+{
+    public IInteractionControl Create(
+        IServiceProvider serviceProvider,
+        ISettingsManager settingsManager,
+        ConfigurablePathsContainerOption containerOptions,
+        PropertyConfig propertyConfig)
+    {
+        return new SettingPathsViewModel(
+             osInterop: serviceProvider.GetRequiredService<IOSInterop>(),
+             pathsContainer: new ConfigurablePathsContainer(
+                 value: propertyConfig.GetValueCasted<ConfigurablePath[]>(settingsManager),
+                 defaultValue: propertyConfig.GetDefaultValueCasted<ConfigurablePath[]>(settingsManager),
+                 config: propertyConfig
+             )
+        );
+    }
+}
+

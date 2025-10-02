@@ -11,7 +11,6 @@
       <ProjectReference Include="..\..\src\NexusMods.DataModel\NexusMods.DataModel.csproj" />
       <ProjectReference Include="..\..\src\NexusMods.Jobs\NexusMods.Jobs.csproj" />
       <ProjectReference Include="..\..\src\NexusMods.Library\NexusMods.Library.csproj" />
-      <ProjectReference Include="..\..\src\NexusMods.Settings\NexusMods.Settings.csproj" />
       <ProjectReference Include="..\..\src\NexusMods.StandardGameLocators\NexusMods.StandardGameLocators.csproj" />
       <ProjectReference Include="..\Games\NexusMods.Games.TestFramework\NexusMods.Games.TestFramework.csproj" />
       <ProjectReference Include="..\NexusMods.StandardGameLocators.TestHelpers\NexusMods.StandardGameLocators.TestHelpers.csproj" />

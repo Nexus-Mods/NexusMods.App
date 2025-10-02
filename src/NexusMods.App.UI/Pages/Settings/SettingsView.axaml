@@ -9,8 +9,8 @@
                                 xmlns:ui1="clr-namespace:NexusMods.Abstractions.UI;assembly=NexusMods.Abstractions.UI"
                                 xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
                                 xmlns:pageHeader="clr-namespace:NexusMods.App.UI.Controls.PageHeader"
+                                xmlns:ui="clr-namespace:NexusMods.Abstractions.UI;assembly=NexusMods.UI.Sdk"
                                 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-                                d:DataContext="{d:DesignInstance Type=settings:SettingsPageDesignViewModel, IsDesignTimeCreatable=True}"
                                 x:Class="NexusMods.App.UI.Pages.Settings.SettingsView">
 
     <DockPanel>
@@ -63,7 +63,7 @@
                             </ItemsControl.ItemsPanel>
 
                             <ItemsControl.ItemTemplate>
-                                <DataTemplate DataType="{x:Type ui1:IViewModelInterface}">
+                                <DataTemplate DataType="{x:Type ui:IViewModelInterface}">
                                     <reactiveUi:ViewModelViewHost ViewModel="{CompiledBinding .}" />
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
