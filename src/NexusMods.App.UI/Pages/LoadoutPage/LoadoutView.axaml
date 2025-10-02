@@ -268,7 +268,13 @@
                                       CanUserResizeColumns="True"
                                       CanUserSortColumns="True"
                                       Classes="MainListsStyling"
-                                      Margin="0 8 0 0" />
+                                      Margin="0 8 0 0" >
+                            <TreeDataGrid.Styles>
+                                <Style Selector="TreeDataGridRow">
+                                    <Setter Property="ContextFlyout" Value="{StaticResource LoadoutItemMenuFlyout}" />
+                                </Style>
+                            </TreeDataGrid.Styles>
+                        </TreeDataGrid>
                     </controls:EmptyState>
                 </Grid>
             </TabItem>
