@@ -1,8 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.Settings;
+using NexusMods.Sdk.Settings;
+using NexusMods.Backend;
 using NexusMods.Paths;
-using NexusMods.Settings;
 using Xunit.DependencyInjection;
 
 namespace NexusMods.CrossPlatform.Tests;

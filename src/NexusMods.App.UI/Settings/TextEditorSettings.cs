@@ -1,5 +1,5 @@
 using JetBrains.Annotations;
-using NexusMods.Abstractions.Settings;
+using NexusMods.Sdk.Settings;
 using TextMateSharp.Grammars;
 
 namespace NexusMods.App.UI.Settings;

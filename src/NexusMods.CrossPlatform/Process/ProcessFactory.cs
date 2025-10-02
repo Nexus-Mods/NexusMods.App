@@ -1,6 +1,6 @@
 using CliWrap;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.Settings;
+using NexusMods.Sdk.Settings;
 using NexusMods.Paths;
 using NexusMods.Paths.Utilities;
 

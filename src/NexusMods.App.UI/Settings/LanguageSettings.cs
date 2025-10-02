@@ -2,7 +2,7 @@ using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Humanizer;
-using NexusMods.Abstractions.Settings;
+using NexusMods.Sdk.Settings;
 
 namespace NexusMods.App.UI.Settings;
 
@@ -35,17 +35,19 @@ public record LanguageSettings : ISettings
 
     public static ISettingsBuilder Configure(ISettingsBuilder settingsBuilder)
     {
-        return settingsBuilder.AddToUI<LanguageSettings>(builder => builder
-            .AddPropertyToUI(x => x.UICulture, propertyBuilder => propertyBuilder
-                .AddToSection(Sections.General)
-                .WithDisplayName("Language")
-                .WithDescription("Set the language for the application.")
-                .UseSingleValueMultipleChoiceContainer(
-                    valueComparer: CultureInfoComparer.Instance,
-                    allowedValues: SupportedLanguages,
-                    valueToDisplayString: static cultureInfo => To.TitleCase.Transform(cultureInfo.NativeName, culture: CultureInfo.InvariantCulture)
-                )
-                .RequiresRestart()
+        return settingsBuilder.ConfigureProperty(
+            x => x.UICulture,
+            new PropertyOptions<LanguageSettings, CultureInfo>
+            {
+                Section = Sections.General,
+                DisplayName = "Language",
+                DescriptionFactory = _ => "Set the language for the application.",
+                RequiresRestart = true,
+            },
+            SingleValueMultipleChoiceContainerOptions.Create(
+                valueComparer: CultureInfoComparer.Instance,
+                allowedValues: SupportedLanguages,
+                valueToDisplayString: static cultureInfo => To.TitleCase.Transform(cultureInfo.NativeName, culture: CultureInfo.InvariantCulture)
             )
         );
     }

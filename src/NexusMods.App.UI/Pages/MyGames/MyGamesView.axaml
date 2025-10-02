@@ -18,7 +18,8 @@
     xmlns:panels="clr-namespace:Avalonia.Labs.Panels;assembly=Avalonia.Labs.Panels"
     xmlns:pageHeader="clr-namespace:NexusMods.App.UI.Controls.PageHeader"
     xmlns:standard="clr-namespace:NexusMods.App.UI.Controls.MiniGameWidget.Standard"
-    xmlns:ui="clr-namespace:NexusMods.Abstractions.UI;assembly=NexusMods.Abstractions.UI">
+    xmlns:ui="clr-namespace:NexusMods.Abstractions.UI;assembly=NexusMods.Abstractions.UI"
+    xmlns:ui1="clr-namespace:NexusMods.Abstractions.UI;assembly=NexusMods.UI.Sdk">
 
     <Design.DataContext>
         <myGames:MyGamesDesignViewModel />
@@ -131,7 +132,7 @@
                                 </ItemsPanelTemplate>
                             </ItemsControl.ItemsPanel>
                             <ItemsControl.ItemTemplate>
-                                <DataTemplate DataType="ui:IViewModelInterface">
+                                <DataTemplate DataType="ui1:IViewModelInterface">
                                     <reactiveUi:ViewModelViewHost ViewModel="{CompiledBinding .}" />
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>

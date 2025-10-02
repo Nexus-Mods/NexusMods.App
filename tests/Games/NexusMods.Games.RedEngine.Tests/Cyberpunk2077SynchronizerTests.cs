@@ -1,11 +1,9 @@
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.Settings;
+using NexusMods.Sdk.Settings;
 using NexusMods.Games.RedEngine.Cyberpunk2077;
 using NexusMods.Games.TestFramework;
-using NexusMods.Games.TestFramework.FluentAssertionExtensions;
-using NexusMods.Paths.Extensions;
 
 namespace NexusMods.Games.RedEngine.Tests;
 
