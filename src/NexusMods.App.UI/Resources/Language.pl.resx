@@ -1117,7 +1117,7 @@ Zachować pobrane pliki w bibliotece na wypadek późniejszej próby instalacji?
         <value>Kontynuuj ręczną instalację</value>
     </data>
     <data name="CollectionStatus_Listed" xml:space="preserve">
-        <value>Widczona</value>
+        <value>Widoczna</value>
     </data>
     <data name="CollectionStatus_Unlisted" xml:space="preserve">
         <value>Niewidoczna</value>
