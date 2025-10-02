@@ -8,10 +8,11 @@
     
     
     <!-- LibraryItemMenuFlyout - Reusable MenuFlyout for library items -->
-    <MenuFlyout x:Key="LibraryItemMenuFlyout" FlyoutPresenterClasses="TreeDataGridMenu">
+    <MenuFlyout x:Key="LibraryItemMenuFlyout" FlyoutPresenterClasses="TreeDataGridMenu"
+                x:DataType="{x:Type controls:CompositeItemModel, x:TypeArguments=abstractions:EntityId}">
         
         <!-- Update (and Replace) -->
-        <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{Binding}">
+        <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
             <controls:ComponentControl.ComponentTemplate>
                 <controls:ComponentTemplate x:TypeArguments="local:LibraryComponents+UpdateAction"
                                             ComponentKey="{x:Static local:LibraryColumns+Actions.UpdateComponentKey}">
@@ -31,7 +32,7 @@
         </controls:ComponentControl>
         
         <!-- Update and Keep Old Mod -->
-        <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{Binding}">
+        <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
             <controls:ComponentControl.ComponentTemplate>
                 <controls:ComponentTemplate x:TypeArguments="local:LibraryComponents+UpdateAction"
                                             ComponentKey="{x:Static local:LibraryColumns+Actions.UpdateComponentKey}">
@@ -50,7 +51,7 @@
         </controls:ComponentControl>
 
         <!-- Hide Updates -->
-        <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{Binding}">
+        <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
             <controls:ComponentControl.ComponentTemplate>
                 <controls:ComponentTemplate x:TypeArguments="local:LibraryComponents+HideUpdatesAction"
                                             ComponentKey="{x:Static local:LibraryColumns+Actions.HideUpdatesComponentKey}">
@@ -71,7 +72,7 @@
         </controls:ComponentControl>
 
         <!-- View Changelog -->
-        <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{Binding}">
+        <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
             <controls:ComponentControl.ComponentTemplate>
                 <controls:ComponentTemplate
                     x:TypeArguments="local:LibraryComponents+ViewChangelogAction"
@@ -95,7 +96,7 @@
         <Separator/>
 
         <!-- View Mod Page -->
-        <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{Binding}">
+        <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
             <controls:ComponentControl.ComponentTemplate>
                 <controls:ComponentTemplate x:TypeArguments="controls:SharedComponents+ViewModPageAction"
                                             ComponentKey="{x:Static local:LibraryColumns+Actions.ViewModPageComponentKey}">
@@ -115,7 +116,7 @@
         </controls:ComponentControl>
         
         <!-- Delete item -->
-        <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{Binding}">
+        <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
             <controls:ComponentControl.ComponentTemplate>
                 <controls:ComponentTemplate x:TypeArguments="local:LibraryComponents+DeleteItemAction"
                                             ComponentKey="{x:Static local:LibraryColumns+Actions.DeleteItemComponentKey}">

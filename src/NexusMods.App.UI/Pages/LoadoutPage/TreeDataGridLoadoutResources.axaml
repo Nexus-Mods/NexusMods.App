@@ -9,9 +9,11 @@
                     xmlns:resources="clr-namespace:NexusMods.App.UI.Resources">
 
     <!-- LoadoutItemMenuFlyout - Reusable MenuFlyout for loadout items -->
-    <MenuFlyout x:Key="LoadoutItemMenuFlyout" FlyoutPresenterClasses="TreeDataGridMenu">
+    <MenuFlyout x:Key="LoadoutItemMenuFlyout" FlyoutPresenterClasses="TreeDataGridMenu"
+                x:DataType="{x:Type controls:CompositeItemModel, x:TypeArguments=abstractions:EntityId}">
+        
         <!-- View Mod Page -->
-        <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{Binding}">
+        <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
             <controls:ComponentControl.ComponentTemplate>
                 <controls:ComponentTemplate x:TypeArguments="controls:SharedComponents+ViewModPageAction"
                                             ComponentKey="{x:Static local:LoadoutColumns+EnabledState.ViewModPageComponentKey}">
@@ -31,7 +33,7 @@
         </controls:ComponentControl>
         
         <!-- View mod files action -->
-        <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{Binding}">
+        <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
             <controls:ComponentControl.ComponentTemplate>
                 <controls:ComponentTemplate x:TypeArguments="controls:SharedComponents+ViewModFilesAction"
                                             ComponentKey="{x:Static local:LoadoutColumns+EnabledState.ViewModFilesComponentKey}">
@@ -52,7 +54,7 @@
         </controls:ComponentControl>
         
         <!-- Uninstall item action -->
-        <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{Binding}">
+        <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
             <controls:ComponentControl.ComponentTemplate>
                 <controls:ComponentTemplate x:TypeArguments="controls:SharedComponents+UninstallItemAction"
                                             ComponentKey="{x:Static local:LoadoutColumns+EnabledState.UninstallItemComponentKey}">
