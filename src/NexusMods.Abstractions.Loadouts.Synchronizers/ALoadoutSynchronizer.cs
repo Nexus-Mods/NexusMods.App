@@ -1788,65 +1788,76 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     /// <inheritdoc />
     public async Task UnManage(GameInstallation installation, bool runGc = true, bool cleanGameFolder = true)
     {
-        await _jobMonitor.Begin(new UnmanageGameJob(installation), async ctx =>
-            {
-                var metadata = installation.GetMetadata(Connection);
-
-                if (GetCurrentlyActiveLoadout(installation).HasValue && cleanGameFolder)
-                    await DeactivateCurrentLoadout(installation);
-
-                await ctx.YieldAsync();
-
+        var sharedSemaphore = _synchronizerService.GetSharedSemaphore();
+        await sharedSemaphore.WaitAsync();
+        try
+        {
+            await _jobMonitor.Begin(new UnmanageGameJob(installation), async ctx =>
                 {
-                    using var tx1 = Connection.BeginTransaction();
+                    var metadata = installation.GetMetadata(Connection);
+
+                    if (GetCurrentlyActiveLoadout(installation).HasValue && cleanGameFolder)
+                        await DeactivateCurrentLoadout(installation);
+
+                    await ctx.YieldAsync();
+
+                    {
+                        using var tx1 = Connection.BeginTransaction();
+                        foreach (var loadout in metadata.Loadouts)
+                        {
+                            tx1.Add(loadout.Id, Loadout.LoadoutKind, LoadoutKind.Deleted);
+                        }
+
+                        await tx1.Commit();
+
+                        metadata = installation.GetMetadata(Connection);
+                        Debug.Assert(metadata.Loadouts.All(x => !x.IsVisible()), "all loadouts shouldn't be visible anymore");
+                    }
+
                     foreach (var loadout in metadata.Loadouts)
                     {
-                        tx1.Add(loadout.Id, Loadout.LoadoutKind, LoadoutKind.Deleted);
+                        Logger.LogInformation("Deleting loadout {Loadout} - {ShortName}", loadout.Name, loadout.ShortName);
+                        await ctx.YieldAsync();
+                        await DeleteLoadout(loadout, GarbageCollectorRunMode.DoNotRun, deactivateIfActive: cleanGameFolder);
                     }
-                    await tx1.Commit();
 
-                    metadata = installation.GetMetadata(Connection);
-                    Debug.Assert(metadata.Loadouts.All(x => !x.IsVisible()), "all loadouts shouldn't be visible anymore");
-                }
+                    // Retract all `GameBakedUpFile` entries to allow for game file backups to be cleaned up from the FileStore
+                    using var tx = Connection.BeginTransaction();
+                    foreach (var file in GameBackedUpFile.All(Connection.Db))
+                    {
+                        if (file.GameInstallId.Value == installation.GameMetadataId)
+                            tx.Delete(file, recursive: false);
+                    }
 
-                foreach (var loadout in metadata.Loadouts)
-                {
-                    Logger.LogInformation("Deleting loadout {Loadout} - {ShortName}", loadout.Name, loadout.ShortName);
-                    await ctx.YieldAsync();
-                    await DeleteLoadout(loadout, GarbageCollectorRunMode.DoNotRun, deactivateIfActive: cleanGameFolder);
-                }
-                
-                // Retract all `GameBakedUpFile` entries to allow for game file backups to be cleaned up from the FileStore
-                using var tx = Connection.BeginTransaction();
-                foreach (var file in GameBackedUpFile.All(Connection.Db))
-                {
-                    if (file.GameInstallId.Value == installation.GameMetadataId)
-                        tx.Delete(file, recursive: false);
-                }
-                
-                // Delete the last applied/scanned disk state data
-                metadata = metadata.Rebase();
-                
-                foreach (var entry in metadata.DiskStateEntries)
-                {
-                    tx.Delete(entry, recursive: false);
-                }
-                if (metadata.Contains(GameInstallMetadata.LastSyncedLoadoutId))
-                    tx.Retract(metadata, GameInstallMetadata.LastSyncedLoadoutId, metadata.LastSyncedLoadoutId.Value);
-                if (metadata.Contains(GameInstallMetadata.LastSyncedLoadoutTransactionId))
-                    tx.Retract(metadata, GameInstallMetadata.LastSyncedLoadoutTransactionId, metadata.LastSyncedLoadoutTransactionId.Value);
-                if (metadata.Contains(GameInstallMetadata.InitialDiskStateTransactionId))
-                    tx.Retract(metadata, GameInstallMetadata.InitialDiskStateTransactionId, metadata.InitialDiskStateTransactionId.Value);
-                if (metadata.Contains(GameInstallMetadata.LastScannedDiskStateTransactionId))
-                    tx.Retract(metadata, GameInstallMetadata.LastScannedDiskStateTransactionId ,metadata.LastScannedDiskStateTransactionId.Value);
-                
-                await tx.Commit();
+                    // Delete the last applied/scanned disk state data
+                    metadata = metadata.Rebase();
 
-                if (runGc)
-                    _garbageCollectorRunner.Run();
-                return installation;
-            }
-        );
+                    foreach (var entry in metadata.DiskStateEntries)
+                    {
+                        tx.Delete(entry, recursive: false);
+                    }
+
+                    if (metadata.Contains(GameInstallMetadata.LastSyncedLoadoutId))
+                        tx.Retract(metadata, GameInstallMetadata.LastSyncedLoadoutId, metadata.LastSyncedLoadoutId.Value);
+                    if (metadata.Contains(GameInstallMetadata.LastSyncedLoadoutTransactionId))
+                        tx.Retract(metadata, GameInstallMetadata.LastSyncedLoadoutTransactionId, metadata.LastSyncedLoadoutTransactionId.Value);
+                    if (metadata.Contains(GameInstallMetadata.InitialDiskStateTransactionId))
+                        tx.Retract(metadata, GameInstallMetadata.InitialDiskStateTransactionId, metadata.InitialDiskStateTransactionId.Value);
+                    if (metadata.Contains(GameInstallMetadata.LastScannedDiskStateTransactionId))
+                        tx.Retract(metadata, GameInstallMetadata.LastScannedDiskStateTransactionId, metadata.LastScannedDiskStateTransactionId.Value);
+
+                    await tx.Commit();
+
+                    if (runGc)
+                        _garbageCollectorRunner.Run();
+                    return installation;
+                }
+            );
+        }
+        finally
+        {
+            sharedSemaphore.Release();
+        }
     }
 
     /// <inheritdoc />

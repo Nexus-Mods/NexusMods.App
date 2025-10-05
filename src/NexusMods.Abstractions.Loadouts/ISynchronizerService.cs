@@ -24,6 +24,11 @@ public interface ISynchronizerService
     public FileDiffTree GetApplyDiffTree(LoadoutId loadout);
 
     /// <summary>
+    /// Returns the instance of the synchronizer's semaphore.
+    /// </summary>
+    public SemaphoreSlim GetSharedSemaphore();
+    
+    /// <summary>
     /// Returns the last applied loadout for a given game installation.
     /// </summary>
     public bool TryGetLastAppliedLoadout(GameInstallation gameInstallation, out Loadout.ReadOnly loadout);

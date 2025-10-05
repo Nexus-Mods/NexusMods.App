@@ -111,6 +111,9 @@ public class SynchronizerService : ISynchronizerService
         );
     }
 
+    /// <inheritdoc />
+    public SemaphoreSlim GetSharedSemaphore() => _semaphore;
+
     private SynchronizerState GetOrAddLoadoutState(LoadoutId loadoutId)
     {
         lock (_lock)
