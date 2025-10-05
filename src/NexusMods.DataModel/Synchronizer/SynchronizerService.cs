@@ -86,6 +86,14 @@ public class SynchronizerService : ISynchronizerService
         await _jobMonitor.Begin(new SynchronizeLoadoutJob(loadoutId),
             async ctx =>
             {
+                var unManageJob = _jobMonitor.Jobs
+                    .FirstOrDefault(j => j.Definition is UnmanageGameJob);
+                if (unManageJob != null)
+                {
+                    _jobMonitor.Cancel(_jobMonitor.Jobs.First(j => j.Definition is SynchronizeLoadoutJob).Id);
+                    return Unit.Default;
+                }
+
                 var job = ctx.Definition;
                 await _semaphore.WaitAsync();
                 try

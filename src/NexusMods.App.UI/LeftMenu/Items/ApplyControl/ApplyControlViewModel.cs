@@ -111,13 +111,14 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
                     .Subscribe(status =>
                     {
                         var (ldStatus, isProcessing,  gameStatus, running) = status;
-                        
+                        var hasUnmanageJob = _jobMonitor.Jobs.Any(job => job.Definition is UnmanageGameJob);
                         IsProcessing = isProcessing;
                         CanApply = !isProcessing
                                    && !running
                                    && gameStatus != GameSynchronizerState.Busy
                                    && ldStatus != LoadoutSynchronizerState.Pending
-                                   && ldStatus != LoadoutSynchronizerState.Current;
+                                   && ldStatus != LoadoutSynchronizerState.Current
+                                   && !hasUnmanageJob;
                         IsLaunchButtonEnabled = !isProcessing 
                                                 && !running
                                                 && gameStatus != GameSynchronizerState.Busy
