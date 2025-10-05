@@ -50,7 +50,7 @@ public abstract class AGame : IGame
     
     private ISortOrderManager MakeSortOrderManager(IServiceProvider provider, IGame game)
     {
-        var manager = new SortOrderManager(provider);
+        var manager = provider.GetRequiredService<SortOrderManager>();
         manager.RegisterSortOrderVarieties(GetSortOrderVarieties(), game);
         return manager;
     }
@@ -81,9 +81,6 @@ public abstract class AGame : IGame
 
     /// <inheritdoc/>
     public virtual IDiagnosticEmitter[] DiagnosticEmitters { get; } = [];
-
-    /// <inheritdoc/>
-    public virtual ISortableItemProviderFactory[] SortableItemProviderFactories { get; } = [];
 
     /// <inheritdoc />
     public virtual ILoadoutSynchronizer Synchronizer => _synchronizer.Value;

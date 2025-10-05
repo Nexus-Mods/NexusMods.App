@@ -1,6 +1,7 @@
 using JetBrains.Annotations;
 using NexusMods.Abstractions.UI;
 using NexusMods.Abstractions.UI.Extensions;
+using NexusMods.UI.Sdk;
 using R3;
 
 namespace NexusMods.App.UI.Controls;

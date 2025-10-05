@@ -22,7 +22,7 @@ public abstract class ACreationEngineSynchronizer : ALoadoutSynchronizer
         };
     }
  
-    protected override Dictionary<GamePath, IIntrinsicFile> IntrinsicFiles(Loadout.ReadOnly _) => _intrinsicFiles;
+    public override Dictionary<GamePath, IIntrinsicFile> IntrinsicFiles(Loadout.ReadOnly _) => _intrinsicFiles;
     
     public override bool IsIgnoredBackupPath(GamePath path)
     {

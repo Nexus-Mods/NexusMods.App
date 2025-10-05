@@ -42,7 +42,9 @@ FROM (
                         ) AS ranking
          FROM redmod.LoadoutRedModGroups(db, loadoutId, gameLocationId) AS matchingMods
      ) ranked
-WHERE ranking = 1;
+WHERE ranking = 1
+-- For RedMods smallest sortIndex wins, so we put newest ModGroupId first
+ORDER BY ModGroupId DESC, ModFolderName ASC;
 
 
 -- Return the RedMod Sort Order for a given loadout including the loadout data

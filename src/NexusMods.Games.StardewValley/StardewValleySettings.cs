@@ -1,4 +1,4 @@
-using NexusMods.Abstractions.Settings;
+using NexusMods.Sdk.Settings;
 
 namespace NexusMods.Games.StardewValley;
 
@@ -11,17 +11,17 @@ public class StardewValleySettings : ISettings
     /// </summary>
     public bool DoFullGameBackup { get; set; } = false;
 
-
     public static ISettingsBuilder Configure(ISettingsBuilder settingsBuilder)
     {
-        return settingsBuilder.AddToUI<StardewValleySettings>(builder => builder
-            .AddPropertyToUI(x => x.DoFullGameBackup, propertyBuilder => propertyBuilder
-                .AddToSection(Sections.Experimental)
-                .WithDisplayName("Full game backup: Stardew Valley") 
-                .WithDescription("Backup all game folders, including the Content folder. This experimental setting is intended for developers testing the upcoming restore feature. Please note that this will increase disk space usage.")
-                .UseBooleanContainer()
-            )
+        return settingsBuilder.ConfigureProperty(
+            x => x.DoFullGameBackup,
+            new PropertyOptions<StardewValleySettings, bool>
+            {
+                Section = Sections.Experimental,
+                DisplayName = "Full game backup: Stardew Valley",
+                DescriptionFactory = _ => "Backup all game folders, this will greatly increase disk space usage. Should only be changed before managing the game.",
+            },
+            new BooleanContainerOptions()
         );
-        
     }
 }

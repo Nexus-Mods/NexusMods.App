@@ -7,13 +7,10 @@ using DynamicData;
 using DynamicData.Binding;
 using Humanizer;
 using NexusMods.Abstractions.Games;
-using NexusMods.Abstractions.Settings;
 using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Controls.Alerts;
-using NexusMods.App.UI.Settings;
 using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.Pages.Sorting;
 

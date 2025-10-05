@@ -1,8 +1,8 @@
 using System.Diagnostics;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.Settings;
 using NexusMods.App.UI.Settings;
+using NexusMods.Sdk.Settings;
 using NexusMods.CrossPlatform.Process;
 using NexusMods.Networking.GitHub;
 using NexusMods.Paths;

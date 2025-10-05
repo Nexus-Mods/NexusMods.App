@@ -4,7 +4,7 @@ using NexusMods.Abstractions.Cli;
 using NexusMods.Abstractions.FileExtractor;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.Settings;
+using NexusMods.Sdk.Settings;
 using NexusMods.CrossPlatform;
 using NexusMods.DataModel;
 using NexusMods.MnemonicDB.Abstractions;
@@ -76,10 +76,6 @@ internal static class CleanupVerbs
                 dataModelSettings.MnemonicDBPath.ToPath(fileSystem),
                 fileExtractorSettings.TempFolderLocation.ToPath(fileSystem),
                 LoggingSettings.GetLogBaseFolder(OSInformation.Shared, fileSystem),
-
-                // Note: This references backend directly in case we ever have
-                // switching backends out. At that point you'd add others here too.
-                JsonStorageBackend.GetConfigsFolderPath(fileSystem),
 
                 // The DataModel folder.
                 DataModelSettings.GetStandardDataModelFolder(fileSystem),

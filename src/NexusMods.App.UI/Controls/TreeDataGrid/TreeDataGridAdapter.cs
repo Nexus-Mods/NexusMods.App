@@ -11,6 +11,7 @@ using System.Reactive.Linq;
 using Avalonia.Input;
 using System.Diagnostics;
 using NexusMods.App.UI.Controls.Filters;
+using NexusMods.UI.Sdk;
 using static NexusMods.App.UI.Controls.Filters.Filter;
 
 namespace NexusMods.App.UI.Controls;

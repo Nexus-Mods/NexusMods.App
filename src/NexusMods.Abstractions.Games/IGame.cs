@@ -38,12 +38,6 @@ public interface IGame : ILocatableGame
     /// by the game.
     /// </summary>
     public IDiagnosticEmitter[] DiagnosticEmitters { get; }
-    
-    /// <summary>
-    /// An array of all instances of <see cref="ISortableItemProviderFactory"/> supported
-    /// by the game.
-    /// </summary>
-    public ISortableItemProviderFactory[] SortableItemProviderFactories { get; }
 
     /// <summary>
     /// The synchronizer for this game.

@@ -639,11 +639,9 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             CleanDirectories(foldersWithDeletedFiles, newState, loadout.InstallationInstance);
         }
 
-        loadout = await ReprocessOverrides(loadout);
-
         job?.SetStatus("Archive Cleanup");
         await _garbageCollectorRunner.RunAsync();
-        
+
 
         return loadout;
     }
@@ -687,18 +685,11 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
     }
 
-    private async ValueTask<Loadout.ReadOnly> ReprocessOverrides(Loadout.ReadOnly loadout)
-    {
-        loadout = await ReprocessGameUpdates(loadout);
-        return loadout;
-    }
-
     /// <summary>
-    /// When enough new files show up in overrides, we may need to reprocess them and change out the game version
-    /// to reflect the new files. This will happen when a game store updates the game files, overwriting the existing
-    /// game files.
+    /// Updates the locator IDs on the loadout if the game has been updated by the store.
+    /// This should be called before building the sync tree.
     /// </summary>
-    private async ValueTask<Loadout.ReadOnly> ReprocessGameUpdates(Loadout.ReadOnly loadout)
+    private async ValueTask<Loadout.ReadOnly> UpdateLocatorIds(Loadout.ReadOnly loadout)
     {
         var gameLocatorResults = loadout.InstallationInstance.Locator.Find(loadout.InstallationInstance.Game);
 
@@ -711,13 +702,13 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
         var metadataLocatorIds = gameLocatorResult.Metadata.ToLocatorIds().ToArray();
         var newLocatorIds = metadataLocatorIds.Distinct().ToArray();
-        
+
         if (newLocatorIds.Length != metadataLocatorIds.Length)
-            Logger.LogWarning("Found duplicate locator IDs `{LocatorIds}` on gameLocatorResult for game `{Game}` while reprocessing game updates", metadataLocatorIds, loadout.InstallationInstance.Game.Name);
-        
+            Logger.LogWarning("Found duplicate locator IDs `{LocatorIds}` on gameLocatorResult for game `{Game}` while updating locator IDs", metadataLocatorIds, loadout.InstallationInstance.Game.Name);
+
         var locatorsToAdd = newLocatorIds.Except(loadout.LocatorIds).ToArray();
         var locatorsToRemove = loadout.LocatorIds.Except(newLocatorIds).ToArray();
-        
+
         // No reason to change the loadout if the version is the same
         if (locatorsToAdd.Length == 0 && locatorsToRemove.Length == 0)
             return loadout;
@@ -730,41 +721,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             Logger.LogInformation("Locator IDs changed Current=`{CurrentIds}` ToAdd=`{ToAdd}` ToRemove=`{ToRemove}`", sCurrent, sToAdd, sToRemove);
         }
 
-        // Make a lookup set of the new files
-        var versionFiles = _fileHashService
-            .GetGameFiles((loadout.InstallationInstance.Store, newLocatorIds))
-            .Select(file => file.Path)
-            .ToHashSet();
-
-        // Find all files in the overrides that match a path in the new files
-        var toDelete = from grp in loadout.Items.OfTypeLoadoutItemGroup().OfTypeLoadoutOverridesGroup()
-            from item in grp.AsLoadoutItemGroup().Children.OfTypeLoadoutItemWithTargetPath()
-            let path = (GamePath)item.TargetPath
-            where versionFiles.Contains(path)
-            select item;
-        
-        
         using var tx = Connection.BeginTransaction();
-        var gameMetadataId = loadout.InstallationInstance.GameMetadataId;
-        
-        // Delete all the matching override files
-        foreach (var file in toDelete)
-        {
-            tx.Delete(file, recursive: false);
-
-            // The backed up file is being 'promoted' to a game file, which needs
-            // to be rooted explicitly in case the user uses a feature like 'undo'
-            // to roll back a game version on a store (like Xbox/Epic) which does
-            // not support downloading non-current version(s).
-            if (!file.TryGetAsLoadoutFile(out var loadoutFile)) 
-                continue;
-
-            _ = new GameBackedUpFile.New(tx)
-            {
-                Hash = loadoutFile.Hash,
-                GameInstallId = gameMetadataId,
-            };
-        }
 
         if (_fileHashService.TryGetVanityVersion((gameLocatorResult.Store, newLocatorIds), out var vanityVersion))
         {
@@ -775,16 +732,57 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             tx.Add(loadout, Loadout.GameVersion, VanityVersion.DefaultValue);
             Logger.LogWarning("Found no vanity version for locator IDs `{LocatorIds}` (`{Store}`)", newLocatorIds, gameLocatorResult.Store);
         }
-        
-        loadout = loadout.Rebase();
-        
 
-        
-        foreach (var id in locatorsToRemove) 
+        foreach (var id in locatorsToRemove)
             tx.Retract(loadout, Loadout.LocatorIds, id);
         foreach (var id in locatorsToAdd)
             tx.Add(loadout, Loadout.LocatorIds, id);
-        
+
+        var result = await tx.Commit();
+        return loadout.Rebase(result.Db);
+    }
+
+    private async ValueTask<Loadout.ReadOnly> ReprocessOverrides(Loadout.ReadOnly loadout)
+    {
+        // Make a lookup set of the new files based on current locator IDs
+        var versionFiles = _fileHashService
+            .GetGameFiles((loadout.InstallationInstance.Store, loadout.LocatorIds.ToArray()))
+            .Select(file => file.Path)
+            .ToHashSet();
+
+        // Find all files in the overrides that match a path in the new files
+        var toDelete = from grp in loadout.Items.OfTypeLoadoutItemGroup().OfTypeLoadoutOverridesGroup()
+            from item in grp.AsLoadoutItemGroup().Children.OfTypeLoadoutItemWithTargetPath()
+            let path = (GamePath)item.TargetPath
+            where versionFiles.Contains(path)
+            select item;
+
+        // No files to process, return early
+        if (!toDelete.Any())
+            return loadout;
+
+        using var tx = Connection.BeginTransaction();
+        var gameMetadataId = loadout.InstallationInstance.GameMetadataId;
+
+        // Delete all the matching override files
+        foreach (var file in toDelete)
+        {
+            tx.Delete(file, recursive: false);
+
+            // The backed up file is being 'promoted' to a game file, which needs
+            // to be rooted explicitly in case the user uses a feature like 'undo'
+            // to roll back a game version on a store (like Xbox/Epic) which does
+            // not support downloading non-current version(s).
+            if (!file.TryGetAsLoadoutFile(out var loadoutFile))
+                continue;
+
+            _ = new GameBackedUpFile.New(tx)
+            {
+                Hash = loadoutFile.Hash,
+                GameInstallId = gameMetadataId,
+            };
+        }
+
         var result = await tx.Commit();
         return loadout.Rebase(result.Db);
     }
@@ -1135,6 +1133,10 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     public virtual async Task<Loadout.ReadOnly> Synchronize(Loadout.ReadOnly loadout, SynchronizeLoadoutJob? job = null)
     {
         loadout = loadout.Rebase();
+        
+        // Update locator IDs before building the sync tree
+        loadout = await UpdateLocatorIds(loadout);
+        
         // If we are swapping loadouts, then we need to synchronize the previous loadout first to ingest
         // any changes, then we can apply the new loadout.
         if (GameInstallMetadata.LastSyncedLoadout.TryGetValue(loadout.Installation, out var lastAppliedId) && lastAppliedId != loadout.Id)
@@ -1147,11 +1149,15 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 return loadout.Rebase();
             }
         }
-
+        
         job?.SetStatus("Collecting files");
         var tree = await BuildSyncTree(loadout);
         ProcessSyncTree(tree);
-        return await RunActions(tree, loadout, job);
+        loadout = await RunActions(tree, loadout, job);
+
+        // Move any override files that now match game files after sync
+        loadout = await ReprocessOverrides(loadout);
+        return loadout;
     }
 
     public async Task<GameInstallMetadata.ReadOnly> RescanFiles(GameInstallation gameInstallation, bool ignoreModifiedDates)
@@ -1936,7 +1942,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     /// These files will not be backed up and will not be included in the loadout directly. Instead, they are
     /// generated at sync time by calling the implementations of the files themselves. 
     /// </summary>
-    protected virtual Dictionary<GamePath, IIntrinsicFile> IntrinsicFiles(Loadout.ReadOnly loadout)
+    public virtual Dictionary<GamePath, IIntrinsicFile> IntrinsicFiles(Loadout.ReadOnly loadout)
     {
         return new();
     }
