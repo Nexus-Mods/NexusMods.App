@@ -1183,7 +1183,7 @@ Zachować pobrane pliki w bibliotece na wypadek późniejszej próby instalacji?
         <value>Mod odinstalowany</value>
     </data>
     <data name="ToastNotification_Mod_Download_Completed____0_" xml:space="preserve">
-        <value>Pobieranie moda zakończone – {0}</value>
+        <value>Pobieranie moda ukończone – {0}</value>
     </data>
     <data name="ToastNotification_Mod_Download_started" xml:space="preserve">
         <value>Pobieranie moda rozpoczęte</value>
@@ -1220,5 +1220,17 @@ Zachować pobrane pliki w bibliotece na wypadek późniejszej próby instalacji?
     </data>
     <data name="GameWidget_VersionUnknown" xml:space="preserve">
         <value>Wersja: Nieznana</value>
+    </data>
+    <data name="DownloadsPage_AllCompleted_Description" xml:space="preserve">
+        <value>Zobacz ukończone pobrania.</value>
+    </data>
+    <data name="DownloadsPage_AllDownloads_Description" xml:space="preserve">
+        <value>Monitoruj postęp pobierania.</value>
+    </data>
+    <data name="DownloadsPage_Default_Description" xml:space="preserve">
+        <value>Zarządzaj bieżącymi i ukończonymi pobraniami</value>
+    </data>
+    <data name="DownloadsPage_GameSpecificDownloads_Description" xml:space="preserve">
+        <value>Monitoruj postęp pobierania.</value>
     </data>
 </root>
