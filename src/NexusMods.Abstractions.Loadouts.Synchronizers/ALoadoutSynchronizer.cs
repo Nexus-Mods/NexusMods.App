@@ -1788,11 +1788,11 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     /// <inheritdoc />
     public async Task UnManage(GameInstallation installation, bool runGc = true, bool cleanGameFolder = true)
     {
-        var sharedSemaphore = _synchronizerService.GetSharedSemaphore();
-        await sharedSemaphore.WaitAsync();
-        try
-        {
-            await _jobMonitor.Begin(new UnmanageGameJob(installation), async ctx =>
+        await _jobMonitor.Begin(new UnmanageGameJob(installation), async ctx =>
+            {
+                var sharedSemaphore = _synchronizerService.GetSharedSemaphore();
+                await sharedSemaphore.WaitAsync();
+                try
                 {
                     var metadata = installation.GetMetadata(Connection);
 
@@ -1850,14 +1850,14 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
                     if (runGc)
                         _garbageCollectorRunner.Run();
-                    return installation;
                 }
-            );
-        }
-        finally
-        {
-            sharedSemaphore.Release();
-        }
+                finally
+                {
+                    sharedSemaphore.Release();
+                }
+                return installation;
+            }
+        );
     }
 
     /// <inheritdoc />
