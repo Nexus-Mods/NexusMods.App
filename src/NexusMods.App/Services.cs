@@ -33,6 +33,7 @@ using NexusMods.Paths;
 using NexusMods.ProxyConsole;
 using NexusMods.Sdk.ProxyConsole;
 using NexusMods.Sdk.Settings;
+using NexusMods.Sdk.Tracking;
 using NexusMods.SingleProcess;
 using NexusMods.StandardGameLocators;
 using NexusMods.Telemetry;
@@ -41,8 +42,9 @@ namespace NexusMods.App;
 
 public static class Services
 {
-    public static IServiceCollection AddApp(this IServiceCollection services,
-        TelemetrySettings? telemetrySettings = null,
+    public static IServiceCollection AddApp(
+        this IServiceCollection services,
+        TrackingSettings? trackingSettings = null,
         bool addStandardGameLocators = true,
         StartupMode? startupMode = null,
         ExperimentalSettings? experimentalSettings = null,
@@ -68,15 +70,16 @@ public static class Services
                 .AddJobMonitor()
                 .AddNexusModsCollections()
 
-                .AddSettings<TelemetrySettings>()
+                .AddSettings<TrackingSettings>()
                 .AddSettings<LoggingSettings>()
                 .AddSettings<ExperimentalSettings>()
                 .AddDefaultRenderers()
                 .AddDefaultParsers()
 
                 .AddSingleton<ITelemetryProvider, TelemetryProvider>()
-                .AddTelemetry(telemetrySettings ?? new TelemetrySettings())
-                .AddTracking(telemetrySettings ?? new TelemetrySettings())
+                .AddTelemetry(trackingSettings)
+                .AddTrackingOld(trackingSettings)
+                .AddTracking(trackingSettings)
 
                 .AddSingleton<CommandLineConfigurator>()
                 .AddCLI()

@@ -1,6 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Backend.Tracking;
 using NexusMods.Sdk;
 using NexusMods.Sdk.Settings;
+using NexusMods.Sdk.Tracking;
 using NexusMods.UI.Sdk.Icons;
 using NexusMods.UI.Sdk.Settings;
 
@@ -8,6 +10,16 @@ namespace NexusMods.Backend;
 
 public static class ServiceExtensions
 {
+    public static IServiceCollection AddTracking(this IServiceCollection serviceCollection, TrackingSettings? settings)
+    {
+        if (settings is null || !settings.EnableTracking) return serviceCollection;
+
+        return serviceCollection
+            .AddSingleton<EventTracker>()
+            .AddSingleton<IEventTracker, EventTracker>(provider => provider.GetRequiredService<EventTracker>())
+            .AddHostedService<EventTracker>(provider => provider.GetRequiredService<EventTracker>());
+    }
+
     public static IServiceCollection AddSettingsManager(this IServiceCollection serviceCollection)
     {
         return serviceCollection

@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.NexusModsLibrary;
+using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.DTOs;
 using NexusMods.Abstractions.NexusWebApi.Types;
@@ -221,13 +222,14 @@ public partial class NexusModsLibrary
     public async Task<IJobTask<NexusModsDownloadJob, AbsolutePath>> CreateDownloadJob(
         AbsolutePath destination,
         NexusModsFileMetadata.ReadOnly fileMetadata,
+        Optional<CollectionRevisionMetadata.ReadOnly> parentRevision = default,
         CancellationToken cancellationToken = default)
     {
         var uri = await GetDownloadUri(fileMetadata, Optional<(NXMKey, DateTime)>.None, cancellationToken: cancellationToken);
 
         var domain = _mappingCache[fileMetadata.Uid.GameId];
         var httpJob = HttpDownloadJob.Create(_serviceProvider, uri, NexusModsUrlBuilder.GetModUri(domain, fileMetadata.ModPage.Uid.ModId), destination);
-        var nexusJob = NexusModsDownloadJob.Create(_serviceProvider, httpJob, fileMetadata);
+        var nexusJob = NexusModsDownloadJob.Create(_serviceProvider, httpJob, fileMetadata, parentRevision: parentRevision);
 
         return nexusJob;
     }
