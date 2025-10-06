@@ -8,72 +8,7 @@
                     xmlns:navigation="clr-namespace:NexusMods.App.UI.Controls.Navigation"
                     xmlns:resources="clr-namespace:NexusMods.App.UI.Resources">
 
-    <!-- LoadoutItemMenuFlyout - Reusable MenuFlyout for loadout items -->
-    <MenuFlyout x:Key="LoadoutItemMenuFlyout" FlyoutPresenterClasses="TreeDataGridMenu"
-                x:DataType="{x:Type controls:CompositeItemModel, x:TypeArguments=abstractions:EntityId}">
-        
-        <!-- View Mod Page -->
-        <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
-            <controls:ComponentControl.ComponentTemplate>
-                <controls:ComponentTemplate x:TypeArguments="controls:SharedComponents+ViewModPageAction"
-                                            ComponentKey="{x:Static local:LoadoutColumns+EnabledState.ViewModPageComponentKey}">
-                    <controls:ComponentTemplate.DataTemplate>
-                        <DataTemplate DataType="{x:Type controls:SharedComponents+ViewModPageAction}">
-                            <MenuItem Header="{x:Static resources:Language.Library_ViewModPage_Text}"
-                                      Command="{CompiledBinding CommandViewModPage}"
-                                      IsEnabled="{CompiledBinding IsEnabled.Value}">
-                                <MenuItem.Icon>
-                                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.OpenInNew}" />
-                                </MenuItem.Icon>
-                            </MenuItem>
-                        </DataTemplate>
-                    </controls:ComponentTemplate.DataTemplate>
-                </controls:ComponentTemplate>
-            </controls:ComponentControl.ComponentTemplate>
-        </controls:ComponentControl>
-        
-        <!-- View mod files action -->
-        <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
-            <controls:ComponentControl.ComponentTemplate>
-                <controls:ComponentTemplate x:TypeArguments="controls:SharedComponents+ViewModFilesAction"
-                                            ComponentKey="{x:Static local:LoadoutColumns+EnabledState.ViewModFilesComponentKey}">
-                    <controls:ComponentTemplate.DataTemplate>
-                        <DataTemplate DataType="{x:Type controls:SharedComponents+ViewModFilesAction}">
-                            <navigation:NavigationMenuItem Header="{x:Static resources:Language.LoadoutGridView__View_Files}" 
-                                      Command="{CompiledBinding Command}"
-                                      IsEnabled="{CompiledBinding IsEnabled.Value}"
-                                      ToolTip.Tip="{x:Static resources:Language.LoadoutGridView__View_Files_ToolTip}">
-                                <MenuItem.Icon>
-                                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.Folder}" />
-                                </MenuItem.Icon>
-                            </navigation:NavigationMenuItem>
-                        </DataTemplate>
-                    </controls:ComponentTemplate.DataTemplate>
-                </controls:ComponentTemplate>
-            </controls:ComponentControl.ComponentTemplate>
-        </controls:ComponentControl>
-        
-        <!-- Uninstall item action -->
-        <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
-            <controls:ComponentControl.ComponentTemplate>
-                <controls:ComponentTemplate x:TypeArguments="controls:SharedComponents+UninstallItemAction"
-                                            ComponentKey="{x:Static local:LoadoutColumns+EnabledState.UninstallItemComponentKey}">
-                    <controls:ComponentTemplate.DataTemplate>
-                        <DataTemplate DataType="{x:Type controls:SharedComponents+UninstallItemAction}">
-                            <MenuItem Header="{CompiledBinding DisplayText}" 
-                                      Command="{CompiledBinding CommandUninstallItem}"
-                                      IsEnabled="{CompiledBinding IsEnabled.Value}">
-                                <MenuItem.Icon>
-                                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.DeleteOutline}" Classes="Critical" />
-                                </MenuItem.Icon>
-                            </MenuItem>
-                        </DataTemplate>
-                    </controls:ComponentTemplate.DataTemplate>
-                </controls:ComponentTemplate>
-            </controls:ComponentControl.ComponentTemplate>
-        </controls:ComponentControl>
-        
-    </MenuFlyout>
+    
 
     <!-- Collections -->
     <DataTemplate x:Key="{x:Static local:LoadoutColumns+Collections.ColumnTemplateResourceKey}">
@@ -198,8 +133,75 @@
                 LeftIcon="{x:Static icons:IconValues.MoreVertical}"
                 ShowIcon="Left"
                 ShowLabel="False"
-                Fill="None"
-                Flyout="{StaticResource LoadoutItemMenuFlyout}"/>
+                Fill="None">
+            <controls:StandardButton.Flyout>
+                <MenuFlyout FlyoutPresenterClasses="TreeDataGridMenu"
+                            x:DataType="{x:Type controls:CompositeItemModel, x:TypeArguments=abstractions:EntityId}">
+                    
+                    <!-- View Mod Page -->
+                    <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
+                        <controls:ComponentControl.ComponentTemplate>
+                            <controls:ComponentTemplate x:TypeArguments="controls:SharedComponents+ViewModPageAction"
+                                                        ComponentKey="{x:Static local:LoadoutColumns+EnabledState.ViewModPageComponentKey}">
+                                <controls:ComponentTemplate.DataTemplate>
+                                    <DataTemplate DataType="{x:Type controls:SharedComponents+ViewModPageAction}">
+                                        <MenuItem Header="{x:Static resources:Language.Library_ViewModPage_Text}"
+                                                  Command="{CompiledBinding CommandViewModPage}"
+                                                  IsEnabled="{CompiledBinding IsEnabled.Value}">
+                                            <MenuItem.Icon>
+                                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.OpenInNew}" />
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                    </DataTemplate>
+                                </controls:ComponentTemplate.DataTemplate>
+                            </controls:ComponentTemplate>
+                        </controls:ComponentControl.ComponentTemplate>
+                    </controls:ComponentControl>
+                    
+                    <!-- View mod files action -->
+                    <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
+                        <controls:ComponentControl.ComponentTemplate>
+                            <controls:ComponentTemplate x:TypeArguments="controls:SharedComponents+ViewModFilesAction"
+                                                        ComponentKey="{x:Static local:LoadoutColumns+EnabledState.ViewModFilesComponentKey}">
+                                <controls:ComponentTemplate.DataTemplate>
+                                    <DataTemplate DataType="{x:Type controls:SharedComponents+ViewModFilesAction}">
+                                        <navigation:NavigationMenuItem Header="{x:Static resources:Language.LoadoutGridView__View_Files}" 
+                                                  Command="{CompiledBinding Command}"
+                                                  IsEnabled="{CompiledBinding IsEnabled.Value}"
+                                                  ToolTip.Tip="{x:Static resources:Language.LoadoutGridView__View_Files_ToolTip}">
+                                            <MenuItem.Icon>
+                                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.Folder}" />
+                                            </MenuItem.Icon>
+                                        </navigation:NavigationMenuItem>
+                                    </DataTemplate>
+                                </controls:ComponentTemplate.DataTemplate>
+                            </controls:ComponentTemplate>
+                        </controls:ComponentControl.ComponentTemplate>
+                    </controls:ComponentControl>
+                    
+                    <!-- Uninstall item action -->
+                    <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
+                        <controls:ComponentControl.ComponentTemplate>
+                            <controls:ComponentTemplate x:TypeArguments="controls:SharedComponents+UninstallItemAction"
+                                                        ComponentKey="{x:Static local:LoadoutColumns+EnabledState.UninstallItemComponentKey}">
+                                <controls:ComponentTemplate.DataTemplate>
+                                    <DataTemplate DataType="{x:Type controls:SharedComponents+UninstallItemAction}">
+                                        <MenuItem Header="{CompiledBinding DisplayText}" 
+                                                  Command="{CompiledBinding CommandUninstallItem}"
+                                                  IsEnabled="{CompiledBinding IsEnabled.Value}">
+                                            <MenuItem.Icon>
+                                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.DeleteOutline}" Classes="Critical" />
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                    </DataTemplate>
+                                </controls:ComponentTemplate.DataTemplate>
+                            </controls:ComponentTemplate>
+                        </controls:ComponentControl.ComponentTemplate>
+                    </controls:ComponentControl>
+                    
+                </MenuFlyout>
+            </controls:StandardButton.Flyout>
+        </controls:StandardButton>
         
         </StackPanel>
     </DataTemplate>
