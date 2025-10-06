@@ -19,10 +19,10 @@ WHERE file.Path.Location = nma_fnv1a_hash_short('Game')
 
 
 CREATE MACRO creation_engine.plugin_sort_order(db) AS TABLE
-SELECT sortOrder.Id SortOrderId, items.ModKey, sortItem.SortIndex, items.GroupId, items.GroupName 
-FROM MDB_SORTORDER() sortOrder
-INNER JOIN creation_engine.load_order_plugin_files(null) items ON items.Loadout = sortOrder.Loadout
-INNER JOIN MDB_PLUGINSORTENTRY() sortItem ON sortItem.ParentSortOrder = sortOrder.Id AND sortItem.ModKey = items.ModKey;
+    SELECT sortOrder.Id SortOrderId, items.ModKey, sortItem.SortIndex, items.GroupId, items.GroupName 
+    FROM MDB_SORTORDER() sortOrder
+    INNER JOIN creation_engine.load_order_plugin_files(null) items ON items.Loadout = sortOrder.Loadout
+    INNER JOIN MDB_PLUGINSORTENTRY() sortItem ON sortItem.ParentSortOrder = sortOrder.Id AND sortItem.ModKey = items.ModKey;
 
 
        

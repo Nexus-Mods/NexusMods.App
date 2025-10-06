@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Reactive.Linq;
 using DynamicData;
 using DynamicData.Kernel;
@@ -70,7 +71,7 @@ public class PluginLoadOrderVariety : ASortOrderVariety<
             .Observe(x => new SortItemKey<ModKey>(x.Key))
             .Transform(x =>
                 {
-                    var model = new PluginReactiveSortItem(x.SortIndex, x.Key, x.GroupName, true);
+                    var model = new PluginReactiveSortItem(x.SortIndex, x.Key, x.GroupName, false);
 
                     if (!x.ModId.HasValue)
                         return model;
@@ -127,7 +128,9 @@ public class PluginLoadOrderVariety : ASortOrderVariety<
             .Select(row => new SortItemData<SortItemKey<ModKey>>(
                 new SortItemKey<ModKey>(row.ModKey),
                 row.AsSortOrderItem().SortIndex
-            )).ToList();
+            ))
+            .OrderBy(r => r.SortIndex)
+            .ToList();
     }
 
     protected override void PersistSortOrderCore(SortOrderId sortOrderId, IReadOnlyList<SortItemData<SortItemKey<ModKey>>> newOrder, ITransaction tx, IDb startingDb, CancellationToken token = default)
@@ -143,6 +146,7 @@ public class PluginLoadOrderVariety : ASortOrderVariety<
             if (!newItem.HasValue)
             {
                 tx.Delete(dbItem.Id, recursive: false);
+                continue;
             }
 
             var liveIdx = newOrder.IndexOf(newItem.Value);
@@ -153,7 +157,6 @@ public class PluginLoadOrderVariety : ASortOrderVariety<
             }
         }
         
-        // Add new items
         // Add new items
         for (var i = 0; i < newOrder.Count; i++)
         {
