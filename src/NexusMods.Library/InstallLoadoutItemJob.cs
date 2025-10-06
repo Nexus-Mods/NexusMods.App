@@ -8,8 +8,10 @@ using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Library.Jobs;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Games.AdvancedInstaller;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.Sdk.Tracking;
 
 namespace NexusMods.Library;
 
@@ -23,9 +25,9 @@ internal class InstallLoadoutItemJob : IJobDefinitionWithStart<InstallLoadoutIte
     public LoadoutId LoadoutId { get; init; }
     
     public required ITransaction Transaction { get; init; }
-    required internal IConnection Connection { get; init; }
-    required internal IServiceProvider ServiceProvider { get; init; }
-    required internal bool OwnsTransaction { get; init; }
+    internal required IConnection Connection { get; init; }
+    internal required IServiceProvider ServiceProvider { get; init; }
+    internal required bool OwnsTransaction { get; init; }
 
     /// <remarks>
     /// Returns null <see cref="LoadoutItemGroup.ReadOnly"/> after running job
@@ -75,19 +77,28 @@ internal class InstallLoadoutItemJob : IJobDefinitionWithStart<InstallLoadoutIte
             ? [Installer]
             : loadout.InstallationInstance.GetGame().LibraryItemInstallers;
 
+        var sw = Stopwatch.StartNew();
         var result = await ExecuteInstallersAsync(installers, loadout, context);
 
         if (result == null)
         {
             if (Installer is AdvancedManualInstaller)
+            {
+                Track(Events.ModsInstallationFailed);
                 throw new InvalidOperationException($"Advanced installer did not succeed for `{LibraryItem.Name}` (`{LibraryItem.Id}`)");
+            }
 
             var fallbackInstaller = FallbackInstaller ?? AdvancedManualInstaller.Create(ServiceProvider);
             result = await ExecuteInstallersAsync([fallbackInstaller], loadout, context);
 
             if (result == null)
+            {
+                Track(Events.ModsInstallationFailed);
                 throw new InvalidOperationException($"Found no installer that supports `{LibraryItem.Name}` (`{LibraryItem.Id}`), including the fallback installer!");
+            }
         }
+
+        Track(Events.ModsInstallationCompleted, sw.ElapsedMilliseconds);
 
         // TODO(erri120): rename this entity to something unique, like "LoadoutItemInstalledFromLibrary"
         var loadoutGroup = result!;
@@ -148,10 +159,37 @@ internal class InstallLoadoutItemJob : IJobDefinitionWithStart<InstallLoadoutIte
             }
             catch (OperationCanceledException ex)
             {
+                Track(Events.ModsInstallationCancelled);
                 context.CancelAndThrow(ex.Message);
             }
         }
 
         return null;
+    }
+
+    private void Track(EventDefinition eventDefinition, long ms = 0)
+    {
+        if (!LibraryItem.TryGetAsNexusModsLibraryItem(out var nexusModsLibraryItem)) return;
+        if (ms == 0)
+        {
+            Tracker.TrackEvent(eventDefinition,
+                ("file_id", nexusModsLibraryItem.FileMetadata.Uid.FileId.Value),
+                ("mod_id", nexusModsLibraryItem.FileMetadata.ModPage.Uid.ModId.Value),
+                ("game_id", nexusModsLibraryItem.FileMetadata.Uid.GameId.Value),
+                ("mod_uid", nexusModsLibraryItem.FileMetadata.ModPage.Uid.AsUlong),
+                ("file_uid", nexusModsLibraryItem.FileMetadata.Uid.AsUlong)
+            );
+        }
+        else
+        {
+            Tracker.TrackEvent(eventDefinition,
+                ("file_id", nexusModsLibraryItem.FileMetadata.Uid.FileId.Value),
+                ("mod_id", nexusModsLibraryItem.FileMetadata.ModPage.Uid.ModId.Value),
+                ("game_id", nexusModsLibraryItem.FileMetadata.Uid.GameId.Value),
+                ("mod_uid", nexusModsLibraryItem.FileMetadata.ModPage.Uid.AsUlong),
+                ("file_uid", nexusModsLibraryItem.FileMetadata.Uid.AsUlong),
+                ("duration_ms", ms)
+            );
+        }
     }
 }
