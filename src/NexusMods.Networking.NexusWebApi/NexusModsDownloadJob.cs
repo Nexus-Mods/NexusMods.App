@@ -70,12 +70,32 @@ public class NexusModsDownloadJob : INexusModsDownloadJob, IJobDefinitionWithSta
         }
         catch (TaskCanceledException)
         {
+            Tracker.TrackEvent(Events.ModsDownloadCancelled,
+                ("file_id", FileMetadata.Uid.FileId.Value),
+                ("mod_id", FileMetadata.ModPage.Uid.ModId.Value),
+                ("game_id", FileMetadata.Uid.GameId.Value),
+                ("mod_uid", FileMetadata.ModPage.Uid.AsUlong),
+                ("file_uid", FileMetadata.Uid.AsUlong),
+                ("collection_id", ParentRevision.Convert(x => x.Collection.CollectionId.Value).OrNull()),
+                ("revision_id", ParentRevision.Convert(x => x.RevisionId.Value).OrNull())
+            );
+
             // Propagate cancellation so upstream jobs (e.g. AddDownloadJob) can abort follow-up actions.
             Logger.LogInformation("Download cancelled by user for file `{GameId}/{ModId}/{FileId}`", FileMetadata.Uid.GameId, FileMetadata.ModPage.Uid.ModId, FileMetadata.Uid.FileId);
             throw;
         }
         catch (Exception e)
         {
+            Tracker.TrackEvent(Events.ModsDownloadFailed,
+                ("file_id", FileMetadata.Uid.FileId.Value),
+                ("mod_id", FileMetadata.ModPage.Uid.ModId.Value),
+                ("game_id", FileMetadata.Uid.GameId.Value),
+                ("mod_uid", FileMetadata.ModPage.Uid.AsUlong),
+                ("file_uid", FileMetadata.Uid.AsUlong),
+                ("collection_id", ParentRevision.Convert(x => x.Collection.CollectionId.Value).OrNull()),
+                ("revision_id", ParentRevision.Convert(x => x.RevisionId.Value).OrNull())
+            );
+
             Logger.LogError(e, "Exception while downloading file `{GameId}/{ModId}/{FileId}`", FileMetadata.Uid.GameId, FileMetadata.ModPage.Uid.ModId, FileMetadata.Uid.FileId);
             throw;
         }
