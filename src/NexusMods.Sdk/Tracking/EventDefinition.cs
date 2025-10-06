@@ -51,6 +51,11 @@ public class EventPropertyDefinition : IEquatable<EventPropertyDefinition>
         IsOptional = isOptional;
     }
 
+    public EventPropertyDefinition AsOptional()
+    {
+        return new EventPropertyDefinition(Name, Type, isOptional: true);
+    }
+
     public static EventPropertyDefinition Create<T>(string name, bool isOptional = false) => new(JsonEncodedText.Encode(name), typeof(T), isOptional);
     public static EventPropertyDefinition Create<T>(JsonEncodedText name, bool isOptional = false) => new(name, typeof(T), isOptional);
 
