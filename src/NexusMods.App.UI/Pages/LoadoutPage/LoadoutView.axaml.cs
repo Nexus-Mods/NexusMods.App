@@ -1,6 +1,7 @@
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Controls.Primitives;
 using DynamicData.Binding;
 using Humanizer;
 using Humanizer.Localisation;
@@ -25,6 +26,9 @@ public partial class LoadoutView : R3UserControl<ILoadoutViewModel>
         InitializeComponent();
 
         TreeDataGridViewHelper.SetupTreeDataGridAdapter<LoadoutView, ILoadoutViewModel, CompositeItemModel<EntityId>, EntityId>(this, TreeDataGrid, vm => vm.Adapter);
+
+        // Add right-click handler for TreeDataGrid rows to show HamburgerMenuButton flyout
+        TreeDataGrid.AddHandler(PointerPressedEvent, OnTreeDataGridPointerPressed, routes: RoutingStrategies.Tunnel);
 
         this.WhenActivated(disposables =>
             {
@@ -175,5 +179,40 @@ public partial class LoadoutView : R3UserControl<ILoadoutViewModel>
                     .AddTo(disposables);
             }
         );
+    }
+
+    private void OnTreeDataGridPointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        // Only handle right-click
+        if (!e.GetCurrentPoint(null).Properties.IsRightButtonPressed)
+            return;
+
+        // Get the TreeDataGridRow that was clicked
+        var source = e.Source as Control;
+        while (source != null && source is not TreeDataGridRow) 
+            source = source.Parent as Control;
+
+        if (source is not TreeDataGridRow { DataContext: CompositeItemModel<EntityId> rowModel } row) 
+            return;
+
+        // Find the HamburgerMenuButton in the visual tree
+        var flyout = this.FindResource("LoadoutItemMenuFlyout") as MenuFlyout;
+        if (flyout == null)
+            return;
+
+        // Set the DataContext for the flyout to match the clicked row
+        foreach (var item in flyout.Items)
+        {
+            if (item is ComponentControl<EntityId> ctrl)
+            {
+                ctrl.Content = rowModel;
+            }
+        }
+                    
+        // Show the flyout at the cursor position
+        flyout.ShowAt(row, true);
+                    
+        // Mark the event as handled to prevent default context menu
+        e.Handled = true;
     }
 }
