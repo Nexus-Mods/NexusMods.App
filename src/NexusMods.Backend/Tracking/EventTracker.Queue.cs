@@ -66,6 +66,7 @@ internal partial class EventTracker
         using (var writer = EventWriter.Create(this, bufferWriter, e))
         {
             writer.Write(property0);
+            writer.ValidateAllPropertyDefinitions();
         }
 
         FinalizeEvent(e, bufferWriter);
@@ -80,6 +81,7 @@ internal partial class EventTracker
         {
             writer.Write(property0);
             writer.Write(property1);
+            writer.ValidateAllPropertyDefinitions();
         }
 
         FinalizeEvent(e, bufferWriter);
@@ -96,6 +98,7 @@ internal partial class EventTracker
             writer.Write(property0);
             writer.Write(property1);
             writer.Write(property2);
+            writer.ValidateAllPropertyDefinitions();
         }
 
         FinalizeEvent(e, bufferWriter);
@@ -114,6 +117,7 @@ internal partial class EventTracker
             writer.Write(property1);
             writer.Write(property2);
             writer.Write(property3);
+            writer.ValidateAllPropertyDefinitions();
         }
 
         FinalizeEvent(e, bufferWriter);
@@ -134,6 +138,7 @@ internal partial class EventTracker
             writer.Write(property2);
             writer.Write(property3);
             writer.Write(property4);
+            writer.ValidateAllPropertyDefinitions();
         }
 
         FinalizeEvent(e, bufferWriter);
@@ -156,6 +161,7 @@ internal partial class EventTracker
             writer.Write(property3);
             writer.Write(property4);
             writer.Write(property5);
+            writer.ValidateAllPropertyDefinitions();
         }
 
         FinalizeEvent(e, bufferWriter);
@@ -180,6 +186,7 @@ internal partial class EventTracker
             writer.Write(property4);
             writer.Write(property5);
             writer.Write(property6);
+            writer.ValidateAllPropertyDefinitions();
         }
 
         FinalizeEvent(e, bufferWriter);
@@ -206,6 +213,7 @@ internal partial class EventTracker
             writer.Write(property5);
             writer.Write(property6);
             writer.Write(property7);
+            writer.ValidateAllPropertyDefinitions();
         }
 
         FinalizeEvent(e, bufferWriter);
@@ -234,6 +242,7 @@ internal partial class EventTracker
             writer.Write(property6);
             writer.Write(property7);
             writer.Write(property8);
+            writer.ValidateAllPropertyDefinitions();
         }
 
         FinalizeEvent(e, bufferWriter);
@@ -264,6 +273,7 @@ internal partial class EventTracker
             writer.Write(property7);
             writer.Write(property8);
             writer.Write(property9);
+            writer.ValidateAllPropertyDefinitions();
         }
 
         FinalizeEvent(e, bufferWriter);
@@ -278,6 +288,8 @@ internal partial class EventTracker
             {
                 writer.Write(property);
             }
+
+            writer.ValidateAllPropertyDefinitions();
         }
 
         FinalizeEvent(e, bufferWriter);

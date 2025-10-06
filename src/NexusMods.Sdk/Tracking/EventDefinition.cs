@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using JetBrains.Annotations;
@@ -5,6 +6,7 @@ using JetBrains.Annotations;
 namespace NexusMods.Sdk.Tracking;
 
 [PublicAPI]
+[DebuggerDisplay("{Name} Count = {Count}")]
 public class EventDefinition : HashSet<EventPropertyDefinition>
 {
     public JsonEncodedText Name { get; init; }
@@ -19,7 +21,7 @@ public class EventDefinition : HashSet<EventPropertyDefinition>
         Name = name;
     }
 
-    public bool TryGet<T>(string name, [NotNullWhen(true)] out EventPropertyDefinition? definition)
+    public bool TryGet(string name, [NotNullWhen(true)] out EventPropertyDefinition? definition)
     {
         foreach (var currentDefinition in this)
         {
@@ -31,6 +33,8 @@ public class EventDefinition : HashSet<EventPropertyDefinition>
         definition = null;
         return false;
     }
+
+    public override string ToString() => $"{Name.Value}";
 }
 
 [PublicAPI]
@@ -53,5 +57,7 @@ public class EventPropertyDefinition : IEquatable<EventPropertyDefinition>
     public override bool Equals(object? obj) => obj is EventPropertyDefinition other && Equals(other);
     public override int GetHashCode() => Name.GetHashCode();
 
-    public bool Equals(EventPropertyDefinition? other) => other is not null && Name.Equals(other.Name);
+    public bool Equals(EventPropertyDefinition? other) => other is not null && Name.Value.Equals(other.Name.Value, StringComparison.OrdinalIgnoreCase);
+
+    public override string ToString() => $"{Name.Value} Type={Type} Optional={IsOptional}";
 }

@@ -57,14 +57,14 @@ internal partial class EventTracker
             _writtenProperties = ApplicationConstants.IsDebug ? new HashSet<string>(StringComparer.OrdinalIgnoreCase) : null;
         }
 
-        public void Write<T>(JsonEncodedText propertyName, T propertyValue)
+        private void Write<T>(JsonEncodedText propertyName, T propertyValue)
         {
             if (!_tracker.ValidateProperty(propertyName.Value, propertyValue)) return;
             _jsonWriter.WritePropertyName(propertyName);
             JsonSerializer.Serialize(_jsonWriter, propertyValue, _tracker._jsonSerializerOptions);
         }
 
-        public void Write<T>(string propertyName, T propertyValue)
+        private void Write<T>(string propertyName, T propertyValue)
         {
             if (!_tracker.ValidateProperty(propertyName, propertyValue)) return;
             _jsonWriter.WritePropertyName(propertyName);
@@ -76,7 +76,7 @@ internal partial class EventTracker
             ValidatePropertyDefinition<T>(property.name);
             Write(property.name, property.value);
         }
-        
+
         [Conditional("DEBUG")]
         private void ValidatePropertyDefinition<T>(string name)
         {
@@ -86,7 +86,7 @@ internal partial class EventTracker
                 throw new InvalidOperationException($"Property `{name}` has already been added to the event `{_eventDefinition.Name.Value}`");
             }
 
-            if (!_eventDefinition.TryGet<T>(name, out var propertyDefinition))
+            if (!_eventDefinition.TryGet(name, out var propertyDefinition))
             {
                 throw new InvalidOperationException($"Event definition `{_eventDefinition.Name.Value}` doesn't contain a property definition for `{name}`");
             }
@@ -100,7 +100,7 @@ internal partial class EventTracker
         }
 
         [Conditional("DEBUG")]
-        private void ValidateAllPropertyDefinitions()
+        internal void ValidateAllPropertyDefinitions()
         {
             Debug.Assert(_writtenProperties is not null);
             foreach (var propertyDefinition in _eventDefinition)
@@ -181,8 +181,6 @@ internal partial class EventTracker
 
         public void Dispose()
         {
-            ValidateAllPropertyDefinitions();
-
             _jsonWriter.WriteEndObject(); // properties
             _jsonWriter.WriteEndObject(); // event
 
