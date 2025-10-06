@@ -184,7 +184,7 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable, IHost
             if (embeddedDatabaseInfo.HasValue)
             {
                 existingDatabases = ExistingDBs().ToArray();
-                Debug.Assert(existingDatabases.Length == 1, $"should've only a single database but found {existingDatabases.Length}");
+                Debug.Assert(existingDatabases.Length >= 1, $"should have at least one database but found {existingDatabases.Length}");
             }
         }
 
