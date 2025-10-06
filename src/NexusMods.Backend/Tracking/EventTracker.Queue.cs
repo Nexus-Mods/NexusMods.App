@@ -57,7 +57,7 @@ internal partial class EventTracker
             BufferWriter.Dispose();
         }
 
-        public string Decode() => Encoding.UTF8.GetString(BufferWriter.WrittenSpan);
+        public string Decode() => IsInitialized ? Encoding.UTF8.GetString(BufferWriter.WrittenSpan) : "not initialized";
     }
 
     public void Track<T0>(EventDefinition e, (string name, T0? value) property0)

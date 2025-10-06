@@ -17,4 +17,6 @@ public static class Events
         EventPropertyDefinition.Create<ulong>("collection_id", isOptional: true),
         EventPropertyDefinition.Create<ulong>("revision_id", isOptional: true),
     };
+
+    public static readonly EventDefinition AppLaunched = new("app_launched");
 }
