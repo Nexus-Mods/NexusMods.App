@@ -35,8 +35,22 @@ public class EventTrackerTests
             jsonSerializerOptions: new JsonSerializerOptions()
         );
 
-        tracker.Track(name: "my first event", ("foo", 1), ("bar", 2), ("baz", 3));
-        tracker.Track(name: "my second event", ("a", "a"), ("b", "b"), ("c", "c"));
+        var firstEvent = new EventDefinition("my first event")
+        {
+            EventPropertyDefinition.Create<int>("foo"),
+            EventPropertyDefinition.Create<int>("bar"),
+            EventPropertyDefinition.Create<int>("baz"),
+        };
+
+        var secondEvent = new EventDefinition("my second event")
+        {
+            EventPropertyDefinition.Create<string>("a"),
+            EventPropertyDefinition.Create<string>("b"),
+            EventPropertyDefinition.Create<string>("c"),
+        };
+
+        tracker.Track(firstEvent, ("foo", 1), ("bar", 2), ("baz", 3));
+        tracker.Track(secondEvent, ("a", "a"), ("b", "b"), ("c", "c"));
 
         using var buffer = tracker.PrepareRequest();
         await Assert.That(buffer).IsNotNull();
