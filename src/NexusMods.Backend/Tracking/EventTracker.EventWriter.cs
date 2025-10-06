@@ -64,21 +64,22 @@ internal partial class EventTracker
             JsonSerializer.Serialize(_jsonWriter, propertyValue, _tracker._jsonSerializerOptions);
         }
 
-        private void Write<T>(string propertyName, T propertyValue)
+        private void Write<T>(string propertyName, T? propertyValue)
         {
+            if (propertyValue is null) return;
             if (!_tracker.ValidateProperty(propertyName, propertyValue)) return;
             _jsonWriter.WritePropertyName(propertyName);
             JsonSerializer.Serialize(_jsonWriter, propertyValue, _tracker._jsonSerializerOptions);
         }
 
-        public void Write<T>((string name, T value) property)
+        public void Write<T>((string name, T? value) property)
         {
-            ValidatePropertyDefinition<T>(property.name);
+            ValidatePropertyDefinition(property.name, property.value);
             Write(property.name, property.value);
         }
 
         [Conditional("DEBUG")]
-        private void ValidatePropertyDefinition<T>(string name)
+        private void ValidatePropertyDefinition<T>(string name, T? value)
         {
             Debug.Assert(_writtenProperties is not null);
             if (_writtenProperties.Contains(name))
@@ -89,6 +90,12 @@ internal partial class EventTracker
             if (!_eventDefinition.TryGet(name, out var propertyDefinition))
             {
                 throw new InvalidOperationException($"Event definition `{_eventDefinition.Name.Value}` doesn't contain a property definition for `{name}`");
+            }
+
+            if (value is null)
+            {
+                if (propertyDefinition.IsOptional) return;
+                throw new InvalidOperationException($"Property `{name}` is null for event `{_eventDefinition.Name.Value}` but it's required in the definition");
             }
 
             if (propertyDefinition.Type != typeof(T))

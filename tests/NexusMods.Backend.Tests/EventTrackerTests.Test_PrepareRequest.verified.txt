@@ -34,5 +34,60 @@
       b: b,
       c: c
     }
+  },
+  {
+    event: my second event,
+    properties: {
+      time: 0,
+      app_name: Nexus Mods App,
+      app_version: 0.0.1,
+      platform_type: app,
+      token: Guid_1,
+      $device_id: Guid_Empty,
+      distinct_id: Guid_Empty,
+      user_type: anonymous,
+      $insert_id: Guid_4,
+      $os: Linux,
+      a: a,
+      b: b,
+      c: c
+    }
+  },
+  {
+    event: my second event,
+    properties: {
+      time: 0,
+      app_name: Nexus Mods App,
+      app_version: 0.0.1,
+      platform_type: app,
+      token: Guid_1,
+      $device_id: Guid_Empty,
+      distinct_id: Guid_Empty,
+      user_type: anonymous,
+      $insert_id: Guid_5,
+      $os: Linux,
+      a: a,
+      b: b,
+      c: c
+    }
+  },
+  {
+    event: my second event,
+    properties: {
+      time: 0,
+      app_name: Nexus Mods App,
+      app_version: 0.0.1,
+      platform_type: app,
+      token: Guid_1,
+      $device_id: Guid_Empty,
+      distinct_id: Guid_Empty,
+      user_type: anonymous,
+      $insert_id: Guid_6,
+      $os: Linux,
+      a: a,
+      b: b,
+      c: c,
+      e: 1
+    }
   }
 ]

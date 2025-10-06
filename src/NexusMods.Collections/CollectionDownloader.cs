@@ -189,7 +189,7 @@ public class CollectionDownloader
         if (userInfo.UserRole is UserRole.Premium)
         {
             await using var tempPath = _temporaryFileManager.CreateFile();
-            var job = await _nexusModsLibrary.CreateDownloadJob(tempPath, download.FileMetadata, cancellationToken: cancellationToken);
+            var job = await _nexusModsLibrary.CreateDownloadJob(tempPath, download.FileMetadata, parentRevision: download.AsCollectionDownload().CollectionRevision, cancellationToken: cancellationToken);
             await _libraryService.AddDownload(job);
         }
         else

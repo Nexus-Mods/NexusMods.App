@@ -54,10 +54,15 @@ public class EventTrackerTests
             EventPropertyDefinition.Create<string>("a"),
             EventPropertyDefinition.Create<string>("b"),
             EventPropertyDefinition.Create<string>("c"),
+            EventPropertyDefinition.Create<string>("d", isOptional: true),
+            EventPropertyDefinition.Create<int>("e", isOptional: true),
         };
 
         tracker.Track(firstEvent, ("foo", 1), ("bar", 2), ("baz", 3));
         tracker.Track(secondEvent, ("a", "a"), ("b", "b"), ("c", "c"));
+        tracker.Track(secondEvent, ("a", "a"), ("b", "b"), ("c", "c"), ("d", (string?)null));
+        tracker.Track(secondEvent, ("a", "a"), ("b", "b"), ("c", "c"), ("e", (int?)null));
+        tracker.Track(secondEvent, ("a", "a"), ("b", "b"), ("c", "c"), ("e", 1));
 
         using var buffer = tracker.PrepareRequest();
         await Assert.That(buffer).IsNotNull();
@@ -80,10 +85,10 @@ public class EventTrackerTests
 
         void Act1() => tracker.Track(eventDefinition, ("foo", 1));
         await Assert.That(Act1).ThrowsExactly<InvalidOperationException>().WithMessage("Missing required property `bar` on event `example`");
-        
+
         void Act2() => tracker.Track(eventDefinition, ("foo", 1), ("foo", 2), ("bar", "baz"));
         await Assert.That(Act2).ThrowsExactly<InvalidOperationException>().WithMessage("Property `foo` has already been added to the event `example`");
-        
+
         void Act3() => tracker.Track(eventDefinition, ("foo", 1), ("bar", 2));
         await Assert.That(Act3).ThrowsExactly<InvalidOperationException>().WithMessage("Property definition type mismatch for property `bar` on event `example`: expected `System.String` but received `System.Int32`");
 

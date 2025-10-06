@@ -60,7 +60,7 @@ internal partial class EventTracker
         public string Decode() => Encoding.UTF8.GetString(BufferWriter.WrittenSpan);
     }
 
-    public void Track<T0>(EventDefinition e, (string name, T0 value) property0)
+    public void Track<T0>(EventDefinition e, (string name, T0? value) property0)
     {
         var bufferWriter = new ArrayPoolBufferWriter<byte>(_arrayPool);
         using (var writer = EventWriter.Create(this, bufferWriter, e))
@@ -73,8 +73,8 @@ internal partial class EventTracker
     }
 
     public void Track<T0, T1>(EventDefinition e,
-        (string name, T0 value) property0,
-        (string name, T1 value) property1)
+        (string name, T0? value) property0,
+        (string name, T1? value) property1)
     {
         var bufferWriter = new ArrayPoolBufferWriter<byte>(_arrayPool);
         using (var writer = EventWriter.Create(this, bufferWriter, e))
@@ -88,9 +88,9 @@ internal partial class EventTracker
     }
 
     public void Track<T0, T1, T2>(EventDefinition e,
-        (string name, T0 value) property0,
-        (string name, T1 value) property1,
-        (string name, T2 value) property2)
+        (string name, T0? value) property0,
+        (string name, T1? value) property1,
+        (string name, T2? value) property2)
     {
         var bufferWriter = new ArrayPoolBufferWriter<byte>(_arrayPool);
         using (var writer = EventWriter.Create(this, bufferWriter, e))
@@ -105,10 +105,10 @@ internal partial class EventTracker
     }
 
     public void Track<T0, T1, T2, T3>(EventDefinition e,
-        (string name, T0 value) property0,
-        (string name, T1 value) property1,
-        (string name, T2 value) property2,
-        (string name, T3 value) property3)
+        (string name, T0? value) property0,
+        (string name, T1? value) property1,
+        (string name, T2? value) property2,
+        (string name, T3? value) property3)
     {
         var bufferWriter = new ArrayPoolBufferWriter<byte>(_arrayPool);
         using (var writer = EventWriter.Create(this, bufferWriter, e))
@@ -124,11 +124,11 @@ internal partial class EventTracker
     }
 
     public void Track<T0, T1, T2, T3, T4>(EventDefinition e,
-        (string name, T0 value) property0,
-        (string name, T1 value) property1,
-        (string name, T2 value) property2,
-        (string name, T3 value) property3,
-        (string name, T4 value) property4)
+        (string name, T0? value) property0,
+        (string name, T1? value) property1,
+        (string name, T2? value) property2,
+        (string name, T3? value) property3,
+        (string name, T4? value) property4)
     {
         var bufferWriter = new ArrayPoolBufferWriter<byte>(_arrayPool);
         using (var writer = EventWriter.Create(this, bufferWriter, e))
@@ -145,12 +145,12 @@ internal partial class EventTracker
     }
 
     public void Track<T0, T1, T2, T3, T4, T5>(EventDefinition e,
-        (string name, T0 value) property0,
-        (string name, T1 value) property1,
-        (string name, T2 value) property2,
-        (string name, T3 value) property3,
-        (string name, T4 value) property4,
-        (string name, T5 value) property5)
+        (string name, T0? value) property0,
+        (string name, T1? value) property1,
+        (string name, T2? value) property2,
+        (string name, T3? value) property3,
+        (string name, T4? value) property4,
+        (string name, T5? value) property5)
     {
         var bufferWriter = new ArrayPoolBufferWriter<byte>(_arrayPool);
         using (var writer = EventWriter.Create(this, bufferWriter, e))
@@ -168,13 +168,13 @@ internal partial class EventTracker
     }
 
     public void Track<T0, T1, T2, T3, T4, T5, T6>(EventDefinition e,
-        (string name, T0 value) property0,
-        (string name, T1 value) property1,
-        (string name, T2 value) property2,
-        (string name, T3 value) property3,
-        (string name, T4 value) property4,
-        (string name, T5 value) property5,
-        (string name, T6 value) property6)
+        (string name, T0? value) property0,
+        (string name, T1? value) property1,
+        (string name, T2? value) property2,
+        (string name, T3? value) property3,
+        (string name, T4? value) property4,
+        (string name, T5? value) property5,
+        (string name, T6? value) property6)
     {
         var bufferWriter = new ArrayPoolBufferWriter<byte>(_arrayPool);
         using (var writer = EventWriter.Create(this, bufferWriter, e))
@@ -193,14 +193,14 @@ internal partial class EventTracker
     }
 
     public void Track<T0, T1, T2, T3, T4, T5, T6, T7>(EventDefinition e,
-        (string name, T0 value) property0,
-        (string name, T1 value) property1,
-        (string name, T2 value) property2,
-        (string name, T3 value) property3,
-        (string name, T4 value) property4,
-        (string name, T5 value) property5,
-        (string name, T6 value) property6,
-        (string name, T7 value) property7)
+        (string name, T0? value) property0,
+        (string name, T1? value) property1,
+        (string name, T2? value) property2,
+        (string name, T3? value) property3,
+        (string name, T4? value) property4,
+        (string name, T5? value) property5,
+        (string name, T6? value) property6,
+        (string name, T7? value) property7)
     {
         var bufferWriter = new ArrayPoolBufferWriter<byte>(_arrayPool);
         using (var writer = EventWriter.Create(this, bufferWriter, e))
@@ -220,15 +220,15 @@ internal partial class EventTracker
     }
 
     public void Track<T0, T1, T2, T3, T4, T5, T6, T7, T8>(EventDefinition e,
-        (string name, T0 value) property0,
-        (string name, T1 value) property1,
-        (string name, T2 value) property2,
-        (string name, T3 value) property3,
-        (string name, T4 value) property4,
-        (string name, T5 value) property5,
-        (string name, T6 value) property6,
-        (string name, T7 value) property7,
-        (string name, T8 value) property8)
+        (string name, T0? value) property0,
+        (string name, T1? value) property1,
+        (string name, T2? value) property2,
+        (string name, T3? value) property3,
+        (string name, T4? value) property4,
+        (string name, T5? value) property5,
+        (string name, T6? value) property6,
+        (string name, T7? value) property7,
+        (string name, T8? value) property8)
     {
         var bufferWriter = new ArrayPoolBufferWriter<byte>(_arrayPool);
         using (var writer = EventWriter.Create(this, bufferWriter, e))
@@ -249,16 +249,16 @@ internal partial class EventTracker
     }
 
     public void Track<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9>(EventDefinition e,
-        (string name, T0 value) property0,
-        (string name, T1 value) property1,
-        (string name, T2 value) property2,
-        (string name, T3 value) property3,
-        (string name, T4 value) property4,
-        (string name, T5 value) property5,
-        (string name, T6 value) property6,
-        (string name, T7 value) property7,
-        (string name, T8 value) property8,
-        (string name, T9 value) property9)
+        (string name, T0? value) property0,
+        (string name, T1? value) property1,
+        (string name, T2? value) property2,
+        (string name, T3? value) property3,
+        (string name, T4? value) property4,
+        (string name, T5? value) property5,
+        (string name, T6? value) property6,
+        (string name, T7? value) property7,
+        (string name, T8? value) property8,
+        (string name, T9? value) property9)
     {
         var bufferWriter = new ArrayPoolBufferWriter<byte>(_arrayPool);
         using (var writer = EventWriter.Create(this, bufferWriter, e))
@@ -279,7 +279,7 @@ internal partial class EventTracker
         FinalizeEvent(e, bufferWriter);
     }
 
-    public void Track(EventDefinition e, params ReadOnlySpan<(string name, object value)> properties)
+    public void Track(EventDefinition e, params ReadOnlySpan<(string name, object? value)> properties)
     {
         var bufferWriter = new ArrayPoolBufferWriter<byte>(_arrayPool);
         using (var writer = EventWriter.Create(this, bufferWriter, e))
