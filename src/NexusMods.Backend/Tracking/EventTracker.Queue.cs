@@ -31,7 +31,7 @@ internal partial class EventTracker
     {
         // https://developer.mixpanel.com/reference/import-events#high-level-requirements
         // "Each event must be smaller than 1MB of uncompressed JSON."
-        // NOTE(erri120): unclear whether it's 1MB (1000 * 1000 bytes) or 1MiB (1024 * 1024) so I'm using the smaller
+        // NOTE(erri120): unclear whether it's 1MB (1000 * 1000 bytes) or 1MiB (1024 * 1024) so I'm using the smaller value
         const int limit = 1000 * 1000;
 
         if (bufferWriter.WrittenCount > limit)

@@ -125,10 +125,6 @@ internal partial class EventTracker : BackgroundService
     {
         Debug.Assert(input.Length == MaxEvents);
 
-        // Only two possibilities:
-        // 1) last highest seen ID is in the array -> start span after that element
-        // 2) last highest seen ID is not in the array -> entire array has new events
-
         // Fast paths since IDs are monotonic increasing and we sort in ascending order
         if (input[0].Id > highestSeenId) return input;
         if (input[^1].Id <= highestSeenId) return ReadOnlySpan<PreparedEvent>.Empty;

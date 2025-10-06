@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.ObjectPool;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Paths;
+using NexusMods.Sdk.Settings;
 using NexusMods.Sdk.Tracking;
 using Polly;
 using Polly.RateLimiting;
@@ -34,10 +35,10 @@ internal partial class EventTracker : IEventTracker
         TimeProvider timeProvider,
         IOSInformation osInformation,
         ILoginManager loginManager,
+        ISettingsManager settingsManager,
         JsonSerializerOptions jsonSerializerOptions)
     {
-        // TODO: persist
-        _deviceId = JsonEncodedText.Encode(Guid.CreateVersion7().ToString());
+        _deviceId = JsonEncodedText.Encode(settingsManager.Get<TrackingSettings>().DeviceId.ToString());
 
         _logger = logger;
         _timeProvider = timeProvider;
