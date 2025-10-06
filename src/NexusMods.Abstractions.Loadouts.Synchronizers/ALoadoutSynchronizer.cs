@@ -50,7 +50,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     /// We'll limit backups to 2GB, for now we should never see much more than this
     /// of modified game files. s
     /// </summary>
-    private static Size MaximumBackupSize => Size.GB * 2;
+    private static Size MaximumBackupSize => Size.GB * 5;
     
     private readonly ScopedAsyncLock _lock = new();
     private readonly IFileStore _fileStore;
