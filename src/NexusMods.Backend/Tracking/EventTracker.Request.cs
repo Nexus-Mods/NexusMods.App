@@ -81,7 +81,7 @@ internal partial class EventTracker : BackgroundService
         return false;
     }
 
-    private ArrayPoolBufferWriter<byte>? PrepareRequest()
+    internal ArrayPoolBufferWriter<byte>? PrepareRequest()
     {
         _insertRingBuffer.CopyTo(_sortedReadingCopy, index: 0);
         Array.Sort(_sortedReadingCopy);

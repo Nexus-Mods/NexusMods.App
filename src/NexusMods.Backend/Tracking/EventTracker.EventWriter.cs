@@ -54,7 +54,6 @@ internal partial class EventTracker
         public void Write<T>(JsonEncodedText propertyName, T propertyValue)
         {
             if (!_tracker.ValidateProperty(propertyName.Value, propertyValue)) return;
-
             _jsonWriter.WritePropertyName(propertyName);
             JsonSerializer.Serialize(_jsonWriter, propertyValue, _tracker._jsonSerializerOptions);
         }
@@ -62,7 +61,6 @@ internal partial class EventTracker
         public void Write<T>(string propertyName, T propertyValue)
         {
             if (!_tracker.ValidateProperty(propertyName, propertyValue)) return;
-
             _jsonWriter.WritePropertyName(propertyName);
             JsonSerializer.Serialize(_jsonWriter, propertyValue, _tracker._jsonSerializerOptions);
         }
@@ -103,7 +101,7 @@ internal partial class EventTracker
             }
             else
             {
-                Write(JsonText.DistinctId, _tracker._deviceId);
+                _jsonWriter.WriteString(JsonText.DistinctId, _tracker._deviceId);
                 _jsonWriter.WriteString(JsonText.UserType, JsonText.Anonymous);
             }
 
