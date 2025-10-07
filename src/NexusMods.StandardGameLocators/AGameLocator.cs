@@ -51,7 +51,7 @@ public abstract class AGameLocator<TGameType, TId, TGame, TParent> : IGameLocato
     ///     We use the unique store identifiers from this game to locate results.
     /// </param>
     /// <returns>List of found game installations.</returns>
-    public IEnumerable<GameLocatorResult> Find(ILocatableGame game)
+    public IEnumerable<GameLocatorResult> Find(ILocatableGame game, bool forceRefreshCache = false)
     {
         if (game is not TGame tg) 
             yield break;
@@ -59,7 +59,7 @@ public abstract class AGameLocator<TGameType, TId, TGame, TParent> : IGameLocato
         if (_handler == null)
             yield break;
         
-        if (_cachedGames is null)
+        if (_cachedGames is null || forceRefreshCache)
         {
             _cachedGames = _handler.FindAllGamesById(out var errors);
             if (errors.Any())

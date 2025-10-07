@@ -29,11 +29,11 @@ public class HeroicGogLocator : IGameLocator
     }
 
     /// <inheritdoc/>
-    public IEnumerable<GameLocatorResult> Find(ILocatableGame game)
+    public IEnumerable<GameLocatorResult> Find(ILocatableGame game, bool forceRefreshCache = false)
     {
         if (game is not IGogGame tg) yield break;
 
-        if (_cachedGames is null)
+        if (_cachedGames is null || forceRefreshCache)
         {
             _cachedGames = _handler.FindAllGamesById(out var errors);
             if (errors.Length != 0)
