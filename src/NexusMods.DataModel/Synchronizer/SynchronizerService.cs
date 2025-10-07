@@ -33,7 +33,7 @@ public class SynchronizerService : ISynchronizerService
     /// <summary>
     /// DI Constructor
     /// </summary>
-    public SynchronizerService(IConnection conn, ILogger<SynchronizerService> logger, IGameRegistry gameRegistry, IFileHashesService fileHashesService, IJobMonitor jobMonitor)
+    public SynchronizerService(IConnection conn, ILogger<SynchronizerService> logger, IGameRegistry gameRegistry, IFileHashesService fileHashesService, IJobMonitor jobMonitor, IGameFolderChangeMonitor changeMonitor)
     {
         _logger = logger;
         _conn = conn;
@@ -42,6 +42,29 @@ public class SynchronizerService : ISynchronizerService
         _gameStates = _gameRegistry.Installations.ToDictionary(e => e.Key, _ => new SynchronizerState());
         _loadoutStates = Loadout.All(conn.Db).ToDictionary(e => e.LoadoutId, _ => new SynchronizerState());
         _fileHashesService = fileHashesService;
+
+        // Start monitoring file system changes and react when they settle
+        changeMonitor.ChangesSettled
+            .Subscribe(async installation =>
+            {
+                try
+                {
+                    // Rehash/rescan the installation
+                    await installation.GetGame().Synchronizer.RescanFiles(installation);
+
+                    // If a loadout is applied, check whether changes need to be applied
+                    if (TryGetLastAppliedLoadout(installation, out var applied))
+                    {
+                        _ = await GetShouldSynchronize(applied.LoadoutId);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogWarning(ex, "Error reacting to settled FS changes for installation {Install}", installation.GameMetadataId);
+                }
+            });
+
+        changeMonitor.Start();
     }
     
     /// <inheritdoc />

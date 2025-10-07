@@ -97,6 +97,7 @@ public static class Services
 
         // Disk State and Synchronizer
         coll.AddDiskStateEntryModel();
+        coll.AddAllSingleton<IGameFolderChangeMonitor, GameFolderChangeMonitor>();
         coll.AddAllSingleton<ISynchronizerService, SynchronizerService>();
 
         coll.AddSingleton<ITypeFinder>(_ => new AssemblyTypeFinder(typeof(Services).Assembly));
