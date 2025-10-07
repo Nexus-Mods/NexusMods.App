@@ -8,8 +8,10 @@ using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Library.Jobs;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Games.AdvancedInstaller;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.Sdk.Tracking;
 
 namespace NexusMods.Library;
 
@@ -23,9 +25,9 @@ internal class InstallLoadoutItemJob : IJobDefinitionWithStart<InstallLoadoutIte
     public LoadoutId LoadoutId { get; init; }
     
     public required ITransaction Transaction { get; init; }
-    required internal IConnection Connection { get; init; }
-    required internal IServiceProvider ServiceProvider { get; init; }
-    required internal bool OwnsTransaction { get; init; }
+    internal required IConnection Connection { get; init; }
+    internal required IServiceProvider ServiceProvider { get; init; }
+    internal required bool OwnsTransaction { get; init; }
 
     /// <remarks>
     /// Returns null <see cref="LoadoutItemGroup.ReadOnly"/> after running job
@@ -75,18 +77,32 @@ internal class InstallLoadoutItemJob : IJobDefinitionWithStart<InstallLoadoutIte
             ? [Installer]
             : loadout.InstallationInstance.GetGame().LibraryItemInstallers;
 
+        var sw = Stopwatch.StartNew();
         var result = await ExecuteInstallersAsync(installers, loadout, context);
 
         if (result == null)
         {
             if (Installer is AdvancedManualInstaller)
+            {
+                if (TryExtract(out var fileId, out var modId, out var gameId, out var modUid, out var fileUid))
+                    Events.ModsInstallationFailed(fileId, modId, gameId, modUid, fileUid);
                 throw new InvalidOperationException($"Advanced installer did not succeed for `{LibraryItem.Name}` (`{LibraryItem.Id}`)");
+            }
 
             var fallbackInstaller = FallbackInstaller ?? AdvancedManualInstaller.Create(ServiceProvider);
             result = await ExecuteInstallersAsync([fallbackInstaller], loadout, context);
 
             if (result == null)
+            {
+                if (TryExtract(out var fileId, out var modId, out var gameId, out var modUid, out var fileUid))
+                    Events.ModsInstallationFailed(fileId, modId, gameId, modUid, fileUid);
                 throw new InvalidOperationException($"Found no installer that supports `{LibraryItem.Name}` (`{LibraryItem.Id}`), including the fallback installer!");
+            }
+        }
+
+        {
+            if (TryExtract(out var fileId, out var modId, out var gameId, out var modUid, out var fileUid))
+                Events.ModsInstallationCompleted(fileId, modId, gameId, modUid, fileUid, sw);
         }
 
         // TODO(erri120): rename this entity to something unique, like "LoadoutItemInstalledFromLibrary"
@@ -148,10 +164,30 @@ internal class InstallLoadoutItemJob : IJobDefinitionWithStart<InstallLoadoutIte
             }
             catch (OperationCanceledException ex)
             {
+                if (TryExtract(out var fileId, out var modId, out var gameId, out var modUid, out var fileUid))
+                    Events.ModsInstallationCancelled(fileId, modId, gameId, modUid, fileUid);
+
                 context.CancelAndThrow(ex.Message);
             }
         }
 
         return null;
+    }
+
+    private bool TryExtract(out uint fileId, out uint modId, out uint gameId, out ulong modUid, out ulong fileUid)
+    {
+        fileId = 0;
+        modId = 0;
+        gameId = 0;
+        modUid = 0;
+        fileUid = 0;
+        if (!LibraryItem.TryGetAsNexusModsLibraryItem(out var nexusModsLibraryItem)) return false;
+
+        fileId = nexusModsLibraryItem.FileMetadata.Uid.FileId.Value;
+        modId = nexusModsLibraryItem.FileMetadata.ModPage.Uid.ModId.Value;
+        gameId = nexusModsLibraryItem.FileMetadata.Uid.GameId.Value;
+        modUid = nexusModsLibraryItem.FileMetadata.ModPage.Uid.AsUlong;
+        fileUid = nexusModsLibraryItem.FileMetadata.Uid.AsUlong;
+        return true;
     }
 }

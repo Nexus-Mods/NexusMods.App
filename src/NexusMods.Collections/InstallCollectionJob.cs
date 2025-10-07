@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -15,6 +16,7 @@ using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Sdk.FileStore;
+using NexusMods.Sdk.Tracking;
 
 namespace NexusMods.Collections;
 
@@ -91,6 +93,14 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
         var isFullyDownloaded = CollectionDownloader.IsFullyDownloaded(items, db: Connection.Db);
         if (!isFullyDownloaded) throw new InvalidOperationException("The collection hasn't fully been downloaded!");
 
+        var sw = Stopwatch.StartNew();
+        Events.CollectionsInstallationStarted(
+            collectionId: RevisionMetadata.Collection.CollectionId.Value,
+            revisionId: RevisionMetadata.RevisionId.Value,
+            gameId: RevisionMetadata.Collection.GameId.Value,
+            modCount: items.Length
+        );
+
         var root = await NexusModsLibrary.ParseCollectionJsonFile(SourceCollection, context.CancellationToken);
         var modsAndDownloads = GatherDownloads(items, root);
 
@@ -148,13 +158,20 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
         var allRequiredItemsInstalled = allRequiredItems.All(item => CollectionDownloader
             .GetStatus(item, collectionGroup.AsCollectionGroup(), db: Connection.Db)
             .IsInstalled(out _));
-
         {
             using var tx = Connection.BeginTransaction();
 
             if (allRequiredItemsInstalled)
             {
                 tx.Retract(collectionGroup.Id, LoadoutItem.Disabled, Null.Instance);
+
+                Events.CollectionsInstallationCompleted(
+                    collectionId: RevisionMetadata.Collection.CollectionId.Value,
+                    revisionId: RevisionMetadata.RevisionId.Value,
+                    gameId: RevisionMetadata.Collection.GameId.Value,
+                    modCount: items.Length,
+                    duration: sw
+                );
             }
             else
             {

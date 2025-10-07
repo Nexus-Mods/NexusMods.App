@@ -73,6 +73,13 @@ public class Program
         var services = host.Services;
         _logger = services.GetRequiredService<ILogger<Program>>();
 
+        if (trackingSettings.EnableTracking)
+        {
+            Tracker.SetTracker(services.GetService<IEventTracker>());
+            Tracker.SetTracker(services.GetService<IExceptionTracker>());
+            Events.AppLaunched();
+        }
+
         // NOTE(erri120): has to come before host startup
         CleanupUnresponsiveProcesses(services).Wait(timeout: TimeSpan.FromSeconds(10));
 
