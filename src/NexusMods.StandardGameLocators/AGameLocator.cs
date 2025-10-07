@@ -68,33 +68,36 @@ public abstract class AGameLocator<TGameType, TId, TGame, TParent> : IGameLocato
                     Logger.LogError("While looking for games: {Error}", error);
             }
 
-            foreach (var cachedGame in _cachedGames)
+            if (!forceRefreshCache)
             {
-                switch (cachedGame.Value)
+                foreach (var cachedGame in _cachedGames)
                 {
-                    case XboxGame xb:
-                        Logger.LogInformation($"Found Xbox Game: {xb.Id}, {xb.DisplayName}");
-                        break;
-                    case SteamGame st:
-                        Logger.LogInformation($"Found Steam Game: {st.AppId}, {st.Name}");
-                        break;
-                    case EGSGame eg:
-                        Logger.LogInformation($"Found Epic Game: {eg.CatalogItemId}, {eg.DisplayName}");
-                        break;
-                    case GOGGame gog:
-                        Logger.LogInformation($"Found GOG Galaxy Game: {gog.Id}, {gog.Name}");
-                        break;
-                    case OriginGame og:
-                        Logger.LogInformation($"Found Origin Game: {og.Id}, {og.InstallPath}");
-                        break;
-                    case EADesktopGame ea:
-                        Logger.LogInformation($"Found EA Desktop Game: {ea.EADesktopGameId}, {ea.BaseInstallPath}");
-                        break;
-                }
-                var metadata = CreateMetadata(cachedGame.Value, _cachedGames.Values);
-                foreach (var id in metadata.ToLocatorIds())
-                {
-                    Logger.LogInformation($" - ID: {id}");
+                    switch (cachedGame.Value)
+                    {
+                        case XboxGame xb:
+                            Logger.LogInformation($"Found Xbox Game: {xb.Id}, {xb.DisplayName}");
+                            break;
+                        case SteamGame st:
+                            Logger.LogInformation($"Found Steam Game: {st.AppId}, {st.Name}");
+                            break;
+                        case EGSGame eg:
+                            Logger.LogInformation($"Found Epic Game: {eg.CatalogItemId}, {eg.DisplayName}");
+                            break;
+                        case GOGGame gog:
+                            Logger.LogInformation($"Found GOG Galaxy Game: {gog.Id}, {gog.Name}");
+                            break;
+                        case OriginGame og:
+                            Logger.LogInformation($"Found Origin Game: {og.Id}, {og.InstallPath}");
+                            break;
+                        case EADesktopGame ea:
+                            Logger.LogInformation($"Found EA Desktop Game: {ea.EADesktopGameId}, {ea.BaseInstallPath}");
+                            break;
+                    }
+                    var metadata = CreateMetadata(cachedGame.Value, _cachedGames.Values);
+                    foreach (var id in metadata.ToLocatorIds())
+                    {
+                        Logger.LogInformation($" - ID: {id}");
+                    }
                 }
             }
         }
