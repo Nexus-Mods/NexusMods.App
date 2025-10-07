@@ -14,19 +14,19 @@ public class LeftMenuNavButton : NavigationControl
 {
     private const string pcActive = ":active";
     private const string pcSelected = ":selected";
-    
+
     /// <summary>
     /// Defines the <see cref="IsActive"/> property.
     /// </summary>
     public static readonly StyledProperty<bool> IsActiveProperty =
         AvaloniaProperty.Register<LeftMenuNavButton, bool>(nameof(IsActive), false);
-    
+
     /// <summary>
     /// Defines the <see cref="IsSelected"/> property.
     /// </summary>
     public static readonly StyledProperty<bool> IsSelectedProperty =
         AvaloniaProperty.Register<LeftMenuNavButton, bool>(nameof(IsSelected), false);
-    
+
     /// <summary>
     /// Gets or sets whether the button is in the active state.
     /// </summary>
@@ -35,7 +35,7 @@ public class LeftMenuNavButton : NavigationControl
         get => GetValue(IsActiveProperty);
         set => SetValue(IsActiveProperty, value);
     }
-    
+
     /// <summary>
     /// Gets or sets whether the button is in the selected state.
     /// </summary>
@@ -44,13 +44,13 @@ public class LeftMenuNavButton : NavigationControl
         get => GetValue(IsSelectedProperty);
         set => SetValue(IsSelectedProperty, value);
     }
-    
+
     /// <inheritdoc/>
     /// Parent class <see cref="NavigationControl"/> has a StyleKey of <see cref="StandardButton"/>,
     /// which would prevent this class from having specialized styling.
     protected override Type StyleKeyOverride => typeof(LeftMenuNavButton);
-    
-    
+
+
     /// <inheritdoc/>
     protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
     {

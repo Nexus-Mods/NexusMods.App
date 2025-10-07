@@ -16,6 +16,10 @@ public class NavigationControl : StandardButton
     public static readonly StyledProperty<ReactiveCommand<NavigationInput, Unit>?> NavigateCommandProperty =
         AvaloniaProperty.Register<NavigationControl, ReactiveCommand<NavigationInput, Unit>?>(nameof(NavigationCommand));
 
+    public static readonly StyledProperty<IReadOnlyList<IContextMenuItem>?> AdditionalContextMenuItemsProperty =
+        AvaloniaProperty.Register<NavigationControl, IReadOnlyList<IContextMenuItem>?>(
+            nameof(AdditionalContextMenuItems));
+
     public ReactiveCommand<NavigationInformation, Unit>? NavigationCommand
     {
         get
@@ -24,6 +28,12 @@ public class NavigationControl : StandardButton
             return value as ReactiveCommand<NavigationInformation, Unit>;
         }
         set => SetValue(CommandProperty, value);
+    }
+
+    public IReadOnlyList<IContextMenuItem>? AdditionalContextMenuItems
+    {
+        get => GetValue(AdditionalContextMenuItemsProperty);
+        set => SetValue(AdditionalContextMenuItemsProperty, value);
     }
 
     private NavigationInformation NavigationInformation
@@ -42,24 +52,50 @@ public class NavigationControl : StandardButton
             OnClick();
         });
 
-        var contextMenu = new ContextMenu
+        this.WhenAnyValue(x => x.AdditionalContextMenuItems)
+            .Subscribe(_ => UpdateContextMenu());
+
+        UpdateContextMenu();
+    }
+
+    private void UpdateContextMenu()
+    {
+        var contextMenu = new ContextMenu();
+
+        // Add standard items
+        contextMenu.Items.Add(new MenuItem
         {
-            Items =
+            Header = Language.NavigationControl_NavigationControl_Open_in_new_tab,
+            Command = _contextMenuCommand,
+            CommandParameter = OpenPageBehaviorType.NewTab,
+        });
+
+        contextMenu.Items.Add(new MenuItem
+        {
+            Header = Language.NavigationControl_NavigationControl_Open_in_new_panel,
+            Command = _contextMenuCommand,
+            CommandParameter = OpenPageBehaviorType.NewPanel,
+        });
+
+        // Add additional items if any exist
+        var additionalItems = AdditionalContextMenuItems?
+            .Where(item => item.IsVisible && item.IsEnabled)
+            .ToList();
+
+        if (additionalItems?.Count > 0)
+        {
+            contextMenu.Items.Add(new Separator());
+
+            foreach (var item in additionalItems)
             {
-                new MenuItem
+                var menuItem = new MenuItem
                 {
-                    Header = Language.NavigationControl_NavigationControl_Open_in_new_tab,
-                    Command = _contextMenuCommand,
-                    CommandParameter = OpenPageBehaviorType.NewTab,
-                },
-                new MenuItem
-                {
-                    Header = Language.NavigationControl_NavigationControl_Open_in_new_panel,
-                    Command = _contextMenuCommand,
-                    CommandParameter = OpenPageBehaviorType.NewPanel,
-                },
-            },
-        };
+                    Header = item.Header,
+                    Command = item.Command,
+                };
+                contextMenu.Items.Add(menuItem);
+            }
+        }
 
         ContextMenu = contextMenu;
     }
