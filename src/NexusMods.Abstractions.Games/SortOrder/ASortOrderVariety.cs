@@ -200,6 +200,13 @@ public abstract class ASortOrderVariety<TKey, TReactiveSortItem, TItemLoadoutDat
         while (retryCount <= 3)
         {
             var refDb = referenceDb ?? Connection.Db;
+
+            // Check if the sort order still exists
+            if (!SortOrder.Load(refDb.Connection.Db, sortOrderId).IsValid())
+            {
+                // Sort order no longer exists, collection/loadout was deleted, abort.
+                return;
+            }
             
             var reconciledItems = ReconcileSortOrderCore(sortOrderId, refDb);
             
@@ -263,19 +270,20 @@ public abstract class ASortOrderVariety<TKey, TReactiveSortItem, TItemLoadoutDat
         
         PersistSortOrderCore(sortOrderId, newOrder, tx, startingDb, token);
 
-        var sortOrderTxId = GetMaxTxIdForSortOrder(sortOrderId, startingDb);
-            
+        var sortOrderTxId = GetMaxTxIdForSortOrder(sortOrderId, startingDb) ;
+        if (sortOrderTxId == default(TxId)) return false;
+        
         tx.Add(sortOrderId, sortOrderTxId,
             (_ ,txDb, orderId, oldTxId) =>
             {
                 var currentTxId = GetMaxTxIdForSortOrder(orderId, txDb);
                 
-                if (currentTxId > oldTxId)
+                if (currentTxId > oldTxId || currentTxId == default(TxId))
                 {
                     throw new InvalidOperationException(
                         $"Unable to complete transaction: Sort Order {orderId} changed, Current TxId: {currentTxId}, Old TxId: {oldTxId}");
                 }
-            } );
+            });
         
         try
         {
@@ -345,7 +353,8 @@ public abstract class ASortOrderVariety<TKey, TReactiveSortItem, TItemLoadoutDat
     
     protected static TxId GetMaxTxIdForSortOrder(SortOrderId sortOrderId, IDb db)
     {
-        // TODO: Use better queries to potentially optimize this
+        var sortOrder = SortOrder.Load(db, sortOrderId);
+        if (!sortOrder.IsValid()) return default(TxId);
         
         var maxTxId = db.Get(sortOrderId).Max(datom => datom.T);
         var maxIds = db.Datoms(SortOrderItem.ParentSortOrder, sortOrderId)
