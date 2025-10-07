@@ -55,6 +55,15 @@ public abstract class AReactiveContentControl<TContent> : ContentControl
     private readonly SerialDisposable _serialDisposable = new();
 
     /// <summary>
+    /// Builds and sets the content control for the given content.
+    /// </summary>
+    private static void BuildAndSetContentControl(AReactiveContentControl<TContent> self, TContent content)
+    {
+        var control = self.BuildContentControl(content, out var optionalClass);
+        self.SetContentControl(control, optionalClass);
+    }
+
+    /// <summary>
     /// Builds a control for the given content.
     /// </summary>
     protected abstract Control? BuildContentControl(TContent content, out Optional<string> contentPresenterClass);
@@ -69,13 +78,20 @@ public abstract class AReactiveContentControl<TContent> : ContentControl
     /// </summary>
     protected virtual IDisposable Subscribe(TContent content)
     {
+        // Note(sewer):
+        // If content has been previously rendered, (i.e. we have >1 column and below subscription was called),
+        // update immediately, since we can't guarantee an immediate return from GetObservable. This way we can
+        // guarantee refresh on reused controls like ContextMenu, etc.
+        // https://github.com/Nexus-Mods/NexusMods.App/pull/3942#issuecomment-3374761550
+        if (Presenter is not null)
+            BuildAndSetContentControl(this, content);
+
         return GetObservable(content).ObserveOnUIThreadDispatcher().Subscribe((this, content), static (_, state) =>
         {
-            var (self, content) = state;
+            var (self, contentState) = state;
             if (self.Presenter is null) return;
 
-            var control = self.BuildContentControl(content, out var optionalClass);
-            self.SetContentControl(control, optionalClass);
+            BuildAndSetContentControl(self, contentState);
         });
     }
 
@@ -93,9 +109,13 @@ public abstract class AReactiveContentControl<TContent> : ContentControl
                 return;
             }
 
-            // NOTE(erri120): we only care about Content changes when the
-            // Control is fully constructed and rendered on screen.
-            if (IsLoaded) _serialDisposable.Disposable = Subscribe(content);
+            // Note(sewer)
+            // We subscribe immediately to the content changes (components).
+            // Meaning that if columns are added or removed, then our XAML templates are rebuilt.
+            // 
+            // In some cases, the content can be changed before it is shown on screen- therefore we accept it
+            // right away, as the user may expect the changed DataContext (Content) to show right away.
+            _serialDisposable.Disposable = Subscribe(content);
         }
     }
 
@@ -106,8 +126,7 @@ public abstract class AReactiveContentControl<TContent> : ContentControl
         // NOTE(erri120): Puts content into the presenter before the first render.
         if (didRegister && Content is TContent content)
         {
-            var control = BuildContentControl(content, out var optionalClass);
-            SetContentControl(control, optionalClass);
+            BuildAndSetContentControl(this, content);
         }
 
         return didRegister;
@@ -135,24 +154,10 @@ public abstract class AReactiveContentControl<TContent> : ContentControl
         Presenter.Content = border;
     }
 
-    protected override void OnLoaded(RoutedEventArgs e)
-    {
-        base.OnLoaded(e);
-
-        if (Content is not TContent content)
-        {
-            _serialDisposable.Disposable = null;
-            return;
-        }
-
-        Debug.Assert(_serialDisposable.Disposable is null, "nothing should've subscribed yet");
-        _serialDisposable.Disposable = Subscribe(content);
-    }
-
     protected override void OnUnloaded(RoutedEventArgs e)
     {
         base.OnUnloaded(e);
-
+        
         _serialDisposable.Disposable = null;
     }
 }
