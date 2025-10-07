@@ -1,9 +1,7 @@
 using System.Collections;
-using System.Diagnostics;
 using System.Text.Json;
 using CommunityToolkit.HighPerformance.Buffers;
 using NexusMods.Abstractions.NexusWebApi.Types;
-using NexusMods.Sdk;
 using NexusMods.Sdk.Tracking;
 
 namespace NexusMods.Backend.Tracking;
@@ -46,76 +44,24 @@ internal partial class EventTracker
     {
         private readonly EventTracker _tracker;
         private readonly Utf8JsonWriter _jsonWriter;
-        private readonly EventDefinition _eventDefinition;
-        private readonly HashSet<string>? _writtenProperties;
 
-        private EventWriter(EventTracker tracker, Utf8JsonWriter jsonWriter, EventDefinition eventDefinition)
+        private EventWriter(EventTracker tracker, Utf8JsonWriter jsonWriter)
         {
             _tracker = tracker;
             _jsonWriter = jsonWriter;
-            _eventDefinition = eventDefinition;
-            _writtenProperties = ApplicationConstants.IsDebug ? new HashSet<string>(StringComparer.OrdinalIgnoreCase) : null;
         }
 
-        private void Write<T>(JsonEncodedText propertyName, T propertyValue)
-        {
-            if (!_tracker.ValidateProperty(propertyName.Value, propertyValue)) return;
-            _jsonWriter.WritePropertyName(propertyName);
-            JsonSerializer.Serialize(_jsonWriter, propertyValue, _tracker._jsonSerializerOptions);
-        }
-
-        private void Write<T>(string propertyName, T? propertyValue)
+        private void Write<T>(EventString propertyName, T? propertyValue)
         {
             if (propertyValue is null) return;
-            if (!_tracker.ValidateProperty(propertyName, propertyValue)) return;
-            _jsonWriter.WritePropertyName(propertyName);
+            if (!_tracker.ValidateProperty(propertyName.Value, propertyValue)) return;
+            _jsonWriter.WritePropertyName(propertyName.EncodedText);
             JsonSerializer.Serialize(_jsonWriter, propertyValue, _tracker._jsonSerializerOptions);
         }
 
-        public void Write<T>((string name, T? value) property)
+        public void Write<T>((EventString name, T? value) property)
         {
-            ValidatePropertyDefinition(property.name, property.value);
             Write(property.name, property.value);
-        }
-
-        [Conditional("DEBUG")]
-        private void ValidatePropertyDefinition<T>(string name, T? value)
-        {
-            Debug.Assert(_writtenProperties is not null);
-            if (_writtenProperties.Contains(name))
-            {
-                throw new InvalidOperationException($"Property `{name}` has already been added to the event `{_eventDefinition.Name.Value}`");
-            }
-
-            if (!_eventDefinition.TryGet(name, out var propertyDefinition))
-            {
-                throw new InvalidOperationException($"Event definition `{_eventDefinition.Name.Value}` doesn't contain a property definition for `{name}`");
-            }
-
-            if (value is null)
-            {
-                if (propertyDefinition.IsOptional) return;
-                throw new InvalidOperationException($"Property `{name}` is null for event `{_eventDefinition.Name.Value}` but it's required in the definition");
-            }
-
-            if (propertyDefinition.Type != typeof(T))
-            {
-                throw new InvalidOperationException($"Property definition type mismatch for property `{name}` on event `{_eventDefinition.Name.Value}`: expected `{propertyDefinition.Type}` but received `{typeof(T)}`");
-            }
-
-            _writtenProperties.Add(name);
-        }
-
-        [Conditional("DEBUG")]
-        internal void ValidateAllPropertyDefinitions()
-        {
-            Debug.Assert(_writtenProperties is not null);
-            foreach (var propertyDefinition in _eventDefinition)
-            {
-                if (propertyDefinition.IsOptional) continue;
-                if (_writtenProperties.TryGetValue(propertyDefinition.Name.Value, out _)) continue;
-                throw new InvalidOperationException($"Missing required property `{propertyDefinition.Name.Value}` on event `{_eventDefinition.Name.Value}`");
-            }
         }
 
         private void WriteSuperProperties()
@@ -173,15 +119,15 @@ internal partial class EventTracker
             ));
         }
 
-        public static EventWriter Create(EventTracker tracker, ArrayPoolBufferWriter<byte> bufferWriter, EventDefinition eventDefinition)
+        public static EventWriter Create(EventTracker tracker, ArrayPoolBufferWriter<byte> bufferWriter, EventString name)
         {
             var jsonWriter = tracker.GetWriter(bufferWriter);
 
             jsonWriter.WriteStartObject();
-            jsonWriter.WriteString(JsonText.Event, eventDefinition.Name);
+            jsonWriter.WriteString(JsonText.Event, name.EncodedText);
             jsonWriter.WriteStartObject(JsonText.Properties);
 
-            var writer = new EventWriter(tracker, jsonWriter, eventDefinition);
+            var writer = new EventWriter(tracker, jsonWriter);
             writer.WriteSuperProperties();
             return writer;
         }

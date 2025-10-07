@@ -143,12 +143,12 @@ public class NxmIpcProtocolHandler : IIpcProtocolHandler
             }
 
             var collectionRevision = await nexusModsLibrary.GetOrAddCollectionRevision(collectionFile, collectionUrl.Collection.Slug, collectionUrl.Revision, CancellationToken.None);
-            Tracker.TrackEvent(Events.CollectionsDownloadCompleted,
-                ("collection_id", collectionRevision.Collection.CollectionId.Value),
-                ("revision_id", collectionRevision.RevisionId.Value),
-                ("game_id", collectionRevision.Collection.GameId.Value),
-                ("mod_count", collectionRevision.Downloads.Count),
-                ("duration_ms", sw.ElapsedMilliseconds)
+            Events.CollectionsDownloadCompleted(
+                collectionId: collectionRevision.Collection.CollectionId.Value,
+                revisionId: collectionRevision.RevisionId.Value,
+                gameId: collectionRevision.Collection.GameId.Value,
+                modCount: collectionRevision.Downloads.Count,
+                duration: sw.ElapsedMilliseconds
             );
 
             _eventBus.Send(new CliMessages.CollectionAddSucceeded(collectionRevision));

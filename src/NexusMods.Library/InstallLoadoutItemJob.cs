@@ -84,7 +84,8 @@ internal class InstallLoadoutItemJob : IJobDefinitionWithStart<InstallLoadoutIte
         {
             if (Installer is AdvancedManualInstaller)
             {
-                Track(Events.ModsInstallationFailed);
+                if (TryExtract(out var fileId, out var modId, out var gameId, out var modUid, out var fileUid))
+                    Events.ModsInstallationFailed(fileId, modId, gameId, modUid, fileUid);
                 throw new InvalidOperationException($"Advanced installer did not succeed for `{LibraryItem.Name}` (`{LibraryItem.Id}`)");
             }
 
@@ -93,12 +94,16 @@ internal class InstallLoadoutItemJob : IJobDefinitionWithStart<InstallLoadoutIte
 
             if (result == null)
             {
-                Track(Events.ModsInstallationFailed);
+                if (TryExtract(out var fileId, out var modId, out var gameId, out var modUid, out var fileUid))
+                    Events.ModsInstallationFailed(fileId, modId, gameId, modUid, fileUid);
                 throw new InvalidOperationException($"Found no installer that supports `{LibraryItem.Name}` (`{LibraryItem.Id}`), including the fallback installer!");
             }
         }
 
-        Track(Events.ModsInstallationCompleted, sw.ElapsedMilliseconds);
+        {
+            if (TryExtract(out var fileId, out var modId, out var gameId, out var modUid, out var fileUid))
+                Events.ModsInstallationCompleted(fileId, modId, gameId, modUid, fileUid, sw.ElapsedMilliseconds);
+        }
 
         // TODO(erri120): rename this entity to something unique, like "LoadoutItemInstalledFromLibrary"
         var loadoutGroup = result!;
@@ -159,7 +164,9 @@ internal class InstallLoadoutItemJob : IJobDefinitionWithStart<InstallLoadoutIte
             }
             catch (OperationCanceledException ex)
             {
-                Track(Events.ModsInstallationCancelled);
+                if (TryExtract(out var fileId, out var modId, out var gameId, out var modUid, out var fileUid))
+                    Events.ModsInstallationCancelled(fileId, modId, gameId, modUid, fileUid);
+
                 context.CancelAndThrow(ex.Message);
             }
         }
@@ -167,29 +174,20 @@ internal class InstallLoadoutItemJob : IJobDefinitionWithStart<InstallLoadoutIte
         return null;
     }
 
-    private void Track(EventDefinition eventDefinition, long ms = 0)
+    private bool TryExtract(out uint fileId, out uint modId, out uint gameId, out ulong modUid, out ulong fileUid)
     {
-        if (!LibraryItem.TryGetAsNexusModsLibraryItem(out var nexusModsLibraryItem)) return;
-        if (ms == 0)
-        {
-            Tracker.TrackEvent(eventDefinition,
-                ("file_id", nexusModsLibraryItem.FileMetadata.Uid.FileId.Value),
-                ("mod_id", nexusModsLibraryItem.FileMetadata.ModPage.Uid.ModId.Value),
-                ("game_id", nexusModsLibraryItem.FileMetadata.Uid.GameId.Value),
-                ("mod_uid", nexusModsLibraryItem.FileMetadata.ModPage.Uid.AsUlong),
-                ("file_uid", nexusModsLibraryItem.FileMetadata.Uid.AsUlong)
-            );
-        }
-        else
-        {
-            Tracker.TrackEvent(eventDefinition,
-                ("file_id", nexusModsLibraryItem.FileMetadata.Uid.FileId.Value),
-                ("mod_id", nexusModsLibraryItem.FileMetadata.ModPage.Uid.ModId.Value),
-                ("game_id", nexusModsLibraryItem.FileMetadata.Uid.GameId.Value),
-                ("mod_uid", nexusModsLibraryItem.FileMetadata.ModPage.Uid.AsUlong),
-                ("file_uid", nexusModsLibraryItem.FileMetadata.Uid.AsUlong),
-                ("duration_ms", ms)
-            );
-        }
+        fileId = 0;
+        modId = 0;
+        gameId = 0;
+        modUid = 0;
+        fileUid = 0;
+        if (!LibraryItem.TryGetAsNexusModsLibraryItem(out var nexusModsLibraryItem)) return false;
+
+        fileId = nexusModsLibraryItem.FileMetadata.Uid.FileId.Value;
+        modId = nexusModsLibraryItem.FileMetadata.ModPage.Uid.ModId.Value;
+        gameId = nexusModsLibraryItem.FileMetadata.Uid.GameId.Value;
+        modUid = nexusModsLibraryItem.FileMetadata.ModPage.Uid.AsUlong;
+        fileUid = nexusModsLibraryItem.FileMetadata.Uid.AsUlong;
+        return true;
     }
 }

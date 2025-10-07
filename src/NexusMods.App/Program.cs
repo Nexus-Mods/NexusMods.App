@@ -77,7 +77,7 @@ public class Program
         {
             Tracker.SetTracker(services.GetService<IEventTracker>());
             Tracker.SetTracker(services.GetService<IExceptionTracker>());
-            Tracker.TrackEvent(Events.AppLaunched);
+            Events.AppLaunched();
         }
 
         // NOTE(erri120): has to come before host startup
