@@ -252,6 +252,10 @@ public static class Events
     {
         public static implicit operator DurationValue(long value) => new(value);
         public static implicit operator DurationValue(TimeSpan value) => new((long)value.TotalMilliseconds);
-        public static implicit operator DurationValue(Stopwatch value) => new(value.ElapsedMilliseconds);
+        public static implicit operator DurationValue(Stopwatch value)
+        {
+            value.Stop();
+            return new DurationValue(value.ElapsedMilliseconds);
+        }
     }
 }
