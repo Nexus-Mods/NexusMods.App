@@ -43,4 +43,10 @@
         <AdditionalFiles Include="**\*.sql" />
         <UpToDateCheckInput Include="**\*.sql"/>
     </ItemGroup>
+
+    <ItemGroup>
+      <Reference Include="CliWrap">
+        <HintPath>..\..\..\..\..\..\..\..\home\florian\.nuget\packages\cliwrap\3.9.0\lib\net9.0\CliWrap.dll</HintPath>
+      </Reference>
+    </ItemGroup>
 </Project>

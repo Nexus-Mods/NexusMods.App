@@ -17,7 +17,6 @@ using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Sdk.Settings;
 using NexusMods.Abstractions.Telemetry;
-using NexusMods.CrossPlatform.Process;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.DatomIterators;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
@@ -195,7 +194,7 @@ public class CollectionDownloader
         else
         {
             var domain = _mappingCache[download.FileUid.GameId];
-            await _osInterop.OpenUrl(NexusModsUrlBuilder.GetFileDownloadUri(domain, download.ModUid.ModId, download.FileUid.FileId, useNxmLink: true, campaign: NexusModsUrlBuilder.CampaignCollections), logOutput: false, fireAndForget: true, cancellationToken: cancellationToken);
+            _osInterop.OpenUri(NexusModsUrlBuilder.GetFileDownloadUri(domain, download.ModUid.ModId, download.FileUid.FileId, useNxmLink: true, campaign: NexusModsUrlBuilder.CampaignCollections));
         }
     }
 

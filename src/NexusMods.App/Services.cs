@@ -92,7 +92,8 @@ public static class Services
                 .AddFileExtractors()
                 .AddSerializationAbstractions()
                 .AddSupportedGames()
-                .AddCrossPlatform()
+                .AddOSInterop()
+                .AddRuntimeDependencies()
                 .AddGames()
                 .AddGenericGameSupport()
                 .AddLoadoutAbstractions()
@@ -120,7 +121,8 @@ public static class Services
             services
                 .AddSingleton<TimeProvider>(_ => TimeProvider.System)
                 .AddFileSystem()
-                .AddCrossPlatform()
+                .AddOSInterop()
+                .AddRuntimeDependencies()
                 .AddDefaultRenderers()
                 .AddSettingsManager()
                 .AddSettings<LoggingSettings>();

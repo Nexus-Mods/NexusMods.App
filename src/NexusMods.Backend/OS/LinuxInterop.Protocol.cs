@@ -1,17 +1,12 @@
-using System.Runtime.Versioning;
 using System.Text;
 using Microsoft.Extensions.Logging;
-using NexusMods.CrossPlatform.Process;
 using NexusMods.Paths;
 using NexusMods.Sdk;
+using NexusMods.Sdk.IO;
 
-namespace NexusMods.CrossPlatform.ProtocolRegistration;
+namespace NexusMods.Backend.OS;
 
-/// <summary>
-/// Protocol registration for Linux.
-/// </summary>
-[SupportedOSPlatform("linux")]
-internal class ProtocolRegistrationLinux : IProtocolRegistration
+internal partial class LinuxInterop
 {
     private const string ApplicationId = "com.nexusmods.app";
     private const string DesktopFile = $"{ApplicationId}.desktop";
@@ -19,34 +14,7 @@ internal class ProtocolRegistrationLinux : IProtocolRegistration
     private const string ExecuteParameterPlaceholder = "${INSTALL_EXEC}";
     private const string TryExecuteParameterPlaceholder = "${INSTALL_TRYEXEC}";
 
-    private readonly ILogger _logger;
-    private readonly IProcessFactory _processFactory;
-    private readonly IFileSystem _fileSystem;
-    private readonly IOSInterop _osInterop;
-    private readonly XDGSettingsDependency _xdgSettingsDependency;
-    private readonly UpdateDesktopDatabaseDependency _updateDesktopDatabaseDependency;
-
-    /// <summary>
-    /// Constructor.
-    /// </summary>
-    public ProtocolRegistrationLinux(
-        ILogger<ProtocolRegistrationLinux> logger,
-        IProcessFactory processFactory,
-        IFileSystem fileSystem,
-        IOSInterop osInterop,
-        XDGSettingsDependency xdgSettingsDependency,
-        UpdateDesktopDatabaseDependency updateDesktopDatabaseDependency)
-    {
-        _logger = logger;
-        _processFactory = processFactory;
-        _fileSystem = fileSystem;
-        _osInterop = osInterop;
-        _xdgSettingsDependency = xdgSettingsDependency;
-        _updateDesktopDatabaseDependency = updateDesktopDatabaseDependency;
-    }
-
-    /// <inheritdoc/>
-    public async Task RegisterHandler(string uriScheme, bool setAsDefaultHandler = true, CancellationToken cancellationToken = default)
+    public async ValueTask RegisterUriSchemeHandler(string scheme, bool setAsDefaultHandler, CancellationToken cancellationToken)
     {
         var canWriteDesktopFile = ApplicationConstants.InstallationMethod is InstallationMethod.AppImage or InstallationMethod.Manually;
         var canRegisterAsDefault = ApplicationConstants.InstallationMethod is not InstallationMethod.Flatpak and not InstallationMethod.PackageManager;
@@ -62,7 +30,7 @@ internal class ProtocolRegistrationLinux : IProtocolRegistration
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Exception while creating desktop file, the handler for `{Scheme}` might not work", uriScheme);
+                _logger.LogError(e, "Exception while creating desktop file, the handler for `{Scheme}` might not work", scheme);
                 return;
             }
 
@@ -81,39 +49,26 @@ internal class ProtocolRegistrationLinux : IProtocolRegistration
         {
             try
             {
-                await SetAsDefaultHandler(uriScheme, cancellationToken: cancellationToken);
+                await SetAsDefaultHandler(scheme, cancellationToken: cancellationToken);
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Exception while setting the default handler for `{Scheme}`, see the process logs for more details", uriScheme);
+                _logger.LogError(e, "Exception while setting the default handler for `{Scheme}`, see the process logs for more details", scheme);
             }
         }
     }
 
     private async Task CreateDesktopFile(AbsolutePath applicationsDirectory, CancellationToken cancellationToken = default)
     {
-        if (!applicationsDirectory.DirectoryExists())
-        {
-            applicationsDirectory.CreateDirectory();
-        }
+        if (!applicationsDirectory.DirectoryExists()) applicationsDirectory.CreateDirectory();
 
         var filePath = applicationsDirectory.Combine(DesktopFile);
         var backupPath = filePath.AppendExtension(new Extension(".bak"));
 
-        if (filePath.FileExists)
-        {
-            _logger.LogInformation("Moving existing desktop file from `{From}` to `{To}`", filePath, backupPath);
-        }
-
+        if (filePath.FileExists) _logger.LogInformation("Moving existing desktop file from `{From}` to `{To}`", filePath, backupPath);
         _logger.LogInformation("Creating desktop file at `{Path}`", filePath);
 
-        await using var stream = typeof(ProtocolRegistrationLinux).Assembly.GetManifestResourceStream(DesktopFileResourceName);
-        if (stream is null)
-        {
-            _logger.LogError($"Manifest resource Stream for `{DesktopFileResourceName}` is null!");
-            return;
-        }
-
+        await using var stream = await new EmbeddedResourceStreamFactory<LinuxInterop>(DesktopFileResourceName).GetStreamAsync();
         using var sr = new StreamReader(stream, encoding: Encoding.UTF8);
 
         var text = await sr.ReadToEndAsync(cancellationToken);
@@ -141,17 +96,17 @@ internal class ProtocolRegistrationLinux : IProtocolRegistration
         //  - The wrapper will only be used if the path requires escaping.
         //  - IF Path requires escaping AND `XDG_DATA_HOME` needs escaping, we log a warning.
         
-        // Note(sewer): We use GetOwnExeUnsanitized() instead of GetOwnExe()
+        // Note(sewer): We use the raw path
         //              because the backslashes \ are unfortunately valid filename
         //              characters on Linux. The Paths library converts \ to /
         //              which breaks the path, so we must avoid this.
         //              https://github.com/Nexus-Mods/NexusMods.Paths/issues/71
-        var processPath = _osInterop.GetOwnExeUnsanitized();
+        _ = GetRunningExecutablePath(out var processPath);
         var wrapperScriptPath = await CreateWrapperScriptIfNeeded(applicationsDirectory, processPath, cancellationToken);
 
-        text = text.Replace(ExecuteParameterPlaceholder, wrapperScriptPath.ToString());
+        text = text.Replace(ExecuteParameterPlaceholder, wrapperScriptPath);
         text = text.Replace(TryExecuteParameterPlaceholder, EscapeDesktopFilePath(processPath));
-
+        
         await filePath.WriteAllTextAsync(text, cancellationToken);
     }
 
@@ -182,8 +137,8 @@ internal class ProtocolRegistrationLinux : IProtocolRegistration
 
         // Make the script executable
         var mode755 = UnixFileMode.UserRead | UnixFileMode.UserWrite | UnixFileMode.UserExecute | // 7
-           UnixFileMode.GroupRead | UnixFileMode.GroupExecute | // 5
-           UnixFileMode.OtherRead | UnixFileMode.OtherExecute; // 5
+                      UnixFileMode.GroupRead | UnixFileMode.GroupExecute | // 5
+                      UnixFileMode.OtherRead | UnixFileMode.OtherExecute; // 5
         scriptPath.SetUnixFileMode(mode755);
 
         return scriptPath.ToString();
@@ -194,7 +149,7 @@ internal class ProtocolRegistrationLinux : IProtocolRegistration
         _logger.LogInformation("Updating MIME cache database");
 
         var command = _updateDesktopDatabaseDependency.BuildUpdateCommand($"\"{applicationsDirectory}\"");
-        await _processFactory.ExecuteAsync(command, cancellationToken: cancellationToken);
+        await _processRunner.RunAsync(command, logOutput: true, cancellationToken: cancellationToken);
     }
 
     private async Task SetAsDefaultHandler(string uriScheme, CancellationToken cancellationToken = default)
@@ -203,7 +158,7 @@ internal class ProtocolRegistrationLinux : IProtocolRegistration
         //              so if we supply this in the existing `.desktop` file running this would make
         //              a duplicate.
         var command = _xdgSettingsDependency.CreateSetDefaultUrlSchemeHandlerCommand(uriScheme, DesktopFile);
-        await _processFactory.ExecuteAsync(command, cancellationToken: cancellationToken);
+        await _processRunner.RunAsync(command, logOutput: true, cancellationToken: cancellationToken);
     }
 
     // Note(sewer)

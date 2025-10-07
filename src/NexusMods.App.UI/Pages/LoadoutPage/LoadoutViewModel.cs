@@ -33,13 +33,13 @@ using NexusMods.App.UI.Settings;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Collections;
-using NexusMods.CrossPlatform.Process;
 using NexusMods.UI.Sdk.Icons;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 using NexusMods.MnemonicDB.Abstractions.Query;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Networking.NexusWebApi;
+using NexusMods.Sdk;
 using NexusMods.UI.Sdk;
 using NexusMods.UI.Sdk.Dialog;
 using NexusMods.UI.Sdk.Dialog.Enums;
@@ -248,7 +248,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                     if (collectionPublishedResult.ButtonId != ButtonDefinitionId.Accept) return;
 
                     var uri = GetCollectionUri(collection);
-                    await serviceProvider.GetRequiredService<IOSInterop>().OpenUrl(uri, cancellationToken: cancellationToken);
+                    serviceProvider.GetRequiredService<IOSInterop>().OpenUri(uri);
                 }
             );
 
@@ -311,7 +311,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
 
                     // open up changelog URL in browser
                     var uri = GetCollectionChangelogUri(managedCollectionLoadoutGroup.Collection);
-                    await serviceProvider.GetRequiredService<IOSInterop>().OpenUrl(uri, cancellationToken: cancellationToken);
+                    serviceProvider.GetRequiredService<IOSInterop>().OpenUri(uri);
                 }, maxSequential: 1, configureAwait: false
             );
 
@@ -373,9 +373,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                     if (!managedCollectionLoadoutGroup.IsValid()) return;
 
                     var uri = GetCollectionUri(managedCollectionLoadoutGroup.Collection);
-
-                    // open collection URL in browser
-                    await serviceProvider.GetRequiredService<IOSInterop>().OpenUrl(uri, cancellationToken: cancellationToken);
+                    serviceProvider.GetRequiredService<IOSInterop>().OpenUri(uri);
                 }, configureAwait: false
             );
 
@@ -694,10 +692,9 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
         NexusModsLibraryItem.TryGet(connection.Db, libraryItem.Value, out var nexusModsLibraryItem);
         if (nexusModsLibraryItem is null) return;
         var modPage = nexusModsLibraryItem.Value.ModPageMetadata;
-        
+
         var url = NexusModsUrlBuilder.GetModUri(modPage.GameDomain, modPage.Uid.ModId);
-        
-        os.OpenUrl(url, cancellationToken: cancellationToken);
+        os.OpenUri(url);
     }
 
     private Uri GetCollectionChangelogUri(CollectionMetadata.ReadOnly collection)

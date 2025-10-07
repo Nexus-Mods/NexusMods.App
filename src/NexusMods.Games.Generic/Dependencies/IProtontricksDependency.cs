@@ -1,5 +1,6 @@
 using CliWrap;
-namespace NexusMods.CrossPlatform.Process;
+
+namespace NexusMods.Games.Generic.Dependencies;
 
 /// <summary>
 /// Common interface for invoking Protontricks across the <see cref="ProtontricksFlatpakDependency"/> and <see cref="ProtontricksNativeDependency"/>.

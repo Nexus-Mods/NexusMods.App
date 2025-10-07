@@ -2,5 +2,11 @@
     <ItemGroup>
         <ProjectReference Include="..\..\src\NexusMods.Backend\NexusMods.Backend.csproj" />
         <ProjectReference Include="..\..\src\NexusMods.CrossPlatform\NexusMods.CrossPlatform.csproj" />
+        <ProjectReference Include="..\..\src\NexusMods.Games.Generic\NexusMods.Games.Generic.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+      <Reference Include="NexusMods.CrossPlatform">
+        <HintPath>..\..\src\NexusMods.App\bin\Debug\net9.0\NexusMods.CrossPlatform.dll</HintPath>
+      </Reference>
     </ItemGroup>
 </Project>

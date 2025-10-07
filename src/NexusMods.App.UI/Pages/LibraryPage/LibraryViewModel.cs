@@ -31,12 +31,12 @@ using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Collections;
-using NexusMods.CrossPlatform.Process;
 using NexusMods.UI.Sdk.Icons;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Networking.NexusWebApi.UpdateFilters;
 using NexusMods.Paths;
+using NexusMods.Sdk;
 using NexusMods.UI.Sdk;
 using NexusMods.UI.Sdk.Dialog;
 using NexusMods.UI.Sdk.Dialog.Enums;
@@ -228,26 +228,19 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         );
 
         var osInterop = serviceProvider.GetRequiredService<IOSInterop>();
-        OpenNexusModsCommand = new ReactiveCommand<Unit>(
-            executeAsync: async (_, cancellationToken) =>
-            {
-                var gameDomain = _gameIdMappingCache[game.GameId];
-                var gameUri = NexusModsUrlBuilder.GetGameUri(gameDomain);
-                await osInterop.OpenUrl(gameUri, cancellationToken: cancellationToken);
-            },
-            awaitOperation: AwaitOperation.Parallel,
-            configureAwait: false
-        );
-        OpenNexusModsCollectionsCommand = new ReactiveCommand<Unit>(
-            executeAsync: async (_, cancellationToken) =>
-            {
-                var gameDomain = _gameIdMappingCache[game.GameId];
-                var gameUri = NexusModsUrlBuilder.GetBrowseCollectionsUri(gameDomain);
-                await osInterop.OpenUrl(gameUri, cancellationToken: cancellationToken);
-            },
-            awaitOperation: AwaitOperation.Parallel,
-            configureAwait: false
-        );
+        OpenNexusModsCommand = new ReactiveCommand<Unit>(execute: _ =>
+        {
+            var gameDomain = _gameIdMappingCache[game.GameId];
+            var gameUri = NexusModsUrlBuilder.GetGameUri(gameDomain);
+            osInterop.OpenUri(gameUri);
+        });
+
+        OpenNexusModsCollectionsCommand = new ReactiveCommand<Unit>(execute: _ =>
+        {
+            var gameDomain = _gameIdMappingCache[game.GameId];
+            var gameUri = NexusModsUrlBuilder.GetBrowseCollectionsUri(gameDomain);
+            osInterop.OpenUri(gameUri);
+        });
 
         this.WhenActivated(disposables =>
         {
@@ -348,7 +341,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         // Note(sewer): Per design, in the future this will expand the mod rows.
         //              But, due to the TreeDataGrid bug, we can't do that today, yet.
         // Instead update and keep old for free users.
-        await UpdateAndKeepOldFree(updatesOnPageCollection, cancellationToken);
+        UpdateAndKeepOldFree(updatesOnPageCollection);
     }
 
     private async ValueTask UpdateAndReplaceForMultiModPagesPremiumOnly(CancellationToken cancellationToken, IEnumerable<ModUpdatesOnModPage> updatesOnPageCollection)
@@ -664,7 +657,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
                }
             */
 
-            await UpdateAndKeepOldFree([updatesOnPage], cancellationToken);
+            UpdateAndKeepOldFree([updatesOnPage]);
         }
         else
         {
@@ -672,7 +665,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         }
     }
 
-    private async Task UpdateAndKeepOldFree(IEnumerable<ModUpdatesOnModPage> updatesOnPages, CancellationToken cancellationToken)
+    private void UpdateAndKeepOldFree(IEnumerable<ModUpdatesOnModPage> updatesOnPages)
     {
         // Aggregate all unique files across all mod pages
         var newestToCurrentMapping = new Dictionary<NexusModsFileMetadata.ReadOnly, List<NexusModsFileMetadata.ReadOnly>>();
@@ -684,7 +677,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         foreach (var newestFile in newestToCurrentMapping.Keys)
         {
             var uri = NexusModsUrlBuilder.GetFileDownloadUri(newestFile.ModPage.GameDomain, newestFile.ModPage.Uid.ModId, newestFile.Uid.FileId, useNxmLink: true, campaign: NexusModsUrlBuilder.CampaignUpdates);
-            await osInterop.OpenUrl(uri, cancellationToken: cancellationToken);
+            osInterop.OpenUri(uri);
         }
     }
 
@@ -725,16 +718,16 @@ A summarised quote/explanation from myself below:
 After asking design, we're choosing to simply open the mod page for now.
 */
         return viewChangelogMessage.Id.Match(
-            modPageMetadataId => OpenModPage(modPageMetadataId, cancellationToken),
-            libraryItemId => OpenModPage(new NexusModsLibraryItem.ReadOnly(_connection.Db, libraryItemId).ModPageMetadataId, cancellationToken)
+            modPageMetadataId => OpenModPage(modPageMetadataId),
+            libraryItemId => OpenModPage(new NexusModsLibraryItem.ReadOnly(_connection.Db, libraryItemId).ModPageMetadataId)
         );
     }
-    
+
     private ValueTask HandleViewModPageMessage(ViewModPageMessage viewModPageMessage, CancellationToken cancellationToken)
     {
         return viewModPageMessage.Id.Match(
-            modPageMetadataId => OpenModPage(modPageMetadataId, cancellationToken),
-            libraryItemId => OpenModPage(new NexusModsLibraryItem.ReadOnly(_connection.Db, libraryItemId).ModPageMetadataId, cancellationToken)
+            modPageMetadataId => OpenModPage(modPageMetadataId),
+            libraryItemId => OpenModPage(new NexusModsLibraryItem.ReadOnly(_connection.Db, libraryItemId).ModPageMetadataId)
         );
     }
     
@@ -813,13 +806,12 @@ After asking design, we're choosing to simply open the mod page for now.
         );
     }
 
-    private ValueTask OpenModPage(NexusModsModPageMetadataId modPageMetadataId, CancellationToken cancellationToken)
+    private ValueTask OpenModPage(NexusModsModPageMetadataId modPageMetadataId)
     {
         var modPage = new NexusModsModPageMetadata.ReadOnly(_connection.Db, modPageMetadataId);
         var url = NexusModsUrlBuilder.GetModUri(modPage.GameDomain, modPage.Uid.ModId);
         var os = _serviceProvider.GetRequiredService<IOSInterop>();
-        // Note(sewer): Don't await, we don't want to block the UI thread when user pops a webpage.
-        _ = os.OpenUrl(url, cancellationToken: cancellationToken);
+        os.OpenUri(url);
         return ValueTask.CompletedTask;
     }
 
@@ -992,8 +984,7 @@ After asking design, we're choosing to simply open the mod page for now.
             }
             else
             {
-                if (!isPremium)
-                    await UpdateAndKeepOldFree(withUpdatesOnPage, cancellationToken);
+                if (!isPremium) UpdateAndKeepOldFree(withUpdatesOnPage);
                 else
                     await UpdateAndKeepOldPremium(withUpdatesOnPage, cancellationToken);
             }

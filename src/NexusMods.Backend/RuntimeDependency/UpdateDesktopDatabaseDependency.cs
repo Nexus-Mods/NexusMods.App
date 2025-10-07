@@ -1,8 +1,9 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using CliWrap;
+using NexusMods.Sdk;
 
-namespace NexusMods.CrossPlatform.Process;
+namespace NexusMods.Backend.RuntimeDependency;
 
 internal class UpdateDesktopDatabaseDependency : ExecutableRuntimeDependency
 {
@@ -11,7 +12,7 @@ internal class UpdateDesktopDatabaseDependency : ExecutableRuntimeDependency
     public override Uri Homepage { get; } = new("https://www.freedesktop.org/wiki/Software/desktop-file-utils/");
     public override OSPlatform[] SupportedPlatforms { get; } = [OSPlatform.Linux];
 
-    public UpdateDesktopDatabaseDependency(IProcessFactory processFactory) : base(processFactory) { }
+    public UpdateDesktopDatabaseDependency(IProcessRunner runner) : base(runner) { }
 
     public Command BuildUpdateCommand(string applicationsDirectory)
     {

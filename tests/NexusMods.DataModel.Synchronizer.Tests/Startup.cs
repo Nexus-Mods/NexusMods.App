@@ -20,7 +20,8 @@ public class Startup
             .AddSettings<LoggingSettings>()
             .AddSettingsManager()
             .AddFileSystem()
-            .AddCrossPlatform()
+            .AddOSInterop()
+            .AddRuntimeDependencies()
             .AddGenericGameSupport();
     }
 }

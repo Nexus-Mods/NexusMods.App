@@ -40,7 +40,6 @@ using NexusMods.App.UI.Overlays;
 using NexusMods.App.UI.Pages.LibraryPage;
 using NexusMods.App.UI.Settings;
 using NexusMods.Collections;
-using NexusMods.CrossPlatform.Process;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Paths;
 using NexusMods.Sdk;
@@ -97,12 +96,11 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
         _serviceProvider = serviceProvider;
         _windowManager = windowManager;
 
-        OpenRoadmapCommand = ReactiveCommand.CreateFromTask(async () =>
-            {
-                var uri = new Uri(TrelloPublicRoadmapUrl);
-                await osInterop.OpenUrl(uri);
-            }
-        );
+        OpenRoadmapCommand = ReactiveCommand.Create(() =>
+        {
+            var uri = new Uri(TrelloPublicRoadmapUrl);
+            osInterop.OpenUri(uri);
+        });
 
         this.WhenActivated(d =>
             {

@@ -3,6 +3,7 @@
     <Import Project="$([MSBuild]::GetPathOfFileAbove('NuGet.Build.props', '$(MSBuildThisFileDirectory)../'))" />
     <ItemGroup>
         <PackageReference Include="BitFaster.Caching" />
+        <PackageReference Include="CliWrap" />
         <PackageReference Include="DynamicData" />
         <PackageReference Include="MemoryPack" />
         <PackageReference Include="Microsoft.Extensions.Options" />
@@ -96,5 +97,12 @@
         <Compile Update="Settings\ConfigurablePathsContainerOption.cs">
           <DependentUpon>IContainerOptions.cs</DependentUpon>
         </Compile>
+        <Compile Update="RuntimeDependency\ExecutableRuntimeDependency.cs">
+          <DependentUpon>IRuntimeDependency.cs</DependentUpon>
+        </Compile>
+        <Compile Update="RuntimeDependency\AggregateExecutableRuntimeDependency.cs">
+          <DependentUpon>IRuntimeDependency.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
+
 </Project>

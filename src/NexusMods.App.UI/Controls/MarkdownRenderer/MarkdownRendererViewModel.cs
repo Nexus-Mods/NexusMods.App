@@ -12,7 +12,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using NexusMods.Sdk.Resources;
 using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Extensions;
-using NexusMods.CrossPlatform.Process;
+using NexusMods.Sdk;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -61,13 +61,10 @@ public class MarkdownRendererViewModel : AViewModel<IMarkdownRendererViewModel>,
         PathResolver = new PathResolverImpl(this);
         ImageResolverPlugin = new ImageResolvePluginImpl(new ImageResolverImpl(this));
 
-        OpenLinkCommand = ReactiveCommand.CreateFromTask<string>(async url =>
+        OpenLinkCommand = ReactiveCommand.Create<string>(url =>
         {
             if (!Uri.TryCreate(url, UriKind.Absolute, out var uri)) return;
-            await Task.Run(() =>
-            {
-                osInterop.OpenUrl(uri);
-            });
+            osInterop.OpenUri(uri);
         });
 
         var fetchMarkdownCommand = ReactiveCommand.CreateFromTask<Uri, string>(FetchMarkdown);

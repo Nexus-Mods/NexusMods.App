@@ -3,6 +3,7 @@
         <ProjectReference Include="..\NexusMods.Abstractions.GameLocators\NexusMods.Abstractions.GameLocators.csproj" />
         <ProjectReference Include="..\NexusMods.Abstractions.Games\NexusMods.Abstractions.Games.csproj" />
         <ProjectReference Include="..\NexusMods.Sdk\NexusMods.Sdk.csproj" />
+        <PackageReference Include="LinuxDesktopUtils.XDGDesktopPortal" />
         <PackageReference Include="Microsoft.Extensions.Http.Resilience" />
 
         <PackageReference Include="TransparentValueObjects" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
@@ -10,6 +11,20 @@
     </ItemGroup>
 
     <ItemGroup>
+        <EmbeddedResource Include="../NexusMods.App/com.nexusmods.app.desktop" />
+    </ItemGroup>
+
+    <ItemGroup>
         <InternalsVisibleTo Include="NexusMods.Backend.Tests"/>
+        <InternalsVisibleTo Include="NexusMods.CrossPlatform.Tests"/>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="OS\LinuxInterop.Protocol.cs">
+        <DependentUpon>LinuxInterop.cs</DependentUpon>
+      </Compile>
+      <Compile Update="OS\WindowsInterop.Protocol.cs">
+        <DependentUpon>WindowsInterop.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
 </Project>
