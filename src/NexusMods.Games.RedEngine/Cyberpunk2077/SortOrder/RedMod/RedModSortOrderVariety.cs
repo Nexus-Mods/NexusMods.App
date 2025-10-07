@@ -1,3 +1,4 @@
+using System.Reactive.Linq;
 using DynamicData;
 using DynamicData.Kernel;
 using NexusMods.Abstractions.Games;
@@ -73,6 +74,9 @@ public class RedModSortOrderVariety : ASortOrderVariety<
     public override IObservable<IChangeSet<RedModReactiveSortItem, SortItemKey<string>>> GetSortOrderItemsChangeSet(SortOrderId sortOrderId)
     {
         var sortOrder = Abstractions.Loadouts.SortOrder.Load(Connection.Db, sortOrderId);
+        if (!sortOrder.IsValid())
+            return Observable.Empty<IChangeSet<RedModReactiveSortItem, SortItemKey<string>>>();    
+        
         var parentEntity = sortOrder.ParentEntity.Match(
             loadoutId => loadoutId.Value,
             collectionGroupId => collectionGroupId.Value
@@ -113,6 +117,9 @@ public class RedModSortOrderVariety : ASortOrderVariety<
     {
         var dbToUse = db ?? Connection.Db;
         var sortOrder = Abstractions.Loadouts.SortOrder.Load(dbToUse, sortOrderId);
+        if (!sortOrder.IsValid())
+            return [];
+        
         var optionalCollection = sortOrder.ParentEntity.Match(
             loadoutId => DynamicData.Kernel.Optional<CollectionGroupId>.None,
             collectionGroupId => DynamicData.Kernel.Optional<CollectionGroupId>.Create(collectionGroupId)
