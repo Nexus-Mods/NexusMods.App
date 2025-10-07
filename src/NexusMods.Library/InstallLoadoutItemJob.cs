@@ -102,7 +102,7 @@ internal class InstallLoadoutItemJob : IJobDefinitionWithStart<InstallLoadoutIte
 
         {
             if (TryExtract(out var fileId, out var modId, out var gameId, out var modUid, out var fileUid))
-                Events.ModsInstallationCompleted(fileId, modId, gameId, modUid, fileUid, sw.ElapsedMilliseconds);
+                Events.ModsInstallationCompleted(fileId, modId, gameId, modUid, fileUid, sw);
         }
 
         // TODO(erri120): rename this entity to something unique, like "LoadoutItemInstalledFromLibrary"

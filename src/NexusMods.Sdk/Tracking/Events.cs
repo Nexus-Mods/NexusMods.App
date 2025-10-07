@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using DynamicData.Kernel;
 using JetBrains.Annotations;
 using NexusMods.Paths;
@@ -19,7 +20,13 @@ public static class Events
     private static readonly EventString CollectionsDownloadCompletedName = "collections_download_completed";
     private static readonly EventString CollectionsDownloadFailedName = "collections_download_failed";
 
+    private static readonly EventString CollectionsInstallationStartedName = "collections_installation_started";
+    private static readonly EventString CollectionsInstallationCompletedName = "collections_installation_completed";
+    private static readonly EventString CollectionsInstallationFailedName = "collections_installation_failed";
+    private static readonly EventString CollectionsInstallationCancelledName = "collections_installation_cancelled";
+
     private static readonly EventString AppLaunchedName = "app_launched";
+    private static readonly EventString AppUninstalledName = "app_uninstalled";
 
     private static readonly EventString FileId = "file_id";
     private static readonly EventString ModId = "mod_id";
@@ -39,7 +46,7 @@ public static class Events
         ulong modUid,
         ulong fileUid,
         Size fileSize,
-        long duration,
+        DurationValue duration,
         Optional<ulong> collectionId = default,
         Optional<ulong> revisionId = default,
         IEventTracker? tracker = null)
@@ -50,7 +57,7 @@ public static class Events
             (GameId, gameId),
             (ModUid, modUid),
             (FileUid, fileUid),
-            (Duration, duration),
+            (Duration, duration.Milliseconds),
             (FileSize, fileSize.Value),
             (CollectionId, collectionId.OrNull()),
             (RevisionId, revisionId.OrNull())
@@ -122,7 +129,7 @@ public static class Events
         uint gameId,
         ulong modUid,
         ulong fileUid,
-        long duration,
+        DurationValue duration,
         IEventTracker? tracker = null)
     {
         (tracker ?? Tracker.EventTracker)?.Track(ModsInstallationCompletedName,
@@ -131,7 +138,7 @@ public static class Events
             (GameId, gameId),
             (ModUid, modUid),
             (FileUid, fileUid),
-            (Duration, duration)
+            (Duration, duration.Milliseconds)
         );
     }
 
@@ -174,7 +181,7 @@ public static class Events
         ulong revisionId,
         uint gameId,
         int modCount,
-        long duration,
+        DurationValue duration,
         IEventTracker? tracker = null)
     {
         (tracker ?? Tracker.EventTracker)?.Track(CollectionsDownloadCompletedName,
@@ -182,7 +189,7 @@ public static class Events
             (RevisionId, revisionId),
             (GameId, gameId),
             (ModCount, modCount),
-            (Duration, duration)
+            (Duration, duration.Milliseconds)
         );
     }
 
@@ -199,8 +206,52 @@ public static class Events
         );
     }
 
+    public static void CollectionsInstallationStarted(
+        ulong collectionId,
+        ulong revisionId,
+        uint gameId,
+        int modCount,
+        IEventTracker? tracker = null)
+    {
+        (tracker ?? Tracker.EventTracker)?.Track(CollectionsInstallationStartedName,
+            (CollectionId, collectionId),
+            (RevisionId, revisionId),
+            (GameId, gameId),
+            (ModCount, modCount)
+        );
+    }
+
+    public static void CollectionsInstallationCompleted(
+        ulong collectionId,
+        ulong revisionId,
+        uint gameId,
+        int modCount,
+        DurationValue duration,
+        IEventTracker? tracker = null)
+    {
+        (tracker ?? Tracker.EventTracker)?.Track(CollectionsInstallationCompletedName,
+            (CollectionId, collectionId),
+            (RevisionId, revisionId),
+            (GameId, gameId),
+            (ModCount, modCount),
+            (Duration, duration.Milliseconds)
+        );
+    }
+
     public static void AppLaunched(IEventTracker? tracker = null)
     {
         (tracker ?? Tracker.EventTracker)?.Track(AppLaunchedName);
+    }
+
+    public static void AppUninstalled(IEventTracker? tracker = null)
+    {
+        (tracker ?? Tracker.EventTracker)?.Track(AppUninstalledName);
+    }
+
+    public readonly record struct DurationValue(long Milliseconds)
+    {
+        public static implicit operator DurationValue(long value) => new(value);
+        public static implicit operator DurationValue(TimeSpan value) => new((long)value.TotalMilliseconds);
+        public static implicit operator DurationValue(Stopwatch value) => new(value.ElapsedMilliseconds);
     }
 }

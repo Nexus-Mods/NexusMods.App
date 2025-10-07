@@ -48,7 +48,6 @@ public class NexusModsDownloadJob : INexusModsDownloadJob, IJobDefinitionWithSta
         {
             var sw = Stopwatch.StartNew();
             var path = await HttpDownloadJob;
-            var duration = sw.ElapsedMilliseconds;
 
             Events.ModsDownloadCompleted(
                 fileId: FileMetadata.Uid.FileId.Value,
@@ -57,7 +56,7 @@ public class NexusModsDownloadJob : INexusModsDownloadJob, IJobDefinitionWithSta
                 modUid: FileMetadata.ModPage.Uid.AsUlong,
                 fileUid: FileMetadata.Uid.AsUlong,
                 fileSize: FileMetadata.Size.ValueOrDefault(),
-                duration: duration,
+                duration: sw,
                 collectionId: ParentRevision.Convert(x => x.Collection.CollectionId.Value),
                 revisionId: ParentRevision.Convert(x => x.RevisionId.Value)
             );

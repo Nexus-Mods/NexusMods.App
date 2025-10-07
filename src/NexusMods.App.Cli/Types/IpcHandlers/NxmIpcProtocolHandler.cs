@@ -148,7 +148,7 @@ public class NxmIpcProtocolHandler : IIpcProtocolHandler
                 revisionId: collectionRevision.RevisionId.Value,
                 gameId: collectionRevision.Collection.GameId.Value,
                 modCount: collectionRevision.Downloads.Count,
-                duration: sw.ElapsedMilliseconds
+                duration: sw
             );
 
             _eventBus.Send(new CliMessages.CollectionAddSucceeded(collectionRevision));

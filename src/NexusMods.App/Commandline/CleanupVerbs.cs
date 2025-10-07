@@ -10,6 +10,7 @@ using NexusMods.DataModel;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using NexusMods.Sdk.ProxyConsole;
+using NexusMods.Sdk.Tracking;
 
 namespace NexusMods.App.Commandline;
 
@@ -30,6 +31,8 @@ internal static class CleanupVerbs
         [Injected] ISettingsManager settingsManager,
         [Injected] IFileSystem fileSystem)
     {
+        Events.AppUninstalled();
+
         // Step 1: Revert the managed games to their original state
         var db = conn.Db;
         var managedInstallations = Loadout.All(db)
