@@ -1,3 +1,26 @@
+# v0.18.2 2025-10-08
+This update introduces some powerful new features and important fixes to make managing your mods smoother than ever. You’ll now find a dedicated Downloads page with full control over your active downloads, the ability to create editable copies of read-only Nexus Collections, and a new view that helps you spot file conflicts between mods. Alongside these upgrades, we’ve resolved several issues to improve stability, prevent unnecessary backups, and ensure a more seamless experience throughout the app.
+
+### New Downloads Page:
+
+- Keep an eye on all your downloads in one place! You can now access a dedicated Downloads page directly from the download speed indicator in the sidebar. Filter by game, pause, resume, or cancel downloads as you like. (#3286)
+
+### Editable Collections:
+
+- You can now create your own editable copy of a Nexus Collection that was previously read-only; perfect for adding or removing mods in your personal version. (#3517)
+
+### Conflict Viewer (Early Version):
+
+- A new basic view lets you see which mods contain file conflicts. While you can’t change the winners just yet, this is the first step toward full conflict management tools coming soon. (#3850)
+
+### Fixes and Improvements:
+
+- Resolved an issue that caused errors when adding some Nexus Collections. (#3886)
+- Fixed unnecessary updates to the game hash database. (#3918)
+- Stopped the app from backing up game files when correct hashing info was already available. (#3455)
+- Fixed a stuck selection issue after clearing filters on Library or Loadout pages. (#3900)
+- Fixed a rare freeze that could occur when downloading mods while the app wasn’t in focus. (#3836)
+
 # v0.17.2 2025-09-29
 This update brings a smoother, more reliable experience along with some exciting quality-of-life improvements. We’ve tidied up a few behind-the-scenes issues and introduced tools to help you keep your game folders clean and organized. You’ll also notice a more informative Library, early glimpses of the upcoming Downloads page, some handy new menus, plus performance boosts to keep everything running fast and responsive.
 
