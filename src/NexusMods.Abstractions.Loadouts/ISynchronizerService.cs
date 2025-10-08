@@ -19,14 +19,17 @@ public interface ISynchronizerService
     public Task Synchronize(LoadoutId loadout);
     
     /// <summary>
+    /// Removes all the loadouts for a game, and resets the game folder to its
+    /// initial state.
+    /// </summary>
+    /// <param name="installation">Game installation which should be unmanaged.</param>
+    /// <param name="runGc">If true, runs the garbage collector.</param>
+    public Task UnManage(GameInstallation installation, bool runGc = true, bool cleanGameFolder = true);
+    
+    /// <summary>
     /// Get the diff tree of the unapplied changes of a loadout.
     /// </summary>
     public FileDiffTree GetApplyDiffTree(LoadoutId loadout);
-
-    /// <summary>
-    /// Returns the instance of the synchronizer's semaphore.
-    /// </summary>
-    public SemaphoreSlim GetSharedSemaphore();
     
     /// <summary>
     /// Returns the last applied loadout for a given game installation.

@@ -86,19 +86,15 @@ public class SynchronizerService : ISynchronizerService
         await _jobMonitor.Begin(new SynchronizeLoadoutJob(loadoutId),
             async ctx =>
             {
-                var unManageJob = _jobMonitor.Jobs
-                    .FirstOrDefault(j => j.Definition is UnmanageGameJob);
-                if (unManageJob != null)
-                {
-                    _jobMonitor.Cancel(_jobMonitor.Jobs.First(j => j.Definition is SynchronizeLoadoutJob).Id);
-                    return Unit.Default;
-                }
-
                 var job = ctx.Definition;
                 await _semaphore.WaitAsync();
                 try
                 {
                     var loadout = Loadout.Load(_conn.Db, loadoutId);
+                    if (!loadout.IsValid())
+                    {
+                        return Unit.Default;
+                    }
                     ThrowIfMainBinaryInUse(loadout);
 
                     var loadoutState = GetOrAddLoadoutState(loadoutId);
@@ -120,7 +116,26 @@ public class SynchronizerService : ISynchronizerService
     }
 
     /// <inheritdoc />
-    public SemaphoreSlim GetSharedSemaphore() => _semaphore;
+    public async Task UnManage(GameInstallation installation, bool runGc = true, bool cleanGameFolder = true)
+    {
+        await _semaphore.WaitAsync();
+        try
+        {
+            var synchronizer = installation.GetGame().Synchronizer;
+            var metadata = installation.GetMetadata(_conn);
+
+            if (!metadata.IsValid())
+            {
+                return;
+            }
+
+            await synchronizer.UnManage(installation, runGc, cleanGameFolder);
+        }
+        finally
+        {
+            _semaphore.Release();
+        }
+    }
 
     private SynchronizerState GetOrAddLoadoutState(LoadoutId loadoutId)
     {
