@@ -1,5 +1,7 @@
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Collections;
 using NexusMods.App.UI.Windows;
+using NexusMods.App.UI.WorkspaceSystem;
 
 namespace NexusMods.App.UI.CollectionDeleteService;
 
@@ -43,4 +45,15 @@ public interface ICollectionDeleteService
     /// <param name="windowManager">The window manager to show the dialog.</param>
     /// <returns>True if the user confirms deletion; otherwise, false.</returns>
     Task<bool> ShowDeleteConfirmationDialogAsync(CollectionGroupId collectionId, IWindowManager windowManager);
+    
+    /// <summary>
+    /// Deletes the Nexus collection asynchronously with navigation.
+    /// </summary>
+    /// <param name="nexusCollectionGroup">The Nexus collection loadout group.</param>
+    /// <param name="workspaceController">The workspace controller for navigation.</param>
+    /// <param name="workspaceId">The workspace identifier.</param>
+    /// <param name="panelId">The panel identifier.</param>
+    /// <param name="tabId">The tab identifier.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    Task DeleteNexusCollectionAsync(NexusCollectionLoadoutGroup.ReadOnly nexusCollectionGroup, IWorkspaceController workspaceController, WorkspaceId workspaceId, PanelId panelId, PanelTabId tabId);
 }
