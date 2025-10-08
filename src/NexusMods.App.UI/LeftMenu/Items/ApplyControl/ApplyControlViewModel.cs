@@ -96,6 +96,9 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
                 var gameStatuses = _syncService.StatusForGame(_gameMetadataId)
                     .Prepend(GameSynchronizerState.Idle);
 
+                var hasUnmanagingJob = _jobMonitor.HasActiveJob<UnmanageGameJob>(job => job.Installation.GameMetadataId.Equals(_gameMetadataId.Value))
+                    .Prepend(false);
+
                 // Note(sewer):
                 // Fire an initial value with StartWith because CombineLatest requires all stuff to have latest values.
                 // In any case, we should prevent Apply from being available while a file is in use.
@@ -105,24 +108,23 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
                 //     - This is done in 'Synchronize' method.
                 // - They're running a tool from within the App.
                 //     - Check running jobs.
-                loadoutStatuses.CombineLatest(isProcessingObservable, gameStatuses, gameRunningTracker.GetWithCurrentStateAsStarting(), 
-                        (loadout, isProcessing, game, running) => (loadout, isProcessing, game, running))
+                loadoutStatuses.CombineLatest(isProcessingObservable, gameStatuses, gameRunningTracker.GetWithCurrentStateAsStarting(), hasUnmanagingJob)
                     .OnUI()
                     .Subscribe(status =>
                     {
-                        var (ldStatus, isProcessing,  gameStatus, running) = status;
-                        var hasUnmanageJob = _jobMonitor.Jobs.Any(job => job.Definition is UnmanageGameJob);
+                        var (ldStatus, isProcessing,  gameStatus, running, isUnmanaging) = status;
                         IsProcessing = isProcessing;
                         CanApply = !isProcessing
                                    && !running
                                    && gameStatus != GameSynchronizerState.Busy
                                    && ldStatus != LoadoutSynchronizerState.Pending
                                    && ldStatus != LoadoutSynchronizerState.Current
-                                   && !hasUnmanageJob;
+                                   && !isUnmanaging;
                         IsLaunchButtonEnabled = !isProcessing 
                                                 && !running
                                                 && gameStatus != GameSynchronizerState.Busy
-                                                && ldStatus == LoadoutSynchronizerState.Current;
+                                                && ldStatus == LoadoutSynchronizerState.Current
+                                                && !isUnmanaging;
                         
                     })
                     .DisposeWith(disposables);
