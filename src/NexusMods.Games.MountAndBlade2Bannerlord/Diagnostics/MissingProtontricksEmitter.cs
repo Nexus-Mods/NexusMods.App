@@ -4,7 +4,7 @@ using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.Diagnostics.Values;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.CrossPlatform.Process;
+using NexusMods.Games.Generic.Dependencies;
 using NexusMods.Paths;
 namespace NexusMods.Games.MountAndBlade2Bannerlord.Diagnostics;
 

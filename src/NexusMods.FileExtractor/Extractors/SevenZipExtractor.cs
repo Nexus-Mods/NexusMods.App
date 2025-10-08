@@ -5,9 +5,9 @@ using System.Reactive.Disposables;
 using CliWrap;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.FileExtractor;
-using NexusMods.CrossPlatform.Process;
 using NexusMods.Paths;
 using NexusMods.Paths.Utilities;
+using NexusMods.Sdk;
 using NexusMods.Sdk.IO;
 using Reloaded.Memory.Extensions;
 
@@ -34,7 +34,7 @@ public class SevenZipExtractor : IExtractor
 
     private readonly ILogger _logger;
     private readonly IOSInformation _osInformation;
-    private readonly IProcessFactory _processFactory;
+    private readonly IProcessRunner _processRunner;
     private readonly TemporaryFileManager _temporaryFileManager;
     private readonly string _exePath;
 
@@ -44,13 +44,13 @@ public class SevenZipExtractor : IExtractor
     public SevenZipExtractor(
         ILogger<SevenZipExtractor> logger,
         TemporaryFileManager fileTemporaryFileManager,
-        IFileSystem fileSystem,
-        IProcessFactory processFactory,
+        IFileSystem fileSystem, 
+        IProcessRunner processRunner,
         IOSInformation osInformation)
     {
         _logger = logger;
         _temporaryFileManager = fileTemporaryFileManager;
-        _processFactory = processFactory;
+        _processRunner = processRunner;
         _osInformation = osInformation;
 
         _exePath = GetExtractorExecutable(fileSystem, osInformation);
@@ -189,9 +189,10 @@ public class SevenZipExtractor : IExtractor
             {
                 if (!TryParseListCommandOutput(line, out var fileName, out var isDirectory)) return;
                 pathsWithInvalidCharacters.Add((fileName, isDirectory));
-            }));
+            }))
+            .WithValidation(CommandResultValidation.ZeroExitCode);
 
-        await _processFactory.ExecuteAsync(process, validateExitCode: true, cancellationToken: cancellationToken);
+        await _processRunner.RunAsync(process, logOutput: true, cancellationToken: cancellationToken);
         return pathsWithInvalidCharacters;
     }
 
@@ -248,9 +249,10 @@ public class SevenZipExtractor : IExtractor
             {
                 // TODO: progress reporting
                 _ = TryParseExtractCommandOutput(line, out var percentage);
-            }));
+            }))
+            .WithValidation(CommandResultValidation.ZeroExitCode);
 
-        await _processFactory.ExecuteAsync(process, validateExitCode: true, cancellationToken: cancellationToken);
+        await _processRunner.RunAsync(process, logOutput: true, cancellationToken: cancellationToken);
     }
 
     private static bool TryParseExtractCommandOutput(ReadOnlySpan<char> line, out int percentage)

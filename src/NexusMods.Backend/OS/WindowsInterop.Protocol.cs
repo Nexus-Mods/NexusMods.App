@@ -1,37 +1,18 @@
 using System.Runtime.Versioning;
 using Microsoft.Extensions.Logging;
 using Microsoft.Win32;
-using NexusMods.CrossPlatform.Process;
-using NexusMods.Paths;
 
-namespace NexusMods.CrossPlatform.ProtocolRegistration;
+namespace NexusMods.Backend.OS;
 
-/// <summary>
-/// Protocol registration for Windows.
-/// </summary>
-[SupportedOSPlatform("windows")]
-internal class ProtocolRegistrationWindows : IProtocolRegistration
+internal partial class WindowsInterop
 {
-    private readonly ILogger _logger;
-    private readonly IOSInterop _osInterop;
-    private readonly IFileSystem _fileSystem;
+    [SupportedOSPlatformGuard("windows")]
+    private bool IsWindows() => _os.IsWindows;
 
-    /// <summary>
-    /// Constructor.
-    /// </summary>
-    public ProtocolRegistrationWindows(
-        ILogger<ProtocolRegistrationWindows> logger,
-        IOSInterop osInterop,
-        IFileSystem fileSystem)
+    public ValueTask RegisterUriSchemeHandler(string scheme, bool setAsDefaultHandler = true, CancellationToken cancellationToken = default)
     {
-        _logger = logger;
-        _osInterop = osInterop;
-        _fileSystem = fileSystem;
-    }
+        if (!IsWindows()) return ValueTask.CompletedTask;
 
-    /// <inheritdoc/>
-    public Task RegisterHandler(string uriScheme, bool setAsDefaultHandler = true, CancellationToken cancellationToken = default)
-    {
         // NOTE(erri120): See this comment for an in-depth guide on protocol handlers:
         // https://github.com/Nexus-Mods/NexusMods.App/pull/1691#issuecomment-2194418849
         // We've decided use the same method that Vortex and MO2 use, which is using a
@@ -39,18 +20,19 @@ internal class ProtocolRegistrationWindows : IProtocolRegistration
 
         try
         {
-            SetAsDefaultHandler(uriScheme);
+            SetAsDefaultHandler(scheme);
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Exception while updating registry to register protocol handler for `{Scheme}`", uriScheme);
+            _logger.LogError(e, "Exception while updating registry to register protocol handler for `{Scheme}`", scheme);
         }
 
-        return Task.CompletedTask;
+        return ValueTask.CompletedTask;
     }
 
     private static string CreateProgId(string uriScheme) => $"NexusMods.App.{uriScheme}";
 
+    [SupportedOSPlatform("windows")]
     private void RegisterApplication(string uriScheme)
     {
         // https://learn.microsoft.com/en-us/windows/win32/shell/default-programs
@@ -70,6 +52,7 @@ internal class ProtocolRegistrationWindows : IProtocolRegistration
         CreateProgIdClass(CreateProgId(uriScheme), $"Nexus Mods App {uriScheme.ToUpperInvariant()} Handler", isProtocolHandler: false);
     }
 
+    [SupportedOSPlatform("windows")]
     private void CreateProgIdClass(string progId, string name, bool isProtocolHandler)
     {
         // https://learn.microsoft.com/en-us/previous-versions/windows/internet-explorer/ie-developer/platform-apis/aa767914(v=vs.85)
@@ -80,8 +63,7 @@ internal class ProtocolRegistrationWindows : IProtocolRegistration
 
         using var commandKey = key.CreateSubKey(@"shell\open\command");
 
-        var executable = _osInterop.GetOwnExe();
-
+        var executable = GetRunningExecutablePath(out _);
         commandKey.SetValue("", $"\"{executable.ToNativeSeparators(_fileSystem.OS)}\" \"%1\"");
 
         // NOTE(erri120): can't set the working directory for generic protocol handlers
@@ -89,6 +71,7 @@ internal class ProtocolRegistrationWindows : IProtocolRegistration
         if (!isProtocolHandler) commandKey.SetValue("WorkingDirectory", $"\"{executable.Parent.ToNativeSeparators(_fileSystem.OS)}\"");
     }
 
+    [SupportedOSPlatform("windows")]
     private void SetAsDefaultHandler(string uriScheme)
     {
         CreateProgIdClass(uriScheme, $"Nexus Mods App {uriScheme.ToUpperInvariant()} Handler", isProtocolHandler: true);

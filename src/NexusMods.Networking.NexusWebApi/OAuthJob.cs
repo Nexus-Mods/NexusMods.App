@@ -6,8 +6,8 @@ using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.DTOs.OAuth;
 using NexusMods.Abstractions.NexusWebApi.Types;
-using NexusMods.CrossPlatform.Process;
 using NexusMods.Networking.NexusWebApi.Auth;
+using NexusMods.Sdk;
 using R3;
 
 namespace NexusMods.Networking.NexusWebApi;
@@ -67,7 +67,7 @@ internal sealed class OAuthJob : IOAuthJob, IJobDefinitionWithStart<OAuthJob, Op
             .FirstAsync(cts.Token);
 
         // see https://www.rfc-editor.org/rfc/rfc7636#section-4.3
-        await _os.OpenUrl(uri, cancellationToken: context.CancellationToken);
+        _os.OpenUri(uri);
 
         cts.CancelAfter(TimeSpan.FromMinutes(3));
         var code = await codeTask;

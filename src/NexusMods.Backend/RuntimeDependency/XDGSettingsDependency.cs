@@ -1,17 +1,20 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using CliWrap;
+using JetBrains.Annotations;
+using NexusMods.Sdk;
 
-namespace NexusMods.CrossPlatform.Process;
+namespace NexusMods.Backend.RuntimeDependency;
 
-internal class XDGSettingsDependency : ExecutableRuntimeDependency
+[UsedImplicitly]
+internal class XdgSettingsDependency : ExecutableRuntimeDependency
 {
     public override string DisplayName => "xdg-settings";
     public override string Description => "Get or set the default URL handlers.";
     public override Uri Homepage { get; } = new("https://www.freedesktop.org/wiki/Software/xdg-utils/");
     public override OSPlatform[] SupportedPlatforms { get; } = [OSPlatform.Linux];
 
-    public XDGSettingsDependency(IProcessFactory processFactory) : base(processFactory) { }
+    public XdgSettingsDependency(IProcessRunner processRunner) : base(processRunner) { }
 
     public Command CreateSetDefaultUrlSchemeHandlerCommand(string uriScheme, string desktopFile)
     {

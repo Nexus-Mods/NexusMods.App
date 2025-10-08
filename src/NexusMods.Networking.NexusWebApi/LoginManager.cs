@@ -1,12 +1,10 @@
 using System.Diagnostics;
-using System.Net.Http;
 using DynamicData.Aggregation;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.DTOs.OAuth;
 using NexusMods.Abstractions.NexusWebApi.Types;
-using NexusMods.CrossPlatform.ProtocolRegistration;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Query;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
@@ -26,7 +24,6 @@ public sealed class LoginManager : IDisposable, ILoginManager
 {
     private readonly ILogger<LoginManager> _logger;
     private readonly OAuth _oauth;
-    private readonly IProtocolRegistration _protocolRegistration;
     private readonly NexusApiClient _nexusApiClient;
     private readonly IAuthenticatingMessageFactory _msgFactory;
 
@@ -71,14 +68,12 @@ public sealed class LoginManager : IDisposable, ILoginManager
         NexusApiClient nexusApiClient,
         IAuthenticatingMessageFactory msgFactory,
         OAuth oauth,
-        IProtocolRegistration protocolRegistration,
         ILogger<LoginManager> logger)
     {
         _oauth = oauth;
         _conn = conn;
         _msgFactory = msgFactory;
         _nexusApiClient = nexusApiClient;
-        _protocolRegistration = protocolRegistration;
         _logger = logger;
 
         _observeDatomDisposable = _conn
