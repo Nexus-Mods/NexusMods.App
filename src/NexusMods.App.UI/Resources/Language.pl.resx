@@ -72,30 +72,30 @@
 	<data name="CancelDownloadOverlayView_Title" xml:space="preserve">
 		<value>Anulować pobieranie?</value>
 	</data>
-	<data name="Helpers_GenerateHeader_NAME" xml:space="preserve">
-		<value>NAZWA</value>
-	</data>
-	<data name="Helpers_GenerateHeader_VERSION" xml:space="preserve">
-		<value>WERSJA</value>
-	</data>
-	<data name="Helpers_GenerateHeader_CATEGORY" xml:space="preserve">
-		<value>KATEGORIA</value>
-	</data>
-	<data name="Helpers_GenerateHeader_INSTALLED" xml:space="preserve">
-		<value>ZAINSTALOWANE</value>
-	</data>
-	<data name="Helpers_GenerateHeader_MOD_NAME" xml:space="preserve">
-		<value>NAZWA MODA</value>
-	</data>
+    <data name="Helpers_GenerateHeader_NAME" xml:space="preserve">
+        <value>Nazwa</value>
+    </data>
+    <data name="Helpers_GenerateHeader_VERSION" xml:space="preserve">
+        <value>Wersja</value>
+    </data>
+    <data name="Helpers_GenerateHeader_CATEGORY" xml:space="preserve">
+        <value>Kategoria</value>
+    </data>
+    <data name="Helpers_GenerateHeader_INSTALLED" xml:space="preserve">
+        <value>Zainstalowane</value>
+    </data>
+    <data name="Helpers_GenerateHeader_MOD_NAME" xml:space="preserve">
+        <value>Nazwa moda</value>
+    </data>
 	<data name="Helpers_GenerateHeader_GAME" xml:space="preserve">
 		<value>GRA</value>
 	</data>
-	<data name="Helpers_GenerateHeader_SIZE" xml:space="preserve">
-		<value>ROZMIAR</value>
-	</data>
-	<data name="Helpers_GenerateHeader_STATUS" xml:space="preserve">
-		<value>STATUS</value>
-	</data>
+    <data name="Helpers_GenerateHeader_SIZE" xml:space="preserve">
+        <value>Rozmiar</value>
+    </data>
+    <data name="Helpers_GenerateHeader_STATUS" xml:space="preserve">
+        <value>Status</value>
+    </data>
 	<data name="LaunchButtonViewModel_LaunchGame_RUNNING" xml:space="preserve">
 		<value>URUCHAMIANIE GRY...</value>
 	</data>
@@ -404,9 +404,9 @@
 	<data name="ApplyDiff_Refresh" xml:space="preserve">
 		<value>Odśwież</value>
 	</data>
-	<data name="Helpers_GenerateHeader_State" xml:space="preserve">
-		<value>STAN</value>
-	</data>
+    <data name="Helpers_GenerateHeader_State" xml:space="preserve">
+        <value>Stan</value>
+    </data>
 	<data name="IFileTreeNodeViewModel_ToFormattedChangeState_Added" xml:space="preserve">
 		<value>Dodane</value>
 	</data>
@@ -667,10 +667,10 @@
 	<data name="SettingsView_Description" xml:space="preserve">
 		<value>Zarządzaj swoimi preferencjami</value>
 	</data>
-	<data name="MyLoadoutsGameSectionHeading" xml:space="preserve">
-		<value>Zestawy {0}</value>
-		<comment>Where {0} is the name of the game</comment>
-	</data>
+    <data name="MyLoadoutsGameSectionHeading" xml:space="preserve">
+        <value>Zestawy: {0}</value>
+        <comment>Where {0} is the name of the game</comment>
+    </data>
 	<data name="CreateNewLoadoutCarViewTexBlock" xml:space="preserve">
 		<value>Utwórz nowy</value>
 	</data>
@@ -1228,7 +1228,7 @@ Zachować pobrane pliki w bibliotece na wypadek późniejszej próby instalacji?
         <value>Monitoruj postęp pobierania.</value>
     </data>
     <data name="DownloadsPage_Default_Description" xml:space="preserve">
-        <value>Zarządzaj bieżącymi i ukończonymi pobraniami</value>
+        <value>Zarządzaj bieżącymi i ukończonymi pobraniami.</value>
     </data>
     <data name="DownloadsPage_GameSpecificDownloads_Description" xml:space="preserve">
         <value>Monitoruj postęp pobierania.</value>
