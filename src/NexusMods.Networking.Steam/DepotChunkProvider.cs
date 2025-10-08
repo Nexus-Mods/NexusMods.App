@@ -80,6 +80,9 @@ public class DepotChunkProvider : IChunkedStreamSource
 
     public void ReadChunk(Span<byte> buffer, ulong chunkIndex)
     {
-        throw new NotSupportedException();
+        using var owner = MemoryPool<byte>.Shared.Rent(buffer.Length);
+        var sliced = owner.Memory[..buffer.Length];
+        Task.Run(() => ReadChunkAsync(sliced, chunkIndex)).Wait();
+        sliced.Span.CopyTo(buffer);
     }
 }

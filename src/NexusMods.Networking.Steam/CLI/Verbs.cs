@@ -11,6 +11,8 @@ using NexusMods.Networking.Steam.Exceptions;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
 using NexusMods.Sdk.ProxyConsole;
+using NexusMods.Archives.Nx.Packing;
+using NexusMods.Archives.Nx.Utilities;
 
 namespace NexusMods.Networking.Steam.CLI;
 
@@ -20,7 +22,9 @@ public static class Verbs
         collection
             .AddModule("steam", "Verbs for interacting with Steam")
             .AddModule("steam app", "Verbs for querying app data")
+            .AddModule("steam manifest", "Verbs for querying and packing manifest data")
             .AddVerb(() => IndexSteamApp)
+            .AddVerb(() => PackManifest)
             .AddVerb(() => Login);
     
     [Verb("steam login", "Starts the login process for Steam")]
@@ -32,7 +36,93 @@ public static class Verbs
         await steamSession.Connect(token);
         return 0;
     }
-    
+
+    [Verb("steam manifest pack", "Packs all files from a Steam manifest into a .nx archive")]
+    private static async Task<int> PackManifest(
+        [Injected] IRenderer renderer,
+        [Injected] ISteamSession steamSession,
+        [Option("a", "appId", "The steam app id to search in")] long appId,
+        [Option("m", "manifestId", "The specific manifest id to pack")] long manifestId,
+        [Option("b", "branch", "Optional branch name to disambiguate if manifest exists on multiple branches")] string branch,
+        [Option("o", "output", "The output .nx file path")] AbsolutePath output,
+        [Injected] CancellationToken token)
+    {
+        var steamAppId = AppId.From((uint)appId);
+
+        RenderingAuthenticationHandler.Renderer = renderer;
+        await steamSession.Connect(token);
+
+        await renderer.TextLine("Fetching product info…");
+        var productInfo = await steamSession.GetProductInfoAsync(steamAppId, token);
+        // Find the depot + branch containing the requested manifest id
+        var candidates = productInfo.Depots
+            .SelectMany(d => d.Manifests.Select(kv => new { Depot = d, Branch = kv.Key, Info = kv.Value }))
+            .Where(x => x.Info.ManifestId.Value == (ulong)manifestId)
+            .ToList();
+
+        if (!string.IsNullOrWhiteSpace(branch))
+            candidates = candidates.Where(c => string.Equals(c.Branch, branch, StringComparison.OrdinalIgnoreCase)).ToList();
+
+        if (candidates.Count == 0)
+        {
+            await renderer.Text($"Manifest {manifestId} not found for app {appId}{(string.IsNullOrWhiteSpace(branch) ? "" : $" on branch '{branch}'")}.");
+            return 1;
+        }
+        if (candidates.Count > 1)
+        {
+            await renderer.TextLine($"Manifest {manifestId} appears in multiple branches/depots:");
+            foreach (var c in candidates)
+                await renderer.TextLine($" - Depot {c.Depot.DepotId.Value} on branch '{c.Branch}'");
+            await renderer.Text("Please specify --branch to disambiguate.");
+            return 1;
+        }
+
+        var chosen = candidates[0];
+        var depot = chosen.Depot.DepotId;
+        var usedBranch = chosen.Branch;
+        var manifest = await steamSession.GetManifestContents(steamAppId, depot, chosen.Info.ManifestId, usedBranch, token);
+
+        await renderer.TextLine($"Preparing to pack {manifest.Files.Length} files from manifest {manifestId} (depot {depot.Value}, branch {usedBranch})…");
+
+        var builder = new NxPackerBuilder();
+        var openStreams = new List<Stream>(manifest.Files.Length);
+
+        // Queue files for packing with depot-relative paths
+        foreach (var file in manifest.Files)
+        {
+            Stream stream = file.Size == Size.Zero
+                ? Stream.Null
+                : steamSession.GetFileStream(steamAppId, manifest, file.Path);
+            if (!ReferenceEquals(stream, Stream.Null))
+                openStreams.Add(stream);
+            builder.AddFile(stream, new AddFileParams
+            {
+                RelativePath = file.Path.ToString(),
+            });
+        }
+
+        // Determine output paths and ensure .nx extension
+        var finalOutput = output;
+        var nxExt = new Extension(".nx");
+        if (!finalOutput.ToString().EndsWith(nxExt.ToString(), StringComparison.OrdinalIgnoreCase))
+            finalOutput = finalOutput.AppendExtension(nxExt);
+        var tmpOutput = finalOutput.ReplaceExtension(new Extension(".tmp"));
+
+        await renderer.TextLine("Writing .nx archive…");
+        await using (var outputStream = tmpOutput.Create())
+        {
+            builder.WithOutput(outputStream);
+            builder.Build();
+        }
+
+        foreach (var s in openStreams)
+            await s.DisposeAsync();
+
+        await tmpOutput.MoveToAsync(finalOutput, token: token);
+        await renderer.TextLine($"Done: {finalOutput}");
+        return 0;
+    }
+
     
     [Verb("steam app index", "Indexes a Steam app and updates the given output folder")]
     private static async Task<int> IndexSteamApp(
