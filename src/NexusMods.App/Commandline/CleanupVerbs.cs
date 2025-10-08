@@ -28,7 +28,8 @@ internal static class CleanupVerbs
         [Injected] IRenderer renderer,
         [Injected] IConnection conn,
         [Injected] ISettingsManager settingsManager,
-        [Injected] IFileSystem fileSystem)
+        [Injected] IFileSystem fileSystem,
+        [Injected] ISynchronizerService syncService)
     {
         // Step 1: Revert the managed games to their original state
         var db = conn.Db;
@@ -40,8 +41,7 @@ internal static class CleanupVerbs
         {
             try
             {
-                var synchronizer = installation.GetGame().Synchronizer;
-                await synchronizer.UnManage(installation, false);
+                await syncService.UnManage(installation, false);
                 await renderer.Text($"Reverted {installation.Game.Name} to its original state");
             }
             catch (Exception ex)
