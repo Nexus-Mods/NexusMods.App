@@ -2469,5 +2469,65 @@ namespace NexusMods.App.UI.Resources {
                 return ResourceManager.GetString("Loadout_DeleteCollection_Confirmation_Delete", resourceCulture);
             }
         }
+        
+        public static string CollectionLoadoutView_More_ToolTip {
+            get {
+                return ResourceManager.GetString("CollectionLoadoutView_More_ToolTip", resourceCulture);
+            }
+        }
+        
+        public static string CollectionLoadoutView_MakeEditableLocalCopy {
+            get {
+                return ResourceManager.GetString("CollectionLoadoutView_MakeEditableLocalCopy", resourceCulture);
+            }
+        }
+        
+        public static string CollectionLoadoutView_ViewCollectionDownloadMenuItem {
+            get {
+                return ResourceManager.GetString("CollectionLoadoutView_ViewCollectionDownloadMenuItem", resourceCulture);
+            }
+        }
+        
+        public static string CollectionLoadoutView_UninstallCollection {
+            get {
+                return ResourceManager.GetString("CollectionLoadoutView_UninstallCollection", resourceCulture);
+            }
+        }
+        
+        public static string CollectionLoadoutView_UninstallCollection_ToolTip {
+            get {
+                return ResourceManager.GetString("CollectionLoadoutView_UninstallCollection_ToolTip", resourceCulture);
+            }
+        }
+        
+        public static string CollectionLoadoutView_NexusMods {
+            get {
+                return ResourceManager.GetString("CollectionLoadoutView_NexusMods", resourceCulture);
+            }
+        }
+        
+        public static string CollectionLoadoutView_ReadOnly_ToolTip {
+            get {
+                return ResourceManager.GetString("CollectionLoadoutView_ReadOnly_ToolTip", resourceCulture);
+            }
+        }
+        
+        public static string CollectionLoadoutView_ReadOnly {
+            get {
+                return ResourceManager.GetString("CollectionLoadoutView_ReadOnly", resourceCulture);
+            }
+        }
+        
+        public static string CollectionLoadoutView_CollectionInstalled {
+            get {
+                return ResourceManager.GetString("CollectionLoadoutView_CollectionInstalled", resourceCulture);
+            }
+        }
+        
+        public static string CollectionLoadoutView_Required {
+            get {
+                return ResourceManager.GetString("CollectionLoadoutView_Required", resourceCulture);
+            }
+        }
     }
 }

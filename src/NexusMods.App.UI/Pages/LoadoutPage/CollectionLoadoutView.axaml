@@ -28,27 +28,27 @@
                                          ShowLabel="False"
                                          ShowIcon="Left"
                                          Size="Toolbar"
-                                         ToolTip.Tip="More">
+                                         ToolTip.Tip="{x:Static resources:Language.CollectionLoadoutView_More_ToolTip}">
 
                     <controls:StandardButton.Flyout>
                         <MenuFlyout>
-                            <navigation:NavigationMenuItem Header="Make an editable local copy"
+                            <navigation:NavigationMenuItem Header="{x:Static resources:Language.CollectionLoadoutView_MakeEditableLocalCopy}"
                                                            x:Name="MakeEditableLocalCopy">
                                 <MenuItem.Icon>
                                     <icons:UnifiedIcon Size="16"
                                                        Value="{x:Static icons:IconValues.Copy}" />
                                 </MenuItem.Icon>
                             </navigation:NavigationMenuItem>
-                            <navigation:NavigationMenuItem Header="View collection download page"
+                            <navigation:NavigationMenuItem Header="{x:Static resources:Language.CollectionLoadoutView_ViewCollectionDownloadMenuItem}"
                                                            x:Name="ViewCollectionDownloadMenuItem">
                                 <MenuItem.Icon>
                                     <icons:UnifiedIcon Size="16"
                                                        Value="{x:Static icons:IconValues.Downloading}" />
                                 </MenuItem.Icon>
                             </navigation:NavigationMenuItem>
-                            <MenuItem Header="Uninstall Collection"
+                            <MenuItem Header="{x:Static resources:Language.CollectionLoadoutView_UninstallCollection}"
                                       x:Name="RemoveCollectionMenuItem"
-                                      ToolTip.Tip="Uninstall this collection from loadout. (Collection will remain in library)">
+                                      ToolTip.Tip="{x:Static resources:Language.CollectionLoadoutView_UninstallCollection_ToolTip}">
                                 <MenuItem.Icon>
                                     <icons:UnifiedIcon Size="16"
                                                        Value="{x:Static icons:IconValues.PlaylistRemove}" />
@@ -63,7 +63,7 @@
                             Spacing="4">
                     <icons:UnifiedIcon Size="16"
                                        Value="{x:Static icons:IconValues.NexusColor}" />
-                    <TextBlock Text="Nexus Mods"
+                    <TextBlock Text="{x:Static resources:Language.CollectionLoadoutView_NexusMods}"
                                Theme="{StaticResource BodySMNormalTheme}"
                                Foreground="{StaticResource PrimaryStrongBrush}"
                                VerticalAlignment="Center" />
@@ -77,12 +77,12 @@
                     <Ellipse Fill="{StaticResource StrokeTranslucentModerateBrush}" Width="4" Height="4" />
 
                     <Border
-                        ToolTip.Tip="Collections downloaded from Nexus Mods are currently not editable. However, the ability to create local, editable copies will be available soon.">
+                        ToolTip.Tip="{x:Static resources:Language.CollectionLoadoutView_ReadOnly_ToolTip}">
                         <StackPanel Orientation="Horizontal" Spacing="4">
                             <icons:UnifiedIcon Size="16"
                                                Foreground="{StaticResource NeutralTranslucentModerateBrush}"
                                                Value="{x:Static icons:IconValues.Info}" />
-                            <TextBlock Text="Read only"
+                            <TextBlock Text="{x:Static resources:Language.CollectionLoadoutView_ReadOnly}"
                                        Foreground="{StaticResource NeutralTranslucentModerateBrush}"
                                        VerticalAlignment="Center" />
                         </StackPanel>
@@ -123,7 +123,7 @@
                                     <Image x:Name="CollectionImage" />
                                 </Border>
                                 <StackPanel>
-                                    <TextBlock x:Name="Title">Collection Installed</TextBlock>
+                                    <TextBlock x:Name="Title" Text="{x:Static resources:Language.CollectionLoadoutView_CollectionInstalled}" />
                                     <TextBlock x:Name="CollectionName" />
                                 </StackPanel>
                             </DockPanel>
@@ -197,7 +197,7 @@
                 <TabItem x:Name="RequiredTab" Content="{StaticResource TabItemContent}">
                     <TabItem.Header>
                         <StackPanel x:Name="RequiredModsPanel" Classes="TabItemHeaderStack">
-                            <TextBlock Text="Required" />
+                            <TextBlock Text="{x:Static resources:Language.CollectionLoadoutView_Required}" />
                             <Border>
                                 <TextBlock x:Name="RequiredDownloadsCount" />
                             </Border>

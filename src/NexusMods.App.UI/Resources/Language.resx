@@ -1303,4 +1303,35 @@ This action cannot be undone.</value>
         <value>Version: Unknown</value>
     </data>
 
+    <data name="CollectionLoadoutView_More_ToolTip" xml:space="preserve">
+        <value>More</value>
+    </data>
+    <data name="CollectionLoadoutView_MakeEditableLocalCopy" xml:space="preserve">
+        <value>Make an editable local copy</value>
+    </data>
+    <data name="CollectionLoadoutView_ViewCollectionDownloadMenuItem" xml:space="preserve">
+        <value>View collection download page</value>
+    </data>
+    <data name="CollectionLoadoutView_UninstallCollection" xml:space="preserve">
+        <value>Uninstall Collection</value>
+    </data>
+    <data name="CollectionLoadoutView_UninstallCollection_ToolTip" xml:space="preserve">
+        <value>Uninstall this collection from loadout. (Collection will remain in library)</value>
+    </data>
+    <data name="CollectionLoadoutView_NexusMods" xml:space="preserve">
+        <value>Nexus Mods</value>
+    </data>
+    <data name="CollectionLoadoutView_ReadOnly_ToolTip" xml:space="preserve">
+        <value>Collections downloaded from Nexus Mods are currently not editable. However, the ability to create local, editable copies will be available soon.</value>
+    </data>
+    <data name="CollectionLoadoutView_ReadOnly" xml:space="preserve">
+        <value>Read only</value>
+    </data>
+    <data name="CollectionLoadoutView_CollectionInstalled" xml:space="preserve">
+        <value>Collection Installed</value>
+    </data>
+    <data name="CollectionLoadoutView_Required" xml:space="preserve">
+        <value>Required</value>
+    </data>
+
 </root>
