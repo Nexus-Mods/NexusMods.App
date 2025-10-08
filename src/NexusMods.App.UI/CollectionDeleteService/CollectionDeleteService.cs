@@ -94,23 +94,26 @@ public class CollectionDeleteService(
     }
 
     /// <inheritdoc />
-    public async Task DeleteNexusCollectionAsync(NexusCollectionLoadoutGroup.ReadOnly nexusCollectionGroup, IWorkspaceController workspaceController, WorkspaceId workspaceId, PanelId panelId, PanelTabId tabId)
+    public async Task DeleteNexusCollectionAsync(NexusCollectionLoadoutGroup.ReadOnly nexusCollectionGroup, IWorkspaceController workspaceController, WorkspaceId workspaceId, PanelId panelId, PanelTabId tabId, bool navigateToCollectionDownloadPage = true)
     {
         var group = nexusCollectionGroup.AsCollectionGroup();
         
-        // Switch away from this page since its collection will be deleted
-        var pageData = new PageData
+        if (navigateToCollectionDownloadPage)
         {
-            FactoryId = CollectionDownloadPageFactory.StaticId,
-            Context = new CollectionDownloadPageContext()
+            // Switch away from this page since its collection will be deleted
+            var pageData = new PageData
             {
-                TargetLoadout = group.AsLoadoutItemGroup().AsLoadoutItem().LoadoutId,
-                CollectionRevisionMetadataId = nexusCollectionGroup.RevisionId,
-            },
-        };
+                FactoryId = CollectionDownloadPageFactory.StaticId,
+                Context = new CollectionDownloadPageContext()
+                {
+                    TargetLoadout = group.AsLoadoutItemGroup().AsLoadoutItem().LoadoutId,
+                    CollectionRevisionMetadataId = nexusCollectionGroup.RevisionId,
+                },
+            };
 
-        var behavior = new OpenPageBehavior.ReplaceTab(panelId, tabId);
-        workspaceController.OpenPage(workspaceId, pageData, behavior, checkOtherPanels: false);
+            var behavior = new OpenPageBehavior.ReplaceTab(panelId, tabId);
+            workspaceController.OpenPage(workspaceId, pageData, behavior, checkOtherPanels: false);
+        }
         
         using var tx = connection.BeginTransaction();
         

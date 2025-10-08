@@ -47,13 +47,14 @@ public interface ICollectionDeleteService
     Task<bool> ShowDeleteConfirmationDialogAsync(CollectionGroupId collectionId, IWindowManager windowManager);
     
     /// <summary>
-    /// Deletes the Nexus collection asynchronously with navigation.
+    /// Deletes the Nexus collection asynchronously.
     /// </summary>
     /// <param name="nexusCollectionGroup">The Nexus collection loadout group.</param>
     /// <param name="workspaceController">The workspace controller for navigation.</param>
     /// <param name="workspaceId">The workspace identifier.</param>
     /// <param name="panelId">The panel identifier.</param>
     /// <param name="tabId">The tab identifier.</param>
+    /// <param name="navigateToCollectionDownloadPage">Whether to navigate to the collection download page before deletion.</param>
     /// <returns>A task representing the asynchronous operation.</returns>
-    Task DeleteNexusCollectionAsync(NexusCollectionLoadoutGroup.ReadOnly nexusCollectionGroup, IWorkspaceController workspaceController, WorkspaceId workspaceId, PanelId panelId, PanelTabId tabId);
+    Task DeleteNexusCollectionAsync(NexusCollectionLoadoutGroup.ReadOnly nexusCollectionGroup, IWorkspaceController workspaceController, WorkspaceId workspaceId, PanelId panelId, PanelTabId tabId, bool navigateToCollectionDownloadPage = true);
 }

@@ -115,7 +115,7 @@ public class CollectionLoadoutViewModel : APageViewModel<ICollectionLoadoutViewM
             executeAsync: async (_, _) =>
             {
                 var workspaceController = GetWorkspaceController();
-                await collectionDeleteService.DeleteNexusCollectionAsync(nexusCollectionGroup, workspaceController, WorkspaceId, PanelId, TabId);
+                await collectionDeleteService.DeleteNexusCollectionAsync(nexusCollectionGroup, workspaceController, WorkspaceId, PanelId, TabId, navigateToCollectionDownloadPage: true);
             },
             awaitOperation: AwaitOperation.Drop,
             configureAwait: false
