@@ -1,5 +1,5 @@
 # v0.18.2 2025-10-08
-This update introduces some powerful new features and important fixes to make managing your mods smoother than ever. You’ll now find a dedicated Downloads page with full control over your active downloads, the ability to create editable copies of read-only Nexus Collections, and a new view that helps you spot file conflicts between mods. Alongside these upgrades, we’ve resolved several issues to improve stability, prevent unnecessary backups, and ensure a more seamless experience throughout the app.
+This update introduces some powerful new features and important fixes to make managing your mods smoother than ever. You’ll now find a dedicated Downloads page with full control over your active downloads, the ability to create editable copies of read-only Nexus Mods Collections, and a new view that helps you spot file conflicts between mods. Alongside these upgrades, we’ve resolved several issues to improve stability, prevent unnecessary backups, and ensure a more seamless experience throughout the app.
 
 ### New Downloads Page:
 
@@ -7,7 +7,7 @@ This update introduces some powerful new features and important fixes to make ma
 
 ### Editable Collections:
 
-- You can now create your own editable copy of a Nexus Collection that was previously read-only; perfect for adding or removing mods in your personal version. (#3517)
+- You can now create your own editable copy of a Nexus Mods Collection that was previously read-only; perfect for adding or removing mods in your personal version. (#3517)
 
 ### Conflict Viewer (Early Version):
 
@@ -15,7 +15,7 @@ This update introduces some powerful new features and important fixes to make ma
 
 ### Fixes and Improvements:
 
-- Resolved an issue that caused errors when adding some Nexus Collections. (#3886)
+- Resolved an issue that caused errors when adding some Nexus Mods Collections. (#3886)
 - Fixed unnecessary updates to the game hash database. (#3918)
 - Stopped the app from backing up game files when correct hashing info was already available. (#3455)
 - Fixed a stuck selection issue after clearing filters on Library or Loadout pages. (#3900)
