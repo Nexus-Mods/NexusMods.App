@@ -18,6 +18,7 @@ using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Sdk.Settings;
 using NexusMods.Abstractions.Telemetry;
+using NexusMods.App.UI.CollectionDeleteService;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.Dialog;
@@ -104,6 +105,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
     private readonly IConnection _connection;
     private readonly IAvaloniaInterop _avaloniaInterop;
     private readonly IWindowNotificationService _notificationService;
+    private readonly ICollectionDeleteService _collectionDeleteService;
 
     public LoadoutViewModel(
         IWindowManager windowManager,
@@ -118,6 +120,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
         _nexusModsLibrary = serviceProvider.GetRequiredService<NexusModsLibrary>();
         _avaloniaInterop = serviceProvider.GetRequiredService<IAvaloniaInterop>();
         _notificationService = serviceProvider.GetRequiredService<IWindowNotificationService>();
+        _collectionDeleteService = serviceProvider.GetRequiredService<ICollectionDeleteService>();
 
         var settingsManager = serviceProvider.GetRequiredService<ISettingsManager>();
         EnableCollectionSharing = settingsManager.Get<ExperimentalSettings>().EnableCollectionSharing;
@@ -414,20 +417,16 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                 }
             );
 
-            var canDelete = CollectionGroup
-                .ObserveAll(_connection)
-                .FilterImmutable(group => group.AsLoadoutItemGroup().AsLoadoutItem().LoadoutId == loadoutId && !group.IsReadOnly)
-                .QueryWhenChanged(query => query.Count)
-                .ToObservable()
-                .Select(count => count > 1)
-                .ObserveOnUIThreadDispatcher();
+            var canDelete = _collectionDeleteService.ObserveCanDeleteCollection(collectionGroupId.Value).ToObservable();
 
-            CommandDeleteGroup = canDelete.ToReactiveCommand<Unit>(async (_, cancellationToken) =>
+            CommandDeleteGroup = canDelete.ToReactiveCommand<Unit>(async (_, _) =>
             {
-                await CollectionCreator.DeleteCollectionGroup(connection: _connection, managedCollectionGroup: collectionGroupId.Value, cancellationToken: cancellationToken);
-                CommandOpenLibraryPage?.Execute(NavigationInformation.From(OpenPageBehaviorType.ReplaceTab));
-                
-                _notificationService.ShowToast(Language.ToastNotification_Collection_removed);
+                var confirmed = await _collectionDeleteService.ShowDeleteConfirmationDialogAsync(collectionGroupId.Value, WindowManager);
+                if (confirmed)
+                {
+                    await _collectionDeleteService.DeleteCollectionAsync(collectionGroupId.Value);
+                    CommandOpenLibraryPage?.Execute(NavigationInformation.From(OpenPageBehaviorType.ReplaceTab));
+                }
             });
         }
         else

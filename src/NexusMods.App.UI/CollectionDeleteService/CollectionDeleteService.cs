@@ -1,0 +1,91 @@
+using DynamicData;
+using NexusMods.Abstractions.Loadouts;
+using NexusMods.App.UI.Dialog;
+using NexusMods.App.UI.Dialog.Enums;
+using NexusMods.App.UI.Resources;
+using NexusMods.App.UI.Windows;
+using NexusMods.Collections;
+using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.UI.Sdk;
+using NexusMods.UI.Sdk.Dialog;
+using NexusMods.UI.Sdk.Dialog.Enums;
+using R3;
+
+namespace NexusMods.App.UI.CollectionDeleteService;
+
+public class CollectionDeleteService(
+    IConnection connection,
+    IWindowNotificationService notificationService) : ICollectionDeleteService
+{
+    /// <inheritdoc />
+    public string GetActionText(CollectionGroupId collectionId)
+    {
+        var group = CollectionGroup.Load(connection.Db, collectionId);
+        return group.IsReadOnly ? Language.Loadout_UninstallItem_Menu_Text__Uninstall_read_only : Language.Library_DeleteItem_Text;
+    }
+
+    /// <inheritdoc />
+    public bool CanDeleteCollection(CollectionGroupId collectionId)
+    {
+        var group = CollectionGroup.Load(connection.Db, collectionId);
+        if (group.IsReadOnly)
+            return false;
+
+        var loadoutId = group.AsLoadoutItemGroup().AsLoadoutItem().LoadoutId;
+        var collectionCount = CollectionGroup
+            .All(connection.Db)
+            .Count(g => g.AsLoadoutItemGroup().AsLoadoutItem().LoadoutId == loadoutId && !g.IsReadOnly);
+
+        return collectionCount > 1;
+    }
+
+    /// <inheritdoc />
+    public IObservable<bool> ObserveCanDeleteCollection(CollectionGroupId collectionId)
+    {
+        var group = CollectionGroup.Load(connection.Db, collectionId);
+        var loadoutId = group.AsLoadoutItemGroup().AsLoadoutItem().LoadoutId;
+
+        return CollectionGroup
+            .ObserveAll(connection)
+            .FilterImmutable(g => g.AsLoadoutItemGroup().AsLoadoutItem().LoadoutId == loadoutId && !g.IsReadOnly)
+            .QueryWhenChanged(query => query.Count)
+            .ToObservable()
+            .Select(count => count > 1)
+            .ObserveOnUIThreadDispatcher()
+            .AsSystemObservable();
+    }
+
+    /// <inheritdoc />
+    public async Task DeleteCollectionAsync(CollectionGroupId collectionId)
+    {
+        await CollectionCreator.DeleteCollectionGroup(connection, collectionId, CancellationToken.None);
+        notificationService.ShowToast(Language.ToastNotification_Collection_removed);
+    }
+
+    /// <inheritdoc />
+    public async Task<bool> ShowDeleteConfirmationDialogAsync(CollectionGroupId collectionId, IWindowManager windowManager)
+    {
+        var group = CollectionGroup.Load(connection.Db, collectionId);
+        var collectionName = group.AsLoadoutItemGroup().AsLoadoutItem().Name;
+
+        var dialog = DialogFactory.CreateStandardDialog(
+            title: Language.Loadout_DeleteCollection_Confirmation_Title,
+            new StandardDialogParameters()
+            {
+                Text = string.Format(Language.Loadout_DeleteCollection_Confirmation_Message, collectionName),
+            },
+            buttonDefinitions:
+            [
+                DialogStandardButtons.Cancel,
+                new DialogButtonDefinition(Language.Loadout_DeleteCollection_Confirmation_Delete,
+                    ButtonDefinitionId.Accept,
+                    ButtonAction.Accept,
+                    ButtonStyling.Destructive
+                )
+            ]
+        );
+
+        var result = await windowManager.ShowDialog(dialog, DialogWindowType.Modal);
+        return result.ButtonId == ButtonDefinitionId.Accept;
+    }
+}
