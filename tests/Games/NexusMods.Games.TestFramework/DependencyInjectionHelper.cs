@@ -14,7 +14,6 @@ using NexusMods.DataModel;
 using NexusMods.FileExtractor;
 using NexusMods.Games.FileHashes;
 using NexusMods.Games.Generic;
-using NexusMods.Jobs;
 using NexusMods.Library;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.NexusWebApi;

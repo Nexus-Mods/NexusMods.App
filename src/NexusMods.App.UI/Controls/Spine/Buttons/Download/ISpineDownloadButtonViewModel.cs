@@ -1,5 +1,5 @@
 using DynamicData.Kernel;
-using NexusMods.Abstractions.Jobs;
+using NexusMods.Sdk.Jobs;
 
 namespace NexusMods.App.UI.Controls.Spine.Buttons.Download;
 

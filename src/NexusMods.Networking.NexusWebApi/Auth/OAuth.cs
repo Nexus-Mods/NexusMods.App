@@ -2,10 +2,10 @@ using System.Text.Json;
 using DynamicData.Kernel;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.NexusWebApi.DTOs.OAuth;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Sdk;
+using NexusMods.Sdk.Jobs;
 using R3;
 
 namespace NexusMods.Networking.NexusWebApi.Auth;

@@ -3,12 +3,12 @@ using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Collections;
-using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Paths;
 using NexusMods.Sdk.Hashes;
+using NexusMods.Sdk.Jobs;
 
 namespace NexusMods.Networking.NexusWebApi;
 

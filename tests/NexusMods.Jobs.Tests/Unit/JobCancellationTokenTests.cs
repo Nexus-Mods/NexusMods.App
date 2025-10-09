@@ -1,5 +1,5 @@
 using FluentAssertions;
-using NexusMods.Abstractions.Jobs;
+using NexusMods.Sdk.Jobs;
 using Xunit;
 
 namespace NexusMods.Jobs.Tests.Unit;

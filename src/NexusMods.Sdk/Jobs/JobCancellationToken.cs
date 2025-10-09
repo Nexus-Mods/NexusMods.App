@@ -1,4 +1,4 @@
-namespace NexusMods.Abstractions.Jobs;
+namespace NexusMods.Sdk.Jobs;
 
 /// <summary>
 /// A cancellation token that supports both cancellation and pause/resume

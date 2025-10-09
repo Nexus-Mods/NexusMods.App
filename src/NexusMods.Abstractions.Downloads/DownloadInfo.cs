@@ -1,11 +1,10 @@
-using System.Reactive.Disposables;
 using System.Runtime.CompilerServices;
 using DynamicData.Kernel;
 using JetBrains.Annotations;
-using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
+using NexusMods.Sdk.Jobs;
 using R3;
 
 [assembly: InternalsVisibleTo("NexusMods.Library")]

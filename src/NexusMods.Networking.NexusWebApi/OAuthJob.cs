@@ -2,12 +2,12 @@ using System.Security.Cryptography;
 using System.Text;
 using DynamicData.Kernel;
 using Microsoft.AspNetCore.WebUtilities;
-using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.DTOs.OAuth;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Networking.NexusWebApi.Auth;
 using NexusMods.Sdk;
+using NexusMods.Sdk.Jobs;
 using R3;
 
 namespace NexusMods.Networking.NexusWebApi;
