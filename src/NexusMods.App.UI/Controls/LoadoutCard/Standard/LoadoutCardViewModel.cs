@@ -12,12 +12,12 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls.LoadoutBadge;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Pages;
 using NexusMods.App.UI.Resources;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.UI.Sdk;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 

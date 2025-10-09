@@ -9,6 +9,7 @@ using NexusMods.CrossPlatform;
 using NexusMods.DataModel;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
+using NexusMods.Sdk.FileExtractor;
 using NexusMods.Sdk.ProxyConsole;
 using NexusMods.Sdk.Tracking;
 

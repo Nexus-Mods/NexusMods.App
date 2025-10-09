@@ -1,7 +1,7 @@
 using NexusMods.Paths;
 using NexusMods.Sdk.IO;
 
-namespace NexusMods.Abstractions.FileExtractor;
+namespace NexusMods.Sdk.FileExtractor;
 
 /// <summary>
 /// Interface for a file extractor manager that can extract files somewhere

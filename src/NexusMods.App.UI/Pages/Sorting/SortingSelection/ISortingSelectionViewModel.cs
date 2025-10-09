@@ -1,5 +1,5 @@
-using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls.Navigation;
+using NexusMods.UI.Sdk;
 using R3;
 
 namespace NexusMods.App.UI.Pages.Sorting;

@@ -1,4 +1,4 @@
-using NexusMods.Abstractions.UI;
+using NexusMods.UI.Sdk;
 
 namespace NexusMods.App.UI.Pages.Sorting;
 

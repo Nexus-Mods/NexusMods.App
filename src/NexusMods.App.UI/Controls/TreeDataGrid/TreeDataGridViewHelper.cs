@@ -1,7 +1,7 @@
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.ReactiveUI;
-using NexusMods.Abstractions.UI;
+using NexusMods.UI.Sdk;
 using R3;
 using ReactiveUI;
 

@@ -1,6 +1,5 @@
 using System.ComponentModel;
 using JetBrains.Annotations;
-using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls;
 using NexusMods.UI.Sdk;
 using R3;

@@ -1,4 +1,6 @@
-namespace NexusMods.Abstractions.FileExtractor;
+using NexusMods.Abstractions.FileExtractor;
+
+namespace NexusMods.Sdk.FileExtractor;
 
 /// <summary>
 /// A factory for creating signature checkers

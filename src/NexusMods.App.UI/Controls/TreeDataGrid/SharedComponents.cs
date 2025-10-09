@@ -1,4 +1,3 @@
-using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.Resources;
 using NexusMods.UI.Sdk;

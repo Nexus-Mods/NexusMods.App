@@ -5,7 +5,7 @@ using Avalonia.Input.Platform;
 using Avalonia.VisualTree;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
-using NexusMods.Abstractions.UI;
+using NexusMods.UI.Sdk;
 using R3;
 
 namespace NexusMods.App.UI.Pages.LoadoutPage.Dialogs.CollectionPublished;

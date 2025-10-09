@@ -1,6 +1,6 @@
 using System.Reactive;
-using NexusMods.Abstractions.UI;
 using NexusMods.App.UI;
+using NexusMods.UI.Sdk;
 using ReactiveUI;
 
 namespace NexusMods.Games.FOMOD.UI;

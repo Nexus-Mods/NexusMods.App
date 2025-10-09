@@ -14,6 +14,7 @@ using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Paths;
+using NexusMods.Sdk.FileExtractor;
 using NexusMods.Sdk.IO;
 
 // ReSharper disable InconsistentNaming

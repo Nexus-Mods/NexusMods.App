@@ -1,5 +1,5 @@
 ﻿using System.Reactive;
-using NexusMods.Abstractions.UI;
+using NexusMods.UI.Sdk;
 using ReactiveUI;
 
 namespace NexusMods.Games.AdvancedInstaller.UI;

@@ -1,4 +1,4 @@
-using NexusMods.Abstractions.UI;
+using NexusMods.UI.Sdk;
 using R3;
 using ReactiveUI.Fody.Helpers;
 

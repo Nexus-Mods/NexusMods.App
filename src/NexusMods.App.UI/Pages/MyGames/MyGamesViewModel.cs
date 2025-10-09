@@ -27,7 +27,6 @@ using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Sdk.Settings;
-using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls.MarkdownRenderer;
 using NexusMods.App.UI.Controls.MiniGameWidget.ComingSoon;
 using NexusMods.App.UI.Controls.MiniGameWidget.Standard;
@@ -43,6 +42,7 @@ using NexusMods.Paths;
 using NexusMods.Sdk;
 using NexusMods.Sdk.Jobs;
 using NexusMods.Telemetry;
+using NexusMods.UI.Sdk;
 using NexusMods.UI.Sdk.Dialog;
 using NexusMods.UI.Sdk.Dialog.Enums;
 

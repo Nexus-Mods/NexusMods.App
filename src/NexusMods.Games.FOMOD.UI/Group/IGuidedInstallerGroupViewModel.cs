@@ -1,6 +1,6 @@
 using System.Collections.ObjectModel;
 using NexusMods.Abstractions.GuidedInstallers;
-using NexusMods.Abstractions.UI;
+using NexusMods.UI.Sdk;
 
 namespace NexusMods.Games.FOMOD.UI;
 

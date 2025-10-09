@@ -1,7 +1,6 @@
 using Humanizer;
 using Humanizer.Bytes;
 using NexusMods.Abstractions.Downloads;
-using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Controls.Filters;
 using NexusMods.App.UI.Controls.TreeDataGrid.Filters;

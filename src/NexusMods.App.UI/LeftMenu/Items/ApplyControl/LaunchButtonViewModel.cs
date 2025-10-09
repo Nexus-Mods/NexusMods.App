@@ -5,7 +5,6 @@ using System.Reactive.Linq;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.UI;
 using NexusMods.Abstractions.Loadouts.Exceptions;
 using NexusMods.App.UI.Overlays;
 using NexusMods.App.UI.Overlays.Generic.MessageBox.Ok;
@@ -13,6 +12,7 @@ using NexusMods.App.UI.Resources;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Sdk.Jobs;
 using NexusMods.Telemetry;
+using NexusMods.UI.Sdk;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 

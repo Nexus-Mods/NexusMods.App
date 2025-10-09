@@ -1,6 +1,6 @@
 using System.ComponentModel;
-using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Dialog.Enums;
+using NexusMods.UI.Sdk;
 using NexusMods.UI.Sdk.Dialog;
 using ReactiveUI;
 

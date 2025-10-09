@@ -9,6 +9,7 @@ using NexusMods.Hashing.xxHash3.Paths;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using NexusMods.Paths.Utilities;
+using NexusMods.Sdk.FileExtractor;
 using NexusMods.Sdk.FileStore;
 using NexusMods.Sdk.Hashes;
 using NexusMods.Sdk.IO;

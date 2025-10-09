@@ -1,7 +1,7 @@
 using System.Reactive;
 using JetBrains.Annotations;
-using NexusMods.Abstractions.UI;
 using NexusMods.App.UI;
+using NexusMods.UI.Sdk;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 

@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using System.Reactive;
 using DynamicData.Kernel;
-using NexusMods.Abstractions.UI;
+using NexusMods.UI.Sdk;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 

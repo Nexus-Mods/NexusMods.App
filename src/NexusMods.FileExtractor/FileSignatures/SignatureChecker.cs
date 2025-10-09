@@ -1,5 +1,6 @@
 using NexusMods.Abstractions.FileExtractor;
 using NexusMods.Paths;
+using NexusMods.Sdk.FileExtractor;
 
 namespace NexusMods.FileExtractor.FileSignatures;
 

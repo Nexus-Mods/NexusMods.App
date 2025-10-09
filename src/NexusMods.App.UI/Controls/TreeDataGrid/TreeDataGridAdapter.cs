@@ -2,8 +2,6 @@ using Avalonia.Controls;
 using Avalonia.Controls.Models.TreeDataGrid;
 using Avalonia.Controls.Selection;
 using DynamicData;
-using NexusMods.Abstractions.UI;
-using NexusMods.Abstractions.UI.Extensions;
 using NexusMods.App.UI.Extensions;
 using ObservableCollections;
 using R3;

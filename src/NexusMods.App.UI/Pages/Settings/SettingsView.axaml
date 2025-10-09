@@ -9,7 +9,7 @@
                                 xmlns:ui1="clr-namespace:NexusMods.Abstractions.UI;assembly=NexusMods.Abstractions.UI"
                                 xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
                                 xmlns:pageHeader="clr-namespace:NexusMods.App.UI.Controls.PageHeader"
-                                xmlns:ui="clr-namespace:NexusMods.Abstractions.UI;assembly=NexusMods.UI.Sdk"
+                                xmlns:ui="clr-namespace:NexusMods.UI.Sdk;assembly=NexusMods.UI.Sdk"
                                 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                                 x:Class="NexusMods.App.UI.Pages.Settings.SettingsView">
 

@@ -1,10 +1,10 @@
 using System.Collections.ObjectModel;
 using System.Reactive;
-using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls.GameWidget;
 using NexusMods.App.UI.Controls.MiniGameWidget;
 using NexusMods.App.UI.Controls.MiniGameWidget.Standard;
 using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.UI.Sdk;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.Pages.MyGames;
