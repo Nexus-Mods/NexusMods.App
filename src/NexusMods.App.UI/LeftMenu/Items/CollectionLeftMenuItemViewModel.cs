@@ -34,9 +34,8 @@ public class CollectionLeftMenuItemViewModel : LeftMenuItemViewModel, ILeftMenuI
     private readonly IConnection _connection;
     private readonly IWorkspaceController _workspaceController;
     private readonly WorkspaceId _workspaceId;
-    private bool _isNexusCollection;
-    private IContextMenuItem? _deleteContextMenuItem;
-    
+    private readonly bool _isNexusCollection;
+
     public CollectionLeftMenuItemViewModel(
         IWorkspaceController workspaceController,
         WorkspaceId workspaceId,
@@ -54,10 +53,10 @@ public class CollectionLeftMenuItemViewModel : LeftMenuItemViewModel, ILeftMenuI
         // Detect collection type and create delete context menu item
         var collectionGroup = CollectionGroup.Load(_connection.Db, CollectionGroupId);
         _isNexusCollection = collectionGroup.TryGetAsNexusCollectionLoadoutGroup(out _);
-        _deleteContextMenuItem = CreateDeleteContextMenuItem();
+        var deleteContextMenuItem = CreateDeleteContextMenuItem();
 
         var isEnabledObservable = CollectionGroup.Observe(_connection, collectionGroupId)
-            .Select(collectionGroup => collectionGroup.AsLoadoutItemGroup().AsLoadoutItem().IsEnabled());
+            .Select(collGroup => collGroup.AsLoadoutItemGroup().AsLoadoutItem().IsEnabled());
         
         ToggleIsEnabledCommand = ReactiveCommand.CreateFromTask(async () =>
         {
@@ -75,7 +74,7 @@ public class CollectionLeftMenuItemViewModel : LeftMenuItemViewModel, ILeftMenuI
         });
         
         // Set additional context menu items
-        AdditionalContextMenuItems = [_deleteContextMenuItem];
+        AdditionalContextMenuItems = [deleteContextMenuItem];
         
         this.WhenActivated(d =>
         {
