@@ -4,9 +4,9 @@ using System.Reactive.Linq;
 using DynamicData;
 using NexusMods.Abstractions.GuidedInstallers;
 using NexusMods.Abstractions.GuidedInstallers.ValueObjects;
-using NexusMods.Abstractions.UI;
 using NexusMods.App.UI;
 using NexusMods.Games.FOMOD.UI.Resources;
+using NexusMods.UI.Sdk;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 

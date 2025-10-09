@@ -10,7 +10,6 @@ using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Sdk.Settings;
-using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls;
 using R3;
 using NexusMods.App.UI.Controls.Alerts;

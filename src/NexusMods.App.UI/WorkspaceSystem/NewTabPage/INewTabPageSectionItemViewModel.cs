@@ -1,5 +1,5 @@
-using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls.Navigation;
+using NexusMods.UI.Sdk;
 using NexusMods.UI.Sdk.Icons;
 using ReactiveUI;
 

@@ -1,6 +1,6 @@
 using ReactiveUI;
 
-namespace NexusMods.Abstractions.UI;
+namespace NexusMods.UI.Sdk;
 
 public interface IViewModel : IActivatableViewModel
 {
