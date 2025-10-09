@@ -1,6 +1,8 @@
 using System.Runtime.InteropServices;
 using CliWrap;
-namespace NexusMods.CrossPlatform.Process;
+using NexusMods.Sdk;
+
+namespace NexusMods.Games.Generic.Dependencies;
 
 /// <summary>
 ///     Protontricks is a tool that helps manage Proton games and their dependencies.
@@ -24,7 +26,7 @@ public class ProtontricksNativeDependency : ExecutableRuntimeDependency, IProton
     public override OSPlatform[] SupportedPlatforms { get; } = [OSPlatform.Linux];
 
     /// <inheritdoc />
-    public ProtontricksNativeDependency(IProcessFactory processFactory) : base(processFactory) { }
+    public ProtontricksNativeDependency(IProcessRunner runner) : base(runner) { }
 
     /// <inheritdoc />
     protected override Command BuildQueryCommand(PipeTarget outputPipeTarget)
@@ -50,7 +52,7 @@ public class ProtontricksNativeDependency : ExecutableRuntimeDependency, IProton
         return new RuntimeDependencyInformation();
     }
 
-    internal static bool TryParseVersion(ReadOnlySpan<char> output, out string? rawVersion, out Version? version)
+    public static bool TryParseVersion(ReadOnlySpan<char> output, out string? rawVersion, out Version? version)
     {
         // Example: "protontricks (1.11.1)"
         const string prefix = "protontricks (";

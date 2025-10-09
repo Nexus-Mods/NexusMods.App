@@ -1,8 +1,10 @@
+using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 
-namespace NexusMods.CrossPlatform;
+namespace NexusMods.Sdk;
 
-public static class Helper
+[PublicAPI]
+public static class TaskExtensions
 {
     public static void FireAndForget(
         this Task task,

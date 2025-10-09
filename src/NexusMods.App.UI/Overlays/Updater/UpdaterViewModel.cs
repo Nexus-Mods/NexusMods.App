@@ -3,7 +3,6 @@ using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.App.UI.Settings;
 using NexusMods.Sdk.Settings;
-using NexusMods.CrossPlatform.Process;
 using NexusMods.Networking.GitHub;
 using NexusMods.Paths;
 using NexusMods.Sdk;
@@ -42,8 +41,8 @@ public class UpdaterViewModel : AOverlayViewModel<IUpdaterViewModel>, IUpdaterVi
             base.Close();
         });
 
-        CommandOpenReleaseInBrowser = new ReactiveCommand(_ => osInterop.OpenUrl(releaseWebUri));
-        CommandDownloadReleaseAssetInBrowser = Observable.Return(assetDownloadUri is not null).ToReactiveCommand(_ => osInterop.OpenUrl(assetDownloadUri!));
+        CommandOpenReleaseInBrowser = new ReactiveCommand(_ => osInterop.OpenUri(releaseWebUri));
+        CommandDownloadReleaseAssetInBrowser = Observable.Return(assetDownloadUri is not null).ToReactiveCommand(_ => osInterop.OpenUri(assetDownloadUri!));
 
         HasAsset = assetDownloadUri is not null;
         CurrentVersion = currentVersion;

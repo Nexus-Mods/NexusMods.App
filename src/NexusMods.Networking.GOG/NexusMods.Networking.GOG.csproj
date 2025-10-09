@@ -21,7 +21,6 @@
       <ProjectReference Include="..\NexusMods.Abstractions.Cli\NexusMods.Abstractions.Cli.csproj" />
       <ProjectReference Include="..\NexusMods.Abstractions.GameLocators\NexusMods.Abstractions.GameLocators.csproj" />
       <ProjectReference Include="..\NexusMods.Abstractions.GOG\NexusMods.Abstractions.GOG.csproj" />
-      <ProjectReference Include="..\NexusMods.CrossPlatform\NexusMods.CrossPlatform.csproj" />
     </ItemGroup>
 
 </Project>

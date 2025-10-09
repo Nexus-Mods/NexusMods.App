@@ -16,7 +16,8 @@ public class Startup
             .AddSettingsManager()
             .AddSettings<LoggingSettings>()
             .AddFileSystem()
-            .AddCrossPlatform()
+            .AddOSInterop()
+            .AddRuntimeDependencies()
             .AddSkippableFactSupport()
             .AddLogging(builder => builder.AddXUnit());
     }

@@ -106,7 +106,7 @@ internal partial class EventTracker
             {
                 // https://developer.mixpanel.com/reference/import-events#propertiesinsert_id
                 // "$insert_ids must be ≤ 36 bytes and contain only alphanumeric characters or "-""
-                const int insertIdLimit = 36;
+                // const int insertIdLimit = 36;
 
                 var insertId = Guid.CreateVersion7(now);
                 Write(JsonText.InsertId, insertId);

@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.NexusWebApi.DTOs.OAuth;
 using NexusMods.Abstractions.NexusWebApi.Types;
-using NexusMods.CrossPlatform.Process;
+using NexusMods.Sdk;
 using R3;
 
 namespace NexusMods.Networking.NexusWebApi.Auth;

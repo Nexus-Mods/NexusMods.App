@@ -3,7 +3,6 @@ using Avalonia.Platform.Storage;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.UI;
-using NexusMods.CrossPlatform.Process;
 using NexusMods.Sdk;
 using NexusMods.Sdk.Settings;
 using NexusMods.UI.Sdk.Settings;

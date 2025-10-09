@@ -13,13 +13,13 @@ using NexusMods.Abstractions.GOG.DTOs;
 using NexusMods.Abstractions.GOG.Values;
 using NexusMods.Sdk.Hashes;
 using NexusMods.Abstractions.NexusWebApi.Types;
-using NexusMods.CrossPlatform.Process;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Networking.GOG.DTOs;
 using NexusMods.Networking.GOG.Exceptions;
 using NexusMods.Networking.GOG.Models;
 using NexusMods.Paths;
+using NexusMods.Sdk;
 using NexusMods.Sdk.IO;
 using Polly;
 using Polly.Retry;
@@ -110,8 +110,8 @@ internal class Client : IClient
 
         var urlTask = _authUrls.Reader.ReadAsync(token).AsTask();
         
-        await _osInterop.OpenUrl(new Uri(QueryHelpers.AddQueryString(AuthorizationUri.ToString(), authQuery)), cancellationToken: token);
-        
+        _osInterop.OpenUri(new Uri(QueryHelpers.AddQueryString(AuthorizationUri.ToString(), authQuery)));
+
         var code = "";
         try
         {

@@ -18,7 +18,6 @@ using NexusMods.App.UI;
 using NexusMods.App.UI.Settings;
 using NexusMods.Backend;
 using NexusMods.CrossPlatform;
-using NexusMods.CrossPlatform.Process;
 using NexusMods.DataModel;
 using NexusMods.DataModel.SchemaVersions;
 using NexusMods.Paths;
@@ -98,9 +97,8 @@ public class Program
             {
                 try
                 {
-                    var fileSystemMounts = await osInterop.GetFileSystemMounts();
                     var archiveLocation = dataModelSettings.ArchiveLocations[0].ToPath(fileSystem);
-                    var mount = await osInterop.GetFileSystemMount(archiveLocation, fileSystemMounts);
+                    var mount = await osInterop.GetFileSystemMount(archiveLocation);
                     if (mount is not null) _logger.LogInformation("Archives are stored at {Path} on mount {Mount}", archiveLocation, mount);
                     else _logger.LogWarning("Failed to find file system mount for {Path}", archiveLocation);
                 }
@@ -237,7 +235,7 @@ public class Program
         catch (NoMainProcessStarted _)
         {
             var interop = services.GetRequiredService<IOSInterop>();
-            var ownExe = interop.GetOwnExe();
+            var ownExe = interop.GetRunningExecutablePath(out var _);
             _logger.LogInformation("No main process started, starting {OwnExe}", ownExe);
             var processInfo = new ProcessStartInfo
             {

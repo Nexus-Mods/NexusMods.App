@@ -2,7 +2,7 @@ using System.Runtime.InteropServices;
 using DynamicData.Kernel;
 using NexusMods.Paths;
 
-namespace NexusMods.CrossPlatform.Process;
+namespace NexusMods.Sdk;
 
 /// <summary>
 /// Represents a runtime dependency that aggregates multiple executable runtime dependencies,
