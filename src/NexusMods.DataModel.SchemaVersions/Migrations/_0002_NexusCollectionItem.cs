@@ -1,4 +1,3 @@
-using Avalonia.Media.TextFormatting;
 using NexusMods.Abstractions.Collections;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary.Models;

@@ -10,7 +10,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\NexusMods.Abstractions.FileExtractor\NexusMods.Abstractions.FileExtractor.csproj" />
       <ProjectReference Include="..\NexusMods.Abstractions.Games\NexusMods.Abstractions.Games.csproj" />
     </ItemGroup>
 </Project>

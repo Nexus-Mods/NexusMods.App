@@ -7,7 +7,6 @@ using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.GameLocators.Stores.EGS;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Jobs;
-using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
 using NexusMods.Sdk.Hashes;
