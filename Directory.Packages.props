@@ -24,10 +24,10 @@
     <PackageVersion Include="NexusMods.MnemonicDB.Abstractions" Version="0.28.0" />
     <PackageVersion Include="NexusMods.Hashing.xxHash3.Paths" Version="3.0.4" />
     <PackageVersion Include="NexusMods.Hashing.xxHash3" Version="3.0.4" />
-    <PackageVersion Include="NexusMods.Archives.Nx" Version="0.6.4" />
-    <PackageVersion Include="NexusMods.Paths" Version="0.20.0" />
-    <PackageVersion Include="NexusMods.Paths.Extensions.Nx" Version="0.20.0" />
-    <PackageVersion Include="NexusMods.Paths.TestingHelpers" Version="0.20.0" />
+    <PackageVersion Include="NexusMods.Archives.Nx" Version="0.6.5" />
+    <PackageVersion Include="NexusMods.Paths" Version="0.21.0" />
+    <PackageVersion Include="NexusMods.Paths.Extensions.Nx" Version="0.21.0" />
+    <PackageVersion Include="NexusMods.Paths.TestingHelpers" Version="0.21.0" />
     <PackageVersion Include="NexusMods.Telemetry.OpenTelemetry" Version="1.0.0" />
     <PackageVersion Include="FomodInstaller.Interface" Version="1.2.0" />
     <PackageVersion Include="FomodInstaller.Scripting.XmlScript" Version="1.0.0" />

@@ -49,6 +49,7 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable, IHost
     private readonly ILogger<FileHashesService> _logger;
     private readonly IQueryEngine _queryEngine;
     private IQueryMixin _queryMixin;
+    private readonly bool _testMode;
 
     private record ConnectedDb(IDb Db, DatomStore Store, Backend Backend, DatabaseInfo DatabaseInfo);
 
@@ -57,7 +58,9 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable, IHost
         _logger = logger;
         _httpClient = httpClient;
         _jsonSerializerOptions = jsonSerializerOptions;
-        _fileSystem = fileSystem;
+        // During integration tests we use the in-memory file system, but we can't use that for the hash database location
+        _fileSystem = fileSystem is InMemoryFileSystem ? FileSystem.Shared : fileSystem;
+        _testMode = fileSystem is InMemoryFileSystem;
         _settings = settingsManager.Get<FileHashesServiceSettings>();
         _databases = new Dictionary<AbsolutePath, ConnectedDb>();
         _provider = provider;

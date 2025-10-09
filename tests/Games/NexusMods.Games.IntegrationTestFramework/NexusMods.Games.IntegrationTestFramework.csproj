@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Microsoft.Extensions.Hosting" />
+      <PackageReference Include="TUnit" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\..\src\NexusMods.Abstractions.GameLocators\NexusMods.Abstractions.GameLocators.csproj" />
+      <ProjectReference Include="..\..\..\src\NexusMods.Abstractions.Loadouts\NexusMods.Abstractions.Loadouts.csproj" />
+      <ProjectReference Include="..\..\..\src\NexusMods.Backend\NexusMods.Backend.csproj" />
+      <ProjectReference Include="..\..\..\src\NexusMods.DataModel\NexusMods.DataModel.csproj" />
+      <ProjectReference Include="..\..\..\src\NexusMods.Games.CreationEngine\NexusMods.Games.CreationEngine.csproj" />
+      <ProjectReference Include="..\..\..\src\NexusMods.Games.FileHashes\NexusMods.Games.FileHashes.csproj" />
+      <ProjectReference Include="..\..\..\src\NexusMods.Jobs\NexusMods.Jobs.csproj" />
+    </ItemGroup>
+
+</Project>
