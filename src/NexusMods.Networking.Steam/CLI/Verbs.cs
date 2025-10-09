@@ -159,7 +159,7 @@ public static class Verbs
                     return;
                 if (existingHashes.Contains(file.Hash))
                     return;
-                
+
                 await using var progressTask = await renderer.StartProgressTask($"Hashing {file.Path}", maxValue: file.Size.Value);
                 await using var stream = session.GetFileStream(appId, manifest, file.Path);
                 await using var progressWrapper = new StreamProgressWrapper<ProgressTask>(stream, state: progressTask, notifyWritten: static (progressTask, values) =>
