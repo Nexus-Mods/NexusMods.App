@@ -91,6 +91,10 @@ public class SynchronizerService : ISynchronizerService
                 try
                 {
                     var loadout = Loadout.Load(_conn.Db, loadoutId);
+                    if (!loadout.IsValid())
+                    {
+                        return Unit.Default;
+                    }
                     ThrowIfMainBinaryInUse(loadout);
 
                     var loadoutState = GetOrAddLoadoutState(loadoutId);
@@ -109,6 +113,28 @@ public class SynchronizerService : ISynchronizerService
                 return Unit.Default;
             }
         );
+    }
+
+    /// <inheritdoc />
+    public async Task UnManage(GameInstallation installation, bool runGc = true, bool cleanGameFolder = true)
+    {
+        await _semaphore.WaitAsync();
+        try
+        {
+            var synchronizer = installation.GetGame().Synchronizer;
+            var metadata = installation.GetMetadata(_conn);
+
+            if (!metadata.IsValid())
+            {
+                return;
+            }
+
+            await synchronizer.UnManage(installation, runGc, cleanGameFolder);
+        }
+        finally
+        {
+            _semaphore.Release();
+        }
     }
 
     private SynchronizerState GetOrAddLoadoutState(LoadoutId loadoutId)
