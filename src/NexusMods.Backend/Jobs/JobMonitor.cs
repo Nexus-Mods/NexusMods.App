@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Sdk.Jobs;
 using CompositeDisposable = System.Reactive.Disposables.CompositeDisposable;
 
-namespace NexusMods.Jobs;
+namespace NexusMods.Backend.Jobs;
 
 [UsedImplicitly]
 public sealed class JobMonitor : IJobMonitor, IDisposable

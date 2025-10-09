@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Concurrent;
 using NexusMods.Sdk.Jobs;
 
-namespace NexusMods.Jobs;
+namespace NexusMods.Backend.Jobs;
 
 public class JobGroup : IJobGroup
 {

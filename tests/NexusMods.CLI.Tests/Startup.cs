@@ -9,7 +9,6 @@ using NexusMods.CrossPlatform;
 using NexusMods.DataModel;
 using NexusMods.FileExtractor;
 using NexusMods.Games.FileHashes;
-using NexusMods.Jobs;
 using NexusMods.Library;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.HttpDownloader.Tests;

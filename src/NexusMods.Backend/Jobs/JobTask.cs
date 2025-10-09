@@ -1,7 +1,7 @@
 using System.Runtime.CompilerServices;
 using NexusMods.Sdk.Jobs;
 
-namespace NexusMods.Jobs;
+namespace NexusMods.Backend.Jobs;
 
 public class JobTask<TJobDefinition, TJobResult> : IJobTask<TJobDefinition, TJobResult> 
     where TJobDefinition : IJobDefinition<TJobResult> where TJobResult : notnull
