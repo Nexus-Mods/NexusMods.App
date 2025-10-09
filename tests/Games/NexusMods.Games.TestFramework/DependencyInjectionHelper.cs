@@ -72,7 +72,6 @@ public static class DependencyInjectionHelper
             .AddLibrary()
             .AddLibraryModels()
             .AddJobMonitor()
-            .AddLoadoutsSynchronizers()
             .OverrideSettingsForTests<DataModelSettings>(settings => settings with
             {
                 UseInMemoryDataModel = true,
