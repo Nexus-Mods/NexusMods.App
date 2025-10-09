@@ -3,6 +3,7 @@ using NexusMods.Abstractions.Cli;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using NexusMods.Sdk.ProxyConsole;
@@ -37,6 +38,7 @@ internal static class CliVerbs
         [Injected] IEnumerable<IGameLocator> locators,
         [Injected] IRenderer renderer,
         [Injected] IConnection conn,
+        [Injected] ILoadoutManager loadoutManager,
         [Option("g", "game", "The game to unregister")] IGame game,
         [Option("id", "entityID", "The EntityId of the manually-added game to remove", true)] string id = null!)
     {
@@ -50,7 +52,7 @@ internal static class CliVerbs
         {
             if (installation.Game != game) continue;
             var synchronizer = installation.GetGame().Synchronizer;
-            await synchronizer.UnManage(installation, false);
+            await loadoutManager.UnManage(installation, runGc: false);
             if (installation.Locator is ManuallyAddedLocator)
                 isManuallyAdded = true;
         }

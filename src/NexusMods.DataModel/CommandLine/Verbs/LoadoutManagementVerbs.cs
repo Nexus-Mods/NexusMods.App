@@ -310,16 +310,15 @@ public static class LoadoutManagementVerbs
         [Option("v", "version", "Version of the game to manage")] string version,
         [Option("n", "name", "The name of the new loadout")] string name,
         [Injected] IGameRegistry registry,
-        [Injected] CancellationToken token)
+        [Injected] CancellationToken token,
+        [Injected] ILoadoutManager loadoutManager)
     {
-        
         var install = registry.Installations.Values.FirstOrDefault(g => g.Game == game);
-        if (install == null)
-            throw new Exception("Game installation not found");
+        if (install == null) throw new Exception("Game installation not found");
 
         return await renderer.WithProgress(token, async () =>
         {
-            await game.Synchronizer.CreateLoadout(install, name);
+            await loadoutManager.CreateLoadout(install, name);
             return 0;
         });
     }

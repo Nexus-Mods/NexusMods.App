@@ -9,16 +9,11 @@ using OneOf;
 
 namespace NexusMods.Abstractions.Loadouts.Synchronizers;
 
-using DiskState = Entities<DiskStateEntry.ReadOnly>;
-
 /// <summary>
 /// A Loadout Synchronizer is responsible for synchronizing loadouts between to and from the game folder.
 /// </summary>
 public interface ILoadoutSynchronizer
 {
-    
-    #region Synchronization Methods
-
     /// <summary>
     /// Creates a new sync tree from the current state of the game folder, the loadout and the previous state. This
     /// sync tree contains a matching of all the files in all 3 sources based on their path.
@@ -77,8 +72,6 @@ public interface ILoadoutSynchronizer
         var oldMetadata = GameInstallMetadata.Load(db, metadata.Id);
         return GetDiskStateForGame(oldMetadata);
     }
-    
-    
 
     /// <summary>
     /// Gets the previously applied disk state for a game.
@@ -123,12 +116,7 @@ public interface ILoadoutSynchronizer
     /// Get the disk state for a game from the given database.
     /// </summary>
     public List<PathPartPair> GetDiskStateForGame(GameInstallMetadata.ReadOnly metadata);
-    
-    #endregion
-    
-    
-    #region High Level Methods
-    
+
     public bool ShouldSynchronize(Loadout.ReadOnly loadout, IEnumerable<PathPartPair> previousState, IEnumerable<PathPartPair> lastScannedState);
     
     /// <summary>
@@ -139,50 +127,11 @@ public interface ILoadoutSynchronizer
     /// <param name="lastScannedState">The last scanned state, e.g. the last time the game folder was scanned</param>
     /// <returns>A tree of all the files with associated <see cref="FileChangeType"/></returns>
     FileDiffTree LoadoutToDiskDiff(Loadout.ReadOnly loadout, List<PathPartPair> previousState, List<PathPartPair> lastScannedState);
-    
-    /// <summary>
-    /// Creates a loadout for a game, managing the game if it has not previously
-    /// been managed.
-    /// </summary>
-    /// <param name="installation">The installation which should be managed.</param>
-    /// <param name="suggestedName">Suggested friendly name for the 'Game Files' mod.</param>
-    /// <returns></returns>
-    /// <remarks>
-    ///     This was formerly called 'Manage'.
-    /// </remarks>
-    IJobTask<CreateLoadoutJob, Loadout.ReadOnly> CreateLoadout(GameInstallation installation, string? suggestedName=null);
 
-    /// <summary>
-    /// Resets a game back to it's initial state, any applied loadouts will be unapplied.
-    /// Last synced loadout should be cleared if the game is being reset
-    /// </summary>
-    public Task DeactivateCurrentLoadout(GameInstallation installation);
-    
-    /// <summary>
-    /// Gets the currently active loadout for the game, if any.
-    /// </summary>
-    /// <param name="installation"></param>
-    /// <returns></returns>
-    public Optional<LoadoutId> GetCurrentlyActiveLoadout(GameInstallation installation);
-    
-    /// <summary>
-    /// Sets the loadout as the active loadout for the game, applying the changes to the game folder.
-    /// </summary>
-    public Task ActivateLoadout(LoadoutId loadout);
+    Task<GameInstallMetadata.ReadOnly> ReindexState(GameInstallation installation, bool ignoreModifiedDates);
+    ValueTask BuildProcessRun(Loadout.ReadOnly loadout, GameInstallMetadata.ReadOnly state, CancellationToken cancellationToken);
 
-    /// <summary>
-    /// Deletes the loadout for the game. If the loadout is the currently active loadout,
-    /// the game's folder will be reset to its initial state.
-    /// </summary>
-    Task DeleteLoadout(LoadoutId loadout, GarbageCollectorRunMode gcRunMode = GarbageCollectorRunMode.DoNotRun, bool deactivateIfActive = true);
-
-    /// <summary>
-    /// Removes all the loadouts for a game, and resets the game folder to its
-    /// initial state.
-    /// </summary>
-    /// <param name="installation">Game installation which should be unmanaged.</param>
-    /// <param name="runGc">If true, runs the garbage collector.</param>
-    Task UnManage(GameInstallation installation, bool runGc = true, bool cleanGameFolder = true);
+    Task ResetToOriginalGameState(GameInstallation installation, LocatorId[] locatorIds);
 
     /// <summary>
     /// Returns true if the path should be ignored by the synchronizer when backing up or restoring files. This does not mean
@@ -190,13 +139,6 @@ public interface ILoadoutSynchronizer
     /// up. This method is ignored when the global configuration is set to always back up all game files.
     /// </summary>
     bool IsIgnoredBackupPath(GamePath path);
-
-#endregion
-
-    /// <summary>
-    /// Create a clone of the current loadout
-    /// </summary>
-    Task<Loadout.ReadOnly> CopyLoadout(LoadoutId loadout);
 }
 
 public record struct FileConflictGroup(GamePath Path, FileConflictItem[] Items);

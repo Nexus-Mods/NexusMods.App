@@ -7,6 +7,7 @@ using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.GC;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Sorting;
+using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.Serialization.ExpressionGenerator;
 using NexusMods.DataModel.CommandLine.Verbs;
 using NexusMods.DataModel.Diagnostics;
@@ -114,6 +115,8 @@ public static class Services
         
         // Undo
         coll.AddSingleton<UndoService>();
+
+        coll.AddSingleton<ILoadoutManager, LoadoutManager>();
 
         // Verbs
         coll.AddLoadoutManagementVerbs()
