@@ -10,7 +10,6 @@ using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.FileHashes;
 using NexusMods.Abstractions.Games.FileHashes.Models;
 using NexusMods.Abstractions.GOG.Values;
-using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Sdk.Settings;
 using NexusMods.Abstractions.Steam.Values;
@@ -23,6 +22,7 @@ using NexusMods.MnemonicDB.Storage.RocksDbBackend;
 using NexusMods.Paths;
 using NexusMods.Sdk;
 using NexusMods.Sdk.IO;
+using NexusMods.Sdk.Jobs;
 using BuildId = NexusMods.Abstractions.GOG.Values.BuildId;
 using Connection = NexusMods.MnemonicDB.Connection;
 

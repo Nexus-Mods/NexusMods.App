@@ -1,6 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <ItemGroup>
-        <ProjectReference Include="..\..\src\NexusMods.Abstractions.Jobs\NexusMods.Abstractions.Jobs.csproj" />
         <ProjectReference Include="..\..\src\NexusMods.Jobs\NexusMods.Jobs.csproj" />
     </ItemGroup>
 

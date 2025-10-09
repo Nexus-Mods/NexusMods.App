@@ -1,6 +1,6 @@
 using System.Runtime.CompilerServices;
 
-namespace NexusMods.Abstractions.Jobs;
+namespace NexusMods.Sdk.Jobs;
 
 /// <summary>
 /// A non-generic base interface for job tasks.

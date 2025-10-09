@@ -1,4 +1,4 @@
-namespace NexusMods.Abstractions.Jobs;
+namespace NexusMods.Sdk.Jobs;
 
 /// <summary>
 /// Marker interface for public job state data containers

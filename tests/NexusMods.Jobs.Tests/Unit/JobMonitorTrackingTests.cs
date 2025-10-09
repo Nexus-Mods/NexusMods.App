@@ -1,9 +1,9 @@
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.Jobs;
 using NexusMods.Jobs.Tests.TestInfrastructure;
 using Xunit;
 using DynamicData;
+using NexusMods.Sdk.Jobs;
 
 namespace NexusMods.Jobs.Tests.Unit;
 

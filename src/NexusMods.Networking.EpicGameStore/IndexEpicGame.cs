@@ -6,10 +6,10 @@ using NexusMods.Abstractions.Cli;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.GameLocators.Stores.EGS;
 using NexusMods.Abstractions.Games;
-using NexusMods.Abstractions.Jobs;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
 using NexusMods.Sdk.Hashes;
+using NexusMods.Sdk.Jobs;
 using NexusMods.Sdk.ProxyConsole;
 
 namespace NexusMods.Networking.EpicGameStore;

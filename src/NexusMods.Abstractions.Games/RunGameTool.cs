@@ -6,11 +6,11 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.GameLocators.Stores.GOG;
 using NexusMods.Abstractions.GameLocators.Stores.Steam;
-using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Paths;
 using NexusMods.Sdk;
+using NexusMods.Sdk.Jobs;
 using R3;
 
 namespace NexusMods.Abstractions.Games;

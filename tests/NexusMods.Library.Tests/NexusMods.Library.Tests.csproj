@@ -7,7 +7,6 @@
   <ItemGroup>
     <ProjectReference Include="../../src/NexusMods.Library/NexusMods.Library.csproj" />
     <ProjectReference Include="../../src/NexusMods.Abstractions.Downloads/NexusMods.Abstractions.Downloads.csproj" />
-    <ProjectReference Include="../../src/NexusMods.Abstractions.Jobs/NexusMods.Abstractions.Jobs.csproj" />
     <ProjectReference Include="../../src/NexusMods.Jobs/NexusMods.Jobs.csproj" />
     <ProjectReference Include="../../src/NexusMods.Networking.HttpDownloader/NexusMods.Networking.HttpDownloader.csproj" />
     <ProjectReference Include="../../src/NexusMods.Abstractions.HttpDownloads/NexusMods.Abstractions.HttpDownloads.csproj" />

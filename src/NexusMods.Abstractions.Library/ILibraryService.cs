@@ -2,13 +2,13 @@ using DynamicData.Kernel;
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Downloads;
 using NexusMods.Abstractions.GC;
-using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Library.Jobs;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
+using NexusMods.Sdk.Jobs;
 
 namespace NexusMods.Abstractions.Library;
 

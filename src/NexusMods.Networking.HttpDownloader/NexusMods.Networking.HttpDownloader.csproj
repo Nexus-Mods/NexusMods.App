@@ -4,7 +4,6 @@
 
     <ItemGroup>
         <ProjectReference Include="..\NexusMods.Abstractions.HttpDownloads\NexusMods.Abstractions.HttpDownloads.csproj" />
-        <ProjectReference Include="..\NexusMods.Abstractions.Jobs\NexusMods.Abstractions.Jobs.csproj" />
     </ItemGroup>
 
     <ItemGroup>

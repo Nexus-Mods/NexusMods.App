@@ -1,7 +1,7 @@
 using System.Numerics;
 using System.Reactive.Subjects;
 using DynamicData.Kernel;
-using NexusMods.Abstractions.Jobs;
+using NexusMods.Sdk.Jobs;
 
 namespace NexusMods.Jobs;
 

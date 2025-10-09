@@ -1,6 +1,6 @@
 using System.Collections;
 using System.Collections.Concurrent;
-using NexusMods.Abstractions.Jobs;
+using NexusMods.Sdk.Jobs;
 
 namespace NexusMods.Jobs;
 

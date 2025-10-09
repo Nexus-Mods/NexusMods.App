@@ -1,5 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.Jobs;
+using NexusMods.Sdk.Jobs;
 
 namespace NexusMods.Jobs;
 

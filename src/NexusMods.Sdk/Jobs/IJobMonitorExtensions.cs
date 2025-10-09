@@ -1,7 +1,7 @@
 using System.Reactive.Linq;
 using DynamicData;
 
-namespace NexusMods.Abstractions.Jobs;
+namespace NexusMods.Sdk.Jobs;
 
 // ReSharper disable once InconsistentNaming
 /// <summary>
@@ -21,7 +21,7 @@ public static class IJobMonitorExtensions
         where TJobType : IJobDefinition
     {
         return jobMonitor.GetObservableChangeSet<TJobType>()
-            .FilterOnObservable(job => job.ObservableStatus.Select(status => status.IsActive()));
+            .FilterOnObservable(job => job.ObservableStatus.Select(status => JobStatusExtensions.IsActive(status)));
     }
 
     /// <summary>

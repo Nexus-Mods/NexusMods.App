@@ -1,5 +1,5 @@
 using System.Runtime.CompilerServices;
-using NexusMods.Abstractions.Jobs;
+using NexusMods.Sdk.Jobs;
 
 namespace NexusMods.Jobs;
 

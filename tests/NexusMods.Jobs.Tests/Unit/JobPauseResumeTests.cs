@@ -1,6 +1,6 @@
 using FluentAssertions;
-using NexusMods.Abstractions.Jobs;
 using NexusMods.Jobs.Tests.TestInfrastructure;
+using NexusMods.Sdk.Jobs;
 using Xunit;
 
 namespace NexusMods.Jobs.Tests.Unit;
