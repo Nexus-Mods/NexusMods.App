@@ -6,6 +6,7 @@ using Avalonia.Input;
 using JetBrains.Annotations;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.UI.Sdk.Icons;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.Controls.Navigation;
@@ -93,6 +94,15 @@ public class NavigationControl : StandardButton
                     Header = item.Header,
                     Command = item.Command,
                 };
+                
+                if (item.Icon != null)
+                {
+                    menuItem.Icon = new UnifiedIcon 
+                    { 
+                        Value = item.Icon,
+                        Size = 16,
+                    };
+                }
                 contextMenu.Items.Add(menuItem);
             }
         }
