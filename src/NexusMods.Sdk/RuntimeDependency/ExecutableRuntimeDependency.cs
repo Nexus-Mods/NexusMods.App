@@ -4,7 +4,7 @@ using CliWrap;
 using DynamicData.Kernel;
 using JetBrains.Annotations;
 
-namespace NexusMods.CrossPlatform.Process;
+namespace NexusMods.Sdk;
 
 [PublicAPI]
 public abstract class ExecutableRuntimeDependency : IRuntimeDependency
@@ -24,14 +24,14 @@ public abstract class ExecutableRuntimeDependency : IRuntimeDependency
     /// <summary>
     /// Process factory.
     /// </summary>
-    protected readonly IProcessFactory ProcessFactory;
+    protected readonly IProcessRunner ProcessRunner;
 
     /// <summary>
     /// Constructor.
     /// </summary>
-    protected ExecutableRuntimeDependency(IProcessFactory processFactory)
+    protected ExecutableRuntimeDependency(IProcessRunner runner)
     {
-        ProcessFactory = processFactory;
+        ProcessRunner = runner;
     }
 
     private Optional<Optional<RuntimeDependencyInformation>> _cachedInformation;
@@ -53,7 +53,7 @@ public abstract class ExecutableRuntimeDependency : IRuntimeDependency
         var outputPipeTarget = PipeTarget.ToStringBuilder(sb);
         var command = BuildQueryCommand(outputPipeTarget);
 
-        var result = await ProcessFactory.ExecuteAsync(command, cancellationToken: cancellationToken);
+        var result = await ProcessRunner.RunAsync(command, cancellationToken: cancellationToken);
         if (!result.IsSuccess)
         {
             _cachedInformation = Optional<Optional<RuntimeDependencyInformation>>.None;

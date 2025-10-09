@@ -1,6 +1,7 @@
 using CliWrap;
+using NexusMods.Sdk;
 
-namespace NexusMods.CrossPlatform.Process;
+namespace NexusMods.Games.Generic.Dependencies;
 
 /// <summary>
 /// Aggregates multiple Protontricks implementations, using either the native or Flatpak version
@@ -12,15 +13,15 @@ public class AggregateProtontricksDependency : AggregateExecutableRuntimeDepende
     /// Creates a new instance of the aggregate Protontricks dependency.
     /// </summary>
     /// <param name="processFactory">The process factory used to execute commands.</param>
-    public AggregateProtontricksDependency(IProcessFactory processFactory) 
+    public AggregateProtontricksDependency(IProcessRunner runner) 
         : base(
             displayName: "Protontricks",
             description: "Manage Proton games and their dependencies",
             homepage: new Uri("https://github.com/Matoking/protontricks"),
             dependencies: new ExecutableRuntimeDependency[]
             {
-                new ProtontricksNativeDependency(processFactory),
-                new ProtontricksFlatpakDependency(processFactory),
+                new ProtontricksNativeDependency(runner),
+                new ProtontricksFlatpakDependency(runner),
             })
     {
     }

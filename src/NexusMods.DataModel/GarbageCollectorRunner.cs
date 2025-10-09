@@ -4,6 +4,8 @@ using NexusMods.Sdk.Settings;
 using NexusMods.App.GarbageCollection.DataModel;
 using NexusMods.CrossPlatform;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.Sdk;
+
 namespace NexusMods.DataModel;
 
 /// <inheritdoc />

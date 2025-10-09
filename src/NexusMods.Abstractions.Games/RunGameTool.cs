@@ -9,8 +9,8 @@ using NexusMods.Abstractions.GameLocators.Stores.Steam;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
-using NexusMods.CrossPlatform.Process;
 using NexusMods.Paths;
+using NexusMods.Sdk;
 using R3;
 
 namespace NexusMods.Abstractions.Games;
@@ -29,9 +29,9 @@ public class RunGameTool<T> : IRunGameTool
 {
     private readonly ILogger<RunGameTool<T>> _logger;
     private readonly T _game;
-    private readonly IProcessFactory _processFactory;
+    private readonly IProcessRunner _processRunner;
     private readonly IOSInterop _osInterop;
-    
+
     /// <summary>
     /// Whether this tool should be started through the shell instead of directly.
     /// This allows tools to start their own console, allowing users to interact with it.
@@ -45,7 +45,7 @@ public class RunGameTool<T> : IRunGameTool
     {
         _game = game;
         _logger = serviceProvider.GetRequiredService<ILogger<RunGameTool<T>>>();
-        _processFactory = serviceProvider.GetRequiredService<IProcessFactory>();
+        _processRunner = serviceProvider.GetRequiredService<IProcessRunner>();
         _osInterop = serviceProvider.GetRequiredService<IOSInterop>();
     }
 
@@ -137,7 +137,7 @@ public class RunGameTool<T> : IRunGameTool
             .WithArguments(arguments)
             .WithWorkingDirectory(program.Parent.ToString());
 
-        var result = await _processFactory.ExecuteAsync(command, cancellationToken: cancellationToken);
+        var result = await _processRunner.RunAsync(command, cancellationToken: cancellationToken);
         return result;
     }
 
@@ -157,7 +157,7 @@ public class RunGameTool<T> : IRunGameTool
         
         try
         {
-            await _processFactory.ExecuteProcessAsync(process, cancellationToken);
+            await _processRunner.RunAsync(process, cancellationToken);
         }
         catch (Exception e)
         {
@@ -191,7 +191,7 @@ public class RunGameTool<T> : IRunGameTool
             steamUrl += $"//{encodedArgs}/";
         }
 
-        await _osInterop.OpenUrl(new Uri(steamUrl), fireAndForget: true, cancellationToken: cancellationToken);
+        _osInterop.OpenUri(new Uri(steamUrl));
 
         var steam = await WaitForProcessToStart("steam", timeout, existingProcesses: null, cancellationToken);
         if (steam is null) return;
@@ -213,7 +213,7 @@ public class RunGameTool<T> : IRunGameTool
             _logger.LogError("Heroic does not currently support command line arguments: https://github.com/Nexus-Mods/NexusMods.App/issues/2264 . " +
                              $"Args {string.Join(',', commandLineArgs)} were specified but will be ignored.");
 
-        await _osInterop.OpenUrl(new Uri($"heroic://launch/{type}/{appId.ToString(CultureInfo.InvariantCulture)}"), fireAndForget: true, cancellationToken: cancellationToken);
+        _osInterop.OpenUri(new Uri($"heroic://launch/{type}/{appId.ToString(CultureInfo.InvariantCulture)}"));
     }
 
     private async ValueTask<Process?> WaitForProcessToStart(

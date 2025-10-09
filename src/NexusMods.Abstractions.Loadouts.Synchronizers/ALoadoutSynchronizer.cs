@@ -50,7 +50,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     /// We'll limit backups to 2GB, for now we should never see much more than this
     /// of modified game files. s
     /// </summary>
-    private static Size MaximumBackupSize => Size.GB * 2;
+    private static Size MaximumBackupSize => Size.GB * 5;
     
     private readonly ScopedAsyncLock _lock = new();
     private readonly IFileStore _fileStore;
@@ -691,7 +691,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     /// </summary>
     private async ValueTask<Loadout.ReadOnly> UpdateLocatorIds(Loadout.ReadOnly loadout)
     {
-        var gameLocatorResults = loadout.InstallationInstance.Locator.Find(loadout.InstallationInstance.Game);
+        var gameLocatorResults = loadout.InstallationInstance.Locator.Find(loadout.InstallationInstance.Game, forceRefreshCache: true);
 
         // NOTE(erri120): It would be very odd if we re-query the game, and it's not installed anymore
         if (!gameLocatorResults.TryGetFirst(result => result.Store == loadout.InstallationInstance.Store, out var gameLocatorResult))
