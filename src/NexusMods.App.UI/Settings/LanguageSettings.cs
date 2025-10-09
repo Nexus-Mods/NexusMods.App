@@ -27,6 +27,7 @@ public record LanguageSettings : ISettings
             new("pt-br"),   // Portuguese (Brazil)
             new("uk"),      // Ukrainian
             new("ru"),      // Russian
+            new("es-ES"),      // Spanish (Spain)
         ];
 
         Array.Sort(supportedLanguages, (a, b) => string.Compare(a.NativeName, b.NativeName, StringComparison.InvariantCulture));
