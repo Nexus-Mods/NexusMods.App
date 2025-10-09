@@ -21,6 +21,5 @@ public class ContextMenuItem : IContextMenuItem
     /// <inheritdoc/>
     public bool IsVisible { get; init; } = true;
     
-    /// <inheritdoc/>
-    public bool IsEnabled { get; init; } = true;
+
 }

@@ -33,8 +33,5 @@ public interface IContextMenuItem
     /// </summary>
     bool IsVisible { get; }
     
-    /// <summary>
-    /// Whether the menu item is enabled for interaction.
-    /// </summary>
-    bool IsEnabled { get; }
+
 }

@@ -80,7 +80,7 @@ public class NavigationControl : StandardButton
 
         // Add additional items if any exist
         var additionalItems = AdditionalContextMenuItems?
-            .Where(item => item.IsVisible && item.IsEnabled)
+            .Where(item => item.IsVisible)
             .ToList();
 
         if (additionalItems?.Count > 0)

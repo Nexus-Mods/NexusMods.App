@@ -97,22 +97,23 @@ public class CollectionLeftMenuItemViewModel : LeftMenuItemViewModel, ILeftMenuI
         var icon = _isNexusCollection 
             ? IconValues.PlaylistRemove 
             : IconValues.DeleteOutline;
-
-        // Nexus collections can always be uninstalled, regular collections follow CanDeleteCollection logic
-        var canDelete = _isNexusCollection || _collectionDeleteService.CanDeleteCollection(CollectionGroupId);
         
         return new ContextMenuItem
         {
             Header = header,
             Icon = icon,
             Command = deleteCommand,
-            IsEnabled = canDelete,
             IsVisible = true,
         };
     }
     
     private ReactiveCommand<Unit, Unit> CreateDeleteCommand()
     {
+        // Nexus collections can always be uninstalled, regular collections follow CanDeleteCollection logic
+        var canExecute = _isNexusCollection 
+            ? Observable.Return(true)
+            : _collectionDeleteService.ObserveCanDeleteCollection(CollectionGroupId);
+
         return ReactiveCommand.CreateFromTask(async () =>
         {
             if (_isNexusCollection)
@@ -137,6 +138,6 @@ public class CollectionLeftMenuItemViewModel : LeftMenuItemViewModel, ILeftMenuI
                 // For regular collections, just delete without navigation
                 await _collectionDeleteService.DeleteCollectionAsync(CollectionGroupId);
             }
-        });
+        }, canExecute: canExecute);
     }
 }
