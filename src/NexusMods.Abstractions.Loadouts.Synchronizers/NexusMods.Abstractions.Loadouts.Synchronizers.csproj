@@ -10,6 +10,7 @@
       <PackageReference Include="CommunityToolkit.HighPerformance" />
       <PackageReference Include="NexusMods.Hashing.xxHash3" />
       <PackageReference Include="NexusMods.Hashing.xxHash3.Paths" />
+        <PackageReference Include="TransparentValueObjects" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
       <PackageReference Include="NexusMods.MnemonicDB.SourceGenerator" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     </ItemGroup>
     <ItemGroup>
