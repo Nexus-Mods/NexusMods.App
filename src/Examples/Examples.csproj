@@ -17,7 +17,6 @@
     </ItemGroup>
     
     <ItemGroup>
-        <ProjectReference Include="..\NexusMods.Jobs\NexusMods.Jobs.csproj" />
         <ProjectReference Include="..\NexusMods.FileExtractor\NexusMods.FileExtractor.csproj" />
         <ProjectReference Include="..\NexusMods.App.UI\NexusMods.App.UI.csproj" />
         <ProjectReference Include="..\NexusMods.App\NexusMods.App.csproj" />
