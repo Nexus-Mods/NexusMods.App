@@ -3,8 +3,6 @@ using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using DynamicData.Kernel;
 using JetBrains.Annotations;
-using NexusMods.Abstractions.UI;
-using NexusMods.Abstractions.UI.Extensions;
 using NexusMods.App.UI.Converters;
 using NexusMods.UI.Sdk;
 using ObservableCollections;

@@ -11,5 +11,9 @@
     <ItemGroup>
       <ProjectReference Include="..\NexusMods.UI.Sdk\NexusMods.UI.Sdk.csproj" />
     </ItemGroup>
+    
+    <ItemGroup>
+      <Folder Include="Extensions\" />
+    </ItemGroup>
 
 </Project>
