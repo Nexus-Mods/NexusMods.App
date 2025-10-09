@@ -12,8 +12,8 @@ SELECT item.Loadout, item.Id,
     file.Size,
     (CASE WHEN deletedFile.Id is NOT NULL THEN 'Deleted' ELSE 'Loadout' END)::synchronizer.ItemType ItemType
 FROM MDB_LOADOUTITEMWITHTARGETPATH(Db=>db) item
-    LEFT JOIN MDB_LOADOUTITEMGROUP(Db=>db) itemGroup ON item.Parent = itemGroup.Id
-    LEFT JOIN MDB_COLLECTIONGROUP(Db=>db) coll ON itemGroup.Parent = coll.Id
+    INNER JOIN MDB_LOADOUTITEMGROUP(Db=>db) itemGroup ON item.Parent = itemGroup.Id
+    INNER JOIN MDB_COLLECTIONGROUP(Db=>db) coll ON itemGroup.Parent = coll.Id
     LEFT JOIN MDB_DELETEDFILE(Db=>db) deletedFile ON item.Id = deletedFile.Id
     LEFT JOIN MDB_LOADOUTFILE(Db=>db) file on item.Id = file.Id
 WHERE not item.Disabled and not itemGroup.Disabled and not coll.Disabled;
@@ -26,7 +26,7 @@ SELECT item.Loadout, item.Id,
     file.Size,
     (CASE WHEN deletedFile.Id is NOT NULL THEN 'Deleted' ELSE 'Loadout' END)::synchronizer.ItemType ItemType
 FROM MDB_LOADOUTITEMWITHTARGETPATH(Db=>db) item
-    LEFT JOIN MDB_LOADOUTOVERRIDESGROUP(Db=>db) itemGroup ON item.Parent = itemGroup.Id
+    INNER JOIN MDB_LOADOUTOVERRIDESGROUP(Db=>db) itemGroup ON item.Parent = itemGroup.Id
     LEFT JOIN MDB_DELETEDFILE(Db=>db) deletedFile ON item.Id = deletedFile.Id
     LEFT JOIN MDB_LOADOUTFILE(Db=>db) file on item.Id = file.Id
 WHERE not item.Disabled;
@@ -45,7 +45,7 @@ WITH
                 SELECT Loadout, Id, Path, Hash, Size, ItemType, 2 Layer FROM synchronizer.OverrideFiles(db)
                 UNION
                 -- Intrinsic files on Layer 3
-                SELECT Loadout, Null, Path, Null, Null, 'Intrinsic', 3 Layer FROM intrinsic_files(Db=>db))
+                SELECT Loadout, Null, {Location: Path.Item1, Path: Path.Item2}, Null, Null, 'Intrinsic', 3 Layer FROM intrinsic_files(Db=>db))
 -- Group by loadout, path and take the winning file
 SELECT Loadout, Path, arg_max(Hash, Layer) Hash, arg_max(Size, Layer) Size, arg_max(Id, Layer) Id, arg_max(ItemType, Layer) ItemType
 FROM allFiles

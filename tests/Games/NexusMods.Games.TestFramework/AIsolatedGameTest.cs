@@ -22,6 +22,7 @@ using NexusMods.Abstractions.Loadouts.Extensions;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.DataModel;
+using NexusMods.Games.FileHashes;
 using NexusMods.Games.FOMOD;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.MnemonicDB.Abstractions;
