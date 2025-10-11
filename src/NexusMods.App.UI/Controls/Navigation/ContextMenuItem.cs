@@ -21,5 +21,7 @@ public class ContextMenuItem : IContextMenuItem
     /// <inheritdoc/>
     public bool IsVisible { get; init; } = true;
     
+    /// <inheritdoc/>
+    public ContextMenuItemStyling Styling { get; init; } = ContextMenuItemStyling.Default;
 
 }

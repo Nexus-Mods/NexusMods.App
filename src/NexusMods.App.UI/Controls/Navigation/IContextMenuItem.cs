@@ -33,5 +33,9 @@ public interface IContextMenuItem
     /// </summary>
     bool IsVisible { get; }
     
+    /// <summary>
+    /// Styling applied to the menu item.
+    /// </summary>
+    ContextMenuItemStyling Styling { get; }
 
 }

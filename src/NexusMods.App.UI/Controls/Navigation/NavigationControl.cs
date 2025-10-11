@@ -103,6 +103,23 @@ public class NavigationControl : StandardButton
                         Size = 16,
                     };
                 }
+                
+                // Apply CSS classes based on styling
+                switch (item.Styling)
+                {
+                    case ContextMenuItemStyling.Critical:
+                        menuItem.Classes.Add("Critical");
+                        break;
+                    case ContextMenuItemStyling.Premium:
+                        menuItem.Classes.Add("Premium");
+                        break;
+                    case ContextMenuItemStyling.None:
+                    case ContextMenuItemStyling.Default:
+                    default:
+                        // No additional classes for default styling
+                        break;
+                }
+                
                 contextMenu.Items.Add(menuItem);
             }
         }

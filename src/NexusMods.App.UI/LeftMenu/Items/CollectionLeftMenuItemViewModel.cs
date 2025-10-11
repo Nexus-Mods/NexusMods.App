@@ -104,6 +104,7 @@ public class CollectionLeftMenuItemViewModel : LeftMenuItemViewModel, ILeftMenuI
             Icon = icon,
             Command = deleteCommand,
             IsVisible = true,
+            Styling = ContextMenuItemStyling.Critical,
         };
     }
     
