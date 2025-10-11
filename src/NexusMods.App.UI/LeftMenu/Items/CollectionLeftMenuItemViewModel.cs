@@ -17,8 +17,6 @@ using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.LeftMenu.Items;
 
-
-
 public class CollectionLeftMenuItemViewModel : LeftMenuItemViewModel, ILeftMenuItemWithToggleViewModel
 {
     [Reactive] public bool IsEnabled { get; set; }
@@ -33,7 +31,6 @@ public class CollectionLeftMenuItemViewModel : LeftMenuItemViewModel, ILeftMenuI
     private readonly ICollectionDeleteService _collectionDeleteService;
     private readonly IConnection _connection;
     private readonly IWorkspaceController _workspaceController;
-    private readonly WorkspaceId _workspaceId;
     private readonly bool _isNexusCollection;
 
     public CollectionLeftMenuItemViewModel(
@@ -46,8 +43,7 @@ public class CollectionLeftMenuItemViewModel : LeftMenuItemViewModel, ILeftMenuI
         _connection = serviceProvider.GetRequiredService<IConnection>();
         _collectionDeleteService = serviceProvider.GetRequiredService<ICollectionDeleteService>();
         _workspaceController = workspaceController;
-        _workspaceId = workspaceId;
-        
+
         CollectionGroupId = collectionGroupId;
 
         // Detect collection type and create delete context menu item
