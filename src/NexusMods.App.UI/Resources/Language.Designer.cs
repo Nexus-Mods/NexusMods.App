@@ -2529,5 +2529,23 @@ namespace NexusMods.App.UI.Resources {
                 return ResourceManager.GetString("CollectionLoadoutView_Required", resourceCulture);
             }
         }
+        
+        public static string CollectionDownloadView_Menu_ViewOnNexusMods {
+            get {
+                return ResourceManager.GetString("CollectionDownloadView_Menu_ViewOnNexusMods", resourceCulture);
+            }
+        }
+        
+        public static string CollectionDownloadView_Menu_OpenJsonFile {
+            get {
+                return ResourceManager.GetString("CollectionDownloadView_Menu_OpenJsonFile", resourceCulture);
+            }
+        }
+        
+        public static string CollectionDownloadView_Menu_DeleteCollectionRevision {
+            get {
+                return ResourceManager.GetString("CollectionDownloadView_Menu_DeleteCollectionRevision", resourceCulture);
+            }
+        }
     }
 }

@@ -54,7 +54,7 @@ public class CollectionRevisionLeftMenuItemViewModel : LeftMenuItemWithRightIcon
         
         return new ContextMenuItem
         {
-            Header = "Delete collection revision",
+            Header = Language.CollectionDownloadView_Menu_DeleteCollectionRevision,
             Icon = IconValues.DeleteOutline,
             Command = deleteCommand,
             IsVisible = true,

@@ -1333,5 +1333,14 @@ This action cannot be undone.</value>
     <data name="CollectionLoadoutView_Required" xml:space="preserve">
         <value>Required</value>
     </data>
+    <data name="CollectionDownloadView_Menu_ViewOnNexusMods" xml:space="preserve">
+        <value>View on Nexus Mods</value>
+    </data>
+    <data name="CollectionDownloadView_Menu_OpenJsonFile" xml:space="preserve">
+        <value>Open JSON file</value>
+    </data>
+    <data name="CollectionDownloadView_Menu_DeleteCollectionRevision" xml:space="preserve">
+        <value>Delete collection revision</value>
+    </data>
 
 </root>
