@@ -22,8 +22,10 @@ using NexusMods.App.UI.Pages.LibraryPage;
 using NexusMods.App.UI.Pages.LoadoutGroupFilesPage;
 using NexusMods.App.UI.Pages.LoadoutPage;
 using NexusMods.App.UI.Resources;
+using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Collections;
+using NexusMods.UI.Sdk;
 using NexusMods.UI.Sdk.Icons;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Query;
@@ -142,7 +144,12 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
                     },
                 };
 
-                return new LeftMenuItemWithRightIconViewModel(workspaceController, workspaceId, pageData)
+                return new CollectionRevisionLeftMenuItemViewModel(
+                    workspaceController, 
+                    workspaceId, 
+                    pageData,
+                    revision,
+                    serviceProvider)
                 {
                     Text = new StringComponent(initialValue: revision.Collection.Name, CollectionMetadata.Observe(conn, revision.Collection).Select(x => x.Name)),
                     Icon = IconValues.CollectionsOutline,
