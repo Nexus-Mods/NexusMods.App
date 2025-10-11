@@ -21,7 +21,6 @@ using NexusMods.Games.FOMOD;
 using NexusMods.Games.FOMOD.UI;
 using NexusMods.Games.Generic;
 using NexusMods.Games.TestHarness;
-using NexusMods.Jobs;
 using NexusMods.Library;
 using NexusMods.Networking.EpicGameStore;
 using NexusMods.Networking.GitHub;

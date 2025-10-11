@@ -1,10 +1,12 @@
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Backend.Jobs;
 using NexusMods.Backend.OS;
 using NexusMods.Backend.Process;
 using NexusMods.Backend.RuntimeDependency;
 using NexusMods.Backend.Tracking;
 using NexusMods.Paths;
 using NexusMods.Sdk;
+using NexusMods.Sdk.Jobs;
 using NexusMods.Sdk.Settings;
 using NexusMods.Sdk.Tracking;
 using NexusMods.UI.Sdk.Icons;
@@ -101,5 +103,11 @@ public static class ServiceExtensions
                 Hidden: !ApplicationConstants.IsDebug
             ))
             .AddSettingModel();
+    }
+    
+    public static IServiceCollection AddJobMonitor(this IServiceCollection serviceCollection)
+    {
+        return serviceCollection
+            .AddSingleton<IJobMonitor, JobMonitor>();
     }
 }

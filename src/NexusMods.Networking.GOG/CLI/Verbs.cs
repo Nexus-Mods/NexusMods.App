@@ -1,8 +1,6 @@
-using System.Buffers;
 using System.Collections.Concurrent;
 using System.IO.Compression;
 using System.Runtime.InteropServices;
-using System.Security.Cryptography;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,14 +8,12 @@ using NexusMods.Abstractions.Cli;
 using NexusMods.Abstractions.GOG;
 using NexusMods.Abstractions.GOG.DTOs;
 using NexusMods.Abstractions.GOG.Values;
-using NexusMods.Abstractions.Jobs;
 using NexusMods.Sdk.Hashes;
 using NexusMods.Hashing.xxHash3;
-using NexusMods.Networking.GOG.DTOs;
 using NexusMods.Networking.GOG.Exceptions;
 using NexusMods.Paths;
-using NexusMods.Paths.Extensions;
 using NexusMods.Sdk;
+using NexusMods.Sdk.Jobs;
 using NexusMods.Sdk.ProxyConsole;
 
 namespace NexusMods.Networking.GOG.CLI;

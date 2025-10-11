@@ -1,11 +1,10 @@
 using DynamicData.Kernel;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.GC;
-using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Loadouts.Files.Diff;
-using NexusMods.Hashing.xxHash3;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.IndexSegments;
+using NexusMods.Sdk.Jobs;
 using OneOf;
 
 namespace NexusMods.Abstractions.Loadouts.Synchronizers;

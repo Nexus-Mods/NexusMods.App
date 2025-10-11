@@ -1,7 +1,7 @@
 using DynamicData.Kernel;
 using JetBrains.Annotations;
 
-namespace NexusMods.Abstractions.Jobs;
+namespace NexusMods.Sdk.Jobs;
 
 /// <summary>
 /// Represents the status of a job.

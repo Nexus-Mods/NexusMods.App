@@ -1,9 +1,9 @@
 using DynamicData.Kernel;
-using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.Sdk.Jobs;
 
 namespace NexusMods.Abstractions.Library.Jobs;
 

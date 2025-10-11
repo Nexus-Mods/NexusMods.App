@@ -1,5 +1,5 @@
 using JetBrains.Annotations;
-using NexusMods.Abstractions.Jobs;
+using NexusMods.Sdk.Jobs;
 using TransparentValueObjects;
 
 namespace NexusMods.Abstractions.Downloads;

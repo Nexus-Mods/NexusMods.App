@@ -1,5 +1,4 @@
 using Avalonia.Media.Imaging;
-using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi.Types;
@@ -13,6 +12,7 @@ using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Collections;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
+using NexusMods.Sdk.Jobs;
 using R3;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;

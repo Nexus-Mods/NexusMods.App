@@ -1,6 +1,6 @@
 using NexusMods.Paths;
 
-namespace NexusMods.Abstractions.Jobs;
+namespace NexusMods.Sdk.Jobs;
 
 /// <summary>
 /// Stream wrapper for progress reporting.

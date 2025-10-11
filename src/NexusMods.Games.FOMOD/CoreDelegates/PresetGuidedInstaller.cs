@@ -1,5 +1,5 @@
 using NexusMods.Abstractions.GuidedInstallers;
-using NexusMods.Abstractions.Jobs;
+using NexusMods.Sdk.Jobs;
 
 namespace NexusMods.Games.FOMOD.CoreDelegates;
 

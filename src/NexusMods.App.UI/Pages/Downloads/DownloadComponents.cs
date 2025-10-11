@@ -1,13 +1,13 @@
 using Humanizer;
 using Humanizer.Bytes;
 using NexusMods.Abstractions.Downloads;
-using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Controls.Filters;
 using NexusMods.App.UI.Controls.TreeDataGrid.Filters;
 using NexusMods.App.UI.Resources;
 using NexusMods.Paths;
+using NexusMods.Sdk.Jobs;
 using NexusMods.UI.Sdk;
 using R3;
 

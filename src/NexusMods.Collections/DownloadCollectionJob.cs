@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.Sdk.Jobs;
 
 namespace NexusMods.Collections;
 

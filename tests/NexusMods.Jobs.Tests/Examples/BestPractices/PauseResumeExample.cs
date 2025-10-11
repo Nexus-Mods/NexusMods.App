@@ -1,8 +1,8 @@
 using FluentAssertions;
 using JetBrains.Annotations;
-using NexusMods.Abstractions.Jobs;
 using NexusMods.Jobs.Tests.TestInfrastructure;
 using NexusMods.Paths;
+using NexusMods.Sdk.Jobs;
 using Xunit;
 // ReSharper disable LocalizableElement
 
