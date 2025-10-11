@@ -13,7 +13,6 @@ using NexusMods.Abstractions.Games.FileHashes;
 using NexusMods.Abstractions.Games.FileHashes.Models;
 using NexusMods.Abstractions.GC;
 using NexusMods.Sdk.Hashes;
-using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Loadouts.Extensions;
 using NexusMods.Abstractions.Loadouts.Files.Diff;
 using NexusMods.Abstractions.Loadouts.Sorting;
@@ -31,7 +30,7 @@ using NexusMods.Paths;
 using NexusMods.Sdk;
 using NexusMods.Sdk.FileStore;
 using NexusMods.Sdk.IO;
-using ReactiveUI;
+using NexusMods.Sdk.Jobs;
 using OneOf;
 using Reloaded.Memory.Extensions;
 
@@ -1803,6 +1802,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                     {
                         tx1.Add(loadout.Id, Loadout.LoadoutKind, LoadoutKind.Deleted);
                     }
+
                     await tx1.Commit();
 
                     metadata = installation.GetMetadata(Connection);
@@ -1815,7 +1815,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                     await ctx.YieldAsync();
                     await DeleteLoadout(loadout, GarbageCollectorRunMode.DoNotRun, deactivateIfActive: cleanGameFolder);
                 }
-                
+
                 // Retract all `GameBakedUpFile` entries to allow for game file backups to be cleaned up from the FileStore
                 using var tx = Connection.BeginTransaction();
                 foreach (var file in GameBackedUpFile.All(Connection.Db))
@@ -1823,14 +1823,15 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                     if (file.GameInstallId.Value == installation.GameMetadataId)
                         tx.Delete(file, recursive: false);
                 }
-                
+
                 // Delete the last applied/scanned disk state data
                 metadata = metadata.Rebase();
-                
+
                 foreach (var entry in metadata.DiskStateEntries)
                 {
                     tx.Delete(entry, recursive: false);
                 }
+
                 if (metadata.Contains(GameInstallMetadata.LastSyncedLoadoutId))
                     tx.Retract(metadata, GameInstallMetadata.LastSyncedLoadoutId, metadata.LastSyncedLoadoutId.Value);
                 if (metadata.Contains(GameInstallMetadata.LastSyncedLoadoutTransactionId))
@@ -1838,8 +1839,8 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 if (metadata.Contains(GameInstallMetadata.InitialDiskStateTransactionId))
                     tx.Retract(metadata, GameInstallMetadata.InitialDiskStateTransactionId, metadata.InitialDiskStateTransactionId.Value);
                 if (metadata.Contains(GameInstallMetadata.LastScannedDiskStateTransactionId))
-                    tx.Retract(metadata, GameInstallMetadata.LastScannedDiskStateTransactionId ,metadata.LastScannedDiskStateTransactionId.Value);
-                
+                    tx.Retract(metadata, GameInstallMetadata.LastScannedDiskStateTransactionId, metadata.LastScannedDiskStateTransactionId.Value);
+
                 await tx.Commit();
 
                 if (runGc)

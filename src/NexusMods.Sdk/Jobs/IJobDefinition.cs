@@ -1,13 +1,13 @@
 using JetBrains.Annotations;
 
-namespace NexusMods.Abstractions.Jobs;
+namespace NexusMods.Sdk.Jobs;
 
 [PublicAPI]
 public interface IJobDefinition
 {
     /// <summary>
     /// Gets whether this job supports pausing and resuming.
-    /// When false, calls to <see cref="IJobMonitor.Pause(NexusMods.Abstractions.Jobs.JobId)"/> will cancel the job instead.
+    /// When false, calls to <see cref="IJobMonitor.Pause(NexusMods.Sdk.Jobs.JobId)"/> will cancel the job instead.
     /// </summary>
     bool SupportsPausing => false;
 

@@ -1,7 +1,6 @@
 using System.Numerics;
-using DynamicData.Kernel;
 
-namespace NexusMods.Abstractions.Jobs;
+namespace NexusMods.Sdk.Jobs;
 
 /// <summary>
 /// A job context, this is what jobs use internally to communicate with the job monitor

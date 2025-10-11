@@ -1,5 +1,4 @@
 using System.Buffers;
-using System.IO.Compression;
 using System.Net;
 using System.Text.Json;
 using CommunityToolkit.HighPerformance.Buffers;

@@ -1,5 +1,5 @@
-using NexusMods.Abstractions.Jobs;
 using NexusMods.Paths;
+using NexusMods.Sdk.Jobs;
 
 namespace NexusMods.Jobs.Tests.TestInfrastructure;
 

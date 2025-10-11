@@ -1,13 +1,11 @@
-using System.ComponentModel;
 using System.Reactive.Linq;
 using DynamicData;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Downloads;
-using NexusMods.Abstractions.Games;
-using NexusMods.Abstractions.Jobs;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.Sdk.Jobs;
 using NexusMods.UI.Sdk.Icons;
 using ObservableCollections;
 using R3;

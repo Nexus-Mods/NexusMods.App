@@ -1,5 +1,6 @@
 using DynamicData.Kernel;
-namespace NexusMods.Abstractions.Jobs;
+
+namespace NexusMods.Sdk.Jobs;
 
 /// <summary>
 /// An untyped job interface, this is the reporting end of a job. The writable side is the <see cref="IJobContext{TJobType}"/>
@@ -70,7 +71,7 @@ public interface IJob
     /// Get the job context for performing control operations like Resume, Pause, Cancel.
     /// IJob is the reader side, IJobContext is the writer side.
     /// </summary>
-    internal IJobContext AsContext();
+    public IJobContext AsContext();
     
     /// <summary>
     /// Get the current job state data. Returns null if no state of this type exists.

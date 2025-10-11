@@ -1,9 +1,9 @@
 using System.Reactive;
 using DynamicData.Kernel;
-using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.Sdk.Jobs;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 

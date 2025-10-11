@@ -9,11 +9,9 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
-using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.App.UI.Controls.GameWidget;
-using NexusMods.App.UI.Controls.MiniGameWidget;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
@@ -43,6 +41,7 @@ using NexusMods.Collections;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Paths;
 using NexusMods.Sdk;
+using NexusMods.Sdk.Jobs;
 using NexusMods.Telemetry;
 using NexusMods.UI.Sdk.Dialog;
 using NexusMods.UI.Sdk.Dialog.Enums;
@@ -61,6 +60,7 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
     private readonly IOverlayController _overlayController;
     private readonly IConnection _connection;
     private readonly IServiceProvider _serviceProvider;
+    private readonly ISynchronizerService _syncService;
 
     private ReadOnlyObservableCollection<IViewModelInterface> _supportedGames = new([]);
     private ReadOnlyObservableCollection<IGameWidgetViewModel> _installedGames = new([]);
@@ -94,6 +94,7 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
         TabIcon = IconValues.GamepadOutline;
 
         _serviceProvider = serviceProvider;
+        _syncService = syncService;
         _windowManager = windowManager;
 
         OpenRoadmapCommand = ReactiveCommand.Create(() =>
@@ -233,7 +234,7 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
 
     private async Task RemoveGame(GameInstallation installation, bool shouldDeleteDownloads, LibraryFile.ReadOnly[] filesToDelete, CollectionMetadata.ReadOnly[] collections)
     {
-        await installation.GetGame().Synchronizer.UnManage(installation);
+        await _syncService.UnManage(installation);
 
         if (!shouldDeleteDownloads) return;
         await _libraryService.RemoveLibraryItems(filesToDelete.Select(file => file.AsLibraryItem()));
@@ -270,7 +271,7 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
             {
                 // Revert the loadout creation
                 vm.State = GameWidgetState.RemovingGame;
-                await Task.Run(async () => await installation.GetGame().Synchronizer.UnManage(installation, cleanGameFolder: false));
+                await Task.Run(async () => await _syncService.UnManage(installation, cleanGameFolder: false));
                 vm.State = GameWidgetState.DetectedGame;
                 
                 Tracking.AddEvent(Events.Game.RevertManageOnDirty, new EventMetadata(name: $"{installation.Game.Name} - {installation.Store}"));

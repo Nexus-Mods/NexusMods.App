@@ -2,8 +2,8 @@ using FluentAssertions;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.Jobs;
 using NexusMods.Paths;
+using NexusMods.Sdk.Jobs;
 using Xunit;
 
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously

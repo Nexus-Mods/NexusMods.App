@@ -1,7 +1,7 @@
 using FluentAssertions;
 using JetBrains.Annotations;
-using NexusMods.Abstractions.Jobs;
 using NexusMods.Paths;
+using NexusMods.Sdk.Jobs;
 using Xunit;
 // ReSharper disable UnusedParameter.Local
 namespace NexusMods.Jobs.Tests.Examples;
