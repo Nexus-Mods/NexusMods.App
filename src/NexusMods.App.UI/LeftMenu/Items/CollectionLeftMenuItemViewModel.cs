@@ -122,14 +122,9 @@ public class CollectionLeftMenuItemViewModel : LeftMenuItemViewModel, ILeftMenuI
                 if (collectionGroup.TryGetAsNexusCollectionLoadoutGroup(out var nexusCollectionGroup))
                 {
                     // For Nexus collections, we need to navigate away before deletion
-                    // Use default panel and tab IDs since we're in the left menu context
                     await _collectionDeleteService.DeleteNexusCollectionAsync(
                         nexusCollectionGroup, 
-                        _workspaceController, 
-                        _workspaceId, 
-                        PanelId.DefaultValue, 
-                        PanelTabId.DefaultValue, 
-                        navigateToCollectionDownloadPage: true
+                        _workspaceController
                     );
                 }
             }

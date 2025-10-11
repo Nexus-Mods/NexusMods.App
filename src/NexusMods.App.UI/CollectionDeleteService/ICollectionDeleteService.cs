@@ -51,10 +51,6 @@ public interface ICollectionDeleteService
     /// </summary>
     /// <param name="nexusCollectionGroup">The Nexus collection loadout group.</param>
     /// <param name="workspaceController">The workspace controller for navigation.</param>
-    /// <param name="workspaceId">The workspace identifier.</param>
-    /// <param name="panelId">The panel identifier.</param>
-    /// <param name="tabId">The tab identifier.</param>
-    /// <param name="navigateToCollectionDownloadPage">Whether to navigate to the collection download page before deletion.</param>
     /// <returns>A task representing the asynchronous operation.</returns>
-    Task DeleteNexusCollectionAsync(NexusCollectionLoadoutGroup.ReadOnly nexusCollectionGroup, IWorkspaceController workspaceController, WorkspaceId workspaceId, PanelId panelId, PanelTabId tabId, bool navigateToCollectionDownloadPage = true);
+    Task DeleteNexusCollectionAsync(NexusCollectionLoadoutGroup.ReadOnly nexusCollectionGroup, IWorkspaceController workspaceController);
 }

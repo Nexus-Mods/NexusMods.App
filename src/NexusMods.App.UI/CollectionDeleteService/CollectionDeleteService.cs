@@ -4,6 +4,7 @@ using NexusMods.Abstractions.Collections;
 using NexusMods.App.UI.Dialog;
 using NexusMods.App.UI.Dialog.Enums;
 using NexusMods.App.UI.Pages.CollectionDownload;
+using NexusMods.App.UI.Pages.LoadoutPage;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
@@ -94,26 +95,25 @@ public class CollectionDeleteService(
     }
 
     /// <inheritdoc />
-    public async Task DeleteNexusCollectionAsync(NexusCollectionLoadoutGroup.ReadOnly nexusCollectionGroup, IWorkspaceController workspaceController, WorkspaceId workspaceId, PanelId panelId, PanelTabId tabId, bool navigateToCollectionDownloadPage = true)
+    public async Task DeleteNexusCollectionAsync(NexusCollectionLoadoutGroup.ReadOnly nexusCollectionGroup, IWorkspaceController workspaceController)
     {
         var group = nexusCollectionGroup.AsCollectionGroup();
         
-        if (navigateToCollectionDownloadPage)
+        // Switch away from this page since its collection will be deleted
+        var pageData = new PageData
         {
-            // Switch away from this page since its collection will be deleted
-            var pageData = new PageData
+            FactoryId = CollectionDownloadPageFactory.StaticId,
+            Context = new CollectionDownloadPageContext()
             {
-                FactoryId = CollectionDownloadPageFactory.StaticId,
-                Context = new CollectionDownloadPageContext()
-                {
-                    TargetLoadout = group.AsLoadoutItemGroup().AsLoadoutItem().LoadoutId,
-                    CollectionRevisionMetadataId = nexusCollectionGroup.RevisionId,
-                },
-            };
+                TargetLoadout = group.AsLoadoutItemGroup().AsLoadoutItem().LoadoutId,
+                CollectionRevisionMetadataId = nexusCollectionGroup.RevisionId,
+            },
+        };
 
-            var behavior = new OpenPageBehavior.ReplaceTab(panelId, tabId);
-            workspaceController.OpenPage(workspaceId, pageData, behavior, checkOtherPanels: false);
-        }
+        await workspaceController.ReplaceTabsMatchingAcrossAllWorkspacesAsync<CollectionLoadoutPageContext>(
+            context => context.GroupId == CollectionGroupId.From(group.Id),
+            pageData
+        );
         
         using var tx = connection.BeginTransaction();
         
