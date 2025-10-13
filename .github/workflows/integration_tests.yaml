@@ -1,0 +1,35 @@
+name: Integration Tests
+
+on:
+  workflow_dispatch:
+  push:
+
+jobs:
+  build:
+    
+    name: Integration Tests
+    runs-on: [self-hosted]
+    
+    environment: test
+    
+    env:
+      NEXUS_API_KEY: ${{ secrets.NEXUS_API_KEY }}
+      NMA_INTEGRATION_BASE_PATH: /home/runner/game-images
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: "recursive"
+          lfs: true
+
+      - name: Print debug info
+        run: dotnet --info
+
+      - name: Install dependencies
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --no-restore
+
+      - name: Creation Engine Tests
+        run: dotnet run --no-build --project .\tests\Games\IntegrationTests\NexusMods.Games.IntegrationTests.CreationEngine.Tests\NexusMods.Games.IntegrationTests.CreationEngine.Tests.csproj
