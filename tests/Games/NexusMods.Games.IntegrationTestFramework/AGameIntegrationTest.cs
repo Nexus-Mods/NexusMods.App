@@ -23,7 +23,8 @@ namespace NexusMods.Games.IntegrationTestFramework;
 public abstract class AGameIntegrationTest<TGame> 
    where TGame : IGame
 {
-    private readonly GameInfo _installedGame;
+    public const string GameImagesEnvVarName = "NMA_INTEGRATION_BASE_PATH";
+    
     private readonly IHost _hosting;
     private readonly IFileSystem _fileSystem;
     private readonly GameLocatorResult _locatorResult;
@@ -35,9 +36,6 @@ public abstract class AGameIntegrationTest<TGame>
     public ILoadoutSynchronizer Synchronizer { get; set; }
     
 #endregion
-
-
-    public record GameInfo(GameStore Store, string[] LocatorIds, Type GameType);
 
     private record FauxLocator(AGameIntegrationTest<TGame> IntegrationTest) : IGameLocator
     { 
@@ -52,9 +50,9 @@ public abstract class AGameIntegrationTest<TGame>
         // Set the base filesystem
         FileSystem = new InMemoryFileSystem();
 
-        var basePathEnv = Environment.GetEnvironmentVariable("NMA_INTEGRATION_BASE_PATH");
+        var basePathEnv = Environment.GetEnvironmentVariable(GameImagesEnvVarName);
         if (basePathEnv is null)
-            Assert.Fail("NMA_INTEGRATION_BASE_PATH environment variable is not set, please set this to the path to the game images");
+            Assert.Fail($"{GameImagesEnvVarName} environment variable is not set, please set this to the path to the game images");
         
         var basePath = NexusMods.Paths.FileSystem.Shared.FromUnsanitizedFullPath(basePathEnv!);
         
