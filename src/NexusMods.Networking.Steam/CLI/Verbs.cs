@@ -14,6 +14,8 @@ using NexusMods.Sdk.ProxyConsole;
 using NexusMods.Archives.Nx.Packing;
 using NexusMods.Archives.Nx.Utilities;
 using NexusMods.Paths.Utilities;
+using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.GameLocators.Stores.Steam;
 
 namespace NexusMods.Networking.Steam.CLI;
 
@@ -26,6 +28,7 @@ public static class Verbs
             .AddModule("steam manifest", "Verbs for querying and packing manifest data")
             .AddVerb(() => IndexSteamApp)
             .AddVerb(() => PackManifest)
+            .AddVerb(() => PackManifestsFromGame)
             .AddVerb(() => Login);
     
     [Verb("steam login", "Starts the login process for Steam")]
@@ -121,6 +124,196 @@ public static class Verbs
 
         await tmpOutput.MoveToAsync(finalOutput, token: token);
         await renderer.TextLine($"Done: {finalOutput}");
+        return 0;
+    }
+
+    [Verb("steam manifest pack-game", "Packs all Steam manifests for an installed game into separate .nx archives")]
+    private static async Task<int> PackManifestsFromGame(
+        [Injected] IRenderer renderer,
+        [Injected] ISteamSession steamSession,
+        [Injected] IGameRegistry gameRegistry,
+        [Option("g", "game", "Installed game name")] string gameName,
+        [Option("o", "output", "Output directory for .nx files")] AbsolutePath output,
+        [Injected] CancellationToken token)
+    {
+        // Find installed game by name (Steam only)
+        var installs = gameRegistry.InstalledGames
+            .Where(g => string.Equals(g.Game.Name, gameName, StringComparison.OrdinalIgnoreCase))
+            .Where(g => g.Store == GameStore.Steam)
+            .ToList();
+
+        if (installs.Count == 0)
+        {
+            await renderer.TextLine($"No installed Steam game found with name '{gameName}'.");
+            return 1;
+        }
+
+        if (installs.Count > 1)
+        {
+            await renderer.TextLine($"Multiple installed Steam games matched '{gameName}', using the first match: {installs[0].Game.Name}.");
+        }
+
+        var install = installs[0];
+        if (install.LocatorResultMetadata is not SteamLocatorResultMetadata steamMeta)
+        {
+            await renderer.TextLine("The matched installation does not have Steam metadata; cannot determine manifests.");
+            return 1;
+        }
+
+        var baseAppId = AppId.From(steamMeta.AppId);
+
+        RenderingAuthenticationHandler.Renderer = renderer;
+        await steamSession.Connect(token);
+
+        // Ensure output directory exists
+        output.CreateDirectory();
+
+        // Build the set of appIds to search depots in: base app + any declared SteamIds on the game
+        var appIdsToQuery = new HashSet<uint> { baseAppId.Value };
+        if (install.Game is ISteamGame steamGame)
+        {
+            foreach (var id in steamGame.SteamIds)
+                appIdsToQuery.Add(id);
+        }
+
+        // Fetch product info for all candidate apps
+        var productInfos = new List<(AppId AppId, ProductInfo Info)>();
+        foreach (var rawId in appIdsToQuery)
+        {
+            var appId = AppId.From(rawId);
+            try
+            {
+                await renderer.TextLine($"Fetching product info for app {appId.Value}…");
+                var info = await steamSession.GetProductInfoAsync(appId, token);
+                productInfos.Add((appId, info));
+            }
+            catch (Exception ex)
+            {
+                await renderer.TextLine($"Failed to get product info for app {appId.Value}: {ex.Message}");
+            }
+        }
+
+        // Index: manifestId -> best candidate across all accessible apps/depots/branches
+        (AppId appId, Depot depot, string branch, ManifestId manifestId)? ResolveCandidate(ulong manifestIdValue)
+        {
+            var candidates = productInfos
+                .SelectMany(pi => pi.Info.Depots
+                    .SelectMany(d => d.Manifests.Select(kv => new { pi.AppId, Depot = d, Branch = kv.Key, Info = kv.Value })))
+                .Where(x => x.Info.ManifestId.Value == manifestIdValue)
+                .ToList();
+            if (candidates.Count == 0) return null;
+
+            // Prefer 'public' branch when ambiguous, otherwise first
+            var chosen = candidates.FirstOrDefault(c => string.Equals(c.Branch, "public", StringComparison.OrdinalIgnoreCase)) ?? candidates[0];
+            return (AppId.From(chosen.AppId.Value), chosen.Depot, chosen.Branch, chosen.Info.ManifestId);
+        }
+
+        var manifestIds = steamMeta.ManifestIds.Distinct().ToArray();
+        if (manifestIds.Length == 0)
+        {
+            await renderer.TextLine("No manifest IDs found for this installation.");
+            return 1;
+        }
+
+        await renderer.TextLine($"Preparing to pack {manifestIds.Length} manifest(s) for '{install.Game.Name}'.");
+
+        var options = new ParallelOptions
+        {
+            MaxDegreeOfParallelism = Math.Min(Environment.ProcessorCount, 4),
+            CancellationToken = token,
+        };
+
+        var results = new ConcurrentDictionary<ulong, string>();
+
+        await Parallel.ForEachAsync(manifestIds, options, async (manifestIdValue, ct) =>
+        {
+            try
+            {
+                var candidate = ResolveCandidate(manifestIdValue);
+                if (candidate is null)
+                {
+                    await renderer.TextLine($"- Manifest {manifestIdValue} not found in product info; skipping.");
+                    results[manifestIdValue] = "notfound";
+                    return;
+                }
+
+                var (appId, depot, branch, manifestId) = candidate.Value;
+
+                // Output path: <output>/<manifestId>.nx
+                var outputPath = output / (manifestId.Value + KnownExtensions.Nx.ToString()).ToRelativePath();
+                if (outputPath.FileExists)
+                {
+                    await renderer.TextLine($"- Skipping {manifestId.Value}: output exists {outputPath}");
+                    results[manifestIdValue] = "skipped_exists";
+                    return;
+                }
+
+                await renderer.TextLine($"- Packing manifest {manifestId.Value} (depot {depot.DepotId.Value}, branch {branch})…");
+
+                var manifest = await steamSession.GetManifestContents(appId, depot.DepotId, manifestId, branch, ct);
+
+                var builder = new NxPackerBuilder();
+                builder.WithMaxNumThreads(Environment.ProcessorCount);
+
+                var openStreams = new List<Stream>(manifest.Files.Length);
+                foreach (var file in manifest.Files)
+                {
+                    Stream stream = file.Size == Size.Zero
+                        ? Stream.Null
+                        : steamSession.GetFileStream(appId, manifest, file.Path);
+                    if (!ReferenceEquals(stream, Stream.Null))
+                        openStreams.Add(stream);
+                    builder.AddFile(stream, new AddFileParams
+                    {
+                        RelativePath = file.Path.ToString(),
+                    });
+                }
+
+                var tmpOutput = outputPath.ReplaceExtension(KnownExtensions.Tmp);
+                await using (var outputStream = tmpOutput.Create())
+                {
+                    builder.WithOutput(outputStream);
+                    builder.Build();
+                }
+
+                foreach (var s in openStreams)
+                    await s.DisposeAsync();
+
+                await tmpOutput.MoveToAsync(outputPath, token: ct);
+                await renderer.TextLine($"- Done: {outputPath}");
+                results[manifestIdValue] = "packed";
+            }
+            catch (FailedToGetRequestCode ex)
+            {
+                await renderer.TextLine($"- Skipping manifest {manifestIdValue}: {ex.Message}");
+                results[manifestIdValue] = "auth_error";
+            }
+            catch (Exception ex)
+            {
+                await renderer.TextLine($"- Error packing manifest {manifestIdValue}: {ex.Message}");
+                results[manifestIdValue] = "error";
+            }
+        });
+
+        // Post-check: confirm all reported manifests were processed
+        var processed = results.Keys.ToHashSet();
+        var missing = manifestIds.Where(id => !processed.Contains(id)).ToArray();
+        var notFound = results.Where(kv => kv.Value == "notfound").Select(kv => kv.Key).OrderBy(x => x).ToArray();
+        var errored = results.Where(kv => kv.Value is "error" or "auth_error").Select(kv => kv.Key).OrderBy(x => x).ToArray();
+
+        var packedCount = results.Count(kv => kv.Value == "packed");
+        var skippedCount = results.Count(kv => kv.Value == "skipped_exists");
+        await renderer.TextLine($"Finished packing manifests. Packed: {packedCount}, Skipped existing: {skippedCount}, Not found: {notFound.Length}, Errors: {errored.Length}.");
+        if (missing.Length > 0 || notFound.Length > 0 || errored.Length > 0)
+        {
+            if (notFound.Length > 0)
+                await renderer.TextLine($"Not found in accessible depots: {string.Join(", ", notFound)}");
+            if (errored.Length > 0)
+                await renderer.TextLine($"Failed due to errors: {string.Join(", ", errored)}");
+
+            var searchedAppIds = string.Join(", ", productInfos.Select(pi => pi.AppId.Value).Distinct());
+            await renderer.TextLine($"Searched appIds: {searchedAppIds}. Some manifests may belong to DLC/appIds not included here.");
+        }
         return 0;
     }
 

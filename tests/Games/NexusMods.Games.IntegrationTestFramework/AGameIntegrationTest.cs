@@ -46,8 +46,8 @@ public abstract class AGameIntegrationTest<TGame>
             return IntegrationTest.Locators;
         }
     }
-    
-    public AGameIntegrationTest()
+
+    protected AGameIntegrationTest()
     {
         // Set the base filesystem
         FileSystem = new InMemoryFileSystem();
