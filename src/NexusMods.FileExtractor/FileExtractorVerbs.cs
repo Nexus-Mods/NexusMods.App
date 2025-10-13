@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.FileExtractor;
 using NexusMods.Paths;
+using NexusMods.Sdk.FileExtractor;
 using NexusMods.Sdk.ProxyConsole;
 
 namespace NexusMods.FileExtractor;

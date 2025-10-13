@@ -1,10 +1,10 @@
 using Avalonia.Media.Imaging;
-using NexusMods.Abstractions.Jobs;
-using NexusMods.Abstractions.UI;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.Paths;
+using NexusMods.Sdk.Jobs;
+using NexusMods.UI.Sdk;
 
 namespace NexusMods.App.UI.Pages.LibraryPage.Collections;
 

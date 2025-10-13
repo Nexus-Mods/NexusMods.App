@@ -7,10 +7,10 @@ using DynamicData;
 using DynamicData.Aggregation;
 using DynamicData.Kernel;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Windows;
 using NexusMods.Sdk;
+using NexusMods.UI.Sdk;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 

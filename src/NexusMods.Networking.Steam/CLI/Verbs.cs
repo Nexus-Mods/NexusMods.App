@@ -2,7 +2,6 @@ using System.Collections.Concurrent;
 using System.Text.Json;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Cli;
-using NexusMods.Abstractions.Jobs;
 using NexusMods.Sdk.Hashes;
 using NexusMods.Abstractions.Steam;
 using NexusMods.Abstractions.Steam.DTOs;
@@ -10,6 +9,7 @@ using NexusMods.Abstractions.Steam.Values;
 using NexusMods.Networking.Steam.Exceptions;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
+using NexusMods.Sdk.Jobs;
 using NexusMods.Sdk.ProxyConsole;
 using NexusMods.Archives.Nx.Packing;
 using NexusMods.Archives.Nx.Utilities;
@@ -423,7 +423,7 @@ public static class Verbs
                     return;
                 if (existingHashes.Contains(file.Hash))
                     return;
-                
+
                 await using var progressTask = await renderer.StartProgressTask($"Hashing {file.Path}", maxValue: file.Size.Value);
                 await using var stream = session.GetFileStream(appId, manifest, file.Path);
                 await using var progressWrapper = new StreamProgressWrapper<ProgressTask>(stream, state: progressTask, notifyWritten: static (progressTask, values) =>

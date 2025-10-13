@@ -1,6 +1,6 @@
 ﻿using System.Reactive;
-using NexusMods.Abstractions.UI;
 using NexusMods.Sdk;
+using NexusMods.UI.Sdk;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.Controls.DevelopmentBuildBanner;

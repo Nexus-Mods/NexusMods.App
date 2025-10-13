@@ -100,6 +100,18 @@
         <Compile Update="RuntimeDependency\AggregateExecutableRuntimeDependency.cs">
           <DependentUpon>IRuntimeDependency.cs</DependentUpon>
         </Compile>
+        <Compile Update="FileExtractor\Signatures.cs">
+          <AutoGen>True</AutoGen>
+          <DesignTime>True</DesignTime>
+          <DependentUpon>Signatures.tt</DependentUpon>
+        </Compile>
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="FileExtractor\Signatures.tt">
+        <Generator>TextTemplatingFileGenerator</Generator>
+        <LastGenOutput>Signatures.cs</LastGenOutput>
+      </None>
     </ItemGroup>
 
 </Project>

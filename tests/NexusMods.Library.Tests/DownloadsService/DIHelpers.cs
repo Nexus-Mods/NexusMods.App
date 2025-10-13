@@ -4,7 +4,6 @@ using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Sdk.Settings;
 using NexusMods.Backend;
 using NexusMods.DataModel;
-using NexusMods.Jobs;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Paths;
 

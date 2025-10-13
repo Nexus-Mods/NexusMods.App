@@ -2,7 +2,6 @@ using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Downloads;
 using NexusMods.Abstractions.GC;
-using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Library.Jobs;
@@ -12,7 +11,7 @@ using NexusMods.Abstractions.Loadouts.Extensions;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Paths;
-using NexusMods.Sdk;
+using NexusMods.Sdk.Jobs;
 
 namespace NexusMods.Library;
 

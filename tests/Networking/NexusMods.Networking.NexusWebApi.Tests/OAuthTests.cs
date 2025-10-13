@@ -2,11 +2,11 @@ using System.Net;
 using System.Text.Json;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.NexusWebApi.DTOs.OAuth;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Networking.NexusWebApi.Auth;
 using NexusMods.Sdk;
+using NexusMods.Sdk.Jobs;
 using NSubstitute;
 
 namespace NexusMods.Networking.NexusWebApi.Tests;

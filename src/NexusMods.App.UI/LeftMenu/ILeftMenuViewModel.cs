@@ -1,5 +1,5 @@
-using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.UI.Sdk;
 
 namespace NexusMods.App.UI.LeftMenu;
 

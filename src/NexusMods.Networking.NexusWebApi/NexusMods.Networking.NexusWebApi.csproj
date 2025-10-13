@@ -15,11 +15,10 @@
     <ItemGroup>
         <ProjectReference Include="..\NexusMods.Abstractions.Cli\NexusMods.Abstractions.Cli.csproj" />
         <ProjectReference Include="..\NexusMods.Abstractions.Collections\NexusMods.Abstractions.Collections.csproj" />
-        <ProjectReference Include="..\NexusMods.Abstractions.Games\NexusMods.Abstractions.Games.csproj" />
-        <ProjectReference Include="..\NexusMods.Abstractions.Jobs\NexusMods.Abstractions.Jobs.csproj" />
         <ProjectReference Include="..\NexusMods.Abstractions.NexusModsLibrary\NexusMods.Abstractions.NexusModsLibrary.csproj" />
         <ProjectReference Include="..\NexusMods.Abstractions.NexusWebApi\NexusMods.Abstractions.NexusWebApi.csproj" />
         <PackageReference Include="NexusMods.MnemonicDB.SourceGenerator" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+        <ProjectReference Include="..\NexusMods.Abstractions.Telemetry\NexusMods.Abstractions.Telemetry.csproj" />
         <ProjectReference Include="..\NexusMods.Networking.HttpDownloader\NexusMods.Networking.HttpDownloader.csproj" />
         <ProjectReference Include="..\NexusMods.Networking.ModUpdates\NexusMods.Networking.ModUpdates.csproj" />
     </ItemGroup>
