@@ -27,13 +27,14 @@ public class SynchronizerService : ISynchronizerService
     private readonly IJobMonitor _jobMonitor;
     private readonly Dictionary<EntityId, SynchronizerState> _gameStates;
     private readonly Dictionary<LoadoutId, SynchronizerState> _loadoutStates;
+    private readonly ILoadoutManager _loadoutManager;
     private readonly SemaphoreSlim _semaphore = new(1, 1);
     private readonly object _lock = new();
 
     /// <summary>
     /// DI Constructor
     /// </summary>
-    public SynchronizerService(IConnection conn, ILogger<SynchronizerService> logger, IGameRegistry gameRegistry, IFileHashesService fileHashesService, IJobMonitor jobMonitor)
+    public SynchronizerService(IConnection conn, ILogger<SynchronizerService> logger, IGameRegistry gameRegistry, IFileHashesService fileHashesService, IJobMonitor jobMonitor, ILoadoutManager loadoutManager)
     {
         _logger = logger;
         _conn = conn;
@@ -42,6 +43,7 @@ public class SynchronizerService : ISynchronizerService
         _gameStates = _gameRegistry.Installations.ToDictionary(e => e.Key, _ => new SynchronizerState());
         _loadoutStates = Loadout.All(conn.Db).ToDictionary(e => e.LoadoutId, _ => new SynchronizerState());
         _fileHashesService = fileHashesService;
+        _loadoutManager = loadoutManager;
     }
     
     /// <inheritdoc />
@@ -121,7 +123,6 @@ public class SynchronizerService : ISynchronizerService
         await _semaphore.WaitAsync();
         try
         {
-            var synchronizer = installation.GetGame().Synchronizer;
             var metadata = installation.GetMetadata(_conn);
 
             if (!metadata.IsValid())
@@ -129,7 +130,7 @@ public class SynchronizerService : ISynchronizerService
                 return;
             }
 
-            await synchronizer.UnManage(installation, runGc, cleanGameFolder);
+            await _loadoutManager.UnManage(installation, runGc, cleanGameFolder);
         }
         finally
         {
