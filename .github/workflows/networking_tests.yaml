@@ -23,50 +23,29 @@ jobs:
 
       - name: Print debug info
         run: dotnet --info
-        
-      - name: Install PowerShell (Linux)
-        if: runner.os == 'Linux'
-        shell: bash
-        run: |
-          set -euo pipefail
-          if command -v pwsh >/dev/null 2>&1; then
-            echo "pwsh already installed"
-            exit 0
-          fi
-          source /etc/os-release
-          VERSION_ID_SAFE=${VERSION_ID:-"22.04"}
-          echo "Installing PowerShell for Ubuntu $VERSION_ID_SAFE"
-          wget -q https://packages.microsoft.com/config/ubuntu/$VERSION_ID_SAFE/packages-microsoft-prod.deb -O packages-microsoft-prod.deb || \
-            wget -q https://packages.microsoft.com/config/ubuntu/22.04/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
-          sudo dpkg -i packages-microsoft-prod.deb
-          sudo apt-get update
-          sudo apt-get install -y powershell        
-
+    
       - name: Install dependencies
         run: dotnet restore
 
       - name: Build
         run: dotnet build --no-restore
 
-      - name: Test (exclude Integration projects)
-        shell: pwsh
+      - name: Test
+        shell: bash
         env:
           VSTEST_TESTHOST_SHUTDOWN_TIMEOUT: 60000
         run: |
-          $ErrorActionPreference = 'Stop'
-          $testProjects = Get-ChildItem -Recurse -Path "tests" -Filter *.csproj |
-            Where-Object { $_.FullName -match '\\.Tests\\.csproj$' -and $_.FullName -notmatch 'Integration' }
-          if (-not $testProjects) {
-            Write-Host "No matching test projects found (excluding *Integration*)."
+          set -euo pipefail
+          mapfile -t projects < <(find tests -type f -name "*.csproj" | grep -E "\.Tests\.csproj$" | grep -vi "Integration" || true)
+          if [ ${#projects[@]} -eq 0 ]; then
+            echo "No matching test projects found (excluding *Integration*)."
             exit 0
-          }
-          foreach ($proj in $testProjects) {
-            Write-Host "Running tests for: $($proj.FullName)"
-            dotnet test $proj.FullName --configuration Release --no-build --verbosity normal `
-              --filter "RequiresNetworking=True" `
-              --logger "GitHubActions" `
+          fi
+          for proj in "${projects[@]}"; do
+            echo "Running tests for: $proj"
+            dotnet test "$proj" --configuration Release --no-build --verbosity normal \
+              --filter "RequiresNetworking=True" \
+              --logger "GitHubActions" \
               --blame-hang-timeout 20m
-            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          }
-
+          done
 
