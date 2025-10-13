@@ -52,9 +52,27 @@ public abstract class AGameIntegrationTest<TGame>
         // Set the base filesystem
         FileSystem = new InMemoryFileSystem();
 
-        var basePath = NexusMods.Paths.FileSystem.Shared.FromUnsanitizedFullPath("I:/");
+        var basePathEnv = Environment.GetEnvironmentVariable("NMA_INTEGRATION_BASE_PATH");
+        if (basePathEnv is null)
+            Assert.Fail("NMA_INTEGRATION_BASE_PATH environment variable is not set, please set this to the path to the game images");
+        
+        var basePath = NexusMods.Paths.FileSystem.Shared.FromUnsanitizedFullPath(basePathEnv!);
         
         var gameArchives = Locators.SelectMany(GetArchives).ToList();
+        List<AbsolutePath> missingGameImages = [];
+        foreach (var (src, mount) in gameArchives)
+        {
+            var absPath = basePath / src;
+            if (!absPath.FileExists)
+            {
+                missingGameImages.Add(absPath);
+            }
+        }
+        
+        if (missingGameImages.Count > 0)
+            ThrowMissingGameImagesError(missingGameImages);
+        
+        
         var overlays = gameArchives.Select(x => new NxReadOnlyFilesystem( basePath / x.Src, x.Mount)).ToArray();
         
         _fileSystem = new ReadOnlySourcesFileSystem(new InMemoryFileSystem(), overlays);
@@ -84,6 +102,15 @@ public abstract class AGameIntegrationTest<TGame>
             .Build();
         
 
+    }
+
+    private void ThrowMissingGameImagesError(List<AbsolutePath> missingGameImages)
+    {
+        Console.WriteLine($"Missing game images (for {GetType().Name}: ");
+        foreach (var missingGameImage in missingGameImages)
+            Console.WriteLine("* " + missingGameImage);
+        
+        Assert.Fail($"Missing game images (for {GetType().Name}");
     }
 
     private IEnumerable<(RelativePath Src, AbsolutePath Mount)> GetArchives(GameLocatorResult locatorResult)

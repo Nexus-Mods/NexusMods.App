@@ -14,7 +14,7 @@ public abstract class ASkyrimSETest : AGameIntegrationTest<SkyrimSE>
         {
             var steamFolder = FileSystem.GetKnownPath(KnownPath.ProgramFilesDirectory) / "Steam" / "steamapps" / "common" / "Skyrim Special Edition";
             yield return new GameLocatorResult(steamFolder, FileSystem, OSInformation.FakeWindows,
-                GameStore.Steam, new SteamLocatorResultMetadata()
+                GameStore.Steam, new SteamLocatorResultMetadata
                 {
                     AppId = 489830,
                     ManifestIds = [1914580699073641964, 8042843504692938467, 8442952117333549665],
