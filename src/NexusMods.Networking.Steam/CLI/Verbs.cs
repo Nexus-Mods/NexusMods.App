@@ -13,6 +13,7 @@ using NexusMods.Paths.Extensions;
 using NexusMods.Sdk.ProxyConsole;
 using NexusMods.Archives.Nx.Packing;
 using NexusMods.Archives.Nx.Utilities;
+using NexusMods.Paths.Utilities;
 
 namespace NexusMods.Networking.Steam.CLI;
 
@@ -85,6 +86,7 @@ public static class Verbs
         await renderer.TextLine($"Preparing to pack {manifest.Files.Length} files from manifest {manifestId} (depot {depot.Value}, branch {usedBranch})…");
 
         var builder = new NxPackerBuilder();
+        builder.WithMaxNumThreads(Environment.ProcessorCount);
         var openStreams = new List<Stream>(manifest.Files.Length);
 
         // Queue files for packing with depot-relative paths
@@ -103,10 +105,9 @@ public static class Verbs
 
         // Determine output paths and ensure .nx extension
         var finalOutput = output;
-        var nxExt = new Extension(".nx");
-        if (!finalOutput.ToString().EndsWith(nxExt.ToString(), StringComparison.OrdinalIgnoreCase))
-            finalOutput = finalOutput.AppendExtension(nxExt);
-        var tmpOutput = finalOutput.ReplaceExtension(new Extension(".tmp"));
+        if (!finalOutput.ToString().EndsWith(KnownExtensions.Nx.ToString(), StringComparison.OrdinalIgnoreCase))
+            finalOutput = finalOutput.AppendExtension(KnownExtensions.Nx);
+        var tmpOutput = finalOutput.ReplaceExtension(KnownExtensions.Tmp);
 
         await renderer.TextLine("Writing .nx archive…");
         await using (var outputStream = tmpOutput.Create())

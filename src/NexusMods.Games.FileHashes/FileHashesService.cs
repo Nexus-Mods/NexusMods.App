@@ -58,8 +58,8 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable, IHost
         _logger = logger;
         _httpClient = httpClient;
         _jsonSerializerOptions = jsonSerializerOptions;
-        // During integration tests we use the in-memory file system, but we can't use that for the hash database location
-        _fileSystem = fileSystem is InMemoryFileSystem ? FileSystem.Shared : fileSystem;
+        // During integration tests we use the in-memory file system (or a variant of it), but we can't use that for the hash database location
+        _fileSystem = fileSystem is not FileSystem ? FileSystem.Shared : fileSystem;
         _testMode = fileSystem is InMemoryFileSystem;
         _settings = settingsManager.Get<FileHashesServiceSettings>();
         _databases = new Dictionary<AbsolutePath, ConnectedDb>();

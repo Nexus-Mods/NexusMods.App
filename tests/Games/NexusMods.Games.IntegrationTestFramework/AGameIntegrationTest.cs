@@ -3,6 +3,7 @@ using Microsoft.Extensions.Hosting;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.GameLocators.Stores.Steam;
 using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.Serialization;
@@ -24,7 +25,7 @@ public abstract class AGameIntegrationTest<TGame>
 {
     private readonly GameInfo _installedGame;
     private readonly IHost _hosting;
-    private readonly InMemoryFileSystem _fileSystem;
+    private readonly IFileSystem _fileSystem;
     private readonly GameLocatorResult _locatorResult;
 
 #region Imported Services
@@ -56,15 +57,16 @@ public abstract class AGameIntegrationTest<TGame>
         var gameArchives = Locators.SelectMany(GetArchives).ToList();
         var overlays = gameArchives.Select(x => new NxReadOnlyFilesystem( basePath / x.Src, x.Mount)).ToArray();
         
-        var filesystem = new ReadOnlySourcesFileSystem(new InMemoryFileSystem(), overlays);
+        _fileSystem = new ReadOnlySourcesFileSystem(new InMemoryFileSystem(), overlays);
         
         _hosting = new HostBuilder()
             .ConfigureServices(s =>
             {
-                s.AddSingleton<IFileSystem>(_ => new InMemoryFileSystem())
+                s.AddSingleton<IFileSystem>(_ => _fileSystem)
                  .AddSettingsManager()
                  .AddCreationEngine()
                  .AddDataModel()
+                 .AddLibraryModels()
                  .AddOSInterop()
                  .AddFileHashes()
                  .AddHttpClient()
