@@ -58,71 +58,23 @@ public static class Verbs
 
         await renderer.TextLine("Fetching product info…");
         var productInfo = await steamSession.GetProductInfoAsync(steamAppId, token);
-        // Find the depot + branch containing the requested manifest id
-        var candidates = productInfo.Depots
-            .SelectMany(d => d.Manifests.Select(kv => new { Depot = d, Branch = kv.Key, Info = kv.Value }))
-            .Where(x => x.Info.ManifestId.Value == (ulong)manifestId)
-            .ToList();
 
-        if (!string.IsNullOrWhiteSpace(branch))
-            candidates = candidates.Where(c => string.Equals(c.Branch, branch, StringComparison.OrdinalIgnoreCase)).ToList();
-
-        if (candidates.Count == 0)
+        var resolved = TryResolveManifest([(steamAppId, productInfo)], (ulong)manifestId, branch);
+        if (resolved is null)
         {
             await renderer.Text($"Manifest {manifestId} not found for app {appId}{(string.IsNullOrWhiteSpace(branch) ? "" : $" on branch '{branch}'")}.");
             return 1;
         }
-        if (candidates.Count > 1)
-        {
-            await renderer.TextLine($"Manifest {manifestId} appears in multiple branches/depots:");
-            foreach (var c in candidates)
-                await renderer.TextLine($" - Depot {c.Depot.DepotId.Value} on branch '{c.Branch}'");
-            await renderer.Text("Please specify --branch to disambiguate.");
-            return 1;
-        }
 
-        var chosen = candidates[0];
-        var depot = chosen.Depot.DepotId;
-        var usedBranch = chosen.Branch;
-        var manifest = await steamSession.GetManifestContents(steamAppId, depot, chosen.Info.ManifestId, usedBranch, token);
+        var (app, depot, usedBranch, manifest) = resolved.Value;
 
-        await renderer.TextLine($"Preparing to pack {manifest.Files.Length} files from manifest {manifestId} (depot {depot.Value}, branch {usedBranch})…");
-
-        var builder = new NxPackerBuilder();
-        builder.WithMaxNumThreads(Environment.ProcessorCount);
-        var openStreams = new List<Stream>(manifest.Files.Length);
-
-        // Queue files for packing with depot-relative paths
-        foreach (var file in manifest.Files)
-        {
-            Stream stream = file.Size == Size.Zero
-                ? Stream.Null
-                : steamSession.GetFileStream(steamAppId, manifest, file.Path);
-            if (!ReferenceEquals(stream, Stream.Null))
-                openStreams.Add(stream);
-            builder.AddFile(stream, new AddFileParams
-            {
-                RelativePath = file.Path.ToString(),
-            });
-        }
-
-        // Determine output paths and ensure .nx extension
+        // Ensure .nx extension
         var finalOutput = output;
         if (!finalOutput.ToString().EndsWith(KnownExtensions.Nx.ToString(), StringComparison.OrdinalIgnoreCase))
             finalOutput = finalOutput.AppendExtension(KnownExtensions.Nx);
-        var tmpOutput = finalOutput.ReplaceExtension(KnownExtensions.Tmp);
 
-        await renderer.TextLine("Writing .nx archive…");
-        await using (var outputStream = tmpOutput.Create())
-        {
-            builder.WithOutput(outputStream);
-            builder.Build();
-        }
-
-        foreach (var s in openStreams)
-            await s.DisposeAsync();
-
-        await tmpOutput.MoveToAsync(finalOutput, token: token);
+        await renderer.TextLine($"Preparing to pack manifest {manifest.Value} (depot {depot.Value}, branch {usedBranch})…");
+        await PackManifestToNx(steamSession, renderer, app, depot, manifest, usedBranch, finalOutput, token);
         await renderer.TextLine($"Done: {finalOutput}");
         return 0;
     }
@@ -193,20 +145,9 @@ public static class Verbs
             }
         }
 
-        // Index: manifestId -> best candidate across all accessible apps/depots/branches
-        (AppId appId, Depot depot, string branch, ManifestId manifestId)? ResolveCandidate(ulong manifestIdValue)
-        {
-            var candidates = productInfos
-                .SelectMany(pi => pi.Info.Depots
-                    .SelectMany(d => d.Manifests.Select(kv => new { pi.AppId, Depot = d, Branch = kv.Key, Info = kv.Value })))
-                .Where(x => x.Info.ManifestId.Value == manifestIdValue)
-                .ToList();
-            if (candidates.Count == 0) return null;
-
-            // Prefer 'public' branch when ambiguous, otherwise first
-            var chosen = candidates.FirstOrDefault(c => string.Equals(c.Branch, "public", StringComparison.OrdinalIgnoreCase)) ?? candidates[0];
-            return (AppId.From(chosen.AppId.Value), chosen.Depot, chosen.Branch, chosen.Info.ManifestId);
-        }
+        // Resolver using shared helper across all candidate apps
+        (AppId appId, DepotId depotId, string branch, ManifestId manifestId)? ResolveCandidate(ulong manifestIdValue)
+            => TryResolveManifest(productInfos.Select(pi => (pi.AppId, pi.Info)), manifestIdValue);
 
         var manifestIds = steamMeta.ManifestIds.Distinct().ToArray();
         if (manifestIds.Length == 0)
@@ -237,7 +178,7 @@ public static class Verbs
                     return;
                 }
 
-                var (appId, depot, branch, manifestId) = candidate.Value;
+                var (appId, depotId, branch, manifestId) = candidate.Value;
 
                 // Output path: <output>/<manifestId>.nx
                 var outputPath = output / (manifestId.Value + KnownExtensions.Nx.ToString()).ToRelativePath();
@@ -248,38 +189,8 @@ public static class Verbs
                     return;
                 }
 
-                await renderer.TextLine($"- Packing manifest {manifestId.Value} (depot {depot.DepotId.Value}, branch {branch})…");
-
-                var manifest = await steamSession.GetManifestContents(appId, depot.DepotId, manifestId, branch, ct);
-
-                var builder = new NxPackerBuilder();
-                builder.WithMaxNumThreads(Environment.ProcessorCount);
-
-                var openStreams = new List<Stream>(manifest.Files.Length);
-                foreach (var file in manifest.Files)
-                {
-                    Stream stream = file.Size == Size.Zero
-                        ? Stream.Null
-                        : steamSession.GetFileStream(appId, manifest, file.Path);
-                    if (!ReferenceEquals(stream, Stream.Null))
-                        openStreams.Add(stream);
-                    builder.AddFile(stream, new AddFileParams
-                    {
-                        RelativePath = file.Path.ToString(),
-                    });
-                }
-
-                var tmpOutput = outputPath.ReplaceExtension(KnownExtensions.Tmp);
-                await using (var outputStream = tmpOutput.Create())
-                {
-                    builder.WithOutput(outputStream);
-                    builder.Build();
-                }
-
-                foreach (var s in openStreams)
-                    await s.DisposeAsync();
-
-                await tmpOutput.MoveToAsync(outputPath, token: ct);
+                await renderer.TextLine($"- Packing manifest {manifestId.Value} (depot {depotId.Value}, branch {branch})…");
+                await PackManifestToNx(steamSession, renderer, appId, depotId, manifestId, branch, outputPath, ct);
                 await renderer.TextLine($"- Done: {outputPath}");
                 results[manifestIdValue] = "packed";
             }
@@ -337,78 +248,147 @@ public static class Verbs
         RenderingAuthenticationHandler.Renderer = renderer;
         await steamSession.Connect(token);
 
-        await using (var _ = await renderer.WithProgress())
+        await using var _ = await renderer.WithProgress();
+        
+        var productInfo = await steamSession.GetProductInfoAsync(steamAppId, token);
+
+        var hashFolder = output / "hashes";
+        hashFolder.CreateDirectory();
+
+        var existingHashes = await LoadExistingHashes(hashFolder, indentedOptions, token);
+
+        // Write the product info to a file
+        var productFile = output / "stores" / "steam" / "apps" / (productInfo.AppId + ".json");
         {
-            {
-                var productInfo = await steamSession.GetProductInfoAsync(steamAppId, token);
-
-                var hashFolder = output / "hashes";
-                hashFolder.CreateDirectory();
-
-                var existingHashes = await LoadExistingHashes(hashFolder, indentedOptions, token);
-
-                // Write the product info to a file
-                var productFile = output / "stores" / "steam" / "apps" / (productInfo.AppId + ".json").ToRelativePath();
-                {
-                    productFile.Parent.CreateDirectory();
-                    await using var outputStream = productFile.Create();
-                    await JsonSerializer.SerializeAsync(outputStream, productInfo, indentedOptions,
-                        token
-                    );
-                }
-
-                var options = new ParallelOptions
-                {
-                    MaxDegreeOfParallelism = 4,
-                    CancellationToken = token,
-                };
-                // For each depot and each manifest, download the manifest and index the files
-                await Parallel.ForEachAsync(productInfo.Depots, options, async (depot, token) =>
-                {
-                    await Parallel.ForEachAsync(depot.Manifests, options, async (manifestInfo, token) =>
-                    {
-                        try
-                        {
-                            var manifest = await steamSession.GetManifestContents(steamAppId, depot.DepotId, manifestInfo.Value.ManifestId,
-                                manifestInfo.Key, token
-                            );
-
-                            var manifestPath = output / "stores" / "steam" / "manifests" / (manifest.ManifestId + ".json").ToRelativePath();
-                            {
-                                manifestPath.Parent.CreateDirectory();
-                                while (true)
-                                {
-                                    try
-                                    {
-                                        await using var outputStream = manifestPath.Create();
-                                        await JsonSerializer.SerializeAsync(outputStream, manifest, indentedOptions,
-                                            token
-                                        );
-                                        break;
-                                    }
-                                    catch (IOException)
-                                    {
-                                        await Task.Delay(1000, token);
-                                    }
-                                }
-                            }
-
-                            await IndexManifest(steamSession, renderer, steamAppId,
-                                output, manifest, indentedOptions,
-                                existingHashes, options
-                            );
-                        }
-                        catch (FailedToGetRequestCode ex)
-                        {
-                            await renderer.Text($"Skipping because of: {ex.Message}");
-                            return;
-                        }
-                    });
-                });
-            }
+            productFile.Parent.CreateDirectory();
+            await using var outputStream = productFile.Create();
+            await JsonSerializer.SerializeAsync(outputStream, productInfo, indentedOptions,
+                token
+            );
         }
 
+        var options = new ParallelOptions
+        {
+            MaxDegreeOfParallelism = 4,
+            CancellationToken = token,
+        };
+        // For each depot and each manifest, download the manifest and index the files
+        await Parallel.ForEachAsync(productInfo.Depots, options, async (depot, token) =>
+        {
+            await Parallel.ForEachAsync(depot.Manifests, options, async (manifestInfo, token) =>
+            {
+                try
+                {
+                    var manifest = await steamSession.GetManifestContents(steamAppId, depot.DepotId, manifestInfo.Value.ManifestId,
+                        manifestInfo.Key, token
+                    );
+
+                    var manifestPath = output / "stores" / "steam" / "manifests" / (manifest.ManifestId + ".json").ToRelativePath();
+                    {
+                        manifestPath.Parent.CreateDirectory();
+                        while (true)
+                        {
+                            try
+                            {
+                                await using var outputStream = manifestPath.Create();
+                                await JsonSerializer.SerializeAsync(outputStream, manifest, indentedOptions,
+                                    token
+                                );
+                                break;
+                            }
+                            catch (IOException)
+                            {
+                                await Task.Delay(1000, token);
+                            }
+                        }
+                    }
+
+                    await IndexManifest(steamSession, renderer, steamAppId,
+                        output, manifest, indentedOptions,
+                        existingHashes, options
+                    );
+                }
+                catch (FailedToGetRequestCode ex)
+                {
+                    await renderer.Text($"Skipping because of: {ex.Message}");
+                    return;
+                }
+            });
+        });
+
         return 0;
+    }
+
+    /// <summary>
+    /// Helper: resolve a manifest to (appId, depotId, branch, manifestId) across one or more product infos
+    /// </summary>
+    private static (AppId appId, DepotId depotId, string branch, ManifestId manifestId)? TryResolveManifest(IEnumerable<(AppId appId, ProductInfo info)> productInfos, ulong manifestId, string? branchFilter = null)
+    {
+        var candidates = productInfos
+            .SelectMany(pi => pi.info.Depots
+                .SelectMany(d => d.Manifests.Select(kv => new { pi.appId, Depot = d.DepotId, Branch = kv.Key, Info = kv.Value })))
+            .Where(x => x.Info.ManifestId.Value == manifestId)
+            .ToList();
+
+        if (!string.IsNullOrWhiteSpace(branchFilter))
+            candidates = candidates.Where(c => string.Equals(c.Branch, branchFilter, StringComparison.OrdinalIgnoreCase)).ToList();
+
+        if (candidates.Count == 0) return null;
+        if (candidates.Count == 1) return (candidates[0].appId, candidates[0].Depot, candidates[0].Branch, candidates[0].Info.ManifestId);
+
+        // Prefer 'public' branch when ambiguous
+        var chosen = candidates.FirstOrDefault(c => string.Equals(c.Branch, "public", StringComparison.OrdinalIgnoreCase)) ?? candidates[0];
+        return (chosen.appId, chosen.Depot, chosen.Branch, chosen.Info.ManifestId);
+    }
+
+    /// <summary>
+    /// Packs the specified Steam manifest into the .nx format and writes it to the specified output location.
+    /// </summary>
+    /// <param name="steamSession">The Steam session instance used to retrieve the manifest contents.</param>
+    /// <param name="renderer">An instance of the renderer for outputting text feedback during the process.</param>
+    /// <param name="appId">The ID of the application for the manifest being packed.</param>
+    /// <param name="depotId">The ID of the depot associated with the manifest.</param>
+    /// <param name="manifestId">The unique identifier for the manifest to be packed.</param>
+    /// <param name="branch">The branch associated with the manifest.</param>
+    /// <param name="finalOutput">The path where the generated .nx archive will be saved.</param>
+    /// <param name="token">A cancellation token to observe while performing the operation.</param>
+    /// <returns>A task that represents the asynchronous operation of packing the manifest.</returns>
+    private static async Task PackManifestToNx(
+        ISteamSession steamSession, IRenderer renderer, AppId appId, DepotId depotId, ManifestId manifestId, string branch, AbsolutePath finalOutput, CancellationToken token)
+    {
+        var manifest = await steamSession.GetManifestContents(appId, depotId, manifestId,
+            branch, token
+        );
+
+        var builder = new NxPackerBuilder();
+        builder.WithMaxNumThreads(Environment.ProcessorCount);
+        var openStreams = new List<Stream>(manifest.Files.Length);
+
+        foreach (var file in manifest.Files)
+        {
+            var stream = file.Size == Size.Zero
+                ? Stream.Null
+                : steamSession.GetFileStream(appId, manifest, file.Path);
+            if (!ReferenceEquals(stream, Stream.Null))
+                openStreams.Add(stream);
+            builder.AddFile(stream, new AddFileParams
+            {
+                RelativePath = file.Path.ToString(),
+            });
+        }
+
+        var tmpOutput = finalOutput.ReplaceExtension(KnownExtensions.Tmp);
+        await renderer.TextLine("Writing .nx archive…");
+        await using (var outputStream = tmpOutput.Create())
+        {
+            builder.WithOutput(outputStream);
+            builder.Build();
+        }
+
+        foreach (var s in openStreams)
+            await s.DisposeAsync();
+
+        await tmpOutput.MoveToAsync(finalOutput, token: token);
     }
 
     private static async Task<ConcurrentBag<Sha1Value>> LoadExistingHashes(AbsolutePath folder, JsonSerializerOptions options, CancellationToken token)
