@@ -32,4 +32,4 @@ jobs:
         run: dotnet build --no-restore
 
       - name: Creation Engine Tests
-        run: dotnet run --no-build --project .\tests\Games\IntegrationTests\NexusMods.Games.IntegrationTests.CreationEngine.Tests\NexusMods.Games.IntegrationTests.CreationEngine.Tests.csproj
+        run: dotnet run --no-build --project tests/Games/IntegrationTests/NexusMods.Games.IntegrationTests.CreationEngine.Tests/NexusMods.Games.IntegrationTests.CreationEngine.Tests.csproj
