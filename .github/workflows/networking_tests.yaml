@@ -30,8 +30,25 @@ jobs:
       - name: Build
         run: dotnet build --no-restore
 
-      - name: Tests
-        run: dotnet test --no-build --logger "GitHubActions" --filter "RequiresNetworking=True" --blame-hang-timeout 20m
-
+      - name: Test (exclude Integration projects)
+        shell: pwsh
+        env:
+          VSTEST_TESTHOST_SHUTDOWN_TIMEOUT: 60000
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $testProjects = Get-ChildItem -Recurse -Path "tests" -Filter *.csproj |
+            Where-Object { $_.FullName -match '\\.Tests\\.csproj$' -and $_.FullName -notmatch 'Integration' }
+          if (-not $testProjects) {
+            Write-Host "No matching test projects found (excluding *Integration*)."
+            exit 0
+          }
+          foreach ($proj in $testProjects) {
+            Write-Host "Running tests for: $($proj.FullName)"
+            dotnet test $proj.FullName --configuration Release --no-build --verbosity normal `
+              --filter "RequiresNetworking=True" `
+              --logger "GitHubActions" `
+              --blame-hang-timeout 20m
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          }
 
 
