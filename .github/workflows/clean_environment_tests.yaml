@@ -30,8 +30,53 @@ jobs:
 
   build-and-test:
     if: github.event_name == 'push' || github.event.pull_request.draft == false
-    uses: Nexus-Mods/NexusMods.App.Meta/.github/workflows/dotnet-build-and-test-with-osx.yaml@main
-    with:
-      extra-test-args: "--blame-hang-timeout 20m"
-      test-filter: "RequiresNetworking!=True&FlakeyTest!=True"
-      codecov-flags: ",clean_environment_tests"
+    name: Build and Test (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, windows-latest, macos-latest ]
+
+    steps:
+      - name: Free Disk Space (Ubuntu)
+        if: runner.os == 'Linux'
+        uses: jlumbroso/free-disk-space@main
+
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
+          lfs: true
+
+      - name: Setup .NET 9.x
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.x'
+
+      - name: Print debug info
+        run: dotnet --info
+
+      - name: Install dependencies
+        run: dotnet restore NexusMods.App.sln
+
+      - name: Build
+        run: dotnet build NexusMods.App.sln --configuration Release --no-restore
+
+      - name: Test (exclude Integration projects)
+        shell: pwsh
+        env:
+          VSTEST_TESTHOST_SHUTDOWN_TIMEOUT: 60000
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $testProjects = Get-ChildItem -Recurse -Path "tests" -Filter *.csproj |
+            Where-Object { $_.FullName -match '\\.Tests\\.csproj$' -and $_.FullName -notmatch 'Integration' }
+          if (-not $testProjects) {
+            Write-Host "No matching test projects found (excluding *Integration*)."
+            exit 0
+          }
+          foreach ($proj in $testProjects) {
+            Write-Host "Running tests for: $($proj.FullName)"
+            dotnet test $proj.FullName --configuration Release --no-build --verbosity normal `
+              --filter "RequiresNetworking!=True&FlakeyTest!=True" `
+              --logger "GitHubActions" `
+              --blame-hang-timeout 20m
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          }
