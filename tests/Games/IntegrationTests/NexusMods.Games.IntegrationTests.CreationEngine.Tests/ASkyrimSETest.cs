@@ -12,7 +12,15 @@ public abstract class ASkyrimSETest : AGameIntegrationTest<SkyrimSE>
     {
         get
         {
-            var steamFolder = FileSystem.GetKnownPath(KnownPath.ProgramFilesDirectory) / "Steam" / "steamapps" / "common" / "Skyrim Special Edition";
+            AbsolutePath steamBase;
+            if (OSInformation.Shared.IsWindows)
+                steamBase = FileSystem.GetKnownPath(KnownPath.ProgramFilesDirectory) / "Steam";
+            else if (OSInformation.Shared.IsLinux)
+                steamBase = FileSystem.GetKnownPath(KnownPath.HomeDirectory) / ".steam";
+            else
+                throw new NotImplementedException("Add OS mappings for this OS");
+            
+            var steamFolder = steamBase / "steamapps" / "common" / "Skyrim Special Edition";
             yield return new GameLocatorResult(steamFolder, FileSystem, OSInformation.FakeWindows,
                 GameStore.Steam, new SteamLocatorResultMetadata
                 {
