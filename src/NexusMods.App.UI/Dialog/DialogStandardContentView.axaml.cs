@@ -6,7 +6,6 @@ using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Dialog.Enums;
 using ReactiveUI;
 using Avalonia.ReactiveUI;
-using NexusMods.Abstractions.UI;
 
 namespace NexusMods.App.UI.Dialog;
 

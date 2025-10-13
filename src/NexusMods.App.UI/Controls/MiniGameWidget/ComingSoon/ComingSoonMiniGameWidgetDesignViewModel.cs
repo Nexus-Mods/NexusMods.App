@@ -1,8 +1,7 @@
-using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls.MiniGameWidget.Standard;
 using ReactiveUI;
 using System.Reactive;
-using ReactiveUI.Fody.Helpers;
+using NexusMods.UI.Sdk;
 
 namespace NexusMods.App.UI.Controls.MiniGameWidget.ComingSoon;
 

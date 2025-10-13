@@ -1,6 +1,6 @@
 using ReactiveUI;
 
-namespace NexusMods.Abstractions.UI;
+namespace NexusMods.UI.Sdk;
 
 public abstract class AViewModel<TInterface> : ReactiveObject, IViewModel
     where TInterface : class, IViewModelInterface

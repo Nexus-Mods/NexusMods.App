@@ -4,8 +4,8 @@ using Avalonia.Automation.Peers;
 using Avalonia.Controls;
 using Avalonia.Threading;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.UI;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.UI.Sdk;
 using NexusMods.UI.Tests.Framework;
 
 namespace NexusMods.UI.Tests;

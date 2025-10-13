@@ -1,6 +1,6 @@
 using JetBrains.Annotations;
-using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Windows;
+using NexusMods.UI.Sdk;
 using NexusMods.UI.Sdk.Icons;
 
 namespace NexusMods.App.UI.WorkspaceSystem;

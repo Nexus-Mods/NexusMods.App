@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using NexusMods.Abstractions.FileExtractor;
 using NexusMods.FileExtractor.Extractors;
 using NexusMods.Paths;
+using NexusMods.Sdk.FileExtractor;
 using NexusMods.Sdk.Settings;
 
 namespace NexusMods.FileExtractor;

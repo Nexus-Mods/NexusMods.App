@@ -1,7 +1,7 @@
 using System.Reactive;
-using NexusMods.Abstractions.UI;
 using NexusMods.UI.Sdk.Icons;
 using NexusMods.App.UI.Resources;
+using NexusMods.UI.Sdk;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 

@@ -1,10 +1,9 @@
 ﻿using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Paths;
-using NexusMods.Sdk;
 using NexusMods.Sdk.Settings;
 
-namespace NexusMods.Abstractions.FileExtractor;
+namespace NexusMods.Sdk.FileExtractor;
 
 /// <summary>
 /// Settings for the file extractor.

@@ -1,9 +1,9 @@
 using System.Collections.ObjectModel;
-using NexusMods.Abstractions.UI;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.Extensions;
 using NexusMods.Sdk.Settings;
+using NexusMods.UI.Sdk;
 using R3;
 
 namespace NexusMods.App.UI.Pages.Sorting;
