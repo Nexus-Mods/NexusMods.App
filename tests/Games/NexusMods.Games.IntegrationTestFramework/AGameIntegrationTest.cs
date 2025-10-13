@@ -1,7 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.GameLocators.Stores.Steam;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
@@ -9,13 +8,9 @@ using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Backend;
 using NexusMods.DataModel;
-using NexusMods.DataModel.GameRegistry;
-using NexusMods.DataModel.Synchronizer;
 using NexusMods.Games.CreationEngine;
 using NexusMods.Games.FileHashes;
-using NexusMods.Jobs;
 using NexusMods.Paths;
-using NexusMods.Sdk;
 using NexusMods.Sdk.Settings;
 
 namespace NexusMods.Games.IntegrationTestFramework;

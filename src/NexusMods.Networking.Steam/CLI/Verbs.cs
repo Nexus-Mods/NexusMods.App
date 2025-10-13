@@ -2,20 +2,19 @@ using System.Collections.Concurrent;
 using System.Text.Json;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Cli;
-using NexusMods.Sdk.Hashes;
+using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.GameLocators.Stores.Steam;
 using NexusMods.Abstractions.Steam;
 using NexusMods.Abstractions.Steam.DTOs;
 using NexusMods.Abstractions.Steam.Values;
+using NexusMods.Archives.Nx.Packing;
 using NexusMods.Networking.Steam.Exceptions;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
+using NexusMods.Paths.Utilities;
+using NexusMods.Sdk.Hashes;
 using NexusMods.Sdk.Jobs;
 using NexusMods.Sdk.ProxyConsole;
-using NexusMods.Archives.Nx.Packing;
-using NexusMods.Archives.Nx.Utilities;
-using NexusMods.Paths.Utilities;
-using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.GameLocators.Stores.Steam;
 
 namespace NexusMods.Networking.Steam.CLI;
 
