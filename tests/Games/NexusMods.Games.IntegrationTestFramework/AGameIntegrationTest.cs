@@ -1,3 +1,6 @@
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using System.Text;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NexusMods.Abstractions.GameLocators;
@@ -5,12 +8,15 @@ using NexusMods.Abstractions.GameLocators.Stores.Steam;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Backend;
 using NexusMods.DataModel;
 using NexusMods.Games.CreationEngine;
 using NexusMods.Games.FileHashes;
+using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.Networking.NexusWebApi;
 using NexusMods.Paths;
 using NexusMods.Sdk.Settings;
 
@@ -24,16 +30,7 @@ public abstract class AGameIntegrationTest
     private readonly IHost _hosting;
     protected readonly Type GameType;
 
-#region Imported Services
-    public IFileSystem FileSystem { get; }
-    public IGameRegistry GameRegistry { get; set; }
-    public GameInstallation GameInstallation { get; set; }
-    public ILoadoutSynchronizer Synchronizer { get; set; }
-    
-    protected ILoadoutManager LoadoutManager { get; set; }
 
-    
-#endregion
 
     private record FauxLocator(GameLocatorResult LocatorResult) : IGameLocator
     { 
@@ -142,13 +139,79 @@ public abstract class AGameIntegrationTest
     public async Task Startup()
     {
         await _hosting.StartAsync();
+        ServiceProvider = _hosting.Services;
+        Connection = ServiceProvider.GetRequiredService<IConnection>();
         GameRegistry = _hosting.Services.GetRequiredService<IGameRegistry>();
         GameInstallation = GameRegistry.Installations.Values
             .Single(g => g.Game.GetType() == GameType);
         Synchronizer = GameInstallation.GetGame().Synchronizer;
         LoadoutManager = _hosting.Services.GetRequiredService<ILoadoutManager>();
+        LibraryService = ServiceProvider.GetRequiredService<ILibraryService>();
+        NexusModsLibrary = ServiceProvider.GetRequiredService<NexusModsLibrary>();
+        TemporaryFileManager = ServiceProvider.GetRequiredService<TemporaryFileManager>();
     }
 
+
+
+#region Imported Services
+    protected IFileSystem FileSystem { get; }
+    protected IGameRegistry GameRegistry { get; set; }
+    protected GameInstallation GameInstallation { get; set; }
+    protected ILoadoutSynchronizer Synchronizer { get; set; }
+    
+    protected ILoadoutManager LoadoutManager { get; set; }
+
+    protected IConnection Connection { get; set; }
+
+    protected IServiceProvider ServiceProvider { get; set; }
+    
+    public ILibraryService LibraryService { get; set; }
+
+    public NexusModsLibrary NexusModsLibrary { get; set; }
+    
+    public TemporaryFileManager TemporaryFileManager { get; set; }
+    
+#endregion
+
+    /// <summary>
+    /// Formats the tuples into a markdown table and runs verify on the resulting data
+    /// </summary>
+    protected SettingsTask VerifyTable<T>(IEnumerable<T> table, string? name = null)
+        where T : ITuple
+    {
+        List<List<string>> rows = new();
+        Dictionary<int, int> cellWidths = new();
+
+        foreach (var row in table)
+        {
+            var rowCells = new List<string>();
+            rows.Add(rowCells);
+            for (var cellIdx = 0; cellIdx < row.Length; cellIdx++)
+            {
+                var cellData = row[cellIdx]?.ToString() ?? string.Empty;
+                ref var existingWidth = ref CollectionsMarshal.GetValueRefOrAddDefault(cellWidths, cellIdx, out var exists);
+                existingWidth = Math.Max(existingWidth, cellData.Length);
+                rowCells.Add(cellData);
+            }
+        }
+
+        var sb = new StringBuilder();
+        foreach (var row in rows)
+        {
+            sb.Append("| ");
+            for (var i = 0; i < row.Count; i++)
+            {
+                sb.Append(row[i].PadRight(cellWidths[i]));
+                sb.Append(" | ");
+            }
+            sb.AppendLine();
+        }
+        var task = Verify(sb.ToString(), extension: "md");
+        if (name is not null)
+            task.UseParameters("NAME", name);
+        return task;
+    }
+    
 
     public async Task<Loadout.ReadOnly> CreateLoadout()
     {
