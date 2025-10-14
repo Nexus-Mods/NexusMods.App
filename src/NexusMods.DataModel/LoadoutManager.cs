@@ -329,24 +329,6 @@ internal class LoadoutManager : ILoadoutManager
         });
     }
 
-    private static ConflictPriority GetNextPriority(LoadoutId loadoutId, IDb db)
-    {
-        var query = db.Connection.Query<ulong>($"""
-                                                         SELECT
-                                                           coalesce(max(priority.Priority), 0)
-                                                         FROM
-                                                           MDB_LOADOUTITEMGROUPPRIORITY(Db=>{db}) priority
-                                                           LEFT JOIN MDB_LOADOUTITEMGROUP (Db=>{db}) item_group ON priority.Target = item_group.Id
-                                                         WHERE
-                                                           item_group.Loadout = {loadoutId};
-                                                         """);
-
-        var results = query.ToArray();
-        Debug.Assert(results.Length == 1, $"scalar query should return 1 element, found {results.Length} elements instead");
-        var max = results[0];
-        return ConflictPriority.From(max + 1);
-    }
-
     public IJobTask<IInstallLoadoutItemJob, InstallLoadoutItemJobResult> InstallItem(
         LibraryItem.ReadOnly libraryItem,
         LoadoutId targetLoadout,
@@ -374,7 +356,7 @@ internal class LoadoutManager : ILoadoutManager
         {
             var result = await job.StartAsync(context);
             var targetId = result.GroupTxId;
-            tx.Add(new PriorityTxFunc(targetLoadout, targetId));
+            tx.Add(new AddPriorityTxFunc(targetLoadout, targetId));
 
             if (mainTransaction is null) return result;
 
@@ -384,12 +366,23 @@ internal class LoadoutManager : ILoadoutManager
         });
     }
 
-    private class PriorityTxFunc : ITxFunction
+    private static ConflictPriority GetNextPriority(LoadoutId loadoutId, IDb db)
+    {
+        var query = db.Connection.Query<ulong>($"synchronizer.MaxPriority({db}, {loadoutId})");
+
+        // TODO: https://github.com/Nexus-Mods/NexusMods.MnemonicDB/issues/181
+        var results = query.ToArray();
+        Debug.Assert(results.Length == 1, $"scalar query should return 1 element, found {results.Length} elements instead");
+        var max = results[0];
+        return ConflictPriority.From(max + 1);
+    }
+
+    private class AddPriorityTxFunc : ITxFunction
     {
         private readonly LoadoutId _loadoutId;
         private readonly LoadoutItemGroupId _targetId;
 
-        public PriorityTxFunc(LoadoutId loadoutId, LoadoutItemGroupId targetId)
+        public AddPriorityTxFunc(LoadoutId loadoutId, LoadoutItemGroupId targetId)
         {
             _loadoutId = loadoutId;
             _targetId = targetId;
@@ -397,7 +390,7 @@ internal class LoadoutManager : ILoadoutManager
 
         public bool Equals(ITxFunction? obj)
         {
-            if (obj is not PriorityTxFunc other) return false;
+            if (obj is not AddPriorityTxFunc other) return false;
             return other._loadoutId.Equals(_loadoutId) && other._targetId == _targetId;
         }
 
@@ -407,6 +400,7 @@ internal class LoadoutManager : ILoadoutManager
         {
             var priority = GetNextPriority(_loadoutId, basis);
             var id = tx.TempId();
+            tx.Add(id, LoadoutItemGroupPriority.Loadout, _loadoutId);
             tx.Add(id, LoadoutItemGroupPriority.Target, _targetId);
             tx.Add(id, LoadoutItemGroupPriority.Priority, priority);
         }
