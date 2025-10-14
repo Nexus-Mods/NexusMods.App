@@ -11,9 +11,9 @@ public abstract class LocatorResultAttribute<TGame> : DataSourceGeneratorAttribu
 
     protected override IEnumerable<Func<(Type, GameLocatorResult)>> GenerateDataSources(DataGeneratorMetadata dataGeneratorMetadata)
     {
-        if (Environment.GetEnvironmentVariable("NMA_INTEGRATION_BASE_PATH") == null)
+        if (Environment.GetEnvironmentVariable(AGameIntegrationTest.GameImagesEnvVarName) == null)
         {
-            Console.WriteLine("NMA_INTEGRATION_BASE_PATH environment variable is not set, skipping integration tests");
+            Console.WriteLine($"{AGameIntegrationTest.GameImagesEnvVarName} environment variable is not set, skipping integration tests");
             yield break;
         }
 
