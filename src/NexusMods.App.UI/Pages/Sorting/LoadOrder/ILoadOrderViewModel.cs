@@ -11,6 +11,11 @@ namespace NexusMods.App.UI.Pages.Sorting;
 public interface ILoadOrderViewModel : IViewModelInterface
 {
     /// <summary>
+    /// The variety of the sort order being represented
+    /// </summary>
+    ISortOrderVariety SortOrderVariety { get; }
+    
+    /// <summary>
     /// TreeDataGridAdapter for the Load Order, for setting up the TreeDataGrid
     /// </summary>
     TreeDataGridAdapter<CompositeItemModel<ISortItemKey>, ISortItemKey> Adapter { get; }
