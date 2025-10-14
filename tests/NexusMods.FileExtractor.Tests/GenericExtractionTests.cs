@@ -3,6 +3,7 @@ using NexusMods.Abstractions.FileExtractor;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.Hashing.xxHash3.Paths;
 using NexusMods.Paths;
+using NexusMods.Sdk.FileExtractor;
 
 namespace NexusMods.FileExtractor.Tests;
 

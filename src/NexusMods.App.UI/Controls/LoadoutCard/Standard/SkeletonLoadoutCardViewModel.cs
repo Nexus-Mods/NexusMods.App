@@ -1,7 +1,7 @@
 using System.Reactive;
 using Avalonia.Media;
-using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls.LoadoutBadge;
+using NexusMods.UI.Sdk;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.Controls.LoadoutCard;

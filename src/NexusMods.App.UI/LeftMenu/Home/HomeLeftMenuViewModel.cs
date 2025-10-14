@@ -1,6 +1,5 @@
 using System.Collections.ObjectModel;
 using JetBrains.Annotations;
-using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.LeftMenu.Items;
@@ -8,6 +7,7 @@ using NexusMods.App.UI.Pages.MyGames;
 using NexusMods.App.UI.Pages.MyLoadouts;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.UI.Sdk;
 using NexusMods.UI.Sdk.Icons;
 using ReactiveUI;
 

@@ -1,7 +1,7 @@
 using System.Collections.ObjectModel;
 using System.Reactive;
-using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls.LoadoutCard;
+using NexusMods.UI.Sdk;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.Pages.MyLoadouts.GameLoadoutsSectionEntry;

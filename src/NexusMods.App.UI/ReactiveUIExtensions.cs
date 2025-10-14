@@ -5,7 +5,7 @@ using System.Reactive.Linq;
 using Avalonia.Threading;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using NexusMods.Abstractions.UI;
+using NexusMods.UI.Sdk;
 using ReactiveUI;
 
 namespace NexusMods.App.UI;

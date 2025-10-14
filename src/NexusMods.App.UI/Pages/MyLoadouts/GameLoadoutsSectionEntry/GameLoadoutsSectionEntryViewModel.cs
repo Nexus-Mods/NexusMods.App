@@ -8,13 +8,13 @@ using DynamicData.Kernel;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls.LoadoutCard;
 using NexusMods.App.UI.Pages.LoadoutPage;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.UI.Sdk;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.Pages.MyLoadouts.GameLoadoutsSectionEntry;

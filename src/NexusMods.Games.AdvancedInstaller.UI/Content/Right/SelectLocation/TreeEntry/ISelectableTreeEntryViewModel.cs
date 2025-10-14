@@ -1,9 +1,9 @@
 ﻿using System.Reactive;
 using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Helpers;
 using NexusMods.App.UI.Helpers.TreeDataGrid;
 using NexusMods.Paths;
+using NexusMods.UI.Sdk;
 using ReactiveUI;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.SelectLocation;

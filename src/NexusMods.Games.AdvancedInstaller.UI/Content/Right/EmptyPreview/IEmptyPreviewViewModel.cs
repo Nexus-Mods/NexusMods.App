@@ -1,4 +1,6 @@
-﻿using NexusMods.Abstractions.UI;
+﻿
+
+using NexusMods.UI.Sdk;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.EmptyPreview;
 
