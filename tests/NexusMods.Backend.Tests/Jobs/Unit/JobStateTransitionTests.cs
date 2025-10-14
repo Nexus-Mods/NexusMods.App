@@ -1,14 +1,14 @@
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Jobs.Tests;
 using NexusMods.Jobs.Tests.TestInfrastructure;
 using NexusMods.Sdk.Jobs;
-using Xunit;
 
-namespace NexusMods.Jobs.Tests.Unit;
+namespace NexusMods.Backend.Tests.Jobs.Unit;
 
-public class JobStateTransitionTests(IJobMonitor jobMonitor)
+public class JobStateTransitionTests : AJobsTest
 {
-    [Fact]
+    [Test]
     public async Task Should_Start_And_Complete_Successfully()
     {
         // Arrange
@@ -16,7 +16,7 @@ public class JobStateTransitionTests(IJobMonitor jobMonitor)
         var job = new SignaledJob(startSignal);
         
         // Act
-        var task = jobMonitor.Begin<SignaledJob, bool>(job);
+        var task = JobMonitor.Begin<SignaledJob, bool>(job);
         
         // Assert
         task.Job.Status.Should().BeOneOf(JobStatus.None, JobStatus.Created, JobStatus.Running);
@@ -28,7 +28,7 @@ public class JobStateTransitionTests(IJobMonitor jobMonitor)
         task.Job.Status.Should().Be(JobStatus.Completed);
     }
 
-    [Fact]
+    [Test]
     public async Task Should_Transition_From_Running_To_Completed()
     {
         // Arrange
@@ -37,7 +37,7 @@ public class JobStateTransitionTests(IJobMonitor jobMonitor)
         var stateChanges = new List<JobStatus>();
         
         // Act
-        var task = jobMonitor.Begin<SignaledJob, bool>(job);
+        var task = JobMonitor.Begin<SignaledJob, bool>(job);
         using var subscription = task.Job.ObservableStatus.Subscribe(status => stateChanges.Add(status));
         
         // Wait for job to reach `Running` state before signaling
@@ -55,7 +55,7 @@ public class JobStateTransitionTests(IJobMonitor jobMonitor)
         // so we can't verify Created/None state.
     }
 
-    [Fact]
+    [Test]
     public async Task Should_Transition_From_Running_To_Failed_On_Exception()
     {
         // Arrange
@@ -65,7 +65,7 @@ public class JobStateTransitionTests(IJobMonitor jobMonitor)
         var stateChanges = new List<JobStatus>();
         
         // Act
-        var task = jobMonitor.Begin<FailingJob, string>(job);
+        var task = JobMonitor.Begin<FailingJob, string>(job);
         using var subscription = task.Job.ObservableStatus.Subscribe(status => stateChanges.Add(status));
         
         // Wait for job to reach `Running` state before signaling failure
@@ -81,7 +81,7 @@ public class JobStateTransitionTests(IJobMonitor jobMonitor)
         stateChanges.Should().ContainInOrder(JobStatus.Running, JobStatus.Failed);
     }
 
-    [Fact]
+    [Test]
     public async Task Should_Transition_From_Running_To_Cancelled()
     {
         // Arrange
@@ -90,28 +90,19 @@ public class JobStateTransitionTests(IJobMonitor jobMonitor)
         var stateChanges = new List<JobStatus>();
         
         // Act
-        var task = jobMonitor.Begin<WaitForCancellationJob, string>(job);
+        var task = JobMonitor.Begin<WaitForCancellationJob, string>(job);
         
         // Wait for job to be ready, then cancel
         readySignal.Wait(TimeSpan.FromSeconds(30));
         
         // Note(sewer): The job is running by definition, since readySignal was signaled on job's end.
         using var subscription = task.Job.ObservableStatus.Subscribe(status => stateChanges.Add(status));
-        jobMonitor.Cancel(task.Job.Id);
+        JobMonitor.Cancel(task.Job.Id);
         
         // Assert
-        await Assert.ThrowsAnyAsync<OperationCanceledException>(() => task.Job.WaitAsync());
+        await Assert.ThrowsAsync<OperationCanceledException>(() => task.Job.WaitAsync());
         
         task.Job.Status.Should().Be(JobStatus.Cancelled);
         stateChanges.Should().ContainInOrder(JobStatus.Cancelled);
-    }
-
-    // Note(sewer): Should_Self_Cancel_Via_CancelAndThrow is tested in JobCancellationTests.cs
-
-    public class Startup
-    {
-        // https://github.com/pengweiqhca/Xunit.DependencyInjection?tab=readme-ov-file#3-closest-startup
-        // A trick for parallelizing tests with Xunit.DependencyInjection
-        public void ConfigureServices(IServiceCollection services) => DIHelpers.ConfigureServices(services);
     }
 }

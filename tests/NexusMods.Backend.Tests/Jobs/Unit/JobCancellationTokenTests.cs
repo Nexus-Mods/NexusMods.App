@@ -1,12 +1,11 @@
 using FluentAssertions;
 using NexusMods.Sdk.Jobs;
-using Xunit;
 
-namespace NexusMods.Jobs.Tests.Unit;
+namespace NexusMods.Backend.Tests.Jobs.Unit;
 
 public class JobCancellationTokenTests
 {
-    [Fact]
+    [Test]
     public void Should_Initialize_In_Running_State()
     {
         // Arrange & Act
@@ -17,7 +16,7 @@ public class JobCancellationTokenTests
         token.Token.IsCancellationRequested.Should().BeFalse();
     }
 
-    [Fact]
+    [Test]
     public void Should_Support_Basic_Cancellation()
     {
         // Arrange
@@ -31,7 +30,7 @@ public class JobCancellationTokenTests
         token.IsCancelled.Should().BeTrue();
     }
 
-    [Fact]
+    [Test]
     public void Should_Cancel_And_Set_Cancellation_Token()
     {
         // Arrange
@@ -45,7 +44,7 @@ public class JobCancellationTokenTests
         token.IsPaused.Should().BeFalse(); // Cancelled jobs are not considered paused
     }
 
-    [Fact]
+    [Test]
     public void Should_Cancel_And_Recycle_Token_on_Pause()
     {
         // Arrange
@@ -64,7 +63,7 @@ public class JobCancellationTokenTests
         token.Token.IsCancellationRequested.Should().BeFalse();
     }
 
-    [Fact]
+    [Test]
     public void Should_Resume_From_Paused_State()
     {
         // Arrange
@@ -78,7 +77,7 @@ public class JobCancellationTokenTests
         token.IsPaused.Should().BeFalse();
     }
 
-    [Fact]
+    [Test]
     public void Should_Ignore_Resume_When_Not_Paused()
     {
         // Arrange
@@ -91,7 +90,7 @@ public class JobCancellationTokenTests
         token.IsPaused.Should().BeFalse();
     }
 
-    [Fact]
+    [Test]
     public void Should_Ignore_Resume_When_Cancelled()
     {
         // Arrange

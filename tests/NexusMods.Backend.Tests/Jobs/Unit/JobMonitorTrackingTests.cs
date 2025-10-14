@@ -1,15 +1,15 @@
+using DynamicData;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Jobs.Tests;
 using NexusMods.Jobs.Tests.TestInfrastructure;
-using Xunit;
-using DynamicData;
 using NexusMods.Sdk.Jobs;
 
-namespace NexusMods.Jobs.Tests.Unit;
+namespace NexusMods.Backend.Tests.Jobs.Unit;
 
-public class JobMonitorTrackingTests(IJobMonitor jobMonitor)
+public class JobMonitorTrackingTests : AJobsTest
 {
-    [Fact]
+    [Test]
     public async Task Should_Filter_ChangeSet_By_Job_Type()
     {
         // Arrange
@@ -20,14 +20,14 @@ public class JobMonitorTrackingTests(IJobMonitor jobMonitor)
         var simpleJobChanges = new List<IChangeSet<IJob, JobId>>();
         
         // Act
-        using var progressSubscription = jobMonitor.GetObservableChangeSet<ProgressReportingJob>()
+        using var progressSubscription = JobMonitor.GetObservableChangeSet<ProgressReportingJob>()
             .Subscribe(changeSet => progressJobChanges.Add(changeSet));
         
-        using var simpleSubscription = jobMonitor.GetObservableChangeSet<SimpleTestJob>()
+        using var simpleSubscription = JobMonitor.GetObservableChangeSet<SimpleTestJob>()
             .Subscribe(changeSet => simpleJobChanges.Add(changeSet));
         
-        var progressTask = jobMonitor.Begin<ProgressReportingJob, double>(progressJob);
-        var simpleTask = jobMonitor.Begin<SimpleTestJob, string>(simpleJob);
+        var progressTask = JobMonitor.Begin<ProgressReportingJob, double>(progressJob);
+        var simpleTask = JobMonitor.Begin<SimpleTestJob, string>(simpleJob);
         
         await Task.WhenAll(progressTask.Job.WaitAsync(), simpleTask.Job.WaitAsync());
         
@@ -43,7 +43,7 @@ public class JobMonitorTrackingTests(IJobMonitor jobMonitor)
         simpleJobs.Should().OnlyContain(job => job.Definition is SimpleTestJob);
     }
 
-    [Fact]
+    [Test]
     public async Task Should_Emit_ChangeSet_Events_For_Job_Lifecycle()
     {
         // Arrange
@@ -52,14 +52,14 @@ public class JobMonitorTrackingTests(IJobMonitor jobMonitor)
         var changeSignal = new AutoResetEvent(false);
         
         // Act
-        using var subscription = jobMonitor.GetObservableChangeSet<SimpleTestJob>()
+        using var subscription = JobMonitor.GetObservableChangeSet<SimpleTestJob>()
             .Subscribe(changeSet => 
             {
                 changeSets.Add(changeSet);
                 changeSignal.Set();
             });
         
-        var task = jobMonitor.Begin<SimpleTestJob, string>(job);
+        var task = JobMonitor.Begin<SimpleTestJob, string>(job);
         
         // Wait for initial change set
         changeSignal.WaitOne(TimeSpan.FromSeconds(2));
@@ -75,12 +75,5 @@ public class JobMonitorTrackingTests(IJobMonitor jobMonitor)
         // Should have at least one Add operation
         var hasAddOperation = changeSets.Any(cs => cs.Any(change => change.Reason == ChangeReason.Add));
         hasAddOperation.Should().BeTrue();
-    }
-
-    public class Startup
-    {
-        // https://github.com/pengweiqhca/Xunit.DependencyInjection?tab=readme-ov-file#3-closest-startup
-        // A trick for parallelizing tests with Xunit.DependencyInjection
-        public void ConfigureServices(IServiceCollection services) => DIHelpers.ConfigureServices(services);
     }
 }

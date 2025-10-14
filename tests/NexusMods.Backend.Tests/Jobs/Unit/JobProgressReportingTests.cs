@@ -1,15 +1,14 @@
-using System.Reactive.Linq;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Jobs.Tests;
 using NexusMods.Jobs.Tests.TestInfrastructure;
-using NexusMods.Sdk.Jobs;
-using Xunit;
+using System.Reactive.Linq;
 
-namespace NexusMods.Jobs.Tests.Unit;
+namespace NexusMods.Backend.Tests.Jobs.Unit;
 
-public class JobProgressReportingTests(IJobMonitor jobMonitor)
+public class JobProgressReportingTests : AJobsTest
 {
-    [Fact]
+    [Test]
     public async Task Should_Report_Progress_As_Percentage()
     {
         // Arrange
@@ -18,7 +17,7 @@ public class JobProgressReportingTests(IJobMonitor jobMonitor)
         var progressUpdates = new List<double>();
         
         // Act
-        var task = jobMonitor.Begin<ProgressReportingJob, double>(job);
+        var task = JobMonitor.Begin<ProgressReportingJob, double>(job);
         
         using var subscription = task.Job.ObservableProgress
             .Where(p => p.HasValue)
@@ -42,7 +41,7 @@ public class JobProgressReportingTests(IJobMonitor jobMonitor)
         progressUpdates.Last().Should().BeApproximately(1.0, 0.01);
     }
 
-    [Fact]
+    [Test]
     public async Task Should_Report_Rate_Of_Progress()
     {
         // Arrange
@@ -51,7 +50,7 @@ public class JobProgressReportingTests(IJobMonitor jobMonitor)
         var rateUpdates = new List<double>();
         
         // Act
-        var task = jobMonitor.Begin<ProgressReportingJob, double>(job);
+        var task = JobMonitor.Begin<ProgressReportingJob, double>(job);
         
         using var subscription = task.Job.ObservableRateOfProgress
             .Where(r => r.HasValue)
@@ -67,7 +66,7 @@ public class JobProgressReportingTests(IJobMonitor jobMonitor)
         rateUpdates.Should().OnlyContain(r => Math.Abs(r - 20.0) < 0.00001);
     }
 
-    [Fact]
+    [Test]
     public async Task Should_Handle_Indeterminate_Progress()
     {
         // Test jobs that report indeterminate progress (unknown total work)
@@ -79,7 +78,7 @@ public class JobProgressReportingTests(IJobMonitor jobMonitor)
         var rateUpdates = new List<double>();
         
         // Act
-        var task = jobMonitor.Begin<IndeterminateProgressJob, int>(job);
+        var task = JobMonitor.Begin<IndeterminateProgressJob, int>(job);
         
         using var progressSub = task.Job.ObservableProgress
             .Where(p => p.HasValue)
@@ -112,12 +111,5 @@ public class JobProgressReportingTests(IJobMonitor jobMonitor)
         // Result should match processed item count
         var result = await task;
         result.Should().Be(job.ItemCount);
-    }
-
-    public class Startup
-    {
-        // https://github.com/pengweiqhca/Xunit.DependencyInjection?tab=readme-ov-file#3-closest-startup
-        // A trick for parallelizing tests with Xunit.DependencyInjection
-        public void ConfigureServices(IServiceCollection services) => DIHelpers.ConfigureServices(services);
     }
 }
