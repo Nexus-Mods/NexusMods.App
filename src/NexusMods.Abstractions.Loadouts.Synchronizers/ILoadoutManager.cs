@@ -75,4 +75,9 @@ public interface ILoadoutManager
     /// Remove a loadout item.
     /// </summary>
     ValueTask RemoveItems(LoadoutId loadoutId, LoadoutItemGroupId[] groups);
+
+    /// <summary>
+    /// Removes a collection.
+    /// </summary>
+    ValueTask RemoveCollection(LoadoutId loadoutId, CollectionGroupId collection);
 }

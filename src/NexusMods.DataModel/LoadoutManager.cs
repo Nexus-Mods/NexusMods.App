@@ -382,7 +382,20 @@ internal partial class LoadoutManager : ILoadoutManager
             tx.Delete(id, recursive: true);
         }
 
-        tx.Add(new RebalancePrioritiesTxFunc(loadoutId, groups));
+        tx.Add(new RebalancePrioritiesTxFunc(loadoutId, groups.Select(x => x.Value).ToArray()));
+        await tx.Commit();
+    }
+
+    public async ValueTask RemoveCollection(LoadoutId loadoutId, CollectionGroupId collection)
+    {
+        var db = _connection.Db;
+        using var tx = _connection.BeginTransaction();
+
+        tx.Delete(collection, recursive: true);
+
+        var items = LoadoutItem.FindByParent(db, collection).EntityIds.ToArray();
+        tx.Add(new RebalancePrioritiesTxFunc(loadoutId, items));
+
         await tx.Commit();
     }
 }

@@ -10,12 +10,12 @@ internal partial class LoadoutManager
     private class RebalancePrioritiesTxFunc : ITxFunction
     {
         private readonly LoadoutId _loadoutId;
-        private readonly LoadoutItemGroupId[] _toDelete;
+        private readonly EntityId[] _toSkip;
 
-        public RebalancePrioritiesTxFunc(LoadoutId loadoutId, LoadoutItemGroupId[] toDelete)
+        public RebalancePrioritiesTxFunc(LoadoutId loadoutId, EntityId[] toSkip)
         {
             _loadoutId = loadoutId;
-            _toDelete = toDelete;
+            _toSkip = toSkip;
         }
 
         public bool Equals(ITxFunction? obj)
@@ -35,7 +35,7 @@ internal partial class LoadoutManager
             var start = 0UL;
             foreach (var model in priorities)
             {
-                if (_toDelete.Contains(model.TargetId)) continue;
+                if (_toSkip.Contains(model.TargetId)) continue;
                 var newPriority = ConflictPriority.From(++start);
                 tx.Add(model.Id, LoadoutItemGroupPriority.Priority, newPriority);
             }
