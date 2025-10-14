@@ -1,12 +1,12 @@
-using FluentAssertions;
 using JetBrains.Annotations;
-using NexusMods.Jobs.Tests.TestInfrastructure;
+using NexusMods.Backend.Tests.Jobs.TestInfrastructure;
 using NexusMods.Paths;
 using NexusMods.Sdk.Jobs;
 using Xunit;
+
 // ReSharper disable LocalizableElement
 
-namespace NexusMods.Jobs.Tests.Examples.BestPractices;
+namespace NexusMods.Backend.Tests.Jobs.Examples.BestPractices;
 
 // Jobs can be paused and resumed cooperatively. Jobs must call YieldAsync() 
 // to respect pause requests.

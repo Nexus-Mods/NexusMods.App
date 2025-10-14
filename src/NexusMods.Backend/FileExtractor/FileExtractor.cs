@@ -1,13 +1,12 @@
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.FileExtractor;
-using NexusMods.FileExtractor.Extractors;
-using NexusMods.FileExtractor.FileSignatures;
+using NexusMods.Backend.FileExtractor.Extractors;
+using NexusMods.Backend.FileExtractor.FileSignatures;
 using NexusMods.Paths;
 using NexusMods.Paths.Utilities;
 using NexusMods.Sdk.FileExtractor;
 using NexusMods.Sdk.IO;
 
-namespace NexusMods.FileExtractor;
+namespace NexusMods.Backend.FileExtractor;
 
 /// <summary>
 /// Utility used for extracting files.

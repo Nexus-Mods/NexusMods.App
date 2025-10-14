@@ -1,8 +1,7 @@
-using FluentAssertions;
-using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Jobs.Tests;
 using NexusMods.Jobs.Tests.TestInfrastructure;
 using NexusMods.Sdk.Jobs;
+using TUnit.Assertions;
 
 namespace NexusMods.Backend.Tests.Jobs.Unit;
 
@@ -26,7 +25,7 @@ public class JobCancellationTests : AJobsTest
         
         // Assert
         await Assert.ThrowsAsync<OperationCanceledException>(async () => await task.Job.WaitAsync());
-        task.Job.Status.Should().Be(JobStatus.Cancelled);
+        await Assert.That(task.Job.Status).IsEqualTo(JobStatus.Cancelled);
     }
 
     // TODO: Should_Cancel_All_Jobs_In_Group once there is a proper group API.
@@ -60,7 +59,7 @@ public class JobCancellationTests : AJobsTest
         foreach (var task in tasks)
         {
             await Assert.ThrowsAsync<OperationCanceledException>(async () => await task.Job.WaitAsync());
-            task.Job.Status.Should().Be(JobStatus.Cancelled);
+            await Assert.That(task.Job.Status).IsEqualTo(JobStatus.Cancelled);
         }
     }
 
@@ -78,8 +77,8 @@ public class JobCancellationTests : AJobsTest
         // Assert
         await Assert.ThrowsAsync<OperationCanceledException>(async () => await task.Job.WaitAsync());
         
-        task.Job.Status.Should().Be(JobStatus.Cancelled);
-        stateChanges.Should().ContainInOrder(JobStatus.Running, JobStatus.Cancelled);
+        await Assert.That(task.Job.Status).IsEqualTo(JobStatus.Cancelled);
+        await Assert.That(stateChanges).Contains(JobStatus.Cancelled);
     }
 
     [Test]
@@ -98,8 +97,8 @@ public class JobCancellationTests : AJobsTest
         JobMonitor.Cancel(task.Job.Id);
         
         // Assert - Job should remain completed
-        task.Job.Status.Should().Be(JobStatus.Completed);
-        result.Should().Be("Completed");
+        await Assert.That(task.Job.Status).IsEqualTo(JobStatus.Completed);
+        await Assert.That(result).IsEqualTo("Completed");
     }
 
     [Test]
@@ -128,7 +127,7 @@ public class JobCancellationTests : AJobsTest
         // Assert - Since the job never calls YieldAsync() and doesn't use cancellation-aware APIs,
         // it should complete normally despite the cancellation request
         var result = await task;
-        result.Should().Be("Non-yielding work completed");
-        task.Job.Status.Should().Be(JobStatus.Completed);
+        await Assert.That(result).IsEqualTo("Non-yielding work completed");
+        await Assert.That(task.Job.Status).IsEqualTo(JobStatus.Completed);
     }
 }

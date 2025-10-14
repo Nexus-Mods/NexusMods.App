@@ -2,7 +2,7 @@ using NexusMods.Abstractions.FileExtractor;
 using NexusMods.Paths;
 using NexusMods.Sdk.IO;
 
-namespace NexusMods.FileExtractor.Extractors;
+namespace NexusMods.Backend.FileExtractor.Extractors;
 
 /// <summary>
 /// Generic enum for expressing the priority of a given operation. Most operations will be Normal priority, but

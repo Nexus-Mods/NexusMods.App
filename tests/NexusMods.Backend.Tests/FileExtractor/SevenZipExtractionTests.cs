@@ -1,57 +1,40 @@
-using FluentAssertions;
-using NexusMods.Abstractions.FileExtractor;
-using NexusMods.FileExtractor.Extractors;
+using NexusMods.Backend.FileExtractor.Extractors;
 using NexusMods.Hashing.xxHash3;
-using NexusMods.Hashing.xxHash3.Paths;
 using NexusMods.Paths;
 using NexusMods.Sdk.FileExtractor;
 using Reloaded.Memory.Extensions;
 
-namespace NexusMods.FileExtractor.Tests;
+namespace NexusMods.Backend.Tests.FileExtractor;
 
-public class SevenZipExtractionTests
+public class SevenZipExtractionTests : AFileExtractorTest
 {
-    private readonly IFileExtractor _extractor;
-
-    private readonly TemporaryFileManager _temporaryFileManager;
-
-    private readonly IFileSystem _fileSystem;
-
-    public SevenZipExtractionTests(IFileExtractor extractor, TemporaryFileManager temporaryFileManager,
-        IFileSystem fileSystem)
-    {
-        _extractor = extractor;
-        _temporaryFileManager = temporaryFileManager;
-        _fileSystem = fileSystem;
-    }
-
-    [Fact]
+    [Test]
     public async Task Test_Issue3003()
     {
         const string fileName = "zip-with-spaces.zip";
         var archivePath = FileSystem.Shared.GetKnownPath(KnownPath.CurrentDirectory).Combine("Resources").Combine(fileName);
-        archivePath.FileExists.Should().BeTrue();
+        await Assert.That(archivePath.FileExists).IsTrue();
 
         await using var destination = _temporaryFileManager.CreateFolder();
         await _extractor.ExtractAllAsync(archivePath, destination);
 
         var files = destination.Path.EnumerateFiles().ToArray();
-        files.Should().AllSatisfy(file =>
-        {
-            file.FileExists.Should().BeTrue(because: $"should exist {file}");
-        });
+        await Assert.That(files)
+            .All()
+            .HasProperty(f => f.FileExists)
+            .EqualTo(true);
     }
 
-    [Theory]
-    [InlineData("foo/bar", "foo/bar")]
-    [InlineData("foo/bar ", "foo/bar_")]
-    [InlineData("foo/bar  ", "foo/bar__")]
-    [InlineData("foo/bar.", "foo/bar_")]
-    [InlineData("foo/bar..", "foo/bar__")]
-    [InlineData("foo/bar. ", "foo/bar__")]
-    [InlineData(". ", "__")]
-    [InlineData(".", "_")]
-    [InlineData(" ", "_")]
+    [Test]
+    [Arguments("foo/bar", "foo/bar")]
+    [Arguments("foo/bar ", "foo/bar_")]
+    [Arguments("foo/bar  ", "foo/bar__")]
+    [Arguments("foo/bar.", "foo/bar_")]
+    [Arguments("foo/bar..", "foo/bar__")]
+    [Arguments("foo/bar. ", "foo/bar__")]
+    [Arguments(". ", "__")]
+    [Arguments(".", "_")]
+    [Arguments(" ", "_")]
     public void Test_To7ZipWindowsExtractionPath(string input, string expected)
     {
         Span<char> span = stackalloc char[input.Length];
@@ -64,13 +47,13 @@ public class SevenZipExtractionTests
         actual.Should().Be(expected);
     }
 
-    [Theory]
-    [InlineData("2024-04-16 06:10:44 D....            0            0  .", false, null, true)]
-    [InlineData("2024-04-16 06:10:44 D....            0            0  ..", false, null, true)]
-    [InlineData("2024-04-16 06:10:44 D....            0            0  foo ", true, "foo ", true)]
-    [InlineData("2024-04-16 06:10:44 .....            0            0  foo ", true, "foo ", false)]
-    [InlineData("2024-04-16 06:10:44 .....            0            0  foo", false, null, false)]
-    [InlineData("2024-04-16 06:10:44 D....            0            0  foo", false, null, true)]
+    [Test]
+    [Arguments("2024-04-16 06:10:44 D....            0            0  .", false, null, true)]
+    [Arguments("2024-04-16 06:10:44 D....            0            0  ..", false, null, true)]
+    [Arguments("2024-04-16 06:10:44 D....            0            0  foo ", true, "foo ", true)]
+    [Arguments("2024-04-16 06:10:44 .....            0            0  foo ", true, "foo ", false)]
+    [Arguments("2024-04-16 06:10:44 .....            0            0  foo", false, null, false)]
+    [Arguments("2024-04-16 06:10:44 D....            0            0  foo", false, null, true)]
     public void Test_TryParseListCommandOutput(string input, bool expected, string? expectedFileName, bool expectedIsDirectory)
     {
         var actual = SevenZipExtractor.TryParseListCommandOutput(input, out var fileName, out var isDirectory);
@@ -80,7 +63,7 @@ public class SevenZipExtractionTests
         isDirectory.Should().Be(expectedIsDirectory);
     }
 
-    [Fact]
+    [Test]
     public async Task CanExtractToLongPath()
     {
         await using var tempFolder = _temporaryFileManager.CreateFolder();

@@ -1,7 +1,7 @@
-using FluentAssertions;
 using NexusMods.Sdk.Jobs;
+using Assert = TUnit.Assertions.Assert;
 
-namespace NexusMods.Jobs.Tests.TestInfrastructure;
+namespace NexusMods.Backend.Tests.Jobs.TestInfrastructure;
 
 public static class SynchronizationHelpers
 {
@@ -11,6 +11,6 @@ public static class SynchronizationHelpers
         while (job.Status != expectedStatus && DateTime.UtcNow - startTime < timeout)
             await Task.Delay(10);
         
-        job.Status.Should().Be(expectedStatus, $"Job should have reached {expectedStatus} within {timeout}");
+        await Assert.That(job.Status).IsEqualTo(expectedStatus, $"Job should have reached {expectedStatus} within {timeout}");
     }
 }

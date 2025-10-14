@@ -1,4 +1,3 @@
-using FluentAssertions;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -7,7 +6,7 @@ using NexusMods.Sdk.Jobs;
 using Xunit;
 
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-namespace NexusMods.Jobs.Tests.Examples.BestPractices;
+namespace NexusMods.Backend.Tests.Jobs.Examples.BestPractices;
 
 // Factory methods like 'create' are useful when you want to fire a job right away after it is created.
 // They encapsulate job creation and job-starting logic as one operation.

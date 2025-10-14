@@ -1,11 +1,16 @@
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using NexusMods.Backend.FileExtractor;
+using NexusMods.Backend.FileExtractor.Extractors;
 using NexusMods.Backend.Jobs;
 using NexusMods.Backend.OS;
 using NexusMods.Backend.Process;
 using NexusMods.Backend.RuntimeDependency;
 using NexusMods.Backend.Tracking;
+using NexusMods.FileExtractor;
 using NexusMods.Paths;
 using NexusMods.Sdk;
+using NexusMods.Sdk.FileExtractor;
 using NexusMods.Sdk.Jobs;
 using NexusMods.Sdk.Settings;
 using NexusMods.Sdk.Tracking;
@@ -103,6 +108,20 @@ public static class ServiceExtensions
                 Hidden: !ApplicationConstants.IsDebug
             ))
             .AddSettingModel();
+    }
+    
+    /// <summary>
+    /// Adds file extraction related services to the provided DI container.
+    /// </summary>
+    public static IServiceCollection AddFileExtractors(this IServiceCollection coll)
+    {
+        coll.AddSettings<FileExtractorSettings>();
+        coll.AddFileExtractorVerbs();
+        coll.AddSingleton<IFileExtractor, FileExtractor.FileExtractor>();
+        coll.AddSingleton<IExtractor, SevenZipExtractor>();
+        coll.AddSingleton<IExtractor, ManagedZipExtractor>();
+        coll.TryAddSingleton<TemporaryFileManager, TemporaryFileManagerEx>();
+        return coll;
     }
     
     public static IServiceCollection AddJobMonitor(this IServiceCollection serviceCollection)

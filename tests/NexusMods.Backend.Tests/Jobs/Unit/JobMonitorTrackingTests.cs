@@ -1,6 +1,4 @@
 using DynamicData;
-using FluentAssertions;
-using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Jobs.Tests;
 using NexusMods.Jobs.Tests.TestInfrastructure;
 using NexusMods.Sdk.Jobs;

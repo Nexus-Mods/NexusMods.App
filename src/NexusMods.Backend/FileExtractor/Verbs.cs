@@ -1,15 +1,14 @@
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.FileExtractor;
 using NexusMods.Paths;
 using NexusMods.Sdk.FileExtractor;
 using NexusMods.Sdk.ProxyConsole;
 
-namespace NexusMods.FileExtractor;
+namespace NexusMods.Backend.FileExtractor;
 
 /// <summary>
 /// Extracts files from an archive.
 /// </summary>
-public static class FileExtractorVerbs
+public static class Verbs
 {
     public static IServiceCollection AddFileExtractorVerbs(this IServiceCollection services) =>
         services.AddVerb(() => ExtractArchive);

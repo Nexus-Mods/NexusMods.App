@@ -1,10 +1,10 @@
-using FluentAssertions;
 using JetBrains.Annotations;
 using NexusMods.Paths;
 using NexusMods.Sdk.Jobs;
 using Xunit;
+
 // ReSharper disable UnusedParameter.Local
-namespace NexusMods.Jobs.Tests.Examples;
+namespace NexusMods.Backend.Tests.Jobs.Examples;
 
 // When running more complex jobs, you will want to make dedicated job objects.
 // For self-contained jobs, use `IJobDefinitionWithStart`.

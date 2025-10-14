@@ -1,9 +1,8 @@
-using FluentAssertions;
 using JetBrains.Annotations;
 using NexusMods.Sdk.Jobs;
 using Xunit;
 
-namespace NexusMods.Jobs.Tests.Examples.BestPractices;
+namespace NexusMods.Backend.Tests.Jobs.Examples.BestPractices;
 
 /// <summary>
 /// Simple example of job state management pattern

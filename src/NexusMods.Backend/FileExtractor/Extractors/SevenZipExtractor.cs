@@ -5,13 +5,14 @@ using System.Reactive.Disposables;
 using CliWrap;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.FileExtractor;
+using NexusMods.FileExtractor;
 using NexusMods.Paths;
 using NexusMods.Paths.Utilities;
 using NexusMods.Sdk;
 using NexusMods.Sdk.IO;
 using Reloaded.Memory.Extensions;
 
-namespace NexusMods.FileExtractor.Extractors;
+namespace NexusMods.Backend.FileExtractor.Extractors;
 
 /// <summary>
 /// Abstracts the 7-zip archive extractor.

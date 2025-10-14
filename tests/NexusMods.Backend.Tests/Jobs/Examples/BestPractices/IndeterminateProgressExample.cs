@@ -1,10 +1,10 @@
-using FluentAssertions;
 using JetBrains.Annotations;
 using NexusMods.Paths;
 using NexusMods.Sdk.Jobs;
 using Xunit;
+
 // ReSharper disable LocalizableElement
-namespace NexusMods.Jobs.Tests.Examples.BestPractices;
+namespace NexusMods.Backend.Tests.Jobs.Examples.BestPractices;
 
 // For indeterminate progress (unknown total work), use Size.One as maximum to avoid division by zero.
 

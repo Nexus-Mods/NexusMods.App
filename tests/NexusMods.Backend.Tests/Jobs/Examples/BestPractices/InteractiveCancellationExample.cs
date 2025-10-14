@@ -1,11 +1,11 @@
-using FluentAssertions;
 using JetBrains.Annotations;
 using NexusMods.Paths;
 using NexusMods.Sdk.Jobs;
 using Xunit;
+
 // ReSharper disable LocalizableElement
 
-namespace NexusMods.Jobs.Tests.Examples.BestPractices;
+namespace NexusMods.Backend.Tests.Jobs.Examples.BestPractices;
 
 [PublicAPI]
 public class InteractiveCancellationExample(IJobMonitor jobMonitor)

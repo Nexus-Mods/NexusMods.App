@@ -5,10 +5,11 @@ using System.Text;
 using ICSharpCode.SharpZipLib.Zip;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.FileExtractor;
+using NexusMods.FileExtractor;
 using NexusMods.Paths;
 using NexusMods.Sdk.IO;
 
-namespace NexusMods.FileExtractor.Extractors;
+namespace NexusMods.Backend.FileExtractor.Extractors;
 
 internal class ManagedZipExtractor : IExtractor
 {

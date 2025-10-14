@@ -1,5 +1,4 @@
-using FluentAssertions;
-using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Backend.Tests.Jobs.TestInfrastructure;
 using NexusMods.Jobs.Tests;
 using NexusMods.Jobs.Tests.TestInfrastructure;
 using NexusMods.Sdk.Jobs;

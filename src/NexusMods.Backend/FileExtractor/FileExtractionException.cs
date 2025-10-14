@@ -1,4 +1,4 @@
-namespace NexusMods.FileExtractor;
+namespace NexusMods.Backend.FileExtractor;
 
 /// <inheritdoc />
 public class FileExtractionException : Exception

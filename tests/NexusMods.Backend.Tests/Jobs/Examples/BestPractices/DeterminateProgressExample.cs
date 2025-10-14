@@ -1,4 +1,3 @@
-using FluentAssertions;
 using JetBrains.Annotations;
 using NexusMods.Paths;
 using NexusMods.Sdk.Jobs;
