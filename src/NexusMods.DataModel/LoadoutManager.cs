@@ -10,6 +10,7 @@ using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
+using NexusMods.Abstractions.Loadouts.Synchronizers.Conflicts;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.DatomIterators;
 using NexusMods.MnemonicDB.Abstractions.Internals;
@@ -328,6 +329,24 @@ internal class LoadoutManager : ILoadoutManager
         });
     }
 
+    private static ConflictPriority GetNextPriority(LoadoutId loadoutId, IDb db)
+    {
+        var query = db.Connection.Query<ulong>($"""
+                                                         SELECT
+                                                           coalesce(max(priority.Priority), 0)
+                                                         FROM
+                                                           MDB_LOADOUTITEMGROUPPRIORITY(Db=>{db}) priority
+                                                           LEFT JOIN MDB_LOADOUTITEMGROUP (Db=>{db}) item_group ON priority.Target = item_group.Id
+                                                         WHERE
+                                                           item_group.Loadout = {loadoutId};
+                                                         """);
+
+        var results = query.ToArray();
+        Debug.Assert(results.Length == 1, $"scalar query should return 1 element, found {results.Length} elements instead");
+        var max = results[0];
+        return ConflictPriority.From(max + 1);
+    }
+
     public IJobTask<IInstallLoadoutItemJob, InstallLoadoutItemJobResult> InstallItem(
         LibraryItem.ReadOnly libraryItem,
         LoadoutId targetLoadout,
@@ -336,6 +355,60 @@ internal class LoadoutManager : ILoadoutManager
         ILibraryItemInstaller? fallbackInstaller = null,
         ITransaction? transaction = null)
     {
-        return InstallLoadoutItemJob.Create(_serviceProvider, libraryItem, targetLoadout, parent, installer, fallbackInstaller, transaction);
+        IMainTransaction? mainTransaction;
+        ITransaction tx;
+
+        if (transaction is null)
+        {
+            mainTransaction = _connection.BeginTransaction();
+            tx = mainTransaction;
+        }
+        else
+        {
+            mainTransaction = null;
+            tx = transaction;
+        }
+
+        var job = InstallLoadoutItemJob.Create(_serviceProvider, libraryItem, targetLoadout, tx, groupId: parent, installer: installer, fallbackInstaller: fallbackInstaller);
+        return _jobMonitor.Begin(job, async context =>
+        {
+            var result = await job.StartAsync(context);
+            var targetId = result.GroupTxId;
+            tx.Add(new PriorityTxFunc(targetLoadout, targetId));
+
+            if (mainTransaction is null) return result;
+
+            var commitResult = await mainTransaction.Commit();
+            var remapped = commitResult[targetId];
+            return new InstallLoadoutItemJobResult(LoadoutItemGroup.Load(commitResult.Db, remapped), LoadoutItemGroupId.From(0));
+        });
+    }
+
+    private class PriorityTxFunc : ITxFunction
+    {
+        private readonly LoadoutId _loadoutId;
+        private readonly LoadoutItemGroupId _targetId;
+
+        public PriorityTxFunc(LoadoutId loadoutId, LoadoutItemGroupId targetId)
+        {
+            _loadoutId = loadoutId;
+            _targetId = targetId;
+        }
+
+        public bool Equals(ITxFunction? obj)
+        {
+            if (obj is not PriorityTxFunc other) return false;
+            return other._loadoutId.Equals(_loadoutId) && other._targetId == _targetId;
+        }
+
+        public override int GetHashCode() => HashCode.Combine(_loadoutId, _targetId);
+
+        public void Apply(ITransaction tx, IDb basis)
+        {
+            var priority = GetNextPriority(_loadoutId, basis);
+            var id = tx.TempId();
+            tx.Add(id, LoadoutItemGroupPriority.Target, _targetId);
+            tx.Add(id, LoadoutItemGroupPriority.Priority, priority);
+        }
     }
 }

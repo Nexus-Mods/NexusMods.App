@@ -27,7 +27,6 @@ internal class InstallLoadoutItemJob : IJobDefinitionWithStart<InstallLoadoutIte
     public required ITransaction Transaction { get; init; }
     internal required IConnection Connection { get; init; }
     internal required IServiceProvider ServiceProvider { get; init; }
-    internal required bool OwnsTransaction { get; init; }
 
     /// <remarks>
     /// Returns null <see cref="LoadoutItemGroup.ReadOnly"/> after running job
@@ -35,14 +34,14 @@ internal class InstallLoadoutItemJob : IJobDefinitionWithStart<InstallLoadoutIte
     ///
     /// (i.e. if you are running this job as part of a larger transaction)
     /// </remarks>
-    public static IJobTask<InstallLoadoutItemJob, InstallLoadoutItemJobResult> Create(
+    public static InstallLoadoutItemJob Create(
         IServiceProvider serviceProvider,
         LibraryItem.ReadOnly libraryItem,
         LoadoutId targetLoadout,
+        ITransaction transaction,
         Optional<LoadoutItemGroupId> groupId = default,
         ILibraryItemInstaller? installer = null,
-        ILibraryItemInstaller? fallbackInstaller = null, 
-        ITransaction? transaction = null)
+        ILibraryItemInstaller? fallbackInstaller = null)
     {
         var connection = serviceProvider.GetRequiredService<IConnection>();
         var job = new InstallLoadoutItemJob
@@ -55,10 +54,10 @@ internal class InstallLoadoutItemJob : IJobDefinitionWithStart<InstallLoadoutIte
             ParentGroupId = groupId,
             Connection = connection,
             ServiceProvider = serviceProvider,
-            Transaction = transaction ?? connection.BeginTransaction(),
-            OwnsTransaction = transaction is null,
+            Transaction = transaction,
         };
-        return serviceProvider.GetRequiredService<IJobMonitor>().Begin<InstallLoadoutItemJob, InstallLoadoutItemJobResult>(job);
+
+        return job;
     }
 
     public async ValueTask<InstallLoadoutItemJobResult> StartAsync(IJobContext<InstallLoadoutItemJob> context)
@@ -112,15 +111,7 @@ internal class InstallLoadoutItemJob : IJobDefinitionWithStart<InstallLoadoutIte
             LoadoutItemGroup = loadoutGroup,
             LibraryItemId = LibraryItem,
         };
-        
-        if (OwnsTransaction && Transaction is IMainTransaction mainTransaction)
-        {
-            var transactionResult = await mainTransaction.Commit();
-            Transaction.Dispose();
-            return new InstallLoadoutItemJobResult(transactionResult.Remap(loadoutGroup), LoadoutItemGroupId.From(0));
-        }
 
-        // Part of an external transaction, so we return null.
         return new InstallLoadoutItemJobResult(null, loadoutGroup);
     }
 
