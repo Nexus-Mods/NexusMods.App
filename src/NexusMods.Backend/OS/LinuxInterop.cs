@@ -57,7 +57,7 @@ internal partial class LinuxInterop : IOSInterop
 
     public void OpenUri(Uri uri)
     {
-        Debug.Assert(uri.IsFile, $"use {nameof(OpenFile)} for opening file `{uri}`");
+        Debug.Assert(!uri.IsFile, $"use {nameof(OpenFile)} for opening file `{uri}`");
         OpenUriImpl(uri).FireAndForget(_logger);
     }
 
