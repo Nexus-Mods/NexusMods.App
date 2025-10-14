@@ -22,6 +22,7 @@ public class SortingSelectionViewModel : AViewModel<ISortingSelectionViewModel>,
 
     public ReadOnlyObservableCollection<IViewModelInterface> RulesViewModels { get; }
     private readonly ObservableCollection<IViewModelInterface> _rulesViewModels = [];
+    private HashSet<SortOrderVarietyId> _managedVarieties = [];
     
     private readonly BindableReactiveProperty<bool> _canEdit = new (true);
     public IReadOnlyBindableReactiveProperty<bool> CanEdit => _canEdit;
@@ -84,31 +85,30 @@ public class SortingSelectionViewModel : AViewModel<ISortingSelectionViewModel>,
 
     private void InitializeSortOrderViewModels(IReadOnlyCollection<ISortOrderVariety> sortOrderVarieties, LoadoutId loadoutId)
     {
-        var activeSortOrders = sortOrderVarieties
+        var varietiesWithSortOrders = sortOrderVarieties
             .Where(variety => variety.GetSortOrderIdFor(loadoutId).HasValue)
             .ToArray();
 
-        foreach (var variety in activeSortOrders)
+        foreach (var variety in varietiesWithSortOrders)
         {
             var viewModel = new LoadOrderViewModel(_serviceProvider, variety, loadoutId);
             _rulesViewModels.Add(viewModel);
+            _managedVarieties.Add(variety.SortOrderVarietyId);
         }
     }
 
     private void UpdateActiveSortOrders(IReadOnlyCollection<ISortOrderVariety> sortOrderVarieties, LoadoutId loadoutId)
     {
-        var activeSortOrders = sortOrderVarieties
+        var varietiesWithSortOrder = sortOrderVarieties
             .Where(variety => variety.GetSortOrderIdFor(loadoutId).HasValue)
             .Select(variety => variety.SortOrderVarietyId)
             .ToHashSet();
-
-        var existingSortOrderIds = _rulesViewModels
-            .OfType<ILoadOrderViewModel>()
-            .Select(vm => vm.SortOrderVariety.SortOrderVarietyId)
-            .ToHashSet();
+        
+        if (varietiesWithSortOrder.Count == _managedVarieties.Count)
+            return;
 
         // Add missing sort orders
-        var missingVarietyIds = activeSortOrders.Except(existingSortOrderIds);
+        var missingVarietyIds = varietiesWithSortOrder.Except(_managedVarieties);
         
         foreach (var varietyId in missingVarietyIds)
         {
@@ -118,6 +118,7 @@ public class SortingSelectionViewModel : AViewModel<ISortingSelectionViewModel>,
             // Insert before FileConflictsViewModel (which should be last)
             var insertIndex = _rulesViewModels.Count - 1;
             _rulesViewModels.Insert(insertIndex, viewModel);
+            _managedVarieties.Add(varietyId);
         }
     }
 }

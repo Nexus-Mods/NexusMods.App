@@ -62,7 +62,6 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
         var sortOrderId = optionalSortOrderId.Value;
         
         SortOrderName = sortOrderVariety.SortOrderUiMetadata.SortOrderName;
-        SortOrderName = sortOrderVariety.SortOrderUiMetadata.SortOrderName;
         InfoAlertTitle = sortOrderVariety.SortOrderUiMetadata.OverrideInfoTitle;
         InfoAlertBody = sortOrderVariety.SortOrderUiMetadata.OverrideInfoMessage;
         TrophyToolTip = sortOrderVariety.SortOrderUiMetadata.WinnerIndexToolTip;
