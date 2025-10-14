@@ -1,11 +1,10 @@
 using DynamicData.Kernel;
 using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Library.Models;
-using NexusMods.Abstractions.Loadouts;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Sdk.Jobs;
 
-namespace NexusMods.Abstractions.Library.Jobs;
+namespace NexusMods.Abstractions.Loadouts.Synchronizers;
 
 /// <summary>
 /// A job that installs a library item to a loadout

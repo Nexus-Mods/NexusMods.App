@@ -129,12 +129,13 @@ public static class LoadoutManagementVerbs
         [Option("f", "file", "Mod file to install")] AbsolutePath file,
         [Option("n", "name", "Name of the mod after installing")] string name,
         [Injected] ILibraryService libraryService,
+        [Injected] ILoadoutManager loadoutManager,
         [Injected] CancellationToken token)
     {
         return await renderer.WithProgress(token, async () =>
         {
             var localFile = await libraryService.AddLocalFile(file); 
-            await libraryService.InstallItem(localFile.AsLibraryFile().AsLibraryItem(), loadout);
+            await loadoutManager.InstallItem(localFile.AsLibraryFile().AsLibraryItem(), loadout);
             return 0;
         });
     }

@@ -250,7 +250,7 @@ public class RedModDeployToolTests : ACyberpunkIsolatedGameTest<Cyberpunk2077Gam
             File.Copy(sourcePath.ToString(), copyPath.ToString(), overwrite: true);
 
             var libraryArchive = await RegisterLocalArchive(copyPath);
-            var result = await LibraryService.InstallItem(libraryArchive.AsLibraryFile().AsLibraryItem(), loadout);
+            var result = await LoadoutManager.InstallItem(libraryArchive.AsLibraryFile().AsLibraryItem(), loadout);
         }
 
         loadout = loadout.Rebase();

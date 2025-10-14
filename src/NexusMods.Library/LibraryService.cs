@@ -1,13 +1,12 @@
-using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Downloads;
 using NexusMods.Abstractions.GC;
 using NexusMods.Abstractions.Library;
-using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Library.Jobs;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Extensions;
+using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Paths;
@@ -21,6 +20,7 @@ namespace NexusMods.Library;
 public sealed class LibraryService : ILibraryService
 {
     private readonly IServiceProvider _serviceProvider;
+    private readonly ILoadoutManager _loadoutManager;
     private readonly IConnection _connection;
     private readonly IGarbageCollectorRunner _gcRunner;
 
@@ -30,6 +30,7 @@ public sealed class LibraryService : ILibraryService
     public LibraryService(IServiceProvider serviceProvider)
     {
         _serviceProvider = serviceProvider;
+        _loadoutManager = serviceProvider.GetRequiredService<ILoadoutManager>();
         _connection = serviceProvider.GetRequiredService<IConnection>();
         _gcRunner = serviceProvider.GetRequiredService<IGarbageCollectorRunner>();
     }
@@ -158,16 +159,6 @@ public sealed class LibraryService : ILibraryService
         return await AddLibraryFileJob.Create(_serviceProvider, transaction, filePath: source);
     }
 
-    public IJobTask<IInstallLoadoutItemJob, InstallLoadoutItemJobResult> InstallItem(
-        LibraryItem.ReadOnly libraryItem,
-        LoadoutId targetLoadout,
-        Optional<LoadoutItemGroupId> parent = default,
-        ILibraryItemInstaller? itemInstaller = null,
-        ILibraryItemInstaller? fallbackInstaller = null,
-        ITransaction? transaction = null)
-    {
-        return InstallLoadoutItemJob.Create(_serviceProvider, libraryItem, targetLoadout, parent, itemInstaller, fallbackInstaller, transaction);
-    }
     public async Task RemoveLibraryItems(IEnumerable<LibraryItem.ReadOnly> libraryItems, GarbageCollectorRunMode gcRunMode = GarbageCollectorRunMode.RunAsynchronously)
     {
         using var tx = _connection.BeginTransaction();
@@ -256,7 +247,7 @@ public sealed class LibraryService : ILibraryService
 
             // 3. Reinstall new mod in original loadouts
             foreach (var (loadout, _) in items)
-                await InstallItem(libraryItem: newItem, targetLoadout: loadout.Id, transaction: tx);
+                await _loadoutManager.InstallItem(libraryItem: newItem, targetLoadout: loadout.Id, transaction: tx);
         }
         catch
         {

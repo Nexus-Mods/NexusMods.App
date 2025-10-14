@@ -75,29 +75,6 @@ public interface ILibraryService
     Task<LibraryFile.New> AddLibraryFile(ITransaction transaction, AbsolutePath source);
 
     /// <summary>
-    /// Installs a library item into a target loadout.
-    /// To remove an installed item, use <see cref="RemoveLinkedItemFromLoadout(LibraryLinkedLoadoutItemId)"/>.
-    /// </summary>
-    /// <param name="libraryItem">The item to install.</param>
-    /// <param name="targetLoadout">The target loadout.</param>
-    /// <param name="parent">If specified the installed item will be placed in this group, otherwise it will default to the user's local collection</param>
-    /// <param name="installer">The Library will use this installer to install the item</param>
-    /// <param name="fallbackInstaller">The installer to use if the default installer fails</param>
-    /// <param name="transaction">The transaction to attach the installation to. Install is only completed when transaction is completed.</param>
-    /// <remarks>
-    /// Job returns a result with null <see cref="LoadoutItemGroup.ReadOnly"/> after
-    /// if supplied an external transaction via <paramref name="transaction"/>,
-    /// since it is the caller's responsibility to complete that transaction.
-    /// </remarks>
-    IJobTask<IInstallLoadoutItemJob, InstallLoadoutItemJobResult> InstallItem(
-        LibraryItem.ReadOnly libraryItem,
-        LoadoutId targetLoadout,
-        Optional<LoadoutItemGroupId> parent = default,
-        ILibraryItemInstaller? installer = null,
-        ILibraryItemInstaller? fallbackInstaller = null,
-        ITransaction? transaction = null);
-
-    /// <summary>
     /// Removes a number of items from the library.
     /// This will automatically unlink the loadouts from the items are part of.
     /// </summary>

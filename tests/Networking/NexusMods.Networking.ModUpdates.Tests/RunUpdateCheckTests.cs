@@ -54,7 +54,7 @@ public class RunUpdateCheckTests : ACyberpunkIsolatedGameTest<RunUpdateCheckTest
 
         // install to loadout
         var libraryFile = await LibraryService.AddDownload(downloadJob);
-        await LibraryService.InstallItem(libraryFile.AsLibraryItem(), loadout);
+        await LoadoutManager.InstallItem(libraryFile.AsLibraryItem(), loadout);
         
         // Ensure we're actually doing work
         var updates = await RunUpdateCheck.CheckForModPagesWhichNeedUpdating(Connection.Db, NexusNexusApiClient, _mappingCache);

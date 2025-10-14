@@ -239,7 +239,7 @@ public class GeneralLoadoutManagementTests(ITestOutputHelper helper) : ACyberpun
         
         var modFile = FileSystem.GetKnownPath(KnownPath.EntryDirectory) / "Resources" / "TestMod.zip";
         var libraryFile = await LibraryService.AddLocalFile(modFile);
-        var mod = (await LibraryService.InstallItem(libraryFile.AsLibraryFile().AsLibraryItem(), loadoutA)).LoadoutItemGroup!.Value;
+        var mod = (await LoadoutManager.InstallItem(libraryFile.AsLibraryFile().AsLibraryItem(), loadoutA)).LoadoutItemGroup!.Value;
         loadoutA = loadoutA.Rebase();
         
         LogDiskState(sb, "## 2 - Loadout A Mod Added",

@@ -6,6 +6,8 @@ using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Games.FileHashes;
 using NexusMods.Abstractions.GC;
+using NexusMods.Abstractions.Library.Installers;
+using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.MnemonicDB.Abstractions;
@@ -19,6 +21,7 @@ namespace NexusMods.DataModel;
 internal class LoadoutManager : ILoadoutManager
 {
     private readonly ILogger _logger;
+    private readonly IServiceProvider _serviceProvider;
     private readonly IJobMonitor _jobMonitor;
     private readonly IFileHashesService _fileHashesService;
     private readonly IConnection _connection;
@@ -28,6 +31,7 @@ internal class LoadoutManager : ILoadoutManager
     public LoadoutManager(IServiceProvider serviceProvider)
     {
         _logger = serviceProvider.GetRequiredService<ILogger<LoadoutManager>>();
+        _serviceProvider = serviceProvider;
         _jobMonitor = serviceProvider.GetRequiredService<IJobMonitor>();
         _fileHashesService = serviceProvider.GetRequiredService<IFileHashesService>();
         _connection = serviceProvider.GetRequiredService<IConnection>();
@@ -322,5 +326,16 @@ internal class LoadoutManager : ILoadoutManager
             if (runGc) _garbageCollectorRunner.Run();
             return installation;
         });
+    }
+
+    public IJobTask<IInstallLoadoutItemJob, InstallLoadoutItemJobResult> InstallItem(
+        LibraryItem.ReadOnly libraryItem,
+        LoadoutId targetLoadout,
+        Optional<LoadoutItemGroupId> parent = default,
+        ILibraryItemInstaller? installer = null,
+        ILibraryItemInstaller? fallbackInstaller = null,
+        ITransaction? transaction = null)
+    {
+        return InstallLoadoutItemJob.Create(_serviceProvider, libraryItem, targetLoadout, parent, installer, fallbackInstaller, transaction);
     }
 }
