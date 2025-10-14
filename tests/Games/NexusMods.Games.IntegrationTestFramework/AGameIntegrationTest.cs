@@ -16,6 +16,7 @@ using NexusMods.Sdk.Settings;
 
 namespace NexusMods.Games.IntegrationTestFramework;
 
+[Property("IntegrationTest", "True")]
 public abstract class AGameIntegrationTest
 {
     public const string GameImagesEnvVarName = "NMA_INTEGRATION_BASE_PATH";

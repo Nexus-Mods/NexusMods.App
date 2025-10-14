@@ -11,12 +11,6 @@ public abstract class LocatorResultAttribute<TGame> : DataSourceGeneratorAttribu
 
     protected override IEnumerable<Func<(Type, GameLocatorResult)>> GenerateDataSources(DataGeneratorMetadata dataGeneratorMetadata)
     {
-        if (Environment.GetEnvironmentVariable(AGameIntegrationTest.GameImagesEnvVarName) == null)
-        {
-            Console.WriteLine($"{AGameIntegrationTest.GameImagesEnvVarName} environment variable is not set, skipping integration tests");
-            yield break;
-        }
-
         foreach (var result in GetLocatorResults())
         {
             yield return () => (typeof(TGame), result);

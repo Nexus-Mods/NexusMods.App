@@ -31,4 +31,4 @@ jobs:
         run: dotnet build --no-restore
 
       - name: Tests
-        run: dotnet test --no-build --logger "GitHubActions" --filter "RequiresNetworking=True" --blame-hang-timeout 20m
+        run: dotnet test --no-build --logger "GitHubActions" --filter "RequiresNetworking=True&IntegrationTest!=True" --blame-hang-timeout 20m

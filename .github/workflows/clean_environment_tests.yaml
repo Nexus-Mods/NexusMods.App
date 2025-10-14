@@ -33,5 +33,5 @@ jobs:
     uses: Nexus-Mods/NexusMods.App.Meta/.github/workflows/dotnet-build-and-test-with-osx.yaml@main
     with:
       extra-test-args: "--blame-hang-timeout 20m"
-      test-filter: "RequiresNetworking!=True&FlakeyTest!=True&FullyQualifiedName!~IntegrationTests"
+      test-filter: "RequiresNetworking!=True&FlakeyTest!=True&IntegrationTest!=True"
       codecov-flags: ",clean_environment_tests"

@@ -31,5 +31,5 @@ jobs:
       - name: Build
         run: dotnet build --no-restore
 
-      - name: Creation Engine Tests
-        run: dotnet run --no-build --project tests/Games/IntegrationTests/NexusMods.Games.IntegrationTests.CreationEngine.Tests/NexusMods.Games.IntegrationTests.CreationEngine.Tests.csproj
+      - name: Tests
+        run: dotnet test --no-build --logger "GitHubActions" --filter "IntegrationTest=True" --blame-hang-timeout 20m
