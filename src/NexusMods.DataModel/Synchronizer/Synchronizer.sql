@@ -54,7 +54,7 @@ GROUP BY Loadout, Path;
 -- Highest loadout item group priority for a Loadout
 CREATE OR REPLACE MACRO synchronizer.MaxPriority(db, loadoutId) AS TABLE
 SELECT
-    coalesce(max(item_group.Priority), 0)
+    coalesce(max(item_group.Priority), 0) AS MaxPriority
 FROM
     MDB_LOADOUTITEMGROUPPRIORITY(Db=>db) item_group
 WHERE

@@ -70,4 +70,9 @@ public interface ILoadoutManager
         ILibraryItemInstaller? installer = null,
         ILibraryItemInstaller? fallbackInstaller = null,
         ITransaction? transaction = null);
+
+    /// <summary>
+    /// Remove a loadout item.
+    /// </summary>
+    ValueTask RemoveItems(LoadoutId loadoutId, LoadoutItemGroupId[] groups);
 }

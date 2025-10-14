@@ -49,5 +49,11 @@
       <Compile Update="InstallLoadoutItemJob.cs">
         <DependentUpon>LoadoutManager.cs</DependentUpon>
       </Compile>
+      <Compile Update="LoadoutManager.Queries.cs">
+        <DependentUpon>LoadoutManager.cs</DependentUpon>
+      </Compile>
+      <Compile Update="LoadoutManager.TxFuncs.cs">
+        <DependentUpon>LoadoutManager.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
 </Project>

@@ -19,7 +19,7 @@ using NexusMods.Sdk.Jobs;
 
 namespace NexusMods.DataModel;
 
-internal class LoadoutManager : ILoadoutManager
+internal partial class LoadoutManager : ILoadoutManager
 {
     private readonly ILogger _logger;
     private readonly IServiceProvider _serviceProvider;
@@ -367,47 +367,22 @@ internal class LoadoutManager : ILoadoutManager
 
             var commitResult = await mainTransaction.Commit();
             var remapped = commitResult[targetId];
+            mainTransaction.Dispose();
+
             return new InstallLoadoutItemJobResult(LoadoutItemGroup.Load(commitResult.Db, remapped), LoadoutItemGroupId.From(0));
         });
     }
 
-    private static ConflictPriority GetNextPriority(LoadoutId loadoutId, IDb db)
+    public async ValueTask RemoveItems(LoadoutId loadoutId, LoadoutItemGroupId[] groups)
     {
-        var query = db.Connection.Query<ulong>($"synchronizer.MaxPriority({db}, {loadoutId})");
+        using var tx = _connection.BeginTransaction();
 
-        // TODO: https://github.com/Nexus-Mods/NexusMods.MnemonicDB/issues/181
-        var results = query.ToArray();
-        Debug.Assert(results.Length == 1, $"scalar query should return 1 element, found {results.Length} elements instead");
-        var max = results[0];
-        return ConflictPriority.From(max + 1);
-    }
-
-    private class AddPriorityTxFunc : ITxFunction
-    {
-        private readonly LoadoutId _loadoutId;
-        private readonly LoadoutItemGroupId _targetId;
-
-        public AddPriorityTxFunc(LoadoutId loadoutId, LoadoutItemGroupId targetId)
+        foreach (var id in groups)
         {
-            _loadoutId = loadoutId;
-            _targetId = targetId;
+            tx.Delete(id, recursive: true);
         }
 
-        public bool Equals(ITxFunction? obj)
-        {
-            if (obj is not AddPriorityTxFunc other) return false;
-            return other._loadoutId.Equals(_loadoutId) && other._targetId == _targetId;
-        }
-
-        public override int GetHashCode() => HashCode.Combine(_loadoutId, _targetId);
-
-        public void Apply(ITransaction tx, IDb basis)
-        {
-            var priority = GetNextPriority(_loadoutId, basis);
-            var id = tx.TempId();
-            tx.Add(id, LoadoutItemGroupPriority.Loadout, _loadoutId);
-            tx.Add(id, LoadoutItemGroupPriority.Target, _targetId);
-            tx.Add(id, LoadoutItemGroupPriority.Priority, priority);
-        }
+        tx.Add(new RebalancePrioritiesTxFunc(loadoutId, groups));
+        await tx.Commit();
     }
 }
