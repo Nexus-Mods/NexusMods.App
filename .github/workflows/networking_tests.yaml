@@ -23,29 +23,12 @@ jobs:
 
       - name: Print debug info
         run: dotnet --info
-    
+
       - name: Install dependencies
         run: dotnet restore
 
       - name: Build
         run: dotnet build --no-restore
 
-      - name: Test
-        shell: bash
-        env:
-          VSTEST_TESTHOST_SHUTDOWN_TIMEOUT: 60000
-        run: |
-          set -euo pipefail
-          mapfile -t projects < <(find tests -type f -name "*.csproj" | grep -E "\.Tests\.csproj$" | grep -vi "Integration" || true)
-          if [ ${#projects[@]} -eq 0 ]; then
-            echo "No matching test projects found (excluding *Integration*)."
-            exit 0
-          fi
-          for proj in "${projects[@]}"; do
-            echo "Running tests for: $proj"
-            dotnet test "$proj" --configuration Release --no-build --verbosity normal \
-              --filter "RequiresNetworking=True" \
-              --logger "GitHubActions" \
-              --blame-hang-timeout 20m
-          done
-
+      - name: Tests
+        run: dotnet test --no-build --logger "GitHubActions" --filter "RequiresNetworking=True" --blame-hang-timeout 20m
