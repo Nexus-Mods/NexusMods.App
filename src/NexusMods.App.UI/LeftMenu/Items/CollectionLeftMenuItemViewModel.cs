@@ -93,6 +93,11 @@ public class CollectionLeftMenuItemViewModel : LeftMenuItemViewModel, ILeftMenuI
         var icon = _isNexusCollection 
             ? IconValues.PlaylistRemove 
             : IconValues.DeleteOutline;
+
+        var styling = _isNexusCollection
+            ? ContextMenuItemStyling.Default // Note(sewer): This is not red because it can be undone; the action that comes after.
+                                             //              Deleting collection revisions is the dangerous one and has the red marker. 
+            : ContextMenuItemStyling.Critical;
         
         return new ContextMenuItem
         {
@@ -100,7 +105,7 @@ public class CollectionLeftMenuItemViewModel : LeftMenuItemViewModel, ILeftMenuI
             Icon = icon,
             Command = deleteCommand,
             IsVisible = true,
-            Styling = ContextMenuItemStyling.Critical,
+            Styling = styling,
         };
     }
     
