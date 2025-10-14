@@ -224,6 +224,11 @@ internal class LoadoutManager : ILoadoutManager
             tx.Delete(item.Id, recursive: false);
         }
 
+        foreach (var priorityEntity in LoadoutItemGroupPriority.FindByLoadout(loadout.Db, loadout))
+        {
+            tx.Delete(priorityEntity, recursive: false);
+        }
+
         await tx.Commit();
         
         // Execute the garbage collector
