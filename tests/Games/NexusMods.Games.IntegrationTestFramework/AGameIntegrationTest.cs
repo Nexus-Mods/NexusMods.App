@@ -13,8 +13,10 @@ using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Backend;
 using NexusMods.DataModel;
+using NexusMods.FileExtractor;
 using NexusMods.Games.CreationEngine;
 using NexusMods.Games.FileHashes;
+using NexusMods.Library;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Paths;
@@ -76,7 +78,7 @@ public abstract class AGameIntegrationTest
         
         var overlays = gameArchives.Select(x => new NxReadOnlyFilesystem( basePath / x.Src, x.Mount)).ToArray();
         
-        FileSystem = new ReadOnlySourcesFileSystem(locatorResult.GameFileSystem, overlays);
+        FileSystem = new ReadOnlySourcesFileSystem(new InMemoryFileSystem(), overlays);
         
         // Remap the file system properties in the locator result to the new file system
         locatorResult = locatorResult with
@@ -92,10 +94,14 @@ public abstract class AGameIntegrationTest
             .ConfigureServices(s =>
             {
                 s.AddSingleton<IFileSystem>(_ => FileSystem)
+                 .AddSingleton<TemporaryFileManager>()
+                 .AddFileExtractors()
                  .AddSettingsManager()
                  .AddCreationEngine()
                  .AddDataModel()
                  .AddLibraryModels()
+                 .AddLibrary()
+                 .AddNexusWebApi()
                  .AddOSInterop()
                  .AddFileHashes()
                  .AddHttpClient()
@@ -144,6 +150,7 @@ public abstract class AGameIntegrationTest
         GameRegistry = _hosting.Services.GetRequiredService<IGameRegistry>();
         GameInstallation = GameRegistry.Installations.Values
             .Single(g => g.Game.GetType() == GameType);
+        Game = GameInstallation.Game;
         Synchronizer = GameInstallation.GetGame().Synchronizer;
         LoadoutManager = _hosting.Services.GetRequiredService<ILoadoutManager>();
         LibraryService = ServiceProvider.GetRequiredService<ILibraryService>();
@@ -154,6 +161,8 @@ public abstract class AGameIntegrationTest
 
 
 #region Imported Services
+    public ILocatableGame Game { get; set; }
+
     protected IFileSystem FileSystem { get; }
     protected IGameRegistry GameRegistry { get; set; }
     protected GameInstallation GameInstallation { get; set; }

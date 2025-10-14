@@ -1,12 +1,11 @@
-using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.GameLocators.Stores.Steam;
-using NexusMods.Games.CreationEngine.Fallout4;
 using NexusMods.Games.IntegrationTestFramework;
-using NexusMods.Paths;
 
-namespace NexusMods.Games.IntegrationTests.CreationEngine.Tests;
+namespace NexusMods.Games.CreationEngine.Tests.TestAttributes;
 
-public class Fallout4SteamCurrentAttribute : SteamIntegrationTestAttribute<Fallout4>
+/// <summary>
+/// Integration test attribute for the current version of Fallout 4 on Steam.
+/// </summary>
+public class Fallout4SteamCurrentAttribute : SteamIntegrationTestAttribute<CreationEngine.Fallout4.Fallout4>
 {
     protected override IEnumerable<(string Name, uint AppId, ulong[] ManifestIds)> GetManifestIds()
     {

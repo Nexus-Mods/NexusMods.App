@@ -25,9 +25,9 @@
     <PackageVersion Include="NexusMods.Hashing.xxHash3.Paths" Version="3.0.4" />
     <PackageVersion Include="NexusMods.Hashing.xxHash3" Version="3.0.4" />
     <PackageVersion Include="NexusMods.Archives.Nx" Version="0.6.5" />
-    <PackageVersion Include="NexusMods.Paths" Version="0.22.1" />
-    <PackageVersion Include="NexusMods.Paths.Extensions.Nx" Version="0.22.1" />
-    <PackageVersion Include="NexusMods.Paths.TestingHelpers" Version="0.22.1" />
+    <PackageVersion Include="NexusMods.Paths" Version="0.22.2" />
+    <PackageVersion Include="NexusMods.Paths.Extensions.Nx" Version="0.22.2" />
+    <PackageVersion Include="NexusMods.Paths.TestingHelpers" Version="0.22.2" />
     <PackageVersion Include="NexusMods.Telemetry.OpenTelemetry" Version="1.0.0" />
     <PackageVersion Include="FomodInstaller.Interface" Version="1.2.0" />
     <PackageVersion Include="FomodInstaller.Scripting.XmlScript" Version="1.0.0" />
@@ -56,6 +56,7 @@
     <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.12.0" />
     <PackageVersion Include="Polly.Core" Version="8.6.3" />
     <PackageVersion Include="Polly" Version="8.6.3" />
+    <PackageVersion Include="TUnit.Core" Version="0.57.24" />
     <PackageVersion Include="Verify" Version="30.11.0" />
     <PackageVersion Include="Verify.TUnit" Version="30.11.0" />
     <PackageVersion Include="YamlDotNet" Version="16.3.0" />

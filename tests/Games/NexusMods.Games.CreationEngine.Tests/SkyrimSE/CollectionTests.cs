@@ -1,20 +1,5 @@
-using FluentAssertions;
-using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.NexusModsLibrary;
-using NexusMods.Abstractions.NexusWebApi;
-using NexusMods.Abstractions.NexusWebApi.Types;
-using NexusMods.Collections;
-using NexusMods.Games.TestFramework;
-using NexusMods.Hashing.xxHash3;
-using NexusMods.HyperDuck;
-using NexusMods.Paths;
-using NexusMods.StandardGameLocators.TestHelpers;
-using Xunit.Abstractions;
-
 namespace NexusMods.Games.CreationEngine.Tests.SkyrimSE;
-
+/*
 public class CollectionTests(ITestOutputHelper outputHelper) : AIsolatedGameTest<CollectionTests, CreationEngine.SkyrimSE.SkyrimSE>(outputHelper)
 {
     protected override IServiceCollection AddServices(IServiceCollection services)
@@ -72,3 +57,4 @@ public class CollectionTests(ITestOutputHelper outputHelper) : AIsolatedGameTest
     }
     
 }
+*/

@@ -52,7 +52,7 @@ public class SevenZipExtractor : IExtractor
         _temporaryFileManager = fileTemporaryFileManager;
         _processRunner = processRunner;
         _osInformation = osInformation;
-
+        
         _exePath = GetExtractorExecutable(fileSystem, osInformation);
         logger.LogDebug("Using extractor at {ExtractorExecutable}", _exePath);
     }

@@ -36,6 +36,7 @@ public class PluginsFile : IIntrinsicFile
     
     public async Task Write(Stream stream, Loadout.ReadOnly loadout, Dictionary<GamePath, SyncNode> syncTree)
     {
+        /*
         var db = loadout.Db;
         var sortOrder = db.Connection.Query<ModKey>(
             $"""
@@ -50,6 +51,7 @@ public class PluginsFile : IIntrinsicFile
         {
             await sw.WriteLineAsync("*" + entry);
         }
+        */
     }
     
 

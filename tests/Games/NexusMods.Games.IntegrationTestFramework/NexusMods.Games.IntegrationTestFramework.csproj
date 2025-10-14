@@ -18,8 +18,10 @@
       <ProjectReference Include="..\..\..\src\NexusMods.Abstractions.Loadouts\NexusMods.Abstractions.Loadouts.csproj" />
       <ProjectReference Include="..\..\..\src\NexusMods.Backend\NexusMods.Backend.csproj" />
       <ProjectReference Include="..\..\..\src\NexusMods.DataModel\NexusMods.DataModel.csproj" />
+      <ProjectReference Include="..\..\..\src\NexusMods.FileExtractor\NexusMods.FileExtractor.csproj" />
       <ProjectReference Include="..\..\..\src\NexusMods.Games.CreationEngine\NexusMods.Games.CreationEngine.csproj" />
       <ProjectReference Include="..\..\..\src\NexusMods.Games.FileHashes\NexusMods.Games.FileHashes.csproj" />
+      <ProjectReference Include="..\..\..\src\NexusMods.Library\NexusMods.Library.csproj" />
     </ItemGroup>
 
 </Project>

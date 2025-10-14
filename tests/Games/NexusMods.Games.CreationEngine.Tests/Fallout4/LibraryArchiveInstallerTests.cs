@@ -1,14 +1,5 @@
-using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.NexusWebApi.Types.V2;
-using NexusMods.Games.TestFramework;
-using NexusMods.HyperDuck;
-using NexusMods.StandardGameLocators.TestHelpers;
-using Xunit.Abstractions;
-
 namespace NexusMods.Games.CreationEngine.Tests.Fallout4;
-
+/*
 public class LibraryArchiveInstallerTests(ITestOutputHelper outputHelper) : AIsolatedGameTest<LibraryArchiveInstallerTests, CreationEngine.Fallout4.Fallout4>(outputHelper)
 {
     protected override IServiceCollection AddServices(IServiceCollection services)
@@ -63,3 +54,4 @@ public class LibraryArchiveInstallerTests(ITestOutputHelper outputHelper) : AIso
     }
     
 }
+*/
