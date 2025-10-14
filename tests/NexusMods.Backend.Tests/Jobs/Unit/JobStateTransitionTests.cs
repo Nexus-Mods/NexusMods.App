@@ -13,18 +13,18 @@ public class JobStateTransitionTests : AJobsTest
         // Arrange
         var startSignal = new ManualResetEventSlim();
         var job = new SignaledJob(startSignal);
-        
+
         // Act
         var task = JobMonitor.Begin<SignaledJob, bool>(job);
-        
+
         // Assert
-        task.Job.Status.Should().BeOneOf(JobStatus.None, JobStatus.Created, JobStatus.Running);
+        await Assert.That(task.Job.Status == JobStatus.None || task.Job.Status == JobStatus.Created || task.Job.Status == JobStatus.Running).IsTrue();
         startSignal.Set(); // Allow job to complete
         var result = await task;
-        
+
         // Verify successful completion
-        result.Should().BeTrue();
-        task.Job.Status.Should().Be(JobStatus.Completed);
+        await Assert.That(result).IsTrue();
+        await Assert.That(task.Job.Status).IsEqualTo(JobStatus.Completed);
     }
 
     [Test]
@@ -47,9 +47,9 @@ public class JobStateTransitionTests : AJobsTest
         var result = await task;
         
         // Assert
-        result.Should().BeTrue();
-        task.Job.Status.Should().Be(JobStatus.Completed);
-        stateChanges.Should().Contain(JobStatus.Completed);
+        await Assert.That(result).IsTrue();
+        await Assert.That(task.Job.Status).IsEqualTo(JobStatus.Completed);
+        await Assert.That(stateChanges).Contains(JobStatus.Completed);
         // Note(sewer): We have no control up until the job starts with `Running`,
         // so we can't verify Created/None state.
     }
@@ -75,9 +75,9 @@ public class JobStateTransitionTests : AJobsTest
         
         // Assert
         await Assert.ThrowsAsync<InvalidOperationException>(() => task.Job.WaitAsync());
-        
-        task.Job.Status.Should().Be(JobStatus.Failed);
-        stateChanges.Should().ContainInOrder(JobStatus.Running, JobStatus.Failed);
+
+        await Assert.That(task.Job.Status).IsEqualTo(JobStatus.Failed);
+        await Assert.That(stateChanges).IsEquivalentTo([JobStatus.Created, JobStatus.Running, JobStatus.Failed]);
     }
 
     [Test]
@@ -100,8 +100,8 @@ public class JobStateTransitionTests : AJobsTest
         
         // Assert
         await Assert.ThrowsAsync<OperationCanceledException>(() => task.Job.WaitAsync());
-        
-        task.Job.Status.Should().Be(JobStatus.Cancelled);
-        stateChanges.Should().ContainInOrder(JobStatus.Cancelled);
+
+        await Assert.That(task.Job.Status).IsEqualTo(JobStatus.Cancelled);
+        await Assert.That(stateChanges).IsEquivalentTo([JobStatus.Running, JobStatus.Cancelled]);
     }
 }

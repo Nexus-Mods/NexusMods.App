@@ -19,9 +19,10 @@ public class AFileExtractorTest
                 {
                     const KnownPath baseKnownPath = KnownPath.EntryDirectory;
                     var baseDirectory = $"NexusMods.Examples.Tests-{Guid.NewGuid()}";
-                    var prefix = FileSystem.Shared.GetKnownPath(baseKnownPath).Combine(baseDirectory);
+                    var prefix = NexusMods.Paths.FileSystem.Shared.GetKnownPath(baseKnownPath).Combine(baseDirectory);
 
                     services
+                        .AddJobMonitor()
                         .AddSingleton<TimeProvider>(_ => TimeProvider.System)
                         .AddFileSystem()
                         .AddSettingsManager()
@@ -41,7 +42,10 @@ public class AFileExtractorTest
         JobMonitor = ServiceProvider.GetRequiredService<IJobMonitor>();
         TemporaryFileManager = ServiceProvider.GetRequiredService<TemporaryFileManager>();
         FileExtractor = ServiceProvider.GetRequiredService<IFileExtractor>();
+        FileSystem = ServiceProvider.GetRequiredService<IFileSystem>();
     }
+
+    public IFileSystem FileSystem { get; set; }
 
     public IFileExtractor FileExtractor { get; private set; } = null!;
     public TemporaryFileManager TemporaryFileManager { get; private set; } = null!;

@@ -28,10 +28,8 @@ public class ManagedZipExtractorTests
         await extractor.ExtractAllAsync(new NativeFileStreamFactory(archivePath), destinationPath);
 
         var files = destinationPath.Path.EnumerateFiles().ToArray();
-        await Assert.That(files)
-            .HasSingleItem()
-            .HasProperty(f => f.FileExists)
-            .EqualTo(expectedFileName);
+        await Assert.That(files.Where(f => f.FileName == expectedFileName))
+            .HasSingleItem();
     }
 
     private static async Task CreateZipFile()

@@ -30,15 +30,15 @@ public class JobMonitorTrackingTests : AJobsTest
         await Task.WhenAll(progressTask.Job.WaitAsync(), simpleTask.Job.WaitAsync());
         
         // Assert
-        progressJobChanges.Should().NotBeEmpty();
-        simpleJobChanges.Should().NotBeEmpty();
-        
+        await Assert.That(progressJobChanges).IsNotEmpty();
+        await Assert.That(simpleJobChanges).IsNotEmpty();
+
         // Verify that each filtered stream only contains jobs of the correct type
         var progressJobs = progressJobChanges.SelectMany(cs => cs).Select(change => change.Current);
         var simpleJobs = simpleJobChanges.SelectMany(cs => cs).Select(change => change.Current);
-        
-        progressJobs.Should().OnlyContain(job => job.Definition is ProgressReportingJob);
-        simpleJobs.Should().OnlyContain(job => job.Definition is SimpleTestJob);
+
+        await Assert.That(progressJobs.All(job => job.Definition is ProgressReportingJob)).IsTrue();
+        await Assert.That(simpleJobs.All(job => job.Definition is SimpleTestJob)).IsTrue();
     }
 
     [Test]
@@ -68,10 +68,10 @@ public class JobMonitorTrackingTests : AJobsTest
         changeSignal.WaitOne(TimeSpan.FromSeconds(2));
         
         // Assert
-        changeSets.Should().NotBeEmpty();
-        
+        await Assert.That(changeSets).IsNotEmpty();
+
         // Should have at least one Add operation
         var hasAddOperation = changeSets.Any(cs => cs.Any(change => change.Reason == ChangeReason.Add));
-        hasAddOperation.Should().BeTrue();
+        await Assert.That(hasAddOperation).IsTrue();
     }
 }

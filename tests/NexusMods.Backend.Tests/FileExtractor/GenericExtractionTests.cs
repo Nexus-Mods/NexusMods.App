@@ -1,6 +1,7 @@
 using NexusMods.Hashing.xxHash3;
 using NexusMods.Hashing.xxHash3.Paths;
 using NexusMods.Paths;
+using TUnit.Assertions.Enums;
 
 namespace NexusMods.Backend.Tests.FileExtractor;
 
@@ -24,11 +25,11 @@ public class GenericExtractionTests : AFileExtractorTest
             ("rootFile.txt", (Hash)0x818A82701BC1CC30),
         ];
 
-        actual.Should().BeEquivalentTo(expected);
+        await Assert.That(actual).IsEquivalentTo(expected, CollectionOrdering.Any);
     }
 }
 
-file class ArchiveDataSource : DataSourceGeneratorAttribute<AbsolutePath>
+internal class ArchiveDataSource : DataSourceGeneratorAttribute<AbsolutePath>
 {
     protected override IEnumerable<Func<AbsolutePath>> GenerateDataSources(DataGeneratorMetadata dataGeneratorMetadata)
     {

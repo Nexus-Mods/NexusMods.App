@@ -28,15 +28,15 @@ public class JobProgressReportingTests : AJobsTest
         await task;
         
         // Assert
-        progressUpdates.Should().NotBeEmpty();
-        progressUpdates.Should().HaveCountGreaterOrEqualTo(4);
-        
+        await Assert.That(progressUpdates).IsNotEmpty();
+        await Assert.That(progressUpdates.Count).IsGreaterThanOrEqualTo(4);
+
         // Progress should be monotonically increasing
         for (var x = 1; x < progressUpdates.Count; x++)
-            progressUpdates[x].Should().BeGreaterOrEqualTo(progressUpdates[x - 1]);
-        
+            await Assert.That(progressUpdates[x]).IsGreaterThanOrEqualTo(progressUpdates[x - 1]);
+
         // Final progress should be 100%
-        progressUpdates.Last().Should().BeApproximately(1.0, 0.01);
+        await Assert.That(Math.Abs(progressUpdates.Last() - 1.0)).IsLessThanOrEqualTo(0.01);
     }
 
     [Test]
@@ -60,8 +60,8 @@ public class JobProgressReportingTests : AJobsTest
         await task;
         
         // Assert
-        rateUpdates.Should().NotBeEmpty();
-        rateUpdates.Should().OnlyContain(r => Math.Abs(r - 20.0) < 0.00001);
+        await Assert.That(rateUpdates).IsNotEmpty();
+        await Assert.That(rateUpdates.All(r => Math.Abs(r - 20.0) < 0.00001)).IsTrue();
     }
 
     [Test]
@@ -93,21 +93,21 @@ public class JobProgressReportingTests : AJobsTest
         
         // Assert
         // Should have progress updates
-        progressUpdates.Should().NotBeEmpty();
-        
+        await Assert.That(progressUpdates).IsNotEmpty();
+
         // Initial progress should be 0
-        progressUpdates.First().Should().Be(0.0);
-        
+        await Assert.That(progressUpdates.First()).IsEqualTo(0.0);
+
         // Final progress should be 1 (100%)
-        progressUpdates.Last().Should().Be(1.0);
-        
+        await Assert.That(progressUpdates.Last()).IsEqualTo(1.0);
+
         // Rate of progress should be reported
-        rateUpdates.Should().NotBeEmpty();
+        await Assert.That(rateUpdates).IsNotEmpty();
         // ReSharper disable once CompareOfFloatsByEqualityOperator
-        rateUpdates.Should().OnlyContain(r => r == job.ExpectedRate);
-        
+        await Assert.That(rateUpdates.All(r => r == job.ExpectedRate)).IsTrue();
+
         // Result should match processed item count
         var result = await task;
-        result.Should().Be(job.ItemCount);
+        await Assert.That(result).IsEqualTo(job.ItemCount);
     }
 }

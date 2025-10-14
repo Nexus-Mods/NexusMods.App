@@ -1,5 +1,7 @@
+using FluentAssertions;
 using NexusMods.Backend.FileExtractor.Extractors;
 using NexusMods.Hashing.xxHash3;
+using NexusMods.Hashing.xxHash3.Paths;
 using NexusMods.Paths;
 using NexusMods.Sdk.FileExtractor;
 using Reloaded.Memory.Extensions;
@@ -12,17 +14,16 @@ public class SevenZipExtractionTests : AFileExtractorTest
     public async Task Test_Issue3003()
     {
         const string fileName = "zip-with-spaces.zip";
-        var archivePath = FileSystem.Shared.GetKnownPath(KnownPath.CurrentDirectory).Combine("Resources").Combine(fileName);
+        var archivePath = FileSystem.GetKnownPath(KnownPath.CurrentDirectory).Combine("Resources").Combine(fileName);
         await Assert.That(archivePath.FileExists).IsTrue();
 
-        await using var destination = _temporaryFileManager.CreateFolder();
-        await _extractor.ExtractAllAsync(archivePath, destination);
+        await using var destination = TemporaryFileManager.CreateFolder();
+        await FileExtractor.ExtractAllAsync(archivePath, destination);
 
         var files = destination.Path.EnumerateFiles().ToArray();
         await Assert.That(files)
             .All()
-            .HasProperty(f => f.FileExists)
-            .EqualTo(true);
+            .Satisfy(f => f.HasMember(f => f.FileExists).EqualTo(true));
     }
 
     [Test]
@@ -66,24 +67,24 @@ public class SevenZipExtractionTests : AFileExtractorTest
     [Test]
     public async Task CanExtractToLongPath()
     {
-        await using var tempFolder = _temporaryFileManager.CreateFolder();
+        await using var tempFolder = TemporaryFileManager.CreateFolder();
         var dest = tempFolder.Path;
 
         // Create a long path
         while (!(dest.GetFullPathLength() > 280))
         {
             dest = dest.Combine("subfolder");
-            _fileSystem.CreateDirectory(dest);
+            FileSystem.CreateDirectory(dest);
         }
 
         dest.GetFullPathLength().Should().BeGreaterThan(280);
 
-        _fileSystem.CreateDirectory(dest);
+        FileSystem.CreateDirectory(dest);
 
-        var file = FileSystem.Shared.GetKnownPath(KnownPath.CurrentDirectory)
+        var file = FileSystem.GetKnownPath(KnownPath.CurrentDirectory)
             .Combine("Resources/data_7zip_lzma2.7z");
 
-        var act = async () => await _extractor.ExtractAllAsync(file, dest, CancellationToken.None);
+        var act = async () => await FileExtractor.ExtractAllAsync(file, dest, CancellationToken.None);
 
         await act.Should().NotThrowAsync();
 

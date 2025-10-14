@@ -34,17 +34,17 @@ public class JobPauseResumeTests : AJobsTest
         JobMonitor.Resume(task);
         
         // Wait for the job to signal it has resumed execution
-        jobHasResumedSignal.Wait(TimeSpan.FromSeconds(30)).Should().BeTrue();
-        task.Job.Status.Should().Be(JobStatus.Running);
-        
+        await Assert.That(jobHasResumedSignal.Wait(TimeSpan.FromSeconds(30))).IsTrue();
+        await Assert.That(task.Job.Status).IsEqualTo(JobStatus.Running);
+
         // Allow the job to complete
         allowJobToCompleteSignal.Set();
-        
+
         // Wait for completion
         var result = await task;
-        
-        result.Should().Be(42);
-        task.Job.Status.Should().Be(JobStatus.Completed);
+
+        await Assert.That(result).IsEqualTo(42);
+        await Assert.That(task.Job.Status).IsEqualTo(JobStatus.Completed);
     }
 
     [Test]
@@ -63,10 +63,10 @@ public class JobPauseResumeTests : AJobsTest
         
         // Cancel while paused
         JobMonitor.Cancel(task);
-        
+
         // Assert
         await Assert.ThrowsAsync<OperationCanceledException>(async () => await task.Job.WaitAsync());
-        task.Job.Status.Should().Be(JobStatus.Cancelled);
+        await Assert.That(task.Job.Status).IsEqualTo(JobStatus.Cancelled);
     }
 
     [Test]
@@ -90,6 +90,6 @@ public class JobPauseResumeTests : AJobsTest
         
         // Assert
         await Assert.ThrowsAsync<OperationCanceledException>(async () => await task.Job.WaitAsync());
-        task.Job.Status.Should().Be(JobStatus.Cancelled);
+        await Assert.That(task.Job.Status).IsEqualTo(JobStatus.Cancelled);
     }
 }
