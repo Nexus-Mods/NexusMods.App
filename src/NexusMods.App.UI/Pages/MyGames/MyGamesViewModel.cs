@@ -61,6 +61,7 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
     private readonly IConnection _connection;
     private readonly IServiceProvider _serviceProvider;
     private readonly ISynchronizerService _syncService;
+    private readonly ILoadoutManager _loadoutManager;
 
     private ReadOnlyObservableCollection<IViewModelInterface> _supportedGames = new([]);
     private ReadOnlyObservableCollection<IGameWidgetViewModel> _installedGames = new([]);
@@ -89,6 +90,7 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
         _jobMonitor = serviceProvider.GetRequiredService<IJobMonitor>();
         _overlayController = overlayController;
         _connection = conn;
+        _loadoutManager = serviceProvider.GetRequiredService<ILoadoutManager>();
 
         TabTitle = Language.MyGames;
         TabIcon = IconValues.GamepadOutline;
@@ -360,9 +362,9 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
 
     private async Task<Loadout.ReadOnly> ManageGame(GameInstallation installation)
     {
-        return await installation.GetGame().Synchronizer.CreateLoadout(installation);
+        return await _loadoutManager.CreateLoadout(installation);
     }
-    
+
     private Optional<LoadoutId> GetLoadout(IConnection conn, GameInstallation installation)
     {
         var db = conn.Db;
