@@ -5,6 +5,7 @@ using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.Dialog;
 using NexusMods.App.UI.Dialog.Enums;
+using NexusMods.App.UI.Pages.CollectionDownload;
 using NexusMods.App.UI.Pages.LoadoutPage;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
@@ -82,8 +83,8 @@ public class CollectionRevisionLeftMenuItemViewModel : LeftMenuItemWithRightIcon
                 );
 
                 // Navigate away from the deleted revision page to default new tab
-                await _workspaceController.ReplaceTabsMatchingAcrossAllWorkspacesAsync<CollectionLoadoutPageContext>(
-                    context => context.RevisionId.HasValue && context.RevisionId.Value == _collectionRevisionMetadataId
+                await _workspaceController.ReplaceTabsMatchingAcrossAllWorkspacesAsync<CollectionDownloadPageContext>(
+                    context => context.CollectionRevisionMetadataId == _collectionRevisionMetadataId
                 );
             }
             catch (Exception ex)
