@@ -15,6 +15,8 @@ internal partial class LoadoutManager
         public RebalancePrioritiesTxFunc(LoadoutId loadoutId, EntityId[] toSkip)
         {
             _loadoutId = loadoutId;
+
+            Array.Sort(toSkip);
             _toSkip = toSkip;
         }
 
@@ -35,7 +37,9 @@ internal partial class LoadoutManager
             var start = 0UL;
             foreach (var model in priorities)
             {
-                if (_toSkip.Contains(model.TargetId)) continue;
+                var index = Array.BinarySearch(_toSkip, model.TargetId);
+                if (index >= 0) continue;
+
                 var newPriority = ConflictPriority.From(++start);
                 tx.Add(model.Id, LoadoutItemGroupPriority.Priority, newPriority);
             }
