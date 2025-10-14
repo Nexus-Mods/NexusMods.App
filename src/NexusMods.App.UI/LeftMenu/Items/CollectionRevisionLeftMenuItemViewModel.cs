@@ -1,15 +1,10 @@
 using System.Reactive;
 using System.Reactive.Linq;
-using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.Collections;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
-using NexusMods.Abstractions.UI;
-using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.Dialog;
 using NexusMods.App.UI.Dialog.Enums;
-using NexusMods.App.UI.Pages.CollectionDownload;
 using NexusMods.App.UI.Pages.LoadoutPage;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
