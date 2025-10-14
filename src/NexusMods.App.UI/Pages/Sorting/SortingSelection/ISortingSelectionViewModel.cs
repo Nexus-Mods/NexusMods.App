@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.UI.Sdk;
 using R3;
@@ -6,7 +7,7 @@ namespace NexusMods.App.UI.Pages.Sorting;
 
 public interface ISortingSelectionViewModel : IViewModelInterface
 {
-    IViewModelInterface[] ViewModels { get; }
+    ReadOnlyObservableCollection<IViewModelInterface> RulesViewModels { get; }
 
     public IReadOnlyBindableReactiveProperty<bool> CanEdit { get; }
     
