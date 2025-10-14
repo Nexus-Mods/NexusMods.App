@@ -18,7 +18,6 @@
       <ProjectReference Include="..\..\..\src\NexusMods.DataModel\NexusMods.DataModel.csproj" />
       <ProjectReference Include="..\..\..\src\NexusMods.Games.CreationEngine\NexusMods.Games.CreationEngine.csproj" />
       <ProjectReference Include="..\..\..\src\NexusMods.Games.FileHashes\NexusMods.Games.FileHashes.csproj" />
-      <ProjectReference Include="..\..\..\src\NexusMods.Jobs\NexusMods.Jobs.csproj" />
     </ItemGroup>
 
 </Project>

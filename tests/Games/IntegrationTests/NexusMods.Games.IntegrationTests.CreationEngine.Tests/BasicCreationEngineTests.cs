@@ -1,12 +1,14 @@
 using FluentAssertions;
 using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Games.CreationEngine;
 using NexusMods.Games.CreationEngine.SkyrimSE;
+using NexusMods.Games.IntegrationTestFramework;
 
 namespace NexusMods.Games.IntegrationTests.CreationEngine.Tests;
 
-public class BasicSkyrimTests : ASkyrimSETest
+[SkyrimSESteamCurrent]
+[Fallout4SteamCurrent]
+public class BasicCreationEngineTests(Type game, GameLocatorResult locatorResult) : AGameIntegrationTest(game, locatorResult)
 {
     [Test]
     public async Task GameFilesExistOnDisk()
