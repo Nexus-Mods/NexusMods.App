@@ -25,9 +25,14 @@ specify the root folder for tests, via the environment variable `NMA_INTEGRATION
 
 ## Running Tests
 
-Now simply navigate to a specific integration test folder and run `dotnet run` to run the tests via tUnit. 
+Now simply navigate to a specific integration test folder and run `dotnet run` to run the tests via tUnit. The Integration tests 
+will not run at all if the environment variable `NMA_INTEGRATION_BASE_PATH` is not set, and will error if the correct game
+images are not present. This silent failure with the environment variable is intentional, so that CI runs in various environments
+without failures and without having specify complex filters in the test runners.  The NMA project hosts all tgame images
+on the test runner for the integration tests, speak with the app developers if there are additional manifests requried for testing.
 
-## Tests in CI
-
-The NMA project hosts all these game images on the test runner for the integration tests, and the github actions files specify the correct root paths.
-Simply talk to the developers if there are additional manifests requried for testing. 
+## Create new tests
+To create new tests, create a class that inherits from `AGameIntegrationTest`. Specify which games to run the test on
+via attributes attached to the class. These attributes then generate data that is used to parameterize the test. Be liberal
+with the creation of new test attributes, as they are an easy extension point for creating new inputs and for verifying
+behavior across multiple games and platforms.
