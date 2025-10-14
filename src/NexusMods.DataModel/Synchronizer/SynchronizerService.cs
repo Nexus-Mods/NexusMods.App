@@ -1,4 +1,5 @@
 ﻿using System.Reactive.Linq;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
@@ -27,14 +28,14 @@ public class SynchronizerService : ISynchronizerService
     private readonly IJobMonitor _jobMonitor;
     private readonly Dictionary<EntityId, SynchronizerState> _gameStates;
     private readonly Dictionary<LoadoutId, SynchronizerState> _loadoutStates;
-    private readonly ILoadoutManager _loadoutManager;
+    private readonly Lazy<ILoadoutManager> _loadoutManager;
     private readonly SemaphoreSlim _semaphore = new(1, 1);
     private readonly object _lock = new();
 
     /// <summary>
     /// DI Constructor
     /// </summary>
-    public SynchronizerService(IConnection conn, ILogger<SynchronizerService> logger, IGameRegistry gameRegistry, IFileHashesService fileHashesService, IJobMonitor jobMonitor, ILoadoutManager loadoutManager)
+    public SynchronizerService(IConnection conn, ILogger<SynchronizerService> logger, IGameRegistry gameRegistry, IFileHashesService fileHashesService, IJobMonitor jobMonitor, IServiceProvider serviceProvider)
     {
         _logger = logger;
         _conn = conn;
@@ -43,7 +44,7 @@ public class SynchronizerService : ISynchronizerService
         _gameStates = _gameRegistry.Installations.ToDictionary(e => e.Key, _ => new SynchronizerState());
         _loadoutStates = Loadout.All(conn.Db).ToDictionary(e => e.LoadoutId, _ => new SynchronizerState());
         _fileHashesService = fileHashesService;
-        _loadoutManager = loadoutManager;
+        _loadoutManager = new Lazy<ILoadoutManager>(serviceProvider.GetRequiredService<ILoadoutManager>);
     }
     
     /// <inheritdoc />
@@ -130,7 +131,7 @@ public class SynchronizerService : ISynchronizerService
                 return;
             }
 
-            await _loadoutManager.UnManage(installation, runGc, cleanGameFolder);
+            await _loadoutManager.Value.UnManage(installation, runGc, cleanGameFolder);
         }
         finally
         {
