@@ -1,9 +1,9 @@
 ﻿using System.Collections.ObjectModel;
-using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.LeftMenu.Items;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.UI.Sdk;
 using NexusMods.UI.Sdk.Icons;
 using R3;
 

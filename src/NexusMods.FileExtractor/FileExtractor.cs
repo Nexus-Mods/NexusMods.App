@@ -4,6 +4,7 @@ using NexusMods.FileExtractor.Extractors;
 using NexusMods.FileExtractor.FileSignatures;
 using NexusMods.Paths;
 using NexusMods.Paths.Utilities;
+using NexusMods.Sdk.FileExtractor;
 using NexusMods.Sdk.IO;
 
 namespace NexusMods.FileExtractor;

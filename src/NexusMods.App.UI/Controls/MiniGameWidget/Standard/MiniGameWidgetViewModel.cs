@@ -4,10 +4,9 @@ using Avalonia.Media.Imaging;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
-using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Helpers;
-using NexusMods.CrossPlatform.Process;
-using NexusMods.Sdk.Settings;
+using NexusMods.Sdk;
+using NexusMods.UI.Sdk;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using R3;
@@ -16,7 +15,7 @@ namespace NexusMods.App.UI.Controls.MiniGameWidget.Standard;
 
 public class MiniGameWidgetViewModel : AViewModel<IMiniGameWidgetViewModel>, IMiniGameWidgetViewModel
 {
-    private const string MissingGamesUrl = "https://nexus-mods.github.io/NexusMods.App/users/games/CompatibleGames/";
+    private static readonly Uri MissingGamesUri = new("https://nexus-mods.github.io/NexusMods.App/users/games/CompatibleGames/");
 
     public MiniGameWidgetViewModel(ILogger<MiniGameWidgetViewModel> logger, IOSInterop osInterop)
     {
@@ -30,7 +29,7 @@ public class MiniGameWidgetViewModel : AViewModel<IMiniGameWidgetViewModel>, IMi
             .WhereNotNull()
             .ToProperty(this, vm => vm.Image, scheduler: RxApp.MainThreadScheduler);
 
-        GiveFeedbackCommand = ReactiveUI.ReactiveCommand.CreateFromTask(async () => { await osInterop.OpenUrl(new Uri(MissingGamesUrl)); });
+        GiveFeedbackCommand = ReactiveUI.ReactiveCommand.Create(() => osInterop.OpenUri(MissingGamesUri));
 
         this.WhenActivated(disposables =>
             {

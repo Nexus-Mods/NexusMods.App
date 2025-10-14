@@ -1,6 +1,6 @@
 using FluentAssertions;
 using JetBrains.Annotations;
-using NexusMods.Abstractions.Jobs;
+using NexusMods.Sdk.Jobs;
 using Xunit;
 
 namespace NexusMods.Jobs.Tests.Examples.BestPractices;

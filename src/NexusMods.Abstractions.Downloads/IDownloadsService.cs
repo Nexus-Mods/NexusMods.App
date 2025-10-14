@@ -1,12 +1,8 @@
-using System.Collections.ObjectModel;
 using DynamicData;
 using DynamicData.Kernel;
 using JetBrains.Annotations;
-using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
-using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.Paths;
 
 namespace NexusMods.Abstractions.Downloads;
 

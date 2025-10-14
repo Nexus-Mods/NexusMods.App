@@ -109,6 +109,8 @@ public partial class SkyrimSE : AGame, ISteamGame, IGogGame, ICreationEngineGame
         var fileName = name?.FileName.ToString() ?? "unknown.esm";
         var key = ModKey.FromFileName(fileName);
         await using var stream = await _streamSource.OpenAsync(hash);
+        if (stream == null)
+            throw new InvalidOperationException("Stream was null");
         var meta = ParsingMeta.Factory(BinaryReadParameters.Default, GameRelease.SkyrimSE, key, stream!);
         await using var mutagenStream = new MutagenBinaryReadStream(stream!, meta);
         using var frame = new MutagenFrame(mutagenStream);

@@ -10,7 +10,6 @@ using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Sdk.Settings;
 using NexusMods.Abstractions.Telemetry;
-using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.Overlays;
 using NexusMods.App.UI.Pages.Changelog;
@@ -19,8 +18,8 @@ using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.CrossPlatform;
-using NexusMods.CrossPlatform.Process;
 using NexusMods.Paths;
+using NexusMods.Sdk;
 using NexusMods.Telemetry;
 using NexusMods.UI.Sdk;
 using R3;
@@ -117,24 +116,22 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
             }
         );
 
-        ViewAppLogsCommand = ReactiveCommand.CreateFromTask(async () =>
-            {
-                var loggingSettings = settingsManager.Get<LoggingSettings>();
-                var logPath = loggingSettings.MainProcessLogFilePath.ToPath(fileSystem);
-                await osInterop.OpenFileInDirectory(logPath);
+        ViewAppLogsCommand = ReactiveCommand.Create(() =>
+        {
+            var loggingSettings = settingsManager.Get<LoggingSettings>();
+            var logPath = loggingSettings.MainProcessLogFilePath.ToPath(fileSystem);
+            osInterop.OpenFileInDirectory(logPath);
 
-                Tracking.AddEvent(Events.Help.ViewAppLogs, metadata: new EventMetadata(name: null));
-            }
-        );
+            Tracking.AddEvent(Events.Help.ViewAppLogs, metadata: new EventMetadata(name: null));
+        });
 
         ShowWelcomeMessageCommand = ReactiveCommand.Create(() =>
-            {
-                var welcomeOverlayViewModel = serviceProvider.GetRequiredService<IWelcomeOverlayViewModel>();
-                overlayController.Enqueue(welcomeOverlayViewModel);
+        {
+            var welcomeOverlayViewModel = serviceProvider.GetRequiredService<IWelcomeOverlayViewModel>();
+            overlayController.Enqueue(welcomeOverlayViewModel);
 
-                Tracking.AddEvent(Events.Help.GiveFeedback, metadata: new EventMetadata(name: null));
-            }
-        );
+            Tracking.AddEvent(Events.Help.GiveFeedback, metadata: new EventMetadata(name: null));
+        });
 
         var canLogin = this.WhenAnyValue(x => x.IsLoggedIn).Select(isLoggedIn => !isLoggedIn).ToObservable();
         LoginCommand = canLogin.ToReactiveCommand<R3.Unit, R3.Unit>(async (_, _) =>
@@ -148,14 +145,13 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
         LogoutCommand = ReactiveCommand.CreateFromTask(Logout, canLogout);
 
         OpenNexusModsProfileCommand = ReactiveCommand.CreateFromTask(async () =>
-            {
-                var userInfo = await _loginManager.GetUserInfoAsync();
-                if (userInfo is null) return;
+        {
+            var userInfo = await _loginManager.GetUserInfoAsync();
+            if (userInfo is null) return;
 
-                var uri = NexusModsUrlBuilder.GetProfileUri(userInfo.UserId);
-                await osInterop.OpenUrl(uri);
-            }
-        );
+            var uri = NexusModsUrlBuilder.GetProfileUri(userInfo.UserId);
+            osInterop.OpenUri(uri);
+        });
 
         NewTabCommand = ReactiveCommand.Create(() =>
             {
@@ -169,17 +165,12 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
             }
         );
 
-        OpenNexusModsAccountSettingsCommand = ReactiveCommand.CreateFromTask(async () => { await osInterop.OpenUrl(NexusModsUrlBuilder.UserSettingsUri); });
-
-        OpenNexusModsPremiumCommand = ReactiveCommand.CreateFromTask(async () => { await osInterop.OpenUrl(NexusModsUrlBuilder.UpgradeToPremiumUri); });
-
-        OpenDiscordCommand = ReactiveCommand.CreateFromTask(async () => { await osInterop.OpenUrl(ConstantLinks.DiscordUri); });
-
-        OpenForumsCommand = ReactiveCommand.CreateFromTask(async () => { await osInterop.OpenUrl(ConstantLinks.ForumsUri); });
-
-        OpenGitHubCommand = ReactiveCommand.CreateFromTask(async () => { await osInterop.OpenUrl(ConstantLinks.GitHubUri); });
-
-        OpenStatusPageCommand = ReactiveCommand.CreateFromTask(async () => { await osInterop.OpenUrl(ConstantLinks.StatusPageUri); });
+        OpenNexusModsAccountSettingsCommand = ReactiveCommand.Create(() => osInterop.OpenUri(NexusModsUrlBuilder.UserSettingsUri));
+        OpenNexusModsPremiumCommand = ReactiveCommand.Create( () => osInterop.OpenUri(NexusModsUrlBuilder.UpgradeToPremiumUri));
+        OpenDiscordCommand = ReactiveCommand.Create( () => osInterop.OpenUri(ConstantLinks.DiscordUri));
+        OpenForumsCommand = ReactiveCommand.Create( () => osInterop.OpenUri(ConstantLinks.ForumsUri));
+        OpenGitHubCommand = ReactiveCommand.Create( () => osInterop.OpenUri(ConstantLinks.GitHubUri));
+        OpenStatusPageCommand = ReactiveCommand.Create(() => osInterop.OpenUri(ConstantLinks.StatusPageUri));
 
         this.WhenActivated(d =>
             {

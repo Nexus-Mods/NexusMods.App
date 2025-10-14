@@ -1,6 +1,6 @@
 using DynamicData.Kernel;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.UI;
+using NexusMods.UI.Sdk;
 
 namespace NexusMods.App.UI.Controls.LoadoutBadge;
 

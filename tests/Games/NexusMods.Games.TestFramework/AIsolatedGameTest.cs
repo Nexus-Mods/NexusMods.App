@@ -32,6 +32,7 @@ using NexusMods.MnemonicDB.Abstractions.Models;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Paths;
 using NexusMods.Sdk;
+using NexusMods.Sdk.FileExtractor;
 using NexusMods.Sdk.FileStore;
 using NexusMods.Sdk.IO;
 using NexusMods.StandardGameLocators.TestHelpers;
@@ -55,7 +56,7 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
     protected readonly IFileExtractor FileExtractor;
     protected readonly IGameRegistry GameRegistry;
     protected readonly NexusModsLibrary NexusModsLibrary;
-
+    protected readonly ILoadoutManager LoadoutManager;
 
     protected readonly IConnection Connection;
 
@@ -92,13 +93,12 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
 
         GameRegistry = ServiceProvider.GetRequiredService<IGameRegistry>();
         
-
-
         FileSystem = ServiceProvider.GetRequiredService<IFileSystem>();
         FileStore = ServiceProvider.GetRequiredService<IFileStore>();
         FileExtractor = ServiceProvider.GetRequiredService<IFileExtractor>();
         TemporaryFileManager = ServiceProvider.GetRequiredService<TemporaryFileManager>();
         Connection = ServiceProvider.GetRequiredService<IConnection>();
+        LoadoutManager = ServiceProvider.GetRequiredService<ILoadoutManager>();
 
         DiagnosticManager = ServiceProvider.GetRequiredService<IDiagnosticManager>();
 
@@ -371,16 +371,14 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
             await GenerateGameFiles();
             _gameFilesWritten = true;
         }
-        return await GameInstallation
-            .GetGame()
-            .Synchronizer
-            .CreateLoadout(GameInstallation, Guid.NewGuid().ToString());
+
+        return await LoadoutManager.CreateLoadout(GameInstallation, Guid.NewGuid().ToString());
     }
 
     /// <summary>
     /// Deletes a loadout with a given ID.
     /// </summary>
-    protected Task DeleteLoadoutAsync(LoadoutId loadoutId, GarbageCollectorRunMode gcRunMode = GarbageCollectorRunMode.DoNotRun) => GameInstallation.GetGame().Synchronizer.DeleteLoadout(loadoutId, gcRunMode);
+    protected ValueTask DeleteLoadoutAsync(LoadoutId loadoutId, GarbageCollectorRunMode gcRunMode = GarbageCollectorRunMode.DoNotRun) => LoadoutManager.DeleteLoadout(loadoutId, gcRunMode);
 
     /// <summary>
     /// Reloads the entity from the database.

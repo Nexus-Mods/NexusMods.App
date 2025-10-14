@@ -8,9 +8,6 @@
                                 xmlns:selectLocation="clr-namespace:NexusMods.Games.AdvancedInstaller.UI.SelectLocation"
                                 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="650"
                                 x:Class="NexusMods.Games.AdvancedInstaller.UI.SelectLocation.SelectLocationView">
-    <Design.DataContext>
-        <selectLocation:SelectLocationDesignViewModel />
-    </Design.DataContext>
 
     <Border Classes="Rounded-lg Mid OutlineModerate" Padding="16" BorderThickness="2">
         <Border.Styles>

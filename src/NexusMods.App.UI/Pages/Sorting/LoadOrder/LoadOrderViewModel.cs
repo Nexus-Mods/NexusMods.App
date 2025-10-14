@@ -10,12 +10,11 @@ using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Sdk.Settings;
-using NexusMods.Abstractions.UI;
-using NexusMods.Abstractions.UI.Extensions;
 using NexusMods.App.UI.Controls;
 using R3;
 using NexusMods.App.UI.Controls.Alerts;
-using NexusMods.CrossPlatform.Process;
+using NexusMods.Sdk;
+using NexusMods.UI.Sdk;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using CompositeDisposable = System.Reactive.Disposables.CompositeDisposable;
@@ -87,10 +86,7 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
         
         ToggleAlertCommand = ReactiveCommand.Create(() => { AlertSettingsWrapper.ToggleAlert(); });
         
-        LearnMoreAlertCommand = ReactiveCommand.CreateFromTask(async () =>
-        {
-            await osInterop.OpenUrl(new Uri(sortOrderVariety.SortOrderUiMetadata.LearnMoreUrl));
-        });
+        LearnMoreAlertCommand = ReactiveCommand.Create(() => osInterop.OpenUri(new Uri(sortOrderVariety.SortOrderUiMetadata.LearnMoreUrl)));
 
         SwitchSortDirectionCommand = ReactiveCommand.Create(() =>
             {

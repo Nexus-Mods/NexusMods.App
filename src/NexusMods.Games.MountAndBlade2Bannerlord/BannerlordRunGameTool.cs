@@ -6,7 +6,6 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.CrossPlatform.Process;
 using NexusMods.Games.Generic;
 using NexusMods.Paths;
 using static Bannerlord.LauncherManager.Constants;

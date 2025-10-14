@@ -10,5 +10,5 @@ public interface IGameLocator
     /// </summary>
     /// <param name="game">The game to find the location of.</param>
     /// <returns>Location of the game.</returns>
-    public IEnumerable<GameLocatorResult> Find(ILocatableGame game);
+    public IEnumerable<GameLocatorResult> Find(ILocatableGame game, bool forceRefreshCache = false);
 }

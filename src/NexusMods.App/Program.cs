@@ -18,12 +18,12 @@ using NexusMods.App.UI;
 using NexusMods.App.UI.Settings;
 using NexusMods.Backend;
 using NexusMods.CrossPlatform;
-using NexusMods.CrossPlatform.Process;
 using NexusMods.DataModel;
 using NexusMods.DataModel.SchemaVersions;
 using NexusMods.Paths;
 using NexusMods.ProxyConsole;
 using NexusMods.Sdk;
+using NexusMods.Sdk.Tracking;
 using NexusMods.SingleProcess;
 using NexusMods.SingleProcess.Exceptions;
 using NexusMods.StandardGameLocators;
@@ -47,14 +47,14 @@ public class Program
 
         MainThreadData.SetMainThread();
 
-        TelemetrySettings telemetrySettings;
+        TrackingSettings trackingSettings;
         LoggingSettings loggingSettings;
         ExperimentalSettings experimentalSettings;
         GameLocatorSettings gameLocatorSettings;
         using (var settingsHost = BuildSettingsHost())
         {
             var settingsManager = settingsHost.Services.GetRequiredService<ISettingsManager>();
-            telemetrySettings = settingsManager.Get<TelemetrySettings>();
+            trackingSettings = settingsManager.Get<TrackingSettings>();
             loggingSettings = settingsManager.Get<LoggingSettings>();
             experimentalSettings = settingsManager.Get<ExperimentalSettings>();
             gameLocatorSettings = settingsManager.Get<GameLocatorSettings>();
@@ -63,7 +63,7 @@ public class Program
         var startupMode = StartupMode.Parse(args);
         using var host = BuildHost(
             startupMode,
-            telemetrySettings,
+            trackingSettings,
             loggingSettings,
             experimentalSettings,
             gameLocatorSettings
@@ -71,6 +71,13 @@ public class Program
 
         var services = host.Services;
         _logger = services.GetRequiredService<ILogger<Program>>();
+
+        if (trackingSettings.EnableTracking)
+        {
+            Tracker.SetTracker(services.GetService<IEventTracker>());
+            Tracker.SetTracker(services.GetService<IExceptionTracker>());
+            Events.AppLaunched();
+        }
 
         // NOTE(erri120): has to come before host startup
         CleanupUnresponsiveProcesses(services).Wait(timeout: TimeSpan.FromSeconds(10));
@@ -90,9 +97,8 @@ public class Program
             {
                 try
                 {
-                    var fileSystemMounts = await osInterop.GetFileSystemMounts();
                     var archiveLocation = dataModelSettings.ArchiveLocations[0].ToPath(fileSystem);
-                    var mount = await osInterop.GetFileSystemMount(archiveLocation, fileSystemMounts);
+                    var mount = await osInterop.GetFileSystemMount(archiveLocation);
                     if (mount is not null) _logger.LogInformation("Archives are stored at {Path} on mount {Mount}", archiveLocation, mount);
                     else _logger.LogWarning("Failed to find file system mount for {Path}", archiveLocation);
                 }
@@ -229,7 +235,7 @@ public class Program
         catch (NoMainProcessStarted _)
         {
             var interop = services.GetRequiredService<IOSInterop>();
-            var ownExe = interop.GetOwnExe();
+            var ownExe = interop.GetRunningExecutablePath(out var _);
             _logger.LogInformation("No main process started, starting {OwnExe}", ownExe);
             var processInfo = new ProcessStartInfo
             {
@@ -284,7 +290,7 @@ public class Program
                 .AddSettingsManager()
                 .AddSerializationAbstractions()
                 .AddStorageBackend<JsonStorageBackend>()
-                .AddSettings<TelemetrySettings>()
+                .AddSettings<TrackingSettings>()
                 .AddSettings<LoggingSettings>()
                 .AddSettings<ExperimentalSettings>()
                 .AddSettings<GameLocatorSettings>()
@@ -307,7 +313,7 @@ public class Program
     /// </summary>
     private static IHost BuildHost(
         StartupMode startupMode,
-        TelemetrySettings telemetrySettings,
+        TrackingSettings trackingSettings,
         LoggingSettings loggingSettings,
         ExperimentalSettings experimentalSettings,
         GameLocatorSettings? gameLocatorSettings = null)
@@ -316,12 +322,12 @@ public class Program
         var host = new HostBuilder().ConfigureServices(services =>
         {
             var s = services.AddApp(
-                telemetrySettings,
+                trackingSettings,
                 startupMode: startupMode,
                 experimentalSettings: experimentalSettings,
                 gameLocatorSettings: gameLocatorSettings).Validate();
 
-            if (loggingSettings.ShowExceptions || telemetrySettings.IsEnabled)
+            if (loggingSettings.ShowExceptions || trackingSettings.EnableTracking)
                 s.AddSingleton<IObservableExceptionSource, ObservableLoggingTarget>(_ => observableTarget);
 
             if (startupMode.IsAvaloniaDesigner)
@@ -414,7 +420,7 @@ public class Program
         };
 
         var host = BuildHost(startupMode,
-            telemetrySettings: new TelemetrySettings(),
+            trackingSettings: new TrackingSettings(),
             LoggingSettings.CreateDefault(OSInformation.Shared),
             experimentalSettings: new ExperimentalSettings()
         );

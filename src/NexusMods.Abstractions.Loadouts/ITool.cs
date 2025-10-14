@@ -1,7 +1,5 @@
-using System.Runtime.CompilerServices;
-using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
+using NexusMods.Sdk.Jobs;
 using R3;
 
 namespace NexusMods.Abstractions.Loadouts;

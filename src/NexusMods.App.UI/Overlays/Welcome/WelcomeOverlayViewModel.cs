@@ -4,7 +4,8 @@ using NexusMods.Sdk.Settings;
 using NexusMods.Abstractions.Telemetry;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Settings;
-using NexusMods.CrossPlatform.Process;
+using NexusMods.Sdk;
+using NexusMods.Sdk.Tracking;
 using NexusMods.UI.Sdk;
 using R3;
 using ReactiveUI;
@@ -35,12 +36,12 @@ public class WelcomeOverlayViewModel : AOverlayViewModel<IWelcomeOverlayViewMode
         ILoginManager loginManager,
         IWindowNotificationService notificationService)
     {
-        AllowTelemetry = new BindableReactiveProperty<bool>(value: settingsManager.Get<TelemetrySettings>().IsEnabled);
+        AllowTelemetry = new BindableReactiveProperty<bool>(value: settingsManager.Get<TrackingSettings>().EnableTracking);
 
-        CommandOpenDiscord = new ReactiveCommand(_ => osInterop.OpenUrl(ConstantLinks.DiscordUri));
-        CommandOpenForum = new ReactiveCommand(_ => osInterop.OpenUrl(ConstantLinks.ForumsUri));
-        CommandOpenGitHub = new ReactiveCommand(_ => osInterop.OpenUrl(ConstantLinks.GitHubUri));
-        CommandOpenPrivacyPolicy = new ReactiveCommand(_ => osInterop.OpenUrl(ConstantLinks.PrivacyPolicyUri));
+        CommandOpenDiscord = new ReactiveCommand(_ => osInterop.OpenUri(ConstantLinks.DiscordUri));
+        CommandOpenForum = new ReactiveCommand(_ => osInterop.OpenUri(ConstantLinks.ForumsUri));
+        CommandOpenGitHub = new ReactiveCommand(_ => osInterop.OpenUri(ConstantLinks.GitHubUri));
+        CommandOpenPrivacyPolicy = new ReactiveCommand(_ => osInterop.OpenUri(ConstantLinks.PrivacyPolicyUri));
 
         CommandLogIn = IsLoggedIn.AsObservable().Select(static isLoggedIn => !isLoggedIn).ToReactiveCommand<Unit>(
             executeAsync: async (_, cancellationToken) =>
@@ -60,9 +61,9 @@ public class WelcomeOverlayViewModel : AOverlayViewModel<IWelcomeOverlayViewMode
 
         CommandClose = new ReactiveCommand(_ =>
         {
-            settingsManager.Update<TelemetrySettings>(telemetrySettings => telemetrySettings with
+            settingsManager.Update<TrackingSettings>(settings => settings with
             {
-                IsEnabled = AllowTelemetry.Value,
+                EnableTracking = AllowTelemetry.Value,
             });
 
             base.Close();

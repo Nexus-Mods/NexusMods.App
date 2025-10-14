@@ -15,7 +15,8 @@ public class Startup
             .AddFileSystem()
             .AddSettingsManager()
             .AddFileExtractors()
-            .AddCrossPlatform()
+            .AddOSInterop()
+            .AddRuntimeDependencies()
             .AddSettings<LoggingSettings>();
     }
 }

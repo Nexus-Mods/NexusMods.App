@@ -1,8 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.Telemetry;
-using NexusMods.Abstractions.UI;
-using NexusMods.CrossPlatform.Process;
+using NexusMods.UI.Sdk;
 using R3;
 
 namespace NexusMods.App.UI.Pages.CollectionDownload.Dialogs.PremiumDownloads;

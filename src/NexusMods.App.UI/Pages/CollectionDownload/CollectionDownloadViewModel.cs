@@ -4,7 +4,6 @@ using Avalonia.Media.Imaging;
 using DynamicData;
 using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi;
@@ -23,11 +22,12 @@ using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Collections;
-using NexusMods.CrossPlatform.Process;
 using NexusMods.UI.Sdk.Icons;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Paths;
+using NexusMods.Sdk;
+using NexusMods.Sdk.Jobs;
 using NexusMods.UI.Sdk;
 using NexusMods.UI.Sdk.Dialog;
 using OneOf;
@@ -106,7 +106,7 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
 
                         if (dialogResult.ButtonId == ButtonDefinitionId.From("go-premium"))
                         {
-                            await osInterop.OpenUrl(NexusModsUrlBuilder.UpgradeToPremiumUri);
+                            osInterop.OpenUri(NexusModsUrlBuilder.UpgradeToPremiumUri);
                         }
 
                         return;
@@ -130,11 +130,7 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
 
                         var dialogResult = await windowManager.ShowDialog(premiumCollectionDownloadsDialog, DialogWindowType.Modal);
 
-                        if (dialogResult.ButtonId == ButtonDefinitionId.From("go-premium"))
-                        {
-                            await osInterop.OpenUrl(NexusModsUrlBuilder.UpgradeToPremiumUri);
-                        }
-
+                        if (dialogResult.ButtonId == ButtonDefinitionId.From("go-premium")) osInterop.OpenUri(NexusModsUrlBuilder.UpgradeToPremiumUri);
                         return;
                     }
 
@@ -210,20 +206,12 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
 
         CommandDeleteAllDownloads = new ReactiveCommand(canExecuteSource: R3.Observable.Return(false), initialCanExecute: false);
 
-        CommandViewOnNexusMods = new ReactiveCommand(
-            executeAsync: async (_, cancellationToken) =>
-            {
-                var gameDomain = mappingCache[_collection.GameId];
-                var uri = NexusModsUrlBuilder.GetCollectionUri(gameDomain, _collection.Slug, revisionMetadata.RevisionNumber,
-                    campaign: NexusModsUrlBuilder.CampaignCollections
-                );
-                await osInterop.OpenUrl(uri, logOutput: false, fireAndForget: true,
-                    cancellationToken: cancellationToken
-                );
-            },
-            awaitOperation: AwaitOperation.Sequential,
-            configureAwait: false
-        );
+        CommandViewOnNexusMods = new ReactiveCommand(execute: _ =>
+        {
+            var gameDomain = mappingCache[_collection.GameId];
+            var uri = NexusModsUrlBuilder.GetCollectionUri(gameDomain, _collection.Slug, revisionMetadata.RevisionNumber, campaign: NexusModsUrlBuilder.CampaignCollections);
+            osInterop.OpenUri(uri);
+        });
 
         CommandOpenJsonFile = new ReactiveCommand(
             execute: _ =>

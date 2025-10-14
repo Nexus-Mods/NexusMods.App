@@ -21,7 +21,6 @@ using NexusMods.Games.FOMOD;
 using NexusMods.Games.FOMOD.UI;
 using NexusMods.Games.Generic;
 using NexusMods.Games.TestHarness;
-using NexusMods.Jobs;
 using NexusMods.Library;
 using NexusMods.Networking.EpicGameStore;
 using NexusMods.Networking.GitHub;
@@ -33,6 +32,7 @@ using NexusMods.Paths;
 using NexusMods.ProxyConsole;
 using NexusMods.Sdk.ProxyConsole;
 using NexusMods.Sdk.Settings;
+using NexusMods.Sdk.Tracking;
 using NexusMods.SingleProcess;
 using NexusMods.StandardGameLocators;
 using NexusMods.Telemetry;
@@ -41,8 +41,9 @@ namespace NexusMods.App;
 
 public static class Services
 {
-    public static IServiceCollection AddApp(this IServiceCollection services,
-        TelemetrySettings? telemetrySettings = null,
+    public static IServiceCollection AddApp(
+        this IServiceCollection services,
+        TrackingSettings? trackingSettings = null,
         bool addStandardGameLocators = true,
         StartupMode? startupMode = null,
         ExperimentalSettings? experimentalSettings = null,
@@ -68,15 +69,16 @@ public static class Services
                 .AddJobMonitor()
                 .AddNexusModsCollections()
 
-                .AddSettings<TelemetrySettings>()
+                .AddSettings<TrackingSettings>()
                 .AddSettings<LoggingSettings>()
                 .AddSettings<ExperimentalSettings>()
                 .AddDefaultRenderers()
                 .AddDefaultParsers()
 
                 .AddSingleton<ITelemetryProvider, TelemetryProvider>()
-                .AddTelemetry(telemetrySettings ?? new TelemetrySettings())
-                .AddTracking(telemetrySettings ?? new TelemetrySettings())
+                .AddTelemetry(trackingSettings)
+                .AddTrackingOld(trackingSettings)
+                .AddTracking(trackingSettings)
 
                 .AddSingleton<CommandLineConfigurator>()
                 .AddCLI()
@@ -89,7 +91,8 @@ public static class Services
                 .AddFileExtractors()
                 .AddSerializationAbstractions()
                 .AddSupportedGames()
-                .AddCrossPlatform()
+                .AddOSInterop()
+                .AddRuntimeDependencies()
                 .AddGames()
                 .AddGenericGameSupport()
                 .AddLoadoutAbstractions()
@@ -117,7 +120,8 @@ public static class Services
             services
                 .AddSingleton<TimeProvider>(_ => TimeProvider.System)
                 .AddFileSystem()
-                .AddCrossPlatform()
+                .AddOSInterop()
+                .AddRuntimeDependencies()
                 .AddDefaultRenderers()
                 .AddSettingsManager()
                 .AddSettings<LoggingSettings>();

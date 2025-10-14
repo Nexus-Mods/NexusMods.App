@@ -9,9 +9,6 @@
                                 xmlns:resources="clr-namespace:NexusMods.Games.AdvancedInstaller.UI.Resources"
                                 mc:Ignorable="d" d:DesignWidth="1232" d:DesignHeight="672"
                                 x:Class="NexusMods.Games.AdvancedInstaller.UI.AdvancedInstallerPageView">
-    <Design.DataContext>
-        <ui:AdvancedInstallerPageDesignViewModel />
-    </Design.DataContext>
     
     <Grid RowDefinitions="*, Auto">
         <Grid.Styles>

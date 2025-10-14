@@ -14,7 +14,6 @@ using NexusMods.DataModel;
 using NexusMods.FileExtractor;
 using NexusMods.Games.FileHashes;
 using NexusMods.Games.Generic;
-using NexusMods.Jobs;
 using NexusMods.Library;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.NexusWebApi;
@@ -63,7 +62,8 @@ public static class DependencyInjectionHelper
             .AddSingleton<TemporaryFileManager>(_ => new TemporaryFileManager(FileSystem.Shared, prefix))
             .AddNexusWebApi(true)
             .AddNexusModsCollections()
-            .AddCrossPlatform()
+            .AddOSInterop()
+            .AddRuntimeDependencies()
             .AddGenericGameSupport()
             .AddSettings<LoggingSettings>()
             .AddHttpDownloader()
@@ -71,7 +71,6 @@ public static class DependencyInjectionHelper
             .AddLibrary()
             .AddLibraryModels()
             .AddJobMonitor()
-            .AddLoadoutsSynchronizers()
             .OverrideSettingsForTests<DataModelSettings>(settings => settings with
             {
                 UseInMemoryDataModel = true,

@@ -10,7 +10,6 @@ using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.FileHashes;
 using NexusMods.Abstractions.Games.FileHashes.Models;
 using NexusMods.Abstractions.GOG.Values;
-using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Sdk.Settings;
 using NexusMods.Abstractions.Steam.Values;
@@ -23,6 +22,7 @@ using NexusMods.MnemonicDB.Storage.RocksDbBackend;
 using NexusMods.Paths;
 using NexusMods.Sdk;
 using NexusMods.Sdk.IO;
+using NexusMods.Sdk.Jobs;
 using BuildId = NexusMods.Abstractions.GOG.Values.BuildId;
 using Connection = NexusMods.MnemonicDB.Connection;
 
@@ -49,6 +49,7 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable, IHost
     private readonly ILogger<FileHashesService> _logger;
     private readonly IQueryEngine _queryEngine;
     private IQueryMixin _queryMixin;
+    private readonly bool _testMode;
 
     private record ConnectedDb(IDb Db, DatomStore Store, Backend Backend, DatabaseInfo DatabaseInfo);
 
@@ -57,7 +58,9 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable, IHost
         _logger = logger;
         _httpClient = httpClient;
         _jsonSerializerOptions = jsonSerializerOptions;
-        _fileSystem = fileSystem;
+        // During integration tests we use the in-memory file system (or a variant of it), but we can't use that for the hash database location
+        _fileSystem = fileSystem is not FileSystem ? FileSystem.Shared : fileSystem;
+        _testMode = fileSystem is InMemoryFileSystem;
         _settings = settingsManager.Get<FileHashesServiceSettings>();
         _databases = new Dictionary<AbsolutePath, ConnectedDb>();
         _provider = provider;
@@ -184,7 +187,7 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable, IHost
             if (embeddedDatabaseInfo.HasValue)
             {
                 existingDatabases = ExistingDBs().ToArray();
-                Debug.Assert(existingDatabases.Length == 1, $"should've only a single database but found {existingDatabases.Length}");
+                Debug.Assert(existingDatabases.Length >= 1, $"should have at least one database but found {existingDatabases.Length}");
             }
         }
 

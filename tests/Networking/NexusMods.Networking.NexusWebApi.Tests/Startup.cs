@@ -7,7 +7,6 @@ using NexusMods.Backend;
 using NexusMods.CrossPlatform;
 using NexusMods.DataModel;
 using NexusMods.FileExtractor;
-using NexusMods.Jobs;
 using NexusMods.Library;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.HttpDownloader.Tests;
@@ -30,7 +29,8 @@ public class Startup
             .AddSingleton<TemporaryFileManager>()
             .AddSingleton<LocalHttpServer>()
             .AddNexusWebApi(true)
-            .AddCrossPlatform()
+            .AddOSInterop()
+            .AddRuntimeDependencies()
             .AddSettings<LoggingSettings>()
             .AddLoadoutAbstractions()
             .AddJobMonitor()

@@ -1,8 +1,8 @@
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls.MarkdownRenderer;
 using NexusMods.Sdk.Settings;
+using NexusMods.UI.Sdk;
 using NexusMods.UI.Sdk.Settings;
 using ReactiveUI;
 
