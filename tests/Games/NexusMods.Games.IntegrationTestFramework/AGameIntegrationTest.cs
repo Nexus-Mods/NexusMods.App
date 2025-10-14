@@ -29,6 +29,9 @@ public abstract class AGameIntegrationTest
     public GameInstallation GameInstallation { get; set; }
     public ILoadoutSynchronizer Synchronizer { get; set; }
     
+    protected ILoadoutManager LoadoutManager { get; set; }
+
+    
 #endregion
 
     private record FauxLocator(GameLocatorResult LocatorResult) : IGameLocator
@@ -142,11 +145,12 @@ public abstract class AGameIntegrationTest
         GameInstallation = GameRegistry.Installations.Values
             .Single(g => g.Game.GetType() == GameType);
         Synchronizer = GameInstallation.GetGame().Synchronizer;
+        LoadoutManager = _hosting.Services.GetRequiredService<ILoadoutManager>();
     }
 
 
     public async Task<Loadout.ReadOnly> CreateLoadout()
     {
-        return await Synchronizer.CreateLoadout(GameInstallation, "Test Loadout");
+        return await LoadoutManager.CreateLoadout(GameInstallation, "Test Loadout");
     }
 }
