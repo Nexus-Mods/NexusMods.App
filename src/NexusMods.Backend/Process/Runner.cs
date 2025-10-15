@@ -80,6 +80,7 @@ internal class ProcessRunner : IProcessRunner
             command = command.WithStandardInputPipe(stdInPipe);
             if (command.StandardOutputPipe == PipeTarget.Null) command = command.WithStandardOutputPipe(PipeTarget.ToStream(Stream.Null));
             if (command.StandardOutputPipe == PipeTarget.Null) command = command.WithStandardErrorPipe(PipeTarget.ToStream(Stream.Null));
+            return command;
         }
 
         var fileName = GetFileName(command);
