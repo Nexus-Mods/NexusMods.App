@@ -2,6 +2,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using NexusMods.Backend.FileExtractor;
 using NexusMods.Backend.FileExtractor.Extractors;
+using NexusMods.Abstractions.Loadouts.Synchronizers;
+using NexusMods.Backend.Game;
 using NexusMods.Backend.Jobs;
 using NexusMods.Backend.OS;
 using NexusMods.Backend.Process;
@@ -21,6 +23,11 @@ namespace NexusMods.Backend;
 
 public static class ServiceExtensions
 {
+    public static IServiceCollection AddGameServices(this IServiceCollection serviceCollection)
+    {
+        return serviceCollection.AddSingleton<IGameLocationsService, GameLocationsService>();
+    }
+
     public static IServiceCollection AddOSInterop(this IServiceCollection serviceCollection, IOSInformation? os = null)
     {
         os ??= OSInformation.Shared;

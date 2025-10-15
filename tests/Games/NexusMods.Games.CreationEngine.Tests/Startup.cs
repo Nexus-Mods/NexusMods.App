@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.GuidedInstallers;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Backend;
 using NexusMods.Games.FOMOD;
 using NexusMods.Games.TestFramework;
 using NexusMods.Sdk;
@@ -22,6 +23,7 @@ public class Startup
             .AddCreationEngine()
             .AddLogging(builder => builder.AddXUnit())
             .AddGames()
+            .AddGameServices()
             .AddLoadoutAbstractions()
             .Validate();
     }
