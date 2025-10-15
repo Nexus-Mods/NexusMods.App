@@ -383,7 +383,6 @@ internal partial class LoadoutManager : ILoadoutManager
     public void RemoveItems(ITransaction tx, LoadoutItemGroupId[] groupIds)
     {
         var db = _connection.Db;
-
         var loadouts = new Dictionary<LoadoutId, List<LoadoutItemGroupId>>();
 
         foreach (var groupId in groupIds)
@@ -392,6 +391,12 @@ internal partial class LoadoutManager : ILoadoutManager
             if (!group.IsValid()) continue;
 
             tx.Delete(groupId, recursive: true);
+
+            var priorities = LoadoutItemGroupPriority.FindByTarget(db, groupId);
+            foreach (var priority in priorities)
+            {
+                tx.Delete(priority.Id, recursive: false);
+            }
 
             var loadoutId = group.AsLoadoutItem().LoadoutId;
             if (!loadouts.TryGetValue(loadoutId, out var list))
@@ -415,9 +420,8 @@ internal partial class LoadoutManager : ILoadoutManager
         using var tx = _connection.BeginTransaction();
 
         tx.Delete(collection, recursive: true);
-
-        var items = LoadoutItem.FindByParent(db, collection).EntityIds.ToArray();
-        tx.Add(new RebalancePrioritiesTxFunc(loadoutId, items));
+        var groupIds = LoadoutItem.FindByParent(db, collection).OfTypeLoadoutItemGroup().Select(x => x.LoadoutItemGroupId).ToArray();
+        RemoveItems(tx, groupIds);
 
         await tx.Commit();
     }
