@@ -10,14 +10,14 @@ public class _0009_AddLoadoutItemGroupPriority : ITransactionalMigration
 {
     public static (MigrationId Id, string Name) IdAndName => MigrationId.ParseNameAndId(nameof(_0009_AddLoadoutItemGroupPriority));
 
-    private static EntityId[] Query(Loadout.ReadOnly loadout)
+    private static EntityId[] Query(IDb db, LoadoutId loadoutId)
     {
-        return loadout.Db.Connection.Query<EntityId>($"""
+        return db.Connection.Query<EntityId>($"""
                                                 SELECT
                                                   item_group.Id
                                                 FROM
-                                                  loadouts.ItemGroupEnabledState ({loadout.Db}, {loadout.Id}) item_group
-                                                  LEFT JOIN MDB_LOADOUTITEMGROUPPRIORITY () group_priority ON item_group.Id = group_priority.Target
+                                                  loadouts.ItemGroupEnabledState ({db}, {loadoutId}) item_group
+                                                  LEFT JOIN MDB_LOADOUTITEMGROUPPRIORITY (Db=>{db}) group_priority ON item_group.Id = group_priority.Target
                                                 WHERE
                                                   group_priority.Target IS NULL
                                                 ORDER BY item_group.Id;
@@ -30,7 +30,7 @@ public class _0009_AddLoadoutItemGroupPriority : ITransactionalMigration
     public Task Prepare(IDb db)
     {
         var loadouts = Loadout.All(db);
-        _loadouts = loadouts.ToDictionary(loadout => loadout.LoadoutId, loadout => Query(loadout));
+        _loadouts = loadouts.ToDictionary(loadout => loadout.LoadoutId, loadout => Query(db, loadout));
         return Task.CompletedTask;
     }
 
