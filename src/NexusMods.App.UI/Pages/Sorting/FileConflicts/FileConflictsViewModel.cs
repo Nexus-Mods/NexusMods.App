@@ -40,30 +40,48 @@ public class FileConflictsViewModel : AViewModel<IFileConflictsViewModel>, IFile
         {
             TreeDataGridAdapter.Activate().AddTo(disposables);
 
-            TreeDataGridAdapter.MessageSubject.Subscribe(msg =>
+            TreeDataGridAdapter.MessageSubject.SubscribeAwait(async (msg, cancellationToken) =>
             {
-                var markdownRendererViewModel = serviceProvider.GetRequiredService<IMarkdownRendererViewModel>();
-                markdownRendererViewModel.Contents = msg.Markdown;
-
-                _ = windowManager.ShowDialog(DialogFactory.CreateStandardDialog(title: $"Conflicts for {msg.Group.AsLoadoutItem().Name}", new StandardDialogParameters
-                {
-                    Markdown = markdownRendererViewModel,
-                }, buttonDefinitions: [DialogStandardButtons.Close]), DialogWindowType.Modeless);
+                await msg.Match<Task>(
+                    viewConflictsMessage => HandleViewConflictsMessage(viewConflictsMessage, windowManager, serviceProvider),
+                    moveUp => Task.CompletedTask, // TODO: implement move up
+                    moveDown => Task.CompletedTask // TODO: implement move down
+                );
             }).AddTo(disposables);
         });
     }
+    
+    private static async Task HandleViewConflictsMessage(FileConflictsTreeDataGridAdapter.ViewConflictsMessage msg, IWindowManager windowManager, IServiceProvider serviceProvider)
+    {
+        var markdownRendererViewModel = serviceProvider.GetRequiredService<IMarkdownRendererViewModel>();
+        markdownRendererViewModel.Contents = msg.Markdown;
+
+        _ = await windowManager.ShowDialog(DialogFactory.CreateStandardDialog(title: $"Conflicts for {msg.Group.AsLoadoutItem().Name}", new StandardDialogParameters
+        {
+            Markdown = markdownRendererViewModel,
+        }, buttonDefinitions: [DialogStandardButtons.Close]), DialogWindowType.Modeless);
+    }
 }
 
-public record ViewConflictsMessage(LoadoutItemGroup.ReadOnly Group, string Markdown);
 
-public class FileConflictsTreeDataGridAdapter : TreeDataGridAdapter<CompositeItemModel<EntityId>, EntityId>, ITreeDataGirdMessageAdapter<ViewConflictsMessage>
+
+public class FileConflictsTreeDataGridAdapter : TreeDataGridAdapter<CompositeItemModel<EntityId>, EntityId>, 
+    ITreeDataGirdMessageAdapter<OneOf.OneOf<
+        FileConflictsTreeDataGridAdapter.ViewConflictsMessage,
+        FileConflictsTreeDataGridAdapter.MoveUpCommandPayload,
+        FileConflictsTreeDataGridAdapter.MoveDownCommandPayload
+    >>
 {
+    public record ViewConflictsMessage(LoadoutItemGroup.ReadOnly Group, string Markdown);
+    public readonly record struct MoveUpCommandPayload(CompositeItemModel<EntityId> Item);
+    public readonly record struct MoveDownCommandPayload(CompositeItemModel<EntityId> Item);
+    
     private readonly IConnection _connection;
     private readonly ILoadoutSynchronizer _synchronizer;
     private readonly IResourceLoader<EntityId, Bitmap> _modPageThumbnailPipeline;
     private readonly LoadoutId _loadoutId;
 
-    public Subject<ViewConflictsMessage> MessageSubject { get; } = new();
+    public Subject<OneOf.OneOf<ViewConflictsMessage, MoveUpCommandPayload, MoveDownCommandPayload>> MessageSubject { get; } = new();
 
     public FileConflictsTreeDataGridAdapter(IServiceProvider serviceProvider, IConnection connection, ILoadoutSynchronizer synchronizer, LoadoutId loadoutId)
     {
@@ -88,6 +106,27 @@ public class FileConflictsTreeDataGridAdapter : TreeDataGridAdapter<CompositeIte
 
                 self.MessageSubject.OnNext(new ViewConflictsMessage(component.Group, markdown));
             })
+        );
+        
+        model.SubscribeToComponentAndTrack<SharedComponents.IndexComponent, FileConflictsTreeDataGridAdapter>(
+            key: FileConflictsColumns.IndexColumn.IndexComponentKey,
+            state: this,
+            factory: static (self, itemModel, component) =>
+            {
+                component.MoveUp.Subscribe((self, itemModel), static (_, state) =>
+                {
+                    var (self, itemModel) = state;
+                    self.MessageSubject.OnNext(new MoveUpCommandPayload(itemModel));
+                });
+
+                component.MoveDown.Subscribe((self, itemModel), static (_, state) =>
+                {
+                    var (self, itemModel) = state;
+                    self.MessageSubject.OnNext(new MoveDownCommandPayload(itemModel));
+                });
+                
+                return Disposable.Empty;
+            }
         );
     }
 

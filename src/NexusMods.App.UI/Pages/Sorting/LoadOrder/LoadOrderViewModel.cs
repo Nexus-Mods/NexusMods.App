@@ -199,13 +199,14 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
     }
 }
 
-public readonly record struct MoveUpCommandPayload(CompositeItemModel<ISortItemKey> Item);
 
-public readonly record struct MoveDownCommandPayload(CompositeItemModel<ISortItemKey> Item);
 
 public class LoadOrderTreeDataGridAdapter : TreeDataGridAdapter<CompositeItemModel<ISortItemKey>, ISortItemKey>,
-    ITreeDataGirdMessageAdapter<OneOf<MoveUpCommandPayload, MoveDownCommandPayload>>
+    ITreeDataGirdMessageAdapter<OneOf<LoadOrderTreeDataGridAdapter.MoveUpCommandPayload, LoadOrderTreeDataGridAdapter.MoveDownCommandPayload>>
 {
+    public readonly record struct MoveUpCommandPayload(CompositeItemModel<ISortItemKey> Item);
+    public readonly record struct MoveDownCommandPayload(CompositeItemModel<ISortItemKey> Item);
+    
     private readonly ISortOrderVariety _sortOrderVariety;
     private readonly LoadoutId _loadoutId;
     private readonly ILoadOrderDataProvider[] _loadOrderDataProviders;
