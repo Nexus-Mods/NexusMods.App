@@ -780,7 +780,17 @@
            <SubType>Code</SubType>
         </Compile>
         <Compile Update="Pages\Sorting\FileConflicts\FileConflictsViewModel.cs">
-          <DependentUpon>IFileConflictsViewModel.cs</DependentUpon>
+           <DependentUpon>IFileConflictsViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\CollectionMenuItem\CollectionMenuItem.axaml.cs">
+           <DependentUpon>CollectionMenuItem.axaml</DependentUpon>
+           <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Controls\CollectionMenuItem\CollectionMenuItemDesignViewModel.cs">
+           <DependentUpon>ICollectionMenuItemViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\CollectionMenuItem\CollectionMenuItemViewModel.cs">
+           <DependentUpon>ICollectionMenuItemViewModel.cs</DependentUpon>
         </Compile>
         <Compile Update="LeftMenu\Items\CollectionRevisionLeftMenuItemViewModel.cs">
           <DependentUpon>LeftMenuItemWithRightIconViewModel.cs</DependentUpon>

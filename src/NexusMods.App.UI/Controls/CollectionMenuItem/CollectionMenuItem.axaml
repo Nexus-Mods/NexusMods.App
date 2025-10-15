@@ -1,0 +1,29 @@
+<reactiveUi:ReactiveUserControl x:TypeArguments="collectionMenuItem:ICollectionMenuItemViewModel"
+                                xmlns="https://github.com/avaloniaui"
+                                xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                                xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                                xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                                xmlns:reactiveUi="http://reactiveui.net"
+                                xmlns:icons="clr-namespace:NexusMods.UI.Sdk.Icons;assembly=NexusMods.UI.Sdk"
+                                xmlns:collectionMenuItem="clr-namespace:NexusMods.App.UI.Controls.CollectionMenuItem"
+                                mc:Ignorable="d" d:DesignWidth="200" d:DesignHeight="32"
+                                x:Class="NexusMods.App.UI.Controls.CollectionMenuItem.CollectionMenuItem">
+    
+    <Design.DataContext>
+        <collectionMenuItem:CollectionMenuItemDesignViewModel />
+    </Design.DataContext>
+
+    <DockPanel Margin="{StaticResource ButtonPaddingSmall}">
+        <!-- Left side: Collection icon and name -->
+        <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" Spacing="{StaticResource Spacing-0.5}">
+            <icons:UnifiedIcon x:Name="CollectionIcon" />
+            <TextBlock x:Name="CollectionName" VerticalAlignment="Center" />
+        </StackPanel>
+        
+        <!-- Right side: Status indicators -->
+        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Spacing="{StaticResource Spacing-0.5}" HorizontalAlignment="Right">
+            <icons:UnifiedIcon x:Name="RightIndicatorIcon" />
+        </StackPanel>
+    </DockPanel>
+    
+</reactiveUi:ReactiveUserControl>

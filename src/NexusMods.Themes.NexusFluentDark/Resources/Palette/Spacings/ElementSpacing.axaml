@@ -1,4 +1,4 @@
-﻿<ResourceDictionary xmlns="https://github.com/avaloniaui"
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:extensions="clr-namespace:NexusMods.Themes.NexusFluentDark.Extensions">
     <!-- Sizes for setting padding, margins, gaps and spacings -->
@@ -52,5 +52,12 @@
                           Top="0"
                           Right="{StaticResource Spacing-1.5}"
                           Bottom="0" />
+    
+    <!-- CollectionMenuItem specific margins/paddings -->
+    <extensions:Thickness x:Key="CollectionMenuItemMargin" 
+                          Left="0"
+                          Top="{StaticResource Spacing-1.5}"
+                          Right="0"
+                          Bottom="{StaticResource Spacing-1.5}" />
 </ResourceDictionary>
 
