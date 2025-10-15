@@ -18,6 +18,7 @@ using NexusMods.Games.CreationEngine.Abstractions;
 using NexusMods.Games.CreationEngine.Abstractions;
 using NexusMods.Games.CreationEngine.Emitters;
 using NexusMods.Games.CreationEngine.Installers;
+using NexusMods.Games.CreationEngine.LoadOrder;
 using NexusMods.Games.FOMOD;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.Paths;
@@ -31,6 +32,7 @@ public partial class Fallout4 : AGame, ISteamGame, IGogGame, ICreationEngineGame
     private readonly IServiceProvider _serviceProvider;
     private readonly IDiagnosticEmitter[] _emitters;
     private readonly IStreamSourceDispatcher _streamSource;
+    private readonly ISortOrderVariety[] _sortOrderVarieties;
 
     public Fallout4(IServiceProvider provider) : base(provider)
     {
@@ -40,6 +42,11 @@ public partial class Fallout4 : AGame, ISteamGame, IGogGame, ICreationEngineGame
         _emitters =
         [
             new MissingMasterEmitter(this),
+        ];
+        
+        _sortOrderVarieties =
+        [
+            new PluginLoadOrderVariety(provider),
         ];
     }
 
@@ -98,6 +105,8 @@ public partial class Fallout4 : AGame, ISteamGame, IGogGame, ICreationEngineGame
     ];
     
     public override IDiagnosticEmitter[] DiagnosticEmitters => _emitters;
+    
+    protected override ISortOrderVariety[] GetSortOrderVarieties() => _sortOrderVarieties;
 
     private static readonly GroupMask EmptyGroupMask = new(false);
     public async ValueTask<IMod?> ParsePlugin(Hash hash, RelativePath? name = null)
