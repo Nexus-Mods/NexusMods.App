@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
+using FomodInstaller.Interface;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NexusMods.Abstractions.GameLocators;
@@ -25,13 +26,16 @@ using NexusMods.Sdk.Settings;
 namespace NexusMods.Games.IntegrationTestFramework;
 
 [Property("IntegrationTest", "True")]
-public abstract class AGameIntegrationTest
+public abstract class AGameIntegrationTest : IDisposable
 {
     public const string GameImagesEnvVarName = "NMA_INTEGRATION_BASE_PATH";
     
     private readonly IHost _hosting;
     protected readonly Type GameType;
-
+    private readonly IFileSystem _baseFileSystem;
+    private readonly TemporaryFileManager _baseTempFileManager;
+    private readonly TemporaryPath _baseFolder;
+    private readonly IFileSystem _mappedFileSystem;
 
 
     private record FauxLocator(GameLocatorResult LocatorResult) : IGameLocator
@@ -52,6 +56,30 @@ public abstract class AGameIntegrationTest
 
     protected AGameIntegrationTest(Type gameType, GameLocatorResult locatorResult)
     {
+        _baseFileSystem = NexusMods.Paths.FileSystem.Shared;
+        _baseTempFileManager = new TemporaryFileManager(_baseFileSystem);
+        _baseFolder = _baseTempFileManager.CreateFolder();
+
+        Dictionary<AbsolutePath, AbsolutePath> pathMappings = new();
+        foreach (var known in new[]
+                 {
+                     KnownPath.ProgramFilesDirectory, 
+                     KnownPath.ApplicationDataDirectory, 
+                     KnownPath.MyDocumentsDirectory, 
+                     KnownPath.HomeDirectory,
+                     KnownPath.TempDirectory,
+                 })
+        {
+            var actualPath = _baseFileSystem.GetKnownPath(known);
+            var mappedPath = _baseFolder.Path / known.ToString();
+            mappedPath.CreateDirectory();
+            pathMappings.Add(actualPath, mappedPath);
+        }
+
+        _mappedFileSystem = _baseFileSystem
+            .CreateOverlayFileSystem(pathMappings, []);
+        
+        
         GameType = gameType;
         var locatorResult1 = locatorResult;
 
@@ -61,7 +89,7 @@ public abstract class AGameIntegrationTest
         
         var basePath = NexusMods.Paths.FileSystem.Shared.FromUnsanitizedFullPath(basePathEnv!);
         
-        var gameArchives = GetArchives(locatorResult1).ToList();
+        var gameArchives = GetArchives(locatorResult1, _mappedFileSystem).ToList();
         List<AbsolutePath> missingGameImages = [];
         foreach (var (src, mount) in gameArchives)
         {
@@ -76,9 +104,11 @@ public abstract class AGameIntegrationTest
             ThrowMissingGameImagesError(missingGameImages);
         
         
-        var overlays = gameArchives.Select(x => new NxReadOnlyFilesystem( basePath / x.Src, x.Mount)).ToArray();
+        var overlays = gameArchives
+            .Select(x => new NxReadOnlyFilesystem( basePath / x.Src, x.Mount)).ToArray();
         
-        FileSystem = new ReadOnlySourcesFileSystem(new InMemoryFileSystem(), overlays);
+        FileSystem = new ReadOnlySourcesFileSystem(_mappedFileSystem, overlays)
+            .CreateOverlayFileSystem(pathMappings, []);
         
         // Remap the file system properties in the locator result to the new file system
         locatorResult = locatorResult with
@@ -106,6 +136,7 @@ public abstract class AGameIntegrationTest
                  .AddFileHashes()
                  .AddHttpClient()
                  .AddJobMonitor()
+                 .AddSingleton<ICoreDelegates, MockDelegates>()
                  .AddLoadoutAbstractions()
                  .AddSerializationAbstractions()
                  .AddSingleton<IGameLocator>(_ => new FauxLocator(locatorResult))
@@ -128,13 +159,13 @@ public abstract class AGameIntegrationTest
         Assert.Fail($"Missing game images (for {GetType().Name}");
     }
 
-    private IEnumerable<(RelativePath Src, AbsolutePath Mount)> GetArchives(GameLocatorResult locatorResult)
+    private IEnumerable<(RelativePath Src, AbsolutePath Mount)> GetArchives(GameLocatorResult locatorResult, IFileSystem fileSystem)
     {
         if (locatorResult.Store == GameStore.Steam)
         {
             foreach (var locatorId in locatorResult.Metadata.ToLocatorIds())
             {
-                yield return (RelativePath.FromUnsanitizedInput("Steam/"  + locatorId + ".nx"), locatorResult.Path);
+                yield return (RelativePath.FromUnsanitizedInput("Steam/"  + locatorId + ".nx"), fileSystem.Map(locatorResult.Path));
             }
             yield break;
         }
@@ -185,7 +216,7 @@ public abstract class AGameIntegrationTest
     /// <summary>
     /// Formats the tuples into a markdown table and runs verify on the resulting data
     /// </summary>
-    protected SettingsTask VerifyTable<T>(IEnumerable<T> table, string? name = null)
+    protected string Table<T>(IEnumerable<T> table)
         where T : ITuple
     {
         List<List<string>> rows = new();
@@ -215,15 +246,19 @@ public abstract class AGameIntegrationTest
             }
             sb.AppendLine();
         }
-        var task = Verify(sb.ToString(), extension: "md");
-        if (name is not null)
-            task.UseParameters("NAME", name);
-        return task;
+
+        return sb.ToString();
     }
     
 
     public async Task<Loadout.ReadOnly> CreateLoadout()
     {
         return await LoadoutManager.CreateLoadout(GameInstallation, "Test Loadout");
+    }
+
+    public void Dispose()
+    {
+        _hosting.Dispose();
+        _baseTempFileManager.Dispose();
     }
 }

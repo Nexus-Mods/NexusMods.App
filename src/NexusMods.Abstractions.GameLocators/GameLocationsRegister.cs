@@ -163,9 +163,11 @@ public class GameLocationsRegister : IGameLocationsRegister
     /// <returns></returns>
     public GamePath ToGamePath(AbsolutePath absolutePath)
     {
+        absolutePath = absolutePath.FileSystem.Unmap(absolutePath);
         return _locations.Values.Where(location => absolutePath.StartsWith(location.ResolvedPath))
             .Select(desc => new GamePath(desc.Id, absolutePath.RelativeTo(desc.ResolvedPath)))
             .MinBy(gamePath => gamePath.Path.Path.Length);
+        
     }
 
     /// <summary>

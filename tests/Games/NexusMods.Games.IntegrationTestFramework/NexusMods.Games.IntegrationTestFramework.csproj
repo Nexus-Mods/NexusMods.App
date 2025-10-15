@@ -22,6 +22,6 @@
       <ProjectReference Include="..\..\..\src\NexusMods.Games.CreationEngine\NexusMods.Games.CreationEngine.csproj" />
       <ProjectReference Include="..\..\..\src\NexusMods.Games.FileHashes\NexusMods.Games.FileHashes.csproj" />
       <ProjectReference Include="..\..\..\src\NexusMods.Library\NexusMods.Library.csproj" />
-    </ItemGroup>
+     </ItemGroup>
 
 </Project>

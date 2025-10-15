@@ -1588,7 +1588,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 }
                 catch (Exception ex)
                 {
-                    throw ex;
+                    throw;
                 }
             });
         }

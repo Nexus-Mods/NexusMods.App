@@ -54,8 +54,9 @@ public class LibraryArchiveInstallerTests(Type gameType, GameLocatorResult locat
             .Select(child => ((GamePath)child.AsLoadoutItemWithTargetPath().TargetPath, child.Hash, child.Size))
             .OrderBy(x => x.Item1);
 
-        await VerifyTable(contents, name);
-
+        await Verify(Table(contents), "md")
+            .UseDirectory("Verification Files")
+            .UseParameters(name);
     }
 
     [Test]
@@ -92,7 +93,6 @@ public class LibraryArchiveInstallerTests(Type gameType, GameLocatorResult locat
             }
         }
 
-        await VerifyTable(data, name);
-
+        await Verify(Table(data), "md");
     }
 }
