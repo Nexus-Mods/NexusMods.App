@@ -97,30 +97,6 @@ public interface ILibraryService
     Task RemoveLinkedItemsFromLoadout(IEnumerable<LibraryLinkedLoadoutItemId> itemIds);
 
     /// <summary>
-    /// Removes a single linked loadout item from a loadout,
-    /// using the provided transaction.
-    /// </summary>
-    /// <param name="itemId">The ID of the linked loadout item to remove from its loadout.</param>
-    /// <param name="tx">Existing transaction to use for this operation.</param>
-    void RemoveLinkedItemFromLoadout(LibraryLinkedLoadoutItemId itemId, ITransaction tx);
-
-    /// <summary>
-    /// Removes multiple linked loadout items from their loadout,
-    /// using the provided transaction.
-    /// </summary>
-    /// <param name="itemIds">The IDs of the linked loadout items to remove from their loadout.</param>
-    /// <param name="tx">Existing transaction to use for this operation.</param>
-    void RemoveLinkedItemsFromLoadout(IEnumerable<LibraryLinkedLoadoutItemId> itemIds, ITransaction tx);
-
-    /// <summary>
-    /// Removes all linked loadout items from all loadouts,
-    /// using the provided transaction.
-    /// </summary>
-    /// <param name="libraryItems">The library items whose associated linked loadout items should be removed.</param>
-    /// <param name="tx">Existing transaction to use for this operation.</param>
-    void RemoveLinkedItemsFromAllLoadouts(IEnumerable<LibraryItem.ReadOnly> libraryItems, ITransaction tx);
-
-    /// <summary>
     /// Removes all linked loadout items from all loadouts,
     /// managing the transaction automatically.
     /// </summary>
@@ -133,34 +109,11 @@ public interface ILibraryService
     /// <param name="oldItem">The library item whose linked loadout items should be replaced.</param>
     /// <param name="newItem">The replacement library item from which to install the new linked loadout items from.</param>
     /// <param name="options">Options controlling how to replace the linked loadout items.</param>
-    /// <param name="tx">The transaction to use for this operation.</param>
-    /// <returns>
-    ///     A result indicating success or failure of the replacement operation.
-    /// </returns>
-    ValueTask<LibraryItemReplacementResult> ReplaceLinkedItemsInAllLoadouts(LibraryItem.ReadOnly oldItem, LibraryItem.ReadOnly newItem, ReplaceLibraryItemOptions options, ITransaction tx);
-
-    /// <summary>
-    /// Replaces linked loadout items across all loadouts with installations of a different library item.   
-    /// </summary>
-    /// <param name="oldItem">The library item whose linked loadout items should be replaced.</param>
-    /// <param name="newItem">The replacement library item from which to install the new linked loadout items from.</param>
-    /// <param name="options">Options controlling how to replace the linked loadout items.</param>
     /// <returns>
     ///     A result indicating success or failure of the replacement operation.
     /// </returns>
     ValueTask<LibraryItemReplacementResult> ReplaceLinkedItemsInAllLoadouts(LibraryItem.ReadOnly oldItem, LibraryItem.ReadOnly newItem, ReplaceLibraryItemOptions options);
-    
-    /// <summary>
-    /// Replaces multiple sets of linked loadout items across all loadouts with new versions.
-    /// </summary>
-    /// <param name="replacements">The pairs of library items (old and new) whose linked loadout items should be replaced.</param>
-    /// <param name="options">Options controlling how to replace the linked loadout items.</param>
-    /// <param name="tx">The transaction to use for this operation.</param>
-    /// <returns>
-    ///     A result indicating success or failure of the replacement operation.
-    /// </returns>
-    ValueTask<LibraryItemReplacementResult> ReplaceLinkedItemsInAllLoadouts(IEnumerable<(LibraryItem.ReadOnly oldItem, LibraryItem.ReadOnly newItem)> replacements, ReplaceLibraryItemsOptions options, ITransaction tx);
-    
+
     /// <summary>
     /// Replaces multiple sets of linked loadout items across all loadouts with new versions,
     /// managing the transaction automatically.

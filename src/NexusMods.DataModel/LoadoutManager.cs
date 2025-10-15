@@ -339,22 +339,9 @@ internal partial class LoadoutManager : ILoadoutManager
         LoadoutId targetLoadout,
         Optional<LoadoutItemGroupId> parent = default,
         ILibraryItemInstaller? installer = null,
-        ILibraryItemInstaller? fallbackInstaller = null,
-        ITransaction? transaction = null)
+        ILibraryItemInstaller? fallbackInstaller = null)
     {
-        IMainTransaction? mainTransaction;
-        ITransaction tx;
-
-        if (transaction is null)
-        {
-            mainTransaction = _connection.BeginTransaction();
-            tx = mainTransaction;
-        }
-        else
-        {
-            mainTransaction = null;
-            tx = transaction;
-        }
+        var tx = _connection.BeginTransaction();
 
         var job = InstallLoadoutItemJob.Create(_serviceProvider, libraryItem, targetLoadout, tx, groupId: parent, installer: installer, fallbackInstaller: fallbackInstaller);
         return _jobMonitor.Begin(job, async context =>
@@ -363,11 +350,9 @@ internal partial class LoadoutManager : ILoadoutManager
             var targetId = result.GroupTxId;
             tx.Add(new AddPriorityTxFunc(targetLoadout, targetId));
 
-            if (mainTransaction is null) return result;
-
-            var commitResult = await mainTransaction.Commit();
+            var commitResult = await tx.Commit();
             var remapped = commitResult[targetId];
-            mainTransaction.Dispose();
+            tx.Dispose();
 
             return new InstallLoadoutItemJobResult(LoadoutItemGroup.Load(commitResult.Db, remapped), LoadoutItemGroupId.From(0));
         });
