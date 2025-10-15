@@ -71,9 +71,14 @@ public interface ILoadoutManager
         ITransaction? transaction = null);
 
     /// <summary>
-    /// Remove a loadout item.
+    /// Removes the items from their Loadouts.
     /// </summary>
-    ValueTask RemoveItems(LoadoutId loadoutId, LoadoutItemGroupId[] groups);
+    void RemoveItems(ITransaction tx, LoadoutItemGroupId[] groupIds);
+
+    /// <summary>
+    /// Removes the items from their Loadouts.
+    /// </summary>
+    ValueTask RemoveItems(LoadoutItemGroupId[] groupIds);
 
     /// <summary>
     /// Removes a collection.

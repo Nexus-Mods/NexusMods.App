@@ -187,23 +187,19 @@ public sealed class LibraryService : ILibraryService
     }
 
     public void RemoveLinkedItemFromLoadout(LibraryLinkedLoadoutItemId itemId, ITransaction tx)
-        => tx.Delete(itemId, recursive: true);
+    {
+        _loadoutManager.RemoveItems(tx, [itemId.Value]);
+    }
 
     public void RemoveLinkedItemsFromLoadout(IEnumerable<LibraryLinkedLoadoutItemId> itemIds, ITransaction tx)
     {
-        foreach (var itemId in itemIds)
-            tx.Delete(itemId, recursive: true);
+        _loadoutManager.RemoveItems(tx, itemIds.Select(LoadoutItemGroupId (x) => x.Value).ToArray());
     }
 
     public void RemoveLinkedItemsFromAllLoadouts(IEnumerable<LibraryItem.ReadOnly> libraryItems, ITransaction tx)
     {
-        foreach (var item in libraryItems)
-        {
-            foreach (var (_, loadoutItem) in LoadoutsWithLibraryItem(item))
-            {
-                tx.Delete(loadoutItem.Id, recursive: true);
-            }
-        }
+        var groupIds = libraryItems.SelectMany(LoadoutsWithLibraryItem).Select(tuple => tuple.linkedItem.AsLoadoutItemGroup().LoadoutItemGroupId).ToArray();
+        _loadoutManager.RemoveItems(tx, groupIds);
     }
 
     public async Task RemoveLinkedItemsFromAllLoadouts(IEnumerable<LibraryItem.ReadOnly> libraryItems)

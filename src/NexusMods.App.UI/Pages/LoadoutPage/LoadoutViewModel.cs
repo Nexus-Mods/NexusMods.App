@@ -526,7 +526,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                     var result = await ShowUninstallModsConformationDialog(ids, windowManager, _connection);
                     if (result.ButtonId != ButtonDefinitionId.Accept) return;
 
-                    await _loadoutManager.RemoveItems(loadoutId, ids);
+                    await _loadoutManager.RemoveItems(ids);
                     _notificationService.ShowToast(Language.ToastNotification_Mods_removed);
                 },
                 awaitOperation: AwaitOperation.Sequential,

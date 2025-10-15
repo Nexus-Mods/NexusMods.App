@@ -373,17 +373,40 @@ internal partial class LoadoutManager : ILoadoutManager
         });
     }
 
-    public async ValueTask RemoveItems(LoadoutId loadoutId, LoadoutItemGroupId[] groups)
+    public async ValueTask RemoveItems(LoadoutItemGroupId[] groupIds)
     {
         using var tx = _connection.BeginTransaction();
+        RemoveItems(tx, groupIds);
+        await tx.Commit();
+    }
 
-        foreach (var id in groups)
+    public void RemoveItems(ITransaction tx, LoadoutItemGroupId[] groupIds)
+    {
+        var db = _connection.Db;
+
+        var loadouts = new Dictionary<LoadoutId, List<LoadoutItemGroupId>>();
+
+        foreach (var groupId in groupIds)
         {
-            tx.Delete(id, recursive: true);
+            var group = LoadoutItemGroup.Load(db, groupId);
+            if (!group.IsValid()) continue;
+
+            tx.Delete(groupId, recursive: true);
+
+            var loadoutId = group.AsLoadoutItem().LoadoutId;
+            if (!loadouts.TryGetValue(loadoutId, out var list))
+            {
+                list = new List<LoadoutItemGroupId>(capacity: groupIds.Length);
+                loadouts[loadoutId] = list;
+            }
+
+            list.Add(groupId);
         }
 
-        tx.Add(new RebalancePrioritiesTxFunc(loadoutId, groups.Select(x => x.Value).ToArray()));
-        await tx.Commit();
+        foreach (var kv in loadouts)
+        {
+            tx.Add(new RebalancePrioritiesTxFunc(kv.Key, kv.Value.Select(x => x.Value).ToArray()));
+        }
     }
 
     public async ValueTask RemoveCollection(LoadoutId loadoutId, CollectionGroupId collection)
