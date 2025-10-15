@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Games.TestFramework;
 using NexusMods.StandardGameLocators;
@@ -12,6 +13,7 @@ public static class DIHelpers
         services.AddDefaultServicesForTesting()
             .AddStandardGameLocators(false)
             .AddLoadoutAbstractions()
-            .AddStubbedGameLocators();
+            .AddStubbedGameLocators()
+            .AddGames();
     }
 }
