@@ -16,6 +16,7 @@ namespace NexusMods.App.UI.Pages.Sorting;
 
 public class LoadOrderDesignViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderViewModel
 {
+    public ISortOrderVariety SortOrderVariety { get; } = null!;
     public TreeDataGridAdapter<CompositeItemModel<ISortItemKey>, ISortItemKey> Adapter { get; set; }
     public string SortOrderName { get; set; } = "Sort Order Name";
     public string InfoAlertTitle { get; set; } = "Info Alert Heading";
