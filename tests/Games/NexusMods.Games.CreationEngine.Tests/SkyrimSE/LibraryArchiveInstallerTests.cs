@@ -93,6 +93,8 @@ public class LibraryArchiveInstallerTests(Type gameType, GameLocatorResult locat
             }
         }
 
-        await Verify(Table(data), "md");
+        await Verify(Table(data))
+            .UseDirectory("Verification Files")
+            .UseParameters(name);
     }
 }
