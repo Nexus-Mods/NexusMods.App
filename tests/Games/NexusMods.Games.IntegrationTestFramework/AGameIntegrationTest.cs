@@ -140,6 +140,7 @@ public abstract class AGameIntegrationTest : IDisposable
                  .AddSingleton<ICoreDelegates, MockDelegates>()
                  .AddLoadoutAbstractions()
                  .AddSerializationAbstractions()
+                 .AddGames()
                  .AddSingleton<IGameLocator>(_ => new FauxLocator(locatorResult))
                  .OverrideSettingsForTests<DataModelSettings>(t =>
                      {
@@ -182,7 +183,7 @@ public abstract class AGameIntegrationTest : IDisposable
         GameRegistry = _hosting.Services.GetRequiredService<IGameRegistry>();
         GameInstallation = GameRegistry.Installations.Values
             .Single(g => g.Game.GetType() == GameType);
-        Game = GameInstallation.Game;
+        Game = (IGame)GameInstallation.Game;
         Synchronizer = GameInstallation.GetGame().Synchronizer;
         LoadoutManager = _hosting.Services.GetRequiredService<ILoadoutManager>();
         LibraryService = ServiceProvider.GetRequiredService<ILibraryService>();
@@ -193,7 +194,7 @@ public abstract class AGameIntegrationTest : IDisposable
 
 
 #region Imported Services
-    public ILocatableGame Game { get; set; }
+    public IGame Game { get; set; }
 
     protected IFileSystem FileSystem { get; }
     protected IGameRegistry GameRegistry { get; set; }
