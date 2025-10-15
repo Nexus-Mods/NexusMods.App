@@ -7,44 +7,138 @@
                    xmlns:local="clr-namespace:NexusMods.App.UI.Pages.Sorting"
                    xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
                    xmlns:abstractions="clr-namespace:NexusMods.MnemonicDB.Abstractions;assembly=NexusMods.MnemonicDB.Abstractions"
+                   xmlns:icons="clr-namespace:NexusMods.UI.Sdk.Icons;assembly=NexusMods.UI.Sdk"
                    mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                    x:Class="NexusMods.App.UI.Pages.Sorting.FileConflictsView">
-    
-    <!-- Actions -->
-    <TreeDataGrid
-        x:Name="TreeDataGrid"
-        CanUserResizeColumns="False"
-        CanUserSortColumns="False"
-        ShowColumnHeaders="True">
-        
-        <TreeDataGrid.Resources>
-            <ResourceDictionary>
-                <DataTemplate x:Key="{x:Static local:FileConflictsColumns+Actions.ColumnTemplateResourceKey}">
-                    <DataTemplate.DataType>
-                        <x:Type TypeName="controls:CompositeItemModel" x:TypeArguments="abstractions:EntityId" />
-                    </DataTemplate.DataType>
 
-                    <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
-                        <controls:ComponentControl.ComponentTemplate>
-                            <controls:ComponentTemplate x:TypeArguments="local:FileConflictsComponents+ViewAction"
-                                                        ComponentKey="{x:Static local:FileConflictsColumns+Actions.ViewComponentKey}">
-                                <controls:ComponentTemplate.DataTemplate>
-                                    <DataTemplate DataType="{x:Type local:FileConflictsComponents+ViewAction}">
-                                        <controls:StandardButton Command="{CompiledBinding CommandViewConflicts}"
-                                                                 Text="View conflicts"
-                                                                 Size="Small"
-                                                                 Type="Tertiary"
-                                                                 Fill="Weak" />
-                                    </DataTemplate>
-                                </controls:ComponentTemplate.DataTemplate>
-                            </controls:ComponentTemplate>
-                        </controls:ComponentControl.ComponentTemplate>
-                    </controls:ComponentControl>
-                </DataTemplate>
-            </ResourceDictionary>
-        </TreeDataGrid.Resources>
-        
-    </TreeDataGrid>
+    <controls:EmptyState x:Name="EmptyState"
+                         Header="No file conflicts detected">
+
+        <controls:EmptyState.Subtitle>
+            <TextBlock x:Name="EmptySpaceMessageTextBlock" />
+        </controls:EmptyState.Subtitle>
+
+        <!-- treedatagrid and trophy bar -->
+        <Grid x:Name="MainGrid" ColumnDefinitions="*, Auto">
+
+            <TreeDataGrid Grid.Column="0"
+                          x:Name="TreeDataGrid"
+                          CanUserResizeColumns="False"
+                          CanUserSortColumns="False"
+                          ShowColumnHeaders="True">
+
+                <TreeDataGrid.Resources>
+                    <ResourceDictionary>
+
+                        <DataTemplate x:Key="{x:Static local:LoadOrderColumns+IndexColumn.ColumnTemplateResourceKey}">
+                            <DataTemplate.DataType>
+                                <x:Type TypeName="controls:CompositeItemModel" x:TypeArguments="abstractions:EntityId" />
+                            </DataTemplate.DataType>
+
+                            <!-- IndexComponent -->
+                            <controls:ComponentControl x:TypeArguments="abstractions:EntityId"
+                                                       Content="{CompiledBinding}">
+                                <controls:ComponentControl.ComponentTemplate>
+                                    <controls:ComponentTemplate x:TypeArguments="controls:SharedComponents+IndexComponent"
+                                                                ComponentKey="{x:Static local:FileConflictsColumns+IndexColumn.IndexComponentKey}">
+                                        <controls:ComponentTemplate.DataTemplate>
+                                            <DataTemplate x:DataType="controls:SharedComponents+IndexComponent">
+
+                                                <StackPanel x:Name="LoadOrderItemIndexColumnStack">
+
+                                                    <!-- Drag indicator -->
+                                                    <Border x:Name="ItemModDragBorder">
+                                                        <icons:UnifiedIcon Value="{x:Static icons:IconValues.DragVerticalDots}" />
+                                                    </Border>
+
+                                                    <controls:StandardButton x:Name="UpButton"
+                                                                             Command="{CompiledBinding MoveUp}"
+                                                                             LeftIcon="{x:Static icons:IconValues.ArrowUp}"
+                                                                             ShowIcon="Left"
+                                                                             ShowLabel="False"
+                                                                             Size="Small"
+                                                                             Type="Tertiary"
+                                                                             Fill="None" />
+                                                    <Border x:Name="ItemIndexBorder">
+                                                        <TextBlock x:Name="ItemIndex" Text="{CompiledBinding DisplaySortIndex}" />
+                                                    </Border>
+                                                    <controls:StandardButton x:Name="DownButton"
+                                                                             Command="{CompiledBinding MoveDown}"
+                                                                             LeftIcon="{x:Static icons:IconValues.ArrowDown}"
+                                                                             ShowIcon="Left"
+                                                                             ShowLabel="False"
+                                                                             Size="Small"
+                                                                             Type="Tertiary"
+                                                                             Fill="None" />
+                                                    <Border x:Name="ItemIndexSeparator" />
+                                                </StackPanel>
+
+                                            </DataTemplate>
+                                        </controls:ComponentTemplate.DataTemplate>
+                                    </controls:ComponentTemplate>
+                                </controls:ComponentControl.ComponentTemplate>
+                            </controls:ComponentControl>
+
+                        </DataTemplate>
+
+
+                        <!-- Actions -->
+                        <DataTemplate x:Key="{x:Static local:FileConflictsColumns+Actions.ColumnTemplateResourceKey}">
+                            <DataTemplate.DataType>
+                                <x:Type TypeName="controls:CompositeItemModel" x:TypeArguments="abstractions:EntityId" />
+                            </DataTemplate.DataType>
+
+                            <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
+                                <controls:ComponentControl.ComponentTemplate>
+                                    <controls:ComponentTemplate x:TypeArguments="local:FileConflictsComponents+ViewAction"
+                                                                ComponentKey="{x:Static local:FileConflictsColumns+Actions.ViewComponentKey}">
+                                        <controls:ComponentTemplate.DataTemplate>
+                                            <DataTemplate DataType="{x:Type local:FileConflictsComponents+ViewAction}">
+                                                <controls:StandardButton Command="{CompiledBinding CommandViewConflicts}"
+                                                                         Text="View conflicts"
+                                                                         Size="Small"
+                                                                         Type="Tertiary"
+                                                                         Fill="Weak" />
+                                            </DataTemplate>
+                                        </controls:ComponentTemplate.DataTemplate>
+                                    </controls:ComponentTemplate>
+                                </controls:ComponentControl.ComponentTemplate>
+                            </controls:ComponentControl>
+                        </DataTemplate>
+
+                    </ResourceDictionary>
+                </TreeDataGrid.Resources>
+
+            </TreeDataGrid>
+
+            <!-- right column (trophy bar) -->
+            <Grid x:Name="TrophyBarColumnGrid" RowDefinitions="Auto, *" Grid.Column="1">
+                <controls:StandardButton Grid.Row="0" x:Name="InfoAlertButton"
+                                         DockPanel.Dock="Top"
+                                         ShowIcon="Left"
+                                         ShowLabel="False"
+                                         LeftIcon="{x:Static icons:IconValues.HelpOutline}"
+                                         Type="Tertiary"
+                                         Fill="None"
+                                         Size="Medium"
+                                         ToolTip.Tip="Click to show help" />
+
+                <!-- SurfaceTransparent Background so the tooltip hit box covers the whole stack -->
+                <DockPanel Grid.Row="1" x:Name="TrophyBarDockPanel">
+                    <icons:UnifiedIcon x:Name="TrophyIcon"
+                                       DockPanel.Dock="Top"
+                                       Value="{x:Static icons:IconValues.TrophyOutline}" />
+                    <Grid x:Name="TrophyBarGrid" RowDefinitions="Auto, *, Auto">
+                        <icons:UnifiedIcon Grid.Row="0" x:Name="ArrowUpIcon"
+                                           Value="{x:Static icons:IconValues.ArrowUpThick}" />
+                        <Border Grid.Row="1" x:Name="TrophyGradientBorder" />
+                        <icons:UnifiedIcon Grid.Row="2" x:Name="ArrowDownIcon"
+                                           Value="{x:Static icons:IconValues.ArrowDownThick}" />
+                    </Grid>
+                </DockPanel>
+            </Grid>
+
+        </Grid>
+    </controls:EmptyState>
 
 </sdk:R3UserControl>
-

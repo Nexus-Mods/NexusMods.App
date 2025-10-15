@@ -125,18 +125,26 @@ public class FileConflictsTreeDataGridAdapter : TreeDataGridAdapter<CompositeIte
         itemModel.Add(SharedColumns.Name.ImageComponentKey, imageComponent);
 
         itemModel.Add(FileConflictsColumns.Actions.ViewComponentKey, new FileConflictsComponents.ViewAction(loadoutGroup, loadoutFiles, conflictsByPath));
+        
+        // TODO: populate with real data
+        itemModel.Add(FileConflictsColumns.IndexColumn.IndexComponentKey, new SharedComponents.IndexComponent(
+            new ValueComponent<int>(0), new ValueComponent<string>("0"),
+            Observable.Return(false), Observable.Return(false))
+        );
 
         return itemModel;
     }
 
     protected override IColumn<CompositeItemModel<EntityId>>[] CreateColumns(bool viewHierarchical)
     {
-        var nameColumn = ColumnCreator.Create<EntityId, SharedColumns.Name>();
-
+        var indexColumn = ColumnCreator.Create<EntityId, FileConflictsColumns.IndexColumn>(
+            canUserSortColumn: false, canUserResizeColumn: false);
+        
         return
         [
-            viewHierarchical ? ITreeDataGridItemModel<CompositeItemModel<EntityId>, EntityId>.CreateExpanderColumn(nameColumn) : nameColumn,
-            ColumnCreator.Create<EntityId, FileConflictsColumns.Actions>(),
+            ITreeDataGridItemModel<CompositeItemModel<EntityId>, EntityId>.CreateExpanderColumn(indexColumn),
+            ColumnCreator.Create<EntityId, SharedColumns.Name>(canUserSortColumn: false),
+            ColumnCreator.Create<EntityId, FileConflictsColumns.Actions>(canUserSortColumn: false),
         ];
     }
 }

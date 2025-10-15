@@ -12,7 +12,8 @@ public partial class FileConflictsView : R3UserControl<IFileConflictsViewModel>
     {
         InitializeComponent();
 
-        TreeDataGridViewHelper.SetupTreeDataGridAdapter<FileConflictsView, IFileConflictsViewModel, CompositeItemModel<EntityId>, EntityId>(this, TreeDataGrid, vm => vm.TreeDataGridAdapter);
+        TreeDataGridViewHelper.SetupTreeDataGridAdapter<FileConflictsView, IFileConflictsViewModel, CompositeItemModel<EntityId>, EntityId>(
+            this, TreeDataGrid, vm => vm.TreeDataGridAdapter);
 
         this.WhenActivated(disposables =>
         {
