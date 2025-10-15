@@ -1,30 +1,23 @@
+using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.NexusModsLibrary;
+using NexusMods.Abstractions.NexusWebApi.Types;
+using NexusMods.Collections;
+using NexusMods.Games.CreationEngine.Tests.TestAttributes;
+using NexusMods.Games.IntegrationTestFramework;
+using NexusMods.Hashing.xxHash3;
+using NexusMods.Paths;
+
 namespace NexusMods.Games.CreationEngine.Tests.SkyrimSE;
-/*
-public class CollectionTests(ITestOutputHelper outputHelper) : AIsolatedGameTest<CollectionTests, CreationEngine.SkyrimSE.SkyrimSE>(outputHelper)
+
+[SkyrimSESteamCurrent]
+public class CollectionTests(Type gameType, GameLocatorResult locatorResult) : AGameIntegrationTest(gameType, locatorResult)
 {
-    protected override IServiceCollection AddServices(IServiceCollection services)
-    {
-        return base.AddServices(services)
-            .AddCreationEngine()
-            .AddAdapters()
-            .AddUniversalGameLocator<CreationEngine.SkyrimSE.SkyrimSE>(new Version("1.6.1"));
-    }
-
-
-    [Theory]
-    [InlineData("xk05aw", 229)]
-    [Trait("RequiresNetworking", "True")]
+    [Test]
+    [Arguments("xk05aw", 229)]
     public async Task InstallCollection(string collectionStub, int revisionNumber)
     {
         var loadout = await CreateLoadout();
-
-        ApiKeyTestHelper.RequireApiKey();
-        
-        var loginManager = ServiceProvider.GetRequiredService<ILoginManager>();
-        _ = await loginManager.GetUserInfoAsync();
-
-        loginManager.UserInfo.Should().NotBeNull(because: "this test requires a logged in user");
-        loginManager.IsPremium.Should().BeTrue(because: "this test requires premium to automatically download mods");
 
         await using var destination = TemporaryFileManager.CreateFile();
         var downloadJob = NexusModsLibrary.CreateCollectionDownloadJob(destination, CollectionSlug.From(collectionStub), RevisionNumber.From((ulong)revisionNumber), CancellationToken.None);
@@ -42,7 +35,7 @@ public class CollectionTests(ITestOutputHelper outputHelper) : AIsolatedGameTest
         var items = CollectionDownloader.GetItems(revisionMetadata, CollectionDownloader.ItemType.Required);
         var installJob = await InstallCollectionJob.Create(ServiceProvider, loadout, collectionFile, revisionMetadata, items);
         
-        List<(string Mod, GamePath Path, Hash Hash, Size Size, int modCount)> collectionFiles = new();
+        List<(string Mod, GamePath Path, Hash Hash, Size Size, int modCount)> collectionFiles = [];
 
         foreach (var mod in installJob.AsCollectionGroup().AsLoadoutItemGroup().Children.OfTypeLoadoutItemGroup())
         {
@@ -53,8 +46,8 @@ public class CollectionTests(ITestOutputHelper outputHelper) : AIsolatedGameTest
         }
         
         collectionFiles.Sort();
-        await VerifyTable(collectionFiles);
+        await Verify(Table(collectionFiles))
+            .UseParameters(collectionStub, revisionNumber)
+            .UseDirectory("Verification Files");
     }
-    
 }
-*/

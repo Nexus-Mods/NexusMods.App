@@ -1,31 +1,25 @@
+using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.NexusModsLibrary;
+using NexusMods.Abstractions.NexusWebApi.Types;
+using NexusMods.Collections;
+using NexusMods.Games.CreationEngine.Tests.TestAttributes;
+using NexusMods.Games.IntegrationTestFramework;
+using NexusMods.Hashing.xxHash3;
+using NexusMods.Paths;
+
 namespace NexusMods.Games.CreationEngine.Tests.Fallout4;
-/*
-public class CollectionTests(ITestOutputHelper outputHelper) : AIsolatedGameTest<CollectionTests, CreationEngine.Fallout4.Fallout4>(outputHelper)
+
+[Fallout4SteamCurrent]
+public class CollectionTests(Type gameType, GameLocatorResult locatorResult) : AGameIntegrationTest(gameType, locatorResult)
 {
-    protected override IServiceCollection AddServices(IServiceCollection services)
-    {
-        return base.AddServices(services)
-            .AddCreationEngine()
-            .AddAdapters()
-            .AddUniversalGameLocator<CreationEngine.Fallout4.Fallout4>(new Version("1.10.163"));
-    }
-
-
-    [Theory]
-    [InlineData("Step 1 - Foundation & Fixes", "cwck5b", 3)]
-    [Trait("RequiresNetworking", "True")]
+    [Test]
+    [Arguments("Step 1 - Foundation & Fixes", "cwck5b", 3)]
     public async Task InstallCollection(string name, string collectionStub, int revisionNumber)
     {
         var loadout = await CreateLoadout();
-
-        ApiKeyTestHelper.RequireApiKey();
         
-        var loginManager = ServiceProvider.GetRequiredService<ILoginManager>();
-        _ = await loginManager.GetUserInfoAsync();
-
-        loginManager.UserInfo.Should().NotBeNull(because: "this test requires a logged in user");
-        loginManager.IsPremium.Should().BeTrue(because: "this test requires premium to automatically download mods");
-
         await using var destination = TemporaryFileManager.CreateFile();
         var downloadJob = NexusModsLibrary.CreateCollectionDownloadJob(destination, CollectionSlug.From(collectionStub), RevisionNumber.From((ulong)revisionNumber), CancellationToken.None);
 
@@ -53,8 +47,8 @@ public class CollectionTests(ITestOutputHelper outputHelper) : AIsolatedGameTest
         }
 
         collectionFiles.Sort();
-        await VerifyTable(collectionFiles, name);
+        await Verify(Table(collectionFiles))
+            .UseParameters(collectionStub, revisionNumber)
+            .UseDirectory("Verification Files");
     }
-    
 }
-*/

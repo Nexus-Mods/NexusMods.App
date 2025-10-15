@@ -13,6 +13,7 @@ using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Backend;
+using NexusMods.Collections;
 using NexusMods.DataModel;
 using NexusMods.FileExtractor;
 using NexusMods.Games.CreationEngine;
@@ -79,7 +80,6 @@ public abstract class AGameIntegrationTest : IDisposable
         _mappedFileSystem = _baseFileSystem
             .CreateOverlayFileSystem(pathMappings, []);
         
-        
         GameType = gameType;
         var locatorResult1 = locatorResult;
 
@@ -136,6 +136,7 @@ public abstract class AGameIntegrationTest : IDisposable
                  .AddFileHashes()
                  .AddHttpClient()
                  .AddJobMonitor()
+                 .AddNexusModsCollections()
                  .AddSingleton<ICoreDelegates, MockDelegates>()
                  .AddLoadoutAbstractions()
                  .AddSerializationAbstractions()
