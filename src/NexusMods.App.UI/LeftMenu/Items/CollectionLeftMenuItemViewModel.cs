@@ -4,9 +4,14 @@ using System.Reactive.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Extensions;
+using NexusMods.Abstractions.Collections;
+using NexusMods.App.UI.CollectionDeleteService;
+using NexusMods.App.UI.Controls.Navigation;
+using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
+using NexusMods.UI.Sdk.Icons;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -23,6 +28,11 @@ public class CollectionLeftMenuItemViewModel : LeftMenuItemViewModel, ILeftMenuI
     
     public CollectionGroupId CollectionGroupId { get; }
     
+    private readonly ICollectionDeleteService _collectionDeleteService;
+    private readonly IConnection _connection;
+    private readonly IWorkspaceController _workspaceController;
+    private readonly bool _isNexusCollection;
+
     public CollectionLeftMenuItemViewModel(
         IWorkspaceController workspaceController,
         WorkspaceId workspaceId,
@@ -30,16 +40,23 @@ public class CollectionLeftMenuItemViewModel : LeftMenuItemViewModel, ILeftMenuI
         IServiceProvider serviceProvider,
         CollectionGroupId collectionGroupId) : base(workspaceController, workspaceId, pageData)
     {
-        var conn = serviceProvider.GetRequiredService<IConnection>();
-        
+        _connection = serviceProvider.GetRequiredService<IConnection>();
+        _collectionDeleteService = serviceProvider.GetRequiredService<ICollectionDeleteService>();
+        _workspaceController = workspaceController;
+
         CollectionGroupId = collectionGroupId;
 
-        var isEnabledObservable = CollectionGroup.Observe(conn, collectionGroupId)
-            .Select(collectionGroup => collectionGroup.AsLoadoutItemGroup().AsLoadoutItem().IsEnabled());
+        // Detect collection type and create delete context menu item
+        var collectionGroup = CollectionGroup.Load(_connection.Db, CollectionGroupId);
+        _isNexusCollection = collectionGroup.TryGetAsNexusCollectionLoadoutGroup(out _);
+        var deleteContextMenuItem = CreateDeleteContextMenuItem();
+
+        var isEnabledObservable = CollectionGroup.Observe(_connection, collectionGroupId)
+            .Select(collGroup => collGroup.AsLoadoutItemGroup().AsLoadoutItem().IsEnabled());
         
         ToggleIsEnabledCommand = ReactiveCommand.CreateFromTask(async () =>
         {
-            using var tx = conn.BeginTransaction();
+            using var tx = _connection.BeginTransaction();
             
             if (IsEnabled)
             {
@@ -52,6 +69,9 @@ public class CollectionLeftMenuItemViewModel : LeftMenuItemViewModel, ILeftMenuI
             await tx.Commit();
         });
         
+        // Set additional context menu items
+        AdditionalContextMenuItems = [deleteContextMenuItem];
+        
         this.WhenActivated(d =>
         {
             isEnabledObservable
@@ -60,5 +80,61 @@ public class CollectionLeftMenuItemViewModel : LeftMenuItemViewModel, ILeftMenuI
                 .DisposeWith(d);
         });
 
+    }
+    
+    private IContextMenuItem CreateDeleteContextMenuItem()
+    {
+        var deleteCommand = CreateDeleteCommand();
+        
+        var header = _isNexusCollection 
+            ? Language.CollectionLoadoutView_UninstallCollection 
+            : Language.Loadout_DeleteCollection_Menu_Text;
+            
+        var icon = _isNexusCollection 
+            ? IconValues.PlaylistRemove 
+            : IconValues.DeleteOutline;
+
+        var styling = _isNexusCollection
+            ? ContextMenuItemStyling.Default // Note(sewer): This is not red because it can be undone; the action that comes after.
+                                             //              Deleting collection revisions is the dangerous one and has the red marker. 
+            : ContextMenuItemStyling.Critical;
+        
+        return new ContextMenuItem
+        {
+            Header = header,
+            Icon = icon,
+            Command = deleteCommand,
+            IsVisible = true,
+            Styling = styling,
+        };
+    }
+    
+    private ReactiveCommand<Unit, Unit> CreateDeleteCommand()
+    {
+        // Nexus collections can always be uninstalled, regular collections follow CanDeleteCollection logic
+        var canExecute = _isNexusCollection 
+            ? Observable.Return(true)
+            : _collectionDeleteService.ObserveCanDeleteCollection(CollectionGroupId);
+
+        return ReactiveCommand.CreateFromTask(async () =>
+        {
+            if (_isNexusCollection)
+            {
+                var collectionGroup = CollectionGroup.Load(_connection.Db, CollectionGroupId);
+                if (collectionGroup.TryGetAsNexusCollectionLoadoutGroup(out var nexusCollectionGroup))
+                {
+                    // For Nexus collections, we need to navigate away before deletion
+                    await _collectionDeleteService.DeleteNexusCollectionAsync(
+                        nexusCollectionGroup, 
+                        _workspaceController
+                    );
+                }
+            }
+            else
+            {
+                // For regular collections, just delete without navigation
+                await _collectionDeleteService.DeleteCollectionAsync(CollectionGroupId);
+            }
+        }, canExecute: canExecute);
     }
 }

@@ -4,6 +4,7 @@ using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Sdk.EventBus;
 using NexusMods.Abstractions.Serialization.ExpressionGenerator;
 using NexusMods.Abstractions.Serialization.Json;
+using NexusMods.App.UI.CollectionDeleteService;
 using NexusMods.App.UI.Controls.DevelopmentBuildBanner;
 using NexusMods.App.UI.Controls.Diagnostics;
 using NexusMods.App.UI.Controls.GameWidget;
@@ -93,6 +94,7 @@ public static class Services
             // Services
             .AddSingleton<IOverlayController, OverlayController>()
             .AddSingleton<IWindowNotificationService, WindowNotificationService>()
+            .AddSingleton<ICollectionDeleteService, CollectionDeleteService.CollectionDeleteService>()
 
             // View Models
             .AddTransient<MainWindowViewModel>()

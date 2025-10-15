@@ -21,6 +21,7 @@ public class LeftMenuItemViewModel : AViewModel<ILeftMenuItemViewModel>, ILeftMe
     [Reactive] public bool IsActive { get; private set; }
     [Reactive] public bool IsSelected { get; private set; }
     public ReactiveCommand<NavigationInformation, Unit> NavigateCommand { get; protected init; }
+    public IReadOnlyList<IContextMenuItem>? AdditionalContextMenuItems { get; protected init; }
 
     public StringComponent? ToolTip { get; init; }
 

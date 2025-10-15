@@ -26,7 +26,7 @@
                     <icons:UnifiedIcon Value="{x:Static icons:IconValues.NexusColor}" />
                 </MenuItem.Icon>
                 <MenuItem.Header>
-                    <TextBlock>View on Nexus Mods</TextBlock>
+                    <TextBlock Text="{x:Static resources:Language.CollectionDownloadView_Menu_ViewOnNexusMods}" />
                 </MenuItem.Header>
             </MenuItem>
             <MenuItem x:Name="MenuItemOpenJsonFile">
@@ -34,7 +34,7 @@
                     <icons:UnifiedIcon Value="{x:Static icons:IconValues.FileDocumentOutline}" />
                 </MenuItem.Icon>
                 <MenuItem.Header>
-                    <TextBlock>Open JSON file</TextBlock>
+                    <TextBlock Text="{x:Static resources:Language.CollectionDownloadView_Menu_OpenJsonFile}" />
                 </MenuItem.Header>
             </MenuItem>
             <MenuItem x:Name="MenuItemDeleteCollectionRevision" Classes="Critical">
@@ -42,7 +42,7 @@
                     <icons:UnifiedIcon Value="{x:Static icons:IconValues.DeleteOutline}" />
                 </MenuItem.Icon>
                 <MenuItem.Header>
-                    <TextBlock>Delete collection revision</TextBlock>
+                    <TextBlock Text="{x:Static resources:Language.CollectionDownloadView_Menu_DeleteCollectionRevision}" />
                 </MenuItem.Header>
             </MenuItem>
         </MenuFlyout>
