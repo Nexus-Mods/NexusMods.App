@@ -228,10 +228,10 @@ public class LoadOrderTreeDataGridAdapter : TreeDataGridAdapter<CompositeItemMod
         _loadOrderDataProviders = serviceProvider.GetServices<ILoadOrderDataProvider>().ToArray();
         
         var ascendingComparer = SortExpressionComparer<CompositeItemModel<ISortItemKey>>.Ascending(
-            item => item.Get<LoadOrderComponents.IndexComponent>(LoadOrderColumns.IndexColumn.IndexComponentKey).SortIndex.Value
+            item => item.Get<SharedComponents.IndexComponent>(LoadOrderColumns.IndexColumn.IndexComponentKey).SortIndex.Value
         );
         var descendingComparer = SortExpressionComparer<CompositeItemModel<ISortItemKey>>.Descending(
-            item => item.Get<LoadOrderComponents.IndexComponent>(LoadOrderColumns.IndexColumn.IndexComponentKey).SortIndex.Value
+            item => item.Get<SharedComponents.IndexComponent>(LoadOrderColumns.IndexColumn.IndexComponentKey).SortIndex.Value
         );
         
         var comparerObservable = sortDirectionObservable.Select(sortDirection =>
@@ -258,7 +258,7 @@ public class LoadOrderTreeDataGridAdapter : TreeDataGridAdapter<CompositeItemMod
         base.BeforeModelActivationHook(model);
         
         // Move up command
-        model.SubscribeToComponentAndTrack<LoadOrderComponents.IndexComponent, LoadOrderTreeDataGridAdapter>(
+        model.SubscribeToComponentAndTrack<SharedComponents.IndexComponent, LoadOrderTreeDataGridAdapter>(
             key: LoadOrderColumns.IndexColumn.IndexComponentKey,
             state: this,
             factory: static (adapter, itemModel, component) => component.MoveUp
@@ -272,7 +272,7 @@ public class LoadOrderTreeDataGridAdapter : TreeDataGridAdapter<CompositeItemMod
         );
         
         // Move down command
-        model.SubscribeToComponentAndTrack<LoadOrderComponents.IndexComponent, LoadOrderTreeDataGridAdapter>(
+        model.SubscribeToComponentAndTrack<SharedComponents.IndexComponent, LoadOrderTreeDataGridAdapter>(
             key: LoadOrderColumns.IndexColumn.IndexComponentKey,
             state: this,
             factory: static (adapter, itemModel, component) => component.MoveDown

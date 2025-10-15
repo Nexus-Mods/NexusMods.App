@@ -16,10 +16,10 @@
         <controls:ComponentControl x:TypeArguments="games:ISortItemKey"
                                    Content="{CompiledBinding}">
             <controls:ComponentControl.ComponentTemplate>
-                <controls:ComponentTemplate x:TypeArguments="local:LoadOrderComponents+IndexComponent"
+                <controls:ComponentTemplate x:TypeArguments="controls:SharedComponents+IndexComponent"
                                             ComponentKey="{x:Static local:LoadOrderColumns+IndexColumn.IndexComponentKey}">
                     <controls:ComponentTemplate.DataTemplate>
-                        <DataTemplate x:DataType="local:LoadOrderComponents+IndexComponent">
+                        <DataTemplate x:DataType="controls:SharedComponents+IndexComponent">
 
                             <StackPanel x:Name="LoadOrderItemIndexColumnStack">
 

@@ -12,7 +12,6 @@ using NexusMods.App.UI.Controls;
 using NexusMods.MnemonicDB.Abstractions;
 using R3;
 using ReactiveUI;
-using static NexusMods.App.UI.Pages.Sorting.LoadOrderComponents;
 // ReSharper disable InvokeAsExtensionMethod
 
 namespace NexusMods.App.UI.Pages.Sorting;
@@ -124,7 +123,7 @@ public class LoadOrderDataProvider : ILoadOrderDataProvider
         var displayIndexObservable = reactiveSortItem.WhenAnyValue(item => item.SortIndex).Select(ToOneBasedOrdinalized);
         
         compositeModel.Add(LoadOrderColumns.IndexColumn.IndexComponentKey,
-            new IndexComponent(
+            new SharedComponents.IndexComponent(
                 new ValueComponent<int>(reactiveSortItem.SortIndex, sortIndexObservable),
                 new ValueComponent<string>(ToOneBasedOrdinalized(reactiveSortItem.SortIndex), displayIndexObservable),
                 canExecuteMoveUp,
