@@ -50,7 +50,6 @@ public interface ILoadoutManager
 
     /// <summary>
     /// Installs a library item into a target loadout.
-    /// To remove an installed item, use <see cref="RemoveLinkedItemFromLoadout(LibraryLinkedLoadoutItemId)"/>.
     /// </summary>
     /// <param name="libraryItem">The item to install.</param>
     /// <param name="targetLoadout">The target loadout.</param>
