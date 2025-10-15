@@ -19,12 +19,12 @@ public class BaldursGate3Synchronizer : ALoadoutSynchronizer
         _settings = settingsManager.Get<BaldursGate3Settings>();
     }
 
-    protected override bool ShouldIgnorePathWhenIndexing(GamePath path)
+    protected override ILocationsFilter LocationsFilter { get; } = Abstractions.Loadouts.Synchronizers.LocationsFilter.Create(path =>
     {
         // ignore all files inside the public player profiles directory except the modsettings.lsx file
         if (path.InFolder(PublicPlayerProfiles)) return !path.Equals(ModSettingsFile);
         return false;
-    }
+    });
 
     public override bool IsIgnoredBackupPath(GamePath path)
     {

@@ -24,7 +24,7 @@ public abstract class ACreationEngineSynchronizer : ALoadoutSynchronizer
 
     
     private static readonly GamePath SavesPath = new GamePath(LocationId.Preferences, "Saves");
-    protected override bool ShouldIgnorePathWhenIndexing(GamePath path) => path.InFolder(SavesPath);
+    protected override ILocationsFilter LocationsFilter { get; } = NexusMods.Abstractions.Loadouts.Synchronizers.LocationsFilter.Create(path => path.InFolder(SavesPath));
 
     public override Dictionary<GamePath, IIntrinsicFile> IntrinsicFiles(Loadout.ReadOnly _) => _intrinsicFiles;
     

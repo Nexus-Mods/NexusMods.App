@@ -240,7 +240,7 @@ internal partial class LoadoutManager : ILoadoutManager
         var loadout = Loadout.Load(_connection.Db, loadoutId);
         var synchronizer = loadout.InstallationInstance.GetGame().Synchronizer;
 
-        var state = await synchronizer.ReindexState(loadout.InstallationInstance, ignoreModifiedDates: false);
+        var state = await synchronizer.ReindexState(loadout.InstallationInstance);
         await synchronizer.BuildProcessRun(loadout, state, cancellationToken);
     }
 
