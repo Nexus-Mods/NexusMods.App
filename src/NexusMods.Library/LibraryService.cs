@@ -162,7 +162,8 @@ public sealed class LibraryService : ILibraryService
     public async Task RemoveLibraryItems(IEnumerable<LibraryItem.ReadOnly> libraryItems, GarbageCollectorRunMode gcRunMode = GarbageCollectorRunMode.RunAsynchronously)
     {
         var items = libraryItems.ToArray();
-        await RemoveLinkedItemsFromAllLoadouts(items);
+        var groupIds = items.SelectMany(LoadoutsWithLibraryItem).Select(tuple => tuple.linkedItem.AsLoadoutItemGroup().LoadoutItemGroupId).ToArray();
+        await _loadoutManager.RemoveItems(groupIds);
 
         using var tx = _connection.BeginTransaction();
 
@@ -171,22 +172,6 @@ public sealed class LibraryService : ILibraryService
 
         await tx.Commit();
         await _gcRunner.RunWithMode(gcRunMode);
-    }
-
-    public async Task RemoveLinkedItemFromLoadout(LibraryLinkedLoadoutItemId itemId)
-    {
-        await _loadoutManager.RemoveItems([itemId.Value]);
-    }
-
-    public async Task RemoveLinkedItemsFromLoadout(IEnumerable<LibraryLinkedLoadoutItemId> itemIds)
-    {
-        await _loadoutManager.RemoveItems(itemIds.Select(x => (LoadoutItemGroupId)x.Value).ToArray());
-    }
-
-    public async Task RemoveLinkedItemsFromAllLoadouts(IEnumerable<LibraryItem.ReadOnly> libraryItems)
-    {
-        var groupIds = libraryItems.SelectMany(LoadoutsWithLibraryItem).Select(tuple => tuple.linkedItem.AsLoadoutItemGroup().LoadoutItemGroupId).ToArray();
-        await _loadoutManager.RemoveItems(groupIds);
     }
 
     public async ValueTask<LibraryItemReplacementResult> ReplaceLinkedItemsInAllLoadouts(LibraryItem.ReadOnly oldItem, LibraryItem.ReadOnly newItem, ReplaceLibraryItemOptions options)
@@ -210,7 +195,7 @@ public sealed class LibraryService : ILibraryService
 
             // 2. Unlink old mod using bulk removal
             var groupIds = items.Select(x => x.linkedItem.LibraryLinkedLoadoutItemId).ToArray();
-            await RemoveLinkedItemsFromLoadout(groupIds);
+            await _loadoutManager.RemoveItems(groupIds.Select(x => (LoadoutItemGroupId)x.Value).ToArray());
 
             // 3. Reinstall new mod in original loadouts
             foreach (var (loadout, _) in items)

@@ -83,27 +83,6 @@ public interface ILibraryService
     Task RemoveLibraryItems(IEnumerable<LibraryItem.ReadOnly> libraryItems, GarbageCollectorRunMode gcRunMode = GarbageCollectorRunMode.RunAsynchronously);
 
     /// <summary>
-    /// Removes a single linked loadout item from its loadout,
-    /// managing the transaction automatically.
-    /// </summary>
-    /// <param name="itemId">The ID of the linked loadout item to remove from the loadout.</param>
-    Task RemoveLinkedItemFromLoadout(LibraryLinkedLoadoutItemId itemId);
-
-    /// <summary>
-    /// Removes multiple linked loadout items from their loadout,
-    /// managing the transaction automatically.
-    /// </summary>
-    /// <param name="itemIds">The IDs of the linked loadout items to remove from their loadout.</param>
-    Task RemoveLinkedItemsFromLoadout(IEnumerable<LibraryLinkedLoadoutItemId> itemIds);
-
-    /// <summary>
-    /// Removes all linked loadout items from all loadouts,
-    /// managing the transaction automatically.
-    /// </summary>
-    /// <param name="libraryItems">The library items whose associated linked loadout items should be removed.</param>
-    Task RemoveLinkedItemsFromAllLoadouts(IEnumerable<LibraryItem.ReadOnly> libraryItems);
-
-    /// <summary>
     /// Replaces linked loadout items across all loadouts with installations of a different library item.   
     /// </summary>
     /// <param name="oldItem">The library item whose linked loadout items should be replaced.</param>
