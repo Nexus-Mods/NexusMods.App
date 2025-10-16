@@ -1437,8 +1437,11 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 };
 
                 archivedFiles.Add(archivedFile);
-                if (node.SourceItemType == LoadoutSourceItemType.Game)
-                    pinnedFileHashes.Add(archivedFile.Hash);
+                
+                // TODO: We should only pin game files, not override files as well.
+                // This check does not work as intended because the winning files is going to be a Loadout one, not a game one.
+                // if (node.SourceItemType == LoadoutSourceItemType.Game)
+                pinnedFileHashes.Add(archivedFile.Hash);
             }
         );
 
