@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Xml;
 using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -339,22 +340,21 @@ internal partial class LoadoutManager : ILoadoutManager
         LoadoutId targetLoadout,
         Optional<LoadoutItemGroupId> parent = default,
         ILibraryItemInstaller? installer = null,
-        ILibraryItemInstaller? fallbackInstaller = null,
-        ITransaction? transaction = null)
+        ILibraryItemInstaller? fallbackInstaller = null)
     {
-        IMainTransaction? mainTransaction;
-        ITransaction tx;
+        return InstallItem(libraryItem, targetLoadout, inputTx: null, parent: parent, installer: installer, fallbackInstaller: fallbackInstaller);
+    }
 
-        if (transaction is null)
-        {
-            mainTransaction = _connection.BeginTransaction();
-            tx = mainTransaction;
-        }
-        else
-        {
-            mainTransaction = null;
-            tx = transaction;
-        }
+    private IJobTask<IInstallLoadoutItemJob, InstallLoadoutItemJobResult> InstallItem(
+        LibraryItem.ReadOnly libraryItem,
+        LoadoutId targetLoadout,
+        ITransaction? inputTx,
+        Optional<LoadoutItemGroupId> parent = default,
+        ILibraryItemInstaller? installer = null,
+        ILibraryItemInstaller? fallbackInstaller = null)
+    {
+        var mainTransaction = inputTx is null ? _connection.BeginTransaction() : null;
+        var tx = inputTx ?? mainTransaction!;
 
         var job = InstallLoadoutItemJob.Create(_serviceProvider, libraryItem, targetLoadout, tx, groupId: parent, installer: installer, fallbackInstaller: fallbackInstaller);
         return _jobMonitor.Begin(job, async context =>
@@ -363,7 +363,7 @@ internal partial class LoadoutManager : ILoadoutManager
             var targetId = result.GroupTxId;
             tx.Add(new AddPriorityTxFunc(targetLoadout, targetId));
 
-            if (mainTransaction is null) return result;
+            if (mainTransaction is null) return new InstallLoadoutItemJobResult(null, targetId);
 
             var commitResult = await mainTransaction.Commit();
             var remapped = commitResult[targetId];
@@ -380,7 +380,7 @@ internal partial class LoadoutManager : ILoadoutManager
         await tx.Commit();
     }
 
-    public void RemoveItems(ITransaction tx, LoadoutItemGroupId[] groupIds)
+    private void RemoveItems(ITransaction tx, LoadoutItemGroupId[] groupIds)
     {
         var db = _connection.Db;
         var loadouts = new Dictionary<LoadoutId, List<LoadoutItemGroupId>>();
@@ -423,6 +423,14 @@ internal partial class LoadoutManager : ILoadoutManager
         var groupIds = LoadoutItem.FindByParent(db, collection).OfTypeLoadoutItemGroup().Select(x => x.LoadoutItemGroupId).ToArray();
         RemoveItems(tx, groupIds);
 
+        await tx.Commit();
+    }
+
+    public async ValueTask ReplaceItems(LoadoutId loadoutId, LoadoutItemGroupId[] groupsToRemove, LibraryItem.ReadOnly libraryItemToInstall)
+    {
+        using var tx = _connection.BeginTransaction();
+        RemoveItems(tx, groupsToRemove);
+        await InstallItem(libraryItemToInstall, loadoutId, inputTx: tx);
         await tx.Commit();
     }
 }
