@@ -179,7 +179,7 @@ public sealed class LibraryService : ILibraryService
         try
         {
             // 1. Find affected loadouts using existing method
-            var items = LoadoutsWithLibraryItem(oldItem)
+            var itemsPerLoadout = LoadoutsWithLibraryItem(oldItem)
                 .Where(tuple =>
                 {
                     if (options.IgnoreReadOnlyCollections)
@@ -191,15 +191,15 @@ public sealed class LibraryService : ILibraryService
 
                     return true;
                 })
-                .ToArray();
+                .GroupBy(tuple => tuple.loadout.LoadoutId)
+                .ToDictionary(grouping => grouping.Key, grouping => grouping.ToArray());
 
-            // 2. Unlink old mod using bulk removal
-            var groupIds = items.Select(x => x.linkedItem.LibraryLinkedLoadoutItemId).ToArray();
-            await _loadoutManager.RemoveItems(groupIds.Select(x => (LoadoutItemGroupId)x.Value).ToArray());
-
-            // 3. Reinstall new mod in original loadouts
-            foreach (var (loadout, _) in items)
-                await _loadoutManager.InstallItem(libraryItem: newItem, targetLoadout: loadout.Id);
+            foreach (var kv in itemsPerLoadout)
+            {
+                var (loadoutId, items) = kv;
+                var groupIds = items.Select(x => x.linkedItem.AsLoadoutItemGroup().LoadoutItemGroupId).ToArray();
+                await _loadoutManager.ReplaceItems(loadoutId, groupIds, newItem);
+            }
         }
         catch
         {

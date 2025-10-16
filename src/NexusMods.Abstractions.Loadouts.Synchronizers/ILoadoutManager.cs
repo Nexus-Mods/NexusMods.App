@@ -76,4 +76,6 @@ public interface ILoadoutManager
     /// Removes a collection.
     /// </summary>
     ValueTask RemoveCollection(LoadoutId loadoutId, CollectionGroupId collection);
+
+    ValueTask ReplaceItems(LoadoutId loadoutId, LoadoutItemGroupId[] groupsToRemove, LibraryItem.ReadOnly libraryItemToInstall);
 }
