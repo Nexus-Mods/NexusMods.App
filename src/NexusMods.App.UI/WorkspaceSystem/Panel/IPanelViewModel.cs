@@ -1,8 +1,8 @@
 using System.Collections.ObjectModel;
 using System.Reactive;
 using Avalonia;
-using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Windows;
+using NexusMods.UI.Sdk;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.WorkspaceSystem;

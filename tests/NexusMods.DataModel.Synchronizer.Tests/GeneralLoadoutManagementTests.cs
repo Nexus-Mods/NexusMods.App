@@ -91,17 +91,17 @@ public class GeneralLoadoutManagementTests(ITestOutputHelper helper) : ACyberpun
             """, [loadoutA, loadoutB]
         );
         
-        await Synchronizer.DeactivateCurrentLoadout(loadoutA.InstallationInstance);
-        await Synchronizer.ActivateLoadout(loadoutA);
-        
+        await LoadoutManager.DeactivateCurrentLoadout(loadoutA.InstallationInstance);
+        await LoadoutManager.ActivateLoadout(loadoutA);
+
         LogDiskState(sb, "## 9 - Switch back to Loadout A",
             """
             Now we switch back to the A loadout, and the new file should be removed from the game folder.
             """, [loadoutA, loadoutB]
         );
         
-        var loadoutC = await Synchronizer.CopyLoadout(loadoutA);
-        
+        var loadoutC = await LoadoutManager.CopyLoadout(loadoutA);
+
         LogDiskState(sb, "## 10 - Loadout A Copied to Loadout C",
             """
             Loadout A has been copied to Loadout C, and the contents should match.
@@ -111,8 +111,8 @@ public class GeneralLoadoutManagementTests(ITestOutputHelper helper) : ACyberpun
         // Cleanup state subscriptions
         subADisposable.Dispose();
         subBDisposable.Dispose();
-        
-        await Synchronizer.UnManage(GameInstallation);
+
+        await LoadoutManager.UnManage(GameInstallation);
         
         LogDiskState(sb, "## 11 - Game Unmanaged",
             """
@@ -239,7 +239,7 @@ public class GeneralLoadoutManagementTests(ITestOutputHelper helper) : ACyberpun
         
         var modFile = FileSystem.GetKnownPath(KnownPath.EntryDirectory) / "Resources" / "TestMod.zip";
         var libraryFile = await LibraryService.AddLocalFile(modFile);
-        var mod = (await LibraryService.InstallItem(libraryFile.AsLibraryFile().AsLibraryItem(), loadoutA)).LoadoutItemGroup!.Value;
+        var mod = (await LoadoutManager.InstallItem(libraryFile.AsLibraryFile().AsLibraryItem(), loadoutA)).LoadoutItemGroup!.Value;
         loadoutA = loadoutA.Rebase();
         
         LogDiskState(sb, "## 2 - Loadout A Mod Added",

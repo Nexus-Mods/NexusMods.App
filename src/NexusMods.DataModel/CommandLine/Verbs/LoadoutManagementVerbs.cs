@@ -129,12 +129,13 @@ public static class LoadoutManagementVerbs
         [Option("f", "file", "Mod file to install")] AbsolutePath file,
         [Option("n", "name", "Name of the mod after installing")] string name,
         [Injected] ILibraryService libraryService,
+        [Injected] ILoadoutManager loadoutManager,
         [Injected] CancellationToken token)
     {
         return await renderer.WithProgress(token, async () =>
         {
             var localFile = await libraryService.AddLocalFile(file); 
-            await libraryService.InstallItem(localFile.AsLibraryFile().AsLibraryItem(), loadout);
+            await loadoutManager.InstallItem(localFile.AsLibraryFile().AsLibraryItem(), loadout);
             return 0;
         });
     }
@@ -310,16 +311,15 @@ public static class LoadoutManagementVerbs
         [Option("v", "version", "Version of the game to manage")] string version,
         [Option("n", "name", "The name of the new loadout")] string name,
         [Injected] IGameRegistry registry,
-        [Injected] CancellationToken token)
+        [Injected] CancellationToken token,
+        [Injected] ILoadoutManager loadoutManager)
     {
-        
         var install = registry.Installations.Values.FirstOrDefault(g => g.Game == game);
-        if (install == null)
-            throw new Exception("Game installation not found");
+        if (install == null) throw new Exception("Game installation not found");
 
         return await renderer.WithProgress(token, async () =>
         {
-            await game.Synchronizer.CreateLoadout(install, name);
+            await loadoutManager.CreateLoadout(install, name);
             return 0;
         });
     }

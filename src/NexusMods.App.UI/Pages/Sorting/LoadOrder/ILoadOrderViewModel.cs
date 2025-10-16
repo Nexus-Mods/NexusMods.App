@@ -1,15 +1,20 @@
 using System.ComponentModel;
 using System.Reactive;
 using NexusMods.Abstractions.Games;
-using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Controls.Alerts;
+using NexusMods.UI.Sdk;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.Pages.Sorting;
 
 public interface ILoadOrderViewModel : IViewModelInterface
 {
+    /// <summary>
+    /// The variety of the sort order being represented
+    /// </summary>
+    ISortOrderVariety SortOrderVariety { get; }
+    
     /// <summary>
     /// TreeDataGridAdapter for the Load Order, for setting up the TreeDataGrid
     /// </summary>

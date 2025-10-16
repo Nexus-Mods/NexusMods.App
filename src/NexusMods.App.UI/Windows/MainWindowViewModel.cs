@@ -8,12 +8,12 @@ using NexusMods.Sdk.EventBus;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.Logging;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Sdk.Settings;
-using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls.DevelopmentBuildBanner;
 using NexusMods.App.UI.Controls.Spine;
 using NexusMods.App.UI.Controls.TopBar;
@@ -305,7 +305,7 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
         if (!gameRegistry.InstalledGames.TryGetFirst(x => x.Game.GameId == gameId, out var gameInstallation)) return Optional<LoadoutId>.None;
 
         if (gameInstallation.Game is not IGame game) return Optional<LoadoutId>.None;
-        return game.Synchronizer.GetCurrentlyActiveLoadout(gameInstallation);
+        return _serviceProvider.GetRequiredService<ILoadoutManager>().GetCurrentlyActiveLoadout(gameInstallation);
     }
     
     private IDisposable ConnectErrors(IServiceProvider provider)

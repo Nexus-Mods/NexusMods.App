@@ -1,9 +1,9 @@
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts.Files.Diff;
-using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls.Trees.Common;
 using NexusMods.App.UI.Helpers.TreeDataGrid;
 using NexusMods.App.UI.Resources;
+using NexusMods.UI.Sdk;
 
 namespace NexusMods.App.UI.Controls.Trees.Files;
 

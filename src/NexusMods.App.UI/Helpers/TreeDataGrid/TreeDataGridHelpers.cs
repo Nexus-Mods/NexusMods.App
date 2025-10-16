@@ -2,7 +2,7 @@ using System.Diagnostics;
 using Avalonia.Controls;
 using Avalonia.Controls.Models.TreeDataGrid;
 using Avalonia.Controls.Templates;
-using NexusMods.Abstractions.UI;
+using NexusMods.UI.Sdk;
 using ReactiveUI;
 using Splat;
 

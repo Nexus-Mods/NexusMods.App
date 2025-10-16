@@ -42,7 +42,7 @@ public class MarkGameTestFilesTest(ITestOutputHelper testOutputHelper) : AGCStub
         (await FileStore.HaveFile(ExpectedHash)).Should().Be(true);
         
         // Unmanage the game (with GC)
-        await Synchronizer.UnManage(GameInstallation, runGc: true);
+        await LoadoutManager.UnManage(GameInstallation, runGc: true);
         
         // The file should be gone, because we deleted/retracted all the roots.
         (await FileStore.HaveFile(ExpectedHash)).Should().Be(false);

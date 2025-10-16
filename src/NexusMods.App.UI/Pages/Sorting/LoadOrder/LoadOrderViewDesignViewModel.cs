@@ -7,15 +7,16 @@ using DynamicData;
 using DynamicData.Binding;
 using Humanizer;
 using NexusMods.Abstractions.Games;
-using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Controls.Alerts;
+using NexusMods.UI.Sdk;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.Pages.Sorting;
 
 public class LoadOrderDesignViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderViewModel
 {
+    public ISortOrderVariety SortOrderVariety { get; } = null!;
     public TreeDataGridAdapter<CompositeItemModel<ISortItemKey>, ISortItemKey> Adapter { get; set; }
     public string SortOrderName { get; set; } = "Sort Order Name";
     public string InfoAlertTitle { get; set; } = "Info Alert Heading";

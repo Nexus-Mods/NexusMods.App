@@ -7,6 +7,7 @@
 
     <ItemGroup>
         <PackageReference Include="Microsoft.Extensions.TimeProvider.Testing" />
+        <PackageReference Include="NexusMods.Hashing.xxHash3.Paths" />
         <PackageReference Include="TUnit" />
         <PackageReference Include="Verify" />
         <PackageReference Include="Verify.TUnit" />
@@ -15,5 +16,13 @@
     <ItemGroup>
         <ProjectReference Include="..\..\src\NexusMods.Backend\NexusMods.Backend.csproj" />
     </ItemGroup>
+
+    <Target Name="CopyResources" AfterTargets="PostBuildEvent">
+        <ItemGroup>
+            <_Resources Include="FileExtractor\Resources\**" />
+        </ItemGroup>
+
+        <Copy SourceFiles="@(_Resources)" DestinationFolder="$(TargetDir)\Resources" />
+    </Target>
 
 </Project>

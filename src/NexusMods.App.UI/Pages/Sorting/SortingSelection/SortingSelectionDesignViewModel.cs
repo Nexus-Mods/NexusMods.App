@@ -1,9 +1,9 @@
 using System.Collections.ObjectModel;
-using NexusMods.Abstractions.UI;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.Extensions;
 using NexusMods.Sdk.Settings;
+using NexusMods.UI.Sdk;
 using R3;
 
 namespace NexusMods.App.UI.Pages.Sorting;
@@ -11,7 +11,7 @@ namespace NexusMods.App.UI.Pages.Sorting;
 public class SortingSelectionDesignViewModel : AViewModel<ISortingSelectionViewModel>, ISortingSelectionViewModel
 {
     private readonly ISettingsManager _settingsManager;
-    public IViewModelInterface[] ViewModels { get; }
+    public ReadOnlyObservableCollection<IViewModelInterface> RulesViewModels { get; }
     public IReadOnlyBindableReactiveProperty<bool> CanEdit { get; } = new BindableReactiveProperty<bool>(true);
     public ReactiveCommand<NavigationInformation> OpenAllModsLoadoutPageCommand { get; } = new (_ => { });
 
@@ -19,7 +19,7 @@ public class SortingSelectionDesignViewModel : AViewModel<ISortingSelectionViewM
     {
         _settingsManager = serviceProvider.GetRequiredService<ISettingsManager>();
 
-        IViewModelInterface[] loadOrderViewModels =
+        ObservableCollection<IViewModelInterface> loadOrderViewModels =
         [
             new LoadOrderDesignViewModel()
             {
@@ -31,14 +31,14 @@ public class SortingSelectionDesignViewModel : AViewModel<ISortingSelectionViewM
             new LoadOrderDesignViewModel() { SortOrderName = "Load Order (Archive XL)" },
         ];
 
-        ViewModels = loadOrderViewModels;
+        RulesViewModels = new ReadOnlyObservableCollection<IViewModelInterface>(loadOrderViewModels);
     }
 
     public SortingSelectionDesignViewModel()
     {
         _settingsManager = null!;
 
-        IViewModelInterface[] loadOrderViewModels =
+        ObservableCollection<IViewModelInterface> loadOrderViewModels =
         [
             new LoadOrderDesignViewModel()
             {
@@ -50,6 +50,6 @@ public class SortingSelectionDesignViewModel : AViewModel<ISortingSelectionViewM
             new LoadOrderDesignViewModel() { SortOrderName = "Load Order (Archive XL)" },
         ];
 
-        ViewModels = loadOrderViewModels;
+        RulesViewModels = new ReadOnlyObservableCollection<IViewModelInterface>(loadOrderViewModels);
     }
 }

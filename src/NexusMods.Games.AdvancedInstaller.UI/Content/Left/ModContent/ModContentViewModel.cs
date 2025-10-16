@@ -1,12 +1,12 @@
 using System.Collections.ObjectModel;
 using DynamicData;
 using NexusMods.Abstractions.Library.Models;
-using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Helpers;
 using NexusMods.App.UI.Helpers.TreeDataGrid;
 using NexusMods.Paths;
 using NexusMods.Paths.Trees;
 using NexusMods.Paths.Trees.Traits;
+using NexusMods.UI.Sdk;
 using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.ModContent;
