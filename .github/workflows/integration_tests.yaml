@@ -1,4 +1,4 @@
-name: Networking Tests
+name: Integration Tests
 
 on:
   workflow_dispatch:
@@ -7,13 +7,14 @@ on:
 jobs:
   build:
     
-    name: Test Networking
+    name: Integration Tests
     runs-on: [self-hosted]
     
     environment: test
     
     env:
       NEXUS_API_KEY: ${{ secrets.NEXUS_API_KEY }}
+      NMA_INTEGRATION_BASE_PATH: /home/runner/game-images
 
     steps:
       - uses: actions/checkout@v3
@@ -31,4 +32,4 @@ jobs:
         run: dotnet build --no-restore
 
       - name: Tests
-        run: dotnet test --no-build --logger "GitHubActions" --filter "RequiresNetworking=True&IntegrationTest!=True" --blame-hang-timeout 20m
+        run: dotnet test --no-build --logger "GitHubActions" --filter "IntegrationTest=True" --blame-hang-timeout 20m
