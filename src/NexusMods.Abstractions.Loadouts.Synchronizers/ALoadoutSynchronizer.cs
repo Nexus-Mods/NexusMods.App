@@ -1525,7 +1525,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         var indexGameResult = await _gameLocationsService.IndexGame(
             installation: installation,
             previousDiskState: previousState,
-            filter: LocationsFilter,
+            filter: GamePathFilter,
             cancellationToken: CancellationToken.None
         );
 
@@ -1610,7 +1610,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     /// Files ignored by this method will not be included in the sync tree. Prefer not including
     /// the path in the first place instead of using this method.
     /// </remarks>
-    protected virtual ILocationsFilter LocationsFilter { get; } = Synchronizers.LocationsFilter.Empty;
+    protected virtual IGamePathFilter GamePathFilter { get; } = Synchronizers.GamePathFilters.Empty;
 
     /// <summary>
     /// Gets a set of files intrinsic to this game. Such as mod order files, preference files, etc.

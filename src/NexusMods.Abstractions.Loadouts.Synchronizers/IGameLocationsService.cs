@@ -21,13 +21,16 @@ public record IndexGameResult(
     FrozenSet<GamePath> RemovedFiles
 );
 
+/// <summary>
+/// Service responsible for handling operations on game locations/installations.
+/// </summary>
 [PublicAPI]
 public interface IGameLocationsService
 {
     Task<IndexGameResult> IndexGame(
         GameInstallation installation,
         FrozenDictionary<GamePath, DiskStateEntry.ReadOnly> previousDiskState,
-        ILocationsFilter filter,
+        IGamePathFilter filter,
         CancellationToken cancellationToken = default
     );
 
@@ -35,21 +38,21 @@ public interface IGameLocationsService
 }
 
 [PublicAPI]
-public interface ILocationsFilter
+public interface IGamePathFilter
 {
     bool ShouldFilter(GamePath gamePath);
 }
 
-public static class LocationsFilter
+public static class GamePathFilters
 {
-    public static readonly ILocationsFilter Empty = new EmptyFilter();
+    public static readonly IGamePathFilter Empty = new EmptyFilter();
 
-    public static ILocationsFilter Create(Func<GamePath, bool> predicate)
+    public static IGamePathFilter Create(Func<GamePath, bool> predicate)
     {
         return new PredicateFilter(predicate);
     }
 
-    private class PredicateFilter : ILocationsFilter
+    private class PredicateFilter : IGamePathFilter
     {
         private readonly Func<GamePath, bool> _predicate;
 
@@ -61,7 +64,7 @@ public static class LocationsFilter
         public bool ShouldFilter(GamePath gamePath) => _predicate(gamePath);
     }
 
-    private class EmptyFilter : ILocationsFilter
+    private class EmptyFilter : IGamePathFilter
     {
         public bool ShouldFilter(GamePath gamePath) => false;
     }

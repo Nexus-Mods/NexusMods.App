@@ -19,7 +19,7 @@ public class BaldursGate3Synchronizer : ALoadoutSynchronizer
         _settings = settingsManager.Get<BaldursGate3Settings>();
     }
 
-    protected override ILocationsFilter LocationsFilter { get; } = Abstractions.Loadouts.Synchronizers.LocationsFilter.Create(path =>
+    protected override IGamePathFilter GamePathFilter { get; } = Abstractions.Loadouts.Synchronizers.GamePathFilters.Create(path =>
     {
         // ignore all files inside the public player profiles directory except the modsettings.lsx file
         if (path.InFolder(PublicPlayerProfiles)) return !path.Equals(ModSettingsFile);

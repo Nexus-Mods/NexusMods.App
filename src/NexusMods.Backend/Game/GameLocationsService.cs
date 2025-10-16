@@ -30,7 +30,7 @@ internal class GameLocationsService : IGameLocationsService
     public async Task<IndexGameResult> IndexGame(
         GameInstallation installation,
         FrozenDictionary<GamePath, DiskStateEntry.ReadOnly> previousDiskState,
-        ILocationsFilter filter,
+        IGamePathFilter filter,
         CancellationToken outerToken = default)
     {
         var topLevelLocations = installation.LocationsRegister.GetTopLevelLocations();
