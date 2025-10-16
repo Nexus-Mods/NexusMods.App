@@ -1163,7 +1163,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         return loadout;
     }
 
-    public async Task<GameInstallMetadata.ReadOnly> RescanFiles(GameInstallation gameInstallation, bool ignoreModifiedDates)
+    public async Task<GameInstallMetadata.ReadOnly> RescanFiles(GameInstallation gameInstallation)
     {
         // Make sure the file hashes are up to date
         await _fileHashService.GetFileHashesDb();
