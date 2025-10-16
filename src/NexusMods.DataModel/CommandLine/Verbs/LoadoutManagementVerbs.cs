@@ -147,10 +147,9 @@ public static class LoadoutManagementVerbs
     {
         await renderer.Text("Reindexing {0}", loadout.Name);
         var synchronizer = loadout.InstallationInstance.GetGame().Synchronizer;
-        await synchronizer.RescanFiles(loadout.InstallationInstance, true);
+        await synchronizer.RescanFiles(loadout.InstallationInstance);
         return 0;
     }
-
 
     [Verb("loadouts list", "Lists all the loadouts")]
     private static async Task<int> ListLoadouts([Injected] IRenderer renderer,

@@ -94,6 +94,7 @@ public static class Services
                 .AddOSInterop()
                 .AddRuntimeDependencies()
                 .AddGames()
+                .AddGameServices()
                 .AddGenericGameSupport()
                 .AddLoadoutAbstractions()
                 .AddFomod()

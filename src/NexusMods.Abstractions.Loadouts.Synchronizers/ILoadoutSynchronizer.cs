@@ -54,11 +54,7 @@ public interface ILoadoutSynchronizer
     /// whatever is on disk.
     /// </summary>
     /// <param name="gameInstallation">The game installation to rescan.</param>
-    /// <param name="ignoreModifiedDate">
-    /// If false, files that have unchanged modified date since the last scan will be skipped.
-    /// If true, all files will be rehashed.
-    /// </param>
-    Task<GameInstallMetadata.ReadOnly> RescanFiles(GameInstallation gameInstallation, bool ignoreModifiedDate = false);
+    Task<GameInstallMetadata.ReadOnly> RescanFiles(GameInstallation gameInstallation);
 
     /// <summary>
     /// Get the disk state for a game as of a specific transaction.
@@ -128,7 +124,7 @@ public interface ILoadoutSynchronizer
     /// <returns>A tree of all the files with associated <see cref="FileChangeType"/></returns>
     FileDiffTree LoadoutToDiskDiff(Loadout.ReadOnly loadout, List<PathPartPair> previousState, List<PathPartPair> lastScannedState);
 
-    Task<GameInstallMetadata.ReadOnly> ReindexState(GameInstallation installation, bool ignoreModifiedDates);
+    Task<GameInstallMetadata.ReadOnly> ReindexState(GameInstallation installation);
     ValueTask BuildProcessRun(Loadout.ReadOnly loadout, GameInstallMetadata.ReadOnly state, CancellationToken cancellationToken);
 
     Task ResetToOriginalGameState(GameInstallation installation, LocatorId[] locatorIds);
