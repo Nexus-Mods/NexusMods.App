@@ -17,7 +17,7 @@ public static class ImageHelper
     /// <param name="width">The width to decode the image to.</param>
     /// <param name="logger">Logger for error handling.</param>
     /// <returns>A Bitmap if successful, null otherwise.</returns>
-    public static async Task<Bitmap?> LoadGameIconAsync(IGame? game, int width, ILogger logger)
+    public static async ValueTask<Bitmap?> LoadGameIconAsync(IGame? game, int width, ILogger logger)
     {
         if (game is null)
             return null;

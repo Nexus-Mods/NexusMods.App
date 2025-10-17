@@ -1,5 +1,6 @@
 using FluentAssertions;
-using NexusMods.CrossPlatform.Process;
+using NexusMods.Games.Generic.Dependencies;
+
 namespace NexusMods.CrossPlatform.Tests;
 
 public class ProtontricksTests

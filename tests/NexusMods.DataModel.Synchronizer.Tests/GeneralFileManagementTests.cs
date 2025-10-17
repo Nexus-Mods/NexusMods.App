@@ -67,14 +67,14 @@ public class GeneralFileManagementTests (ITestOutputHelper helper) : ACyberpunkI
         var libraryArchive = await RegisterLocalArchive(dataPath);
 
         var collection1 = await CreateCollection(loadout, name: "Collection 1");
-        var item1Result = await LibraryService.InstallItem(libraryArchive.AsLibraryFile().AsLibraryItem(), loadout, parent: collection1.AsLoadoutItemGroup().LoadoutItemGroupId);
+        var item1Result = await LoadoutManager.InstallItem(libraryArchive.AsLibraryFile().AsLibraryItem(), loadout, parent: collection1.AsLoadoutItemGroup().LoadoutItemGroupId);
         var item1Id = item1Result.LoadoutItemGroup!.Value.Id;
 
         Synchronizer.GetFileConflicts(Loadout.Load(Connection.Db, loadout)).Should().BeEmpty(because: "no conflicts yet");
         Synchronizer.GetFileConflictsByParentGroup(Loadout.Load(Connection.Db, loadout)).Should().BeEmpty(because: "no conflicts yet");
 
         var collection2 = await CreateCollection(loadout, name: "Collection 2");
-        var item2Result = await LibraryService.InstallItem(libraryArchive.AsLibraryFile().AsLibraryItem(), loadout, parent: collection2.AsLoadoutItemGroup().LoadoutItemGroupId);
+        var item2Result = await LoadoutManager.InstallItem(libraryArchive.AsLibraryFile().AsLibraryItem(), loadout, parent: collection2.AsLoadoutItemGroup().LoadoutItemGroupId);
         var item2Id = item2Result.LoadoutItemGroup!.Value.Id;
 
         Synchronizer.GetFileConflicts(Loadout.Load(Connection.Db, loadout), removeDuplicates: true).Should().BeEmpty(because: "all conflicts are duplicates");

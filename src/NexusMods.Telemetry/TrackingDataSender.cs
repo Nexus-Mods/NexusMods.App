@@ -18,6 +18,7 @@ using NexusMods.Sdk;
 
 namespace NexusMods.Telemetry;
 
+[Obsolete]
 internal sealed class TrackingDataSender : ITrackingDataSender, IDisposable
 {
     // NOTE(erri120): Arbitrarily chosen limit.

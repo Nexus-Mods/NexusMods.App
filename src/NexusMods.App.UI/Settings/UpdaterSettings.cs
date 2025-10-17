@@ -1,5 +1,5 @@
 using JetBrains.Annotations;
-using NexusMods.Abstractions.Settings;
+using NexusMods.Sdk.Settings;
 
 namespace NexusMods.App.UI.Settings;
 

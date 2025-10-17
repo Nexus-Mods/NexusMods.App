@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 namespace NexusMods.Telemetry;
 
 [PublicAPI]
+[Obsolete]
 public class TrackingService : BackgroundService
 {
     private static readonly TimeSpan Delay = TimeSpan.FromSeconds(seconds: 5);

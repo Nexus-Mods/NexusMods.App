@@ -10,9 +10,8 @@ using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.FileHashes;
 using NexusMods.Abstractions.Games.FileHashes.Models;
 using NexusMods.Abstractions.GOG.Values;
-using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
-using NexusMods.Abstractions.Settings;
+using NexusMods.Sdk.Settings;
 using NexusMods.Abstractions.Steam.Values;
 using NexusMods.Games.FileHashes.DTOs;
 using NexusMods.Hashing.xxHash3;
@@ -23,6 +22,7 @@ using NexusMods.MnemonicDB.Storage.RocksDbBackend;
 using NexusMods.Paths;
 using NexusMods.Sdk;
 using NexusMods.Sdk.IO;
+using NexusMods.Sdk.Jobs;
 using BuildId = NexusMods.Abstractions.GOG.Values.BuildId;
 using Connection = NexusMods.MnemonicDB.Connection;
 
@@ -184,7 +184,7 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable, IHost
             if (embeddedDatabaseInfo.HasValue)
             {
                 existingDatabases = ExistingDBs().ToArray();
-                Debug.Assert(existingDatabases.Length == 1);
+                Debug.Assert(existingDatabases.Length >= 1, $"should have at least one database but found {existingDatabases.Length}");
             }
         }
 
@@ -194,7 +194,7 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable, IHost
             return;
         }
 
-        if (latestReleaseManifest is null || existingDatabases[0].CreationTime >= latestReleaseManifest.CreatedAt)
+        if (latestReleaseManifest is null || existingDatabases[0].CreationTime.ToUnixTimeSeconds() >= latestReleaseManifest.CreatedAt.ToUnixTimeSeconds())
         {
             _currentDb = OpenDb(existingDatabases[0]);
             return;

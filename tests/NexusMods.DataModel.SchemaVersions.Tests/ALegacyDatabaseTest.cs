@@ -12,11 +12,11 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Abstractions.Serialization;
-using NexusMods.Abstractions.Settings;
+using NexusMods.Backend;
+using NexusMods.Backend.FileExtractor.FileSignatures;
 using NexusMods.Collections;
 using NexusMods.CrossPlatform;
 using NexusMods.FileExtractor;
-using NexusMods.FileExtractor.FileSignatures;
 using NexusMods.Games.FileHashes;
 using NexusMods.Games.StardewValley;
 using NexusMods.Hashing.xxHash3;
@@ -27,12 +27,10 @@ using NexusMods.Networking.NexusWebApi;
 using NexusMods.Networking.NexusWebApi.Errors;
 using NexusMods.Paths;
 using NexusMods.Sdk;
-using NexusMods.Settings;
+using NexusMods.Sdk.Settings;
 using NexusMods.StandardGameLocators;
 using NexusMods.StandardGameLocators.TestHelpers;
 using NSubstitute;
-using NSubstitute.Core.Arguments;
-using NSubstitute.Core.DependencyInjection;
 using Xunit.Abstractions;
 using Xunit.DependencyInjection;
 
@@ -75,7 +73,8 @@ public abstract class ALegacyDatabaseTest
             .AddHttpDownloader()
             .AddSettingsManager()
             .AddSettings<LoggingSettings>()
-            .AddCrossPlatform()
+            .AddOSInterop()
+            .AddRuntimeDependencies()
             .AddRocksDbBackend()
             .AddFileHashes()
             .AddFileSystem()

@@ -41,9 +41,6 @@ internal class TypeFinder : ITypeFinder
         typeof(CollectionLoadoutPageContext),
         typeof(ProtocolRegistrationTestPageContext),
         typeof(DownloadsPageContext),
-        typeof(AllDownloadsPageContext),
-        typeof(CompletedDownloadsPageContext),
-        typeof(GameSpecificDownloadsPageContext),
 
         // workspace context
         typeof(EmptyContext),

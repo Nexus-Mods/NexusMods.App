@@ -1,9 +1,9 @@
 using System.Reactive;
 using Avalonia.Media;
 using NexusMods.Abstractions.NexusWebApi.Types;
-using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.UI.Sdk;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.Controls.TopBar;

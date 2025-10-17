@@ -2,7 +2,6 @@ using System.Collections.Concurrent;
 using System.Collections.Frozen;
 using System.Diagnostics;
 using System.Security.Cryptography;
-using Avalonia.Controls.Primitives;
 using DynamicData.Kernel;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,11 +11,11 @@ using NexusMods.Abstractions.Collections.Types;
 using NexusMods.Abstractions.Collections.Json;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
-using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Games.FOMOD;
@@ -27,6 +26,7 @@ using NexusMods.Sdk;
 using NexusMods.Sdk.FileStore;
 using NexusMods.Sdk.Hashes;
 using NexusMods.Sdk.IO;
+using NexusMods.Sdk.Jobs;
 
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 
@@ -48,6 +48,7 @@ public class InstallCollectionDownloadJob : IJobDefinitionWithStart<InstallColle
     public required IConnection Connection { get; init; }
     public required IFileStore FileStore { get; init; }
     public required ILibraryService LibraryService { get; init; }
+    public required ILoadoutManager LoadoutManager { get; init; }
 
     public ILibraryItemInstaller? FallbackInstaller { get; init; }
     public Optional<GamePath> FallbackCollectionInstallDirectory { get; init; }
@@ -83,6 +84,7 @@ public class InstallCollectionDownloadJob : IJobDefinitionWithStart<InstallColle
             Connection = connection,
             FileStore = serviceProvider.GetRequiredService<IFileStore>(),
             LibraryService = serviceProvider.GetRequiredService<ILibraryService>(),
+            LoadoutManager = serviceProvider.GetRequiredService<ILoadoutManager>(),
         };
     }
 
@@ -141,7 +143,7 @@ public class InstallCollectionDownloadJob : IJobDefinitionWithStart<InstallColle
             return (await InstallFomodWithPredefinedChoices(context.CancellationToken), patchedFiles);
         }
 
-        var result = await LibraryService.InstallItem(
+        var result = await LoadoutManager.InstallItem(
             libraryFile.AsLibraryItem(),
             TargetLoadout,
             parent: Group.AsLoadoutItemGroup().LoadoutItemGroupId,

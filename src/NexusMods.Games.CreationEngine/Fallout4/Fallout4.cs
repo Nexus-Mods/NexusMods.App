@@ -52,7 +52,8 @@ public partial class Fallout4 : AGame, ISteamGame, IGogGame, ICreationEngineGame
         return new Dictionary<LocationId, AbsolutePath>()
         {
             { LocationId.Game, installation.Path },
-            { LocationId.AppData, fileSystem.GetKnownPath(KnownPath.LocalApplicationDataDirectory) / "Fallout 4" },
+            { LocationId.AppData, fileSystem.GetKnownPath(KnownPath.LocalApplicationDataDirectory) / "Fallout4" },
+            { LocationId.Preferences, fileSystem.GetKnownPath(KnownPath.MyGamesDirectory) / "Fallout4" },
         };
     }
 

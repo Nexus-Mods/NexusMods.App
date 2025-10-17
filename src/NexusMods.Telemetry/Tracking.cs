@@ -1,6 +1,6 @@
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.Telemetry;
+using NexusMods.Sdk.Tracking;
 
 namespace NexusMods.Telemetry;
 
@@ -8,6 +8,7 @@ namespace NexusMods.Telemetry;
 /// Tracking methods.
 /// </summary>
 [PublicAPI]
+[Obsolete]
 public static class Tracking
 {
     internal static ITrackingDataSender? EventSender { get; set; }
@@ -28,11 +29,12 @@ public static class Tracking
 
 public static class TrackingRegistration
 {
-    public static IServiceCollection AddTracking(
+    [Obsolete]
+    public static IServiceCollection AddTrackingOld(
         this IServiceCollection serviceCollection,
-        TelemetrySettings settings)
+        TrackingSettings? trackingSettings)
     {
-        if (!settings.IsEnabled) return serviceCollection;
+        if (trackingSettings is null || !trackingSettings.EnableTracking) return serviceCollection;
 
         return serviceCollection
             .AddSingleton<ITrackingDataSender, TrackingDataSender>()

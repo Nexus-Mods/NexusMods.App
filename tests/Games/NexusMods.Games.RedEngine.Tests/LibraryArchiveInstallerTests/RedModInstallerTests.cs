@@ -30,13 +30,7 @@ public class RedModInstallerTests(ITestOutputHelper outputHelper) : ALibraryArch
         var loadout = await CreateLoadout();
         var libraryArchive = await RegisterLocalArchive(fullPath);
         var group = await Install(typeof(RedModInstaller), loadout, libraryArchive);
-
-        foreach (var child in group.Children)
-        {
-            child.TryGetAsLoadoutItemGroup(out var childGroup).Should().BeTrue("The child should be a loadout item group.");
-            childGroup.TryGetAsRedModLoadoutGroup(out var redModGroup).Should().BeTrue("The child should be a red mod loadout group.");
-        }
-
-        await VerifyTx(group.Max(m => m.T)).UseParameters(filename);
+        
+        await VerifyGroup(libraryArchive, group).UseParameters(filename);
     }
 }

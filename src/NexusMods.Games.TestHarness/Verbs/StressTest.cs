@@ -3,6 +3,7 @@ using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.GuidedInstallers;
 using NexusMods.Abstractions.Library;
+using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Abstractions.NexusWebApi.Types.V2.Uid;
@@ -31,6 +32,7 @@ public class StressTest
         [Injected] IGameDomainToGameIdMappingCache domainToIdCache,
         [Injected] TemporaryFileManager temporaryFileManager,
         [Injected] ILibraryService libraryService,
+        [Injected] ILoadoutManager loadoutManager,
         [Injected] IEnumerable<IGameLocator> gameLocators,
         [Injected] IGuidedInstaller optionSelector,
         [Injected] NexusModsLibrary nexusModsLibrary,
@@ -87,10 +89,9 @@ public class StressTest
                             file.Name,
                             size);
 
-                        var list = await game.Synchronizer.CreateLoadout(install);
+                        var list = await loadoutManager.CreateLoadout(install);
+                        await loadoutManager.InstallItem(libraryFile.AsLibraryItem(), list.LoadoutId);
 
-                        await libraryService.InstallItem(libraryFile.AsLibraryItem(), list.LoadoutId);
-                        
                         results.Add((file.Name, mod.ModId, uid.FileId, hash, true, null));
                         await renderer.Text("Installed {0} {1} {2} - {3}", mod.ModId, uid.FileId,
                             file.Name, size);

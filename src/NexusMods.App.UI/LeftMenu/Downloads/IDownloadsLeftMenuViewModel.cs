@@ -8,6 +8,4 @@ public interface IDownloadsLeftMenuViewModel : ILeftMenuViewModel
     public ILeftMenuItemViewModel LeftMenuItemAllDownloads { get; }
     
     public ReadOnlyObservableCollection<ILeftMenuItemViewModel> LeftMenuItemsPerGameDownloads { get; }
-    
-    public ILeftMenuItemViewModel LeftMenuItemAllCompleted { get; }
 }

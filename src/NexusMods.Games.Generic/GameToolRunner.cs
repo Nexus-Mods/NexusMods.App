@@ -4,8 +4,10 @@ using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.GameLocators.Stores.Steam;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.CrossPlatform.Process;
+using NexusMods.Games.Generic.Dependencies;
 using NexusMods.Paths;
+using NexusMods.Sdk;
+
 namespace NexusMods.Games.Generic;
 
 /// <summary>
@@ -20,13 +22,13 @@ namespace NexusMods.Games.Generic;
 /// </summary>
 public class GameToolRunner
 {
-    private readonly IProcessFactory _processFactory;
+    private readonly IProcessRunner _processRunner;
     private readonly AggregateProtontricksDependency? _protontricks;
 
     /// <summary/>
     public GameToolRunner(IServiceProvider provider)
     {
-        _processFactory = provider.GetRequiredService<IProcessFactory>();
+        _processRunner = provider.GetRequiredService<IProcessRunner>();
         _protontricks = provider.GetService<AggregateProtontricksDependency>();
     }
 
@@ -41,8 +43,8 @@ public class GameToolRunner
     {
         var isLinux = FileSystem.Shared.OS.IsLinux;
         if (!isLinux)
-            return await _processFactory.ExecuteAsync(command, logProcessOutput, cancellationToken: cancellationToken);
-        
+            return await _processRunner.RunAsync(command, logProcessOutput, cancellationToken: cancellationToken);
+
         // For Linux, if the user is managing the game via Steam, we can use proton (via protontricks)
         var install = loadout.InstallationInstance;
         if (install.Store == GameStore.Steam && _protontricks is not null 
@@ -50,9 +52,8 @@ public class GameToolRunner
         {
             var appId = steamLocatorResultMetadata.AppId;
             command = await _protontricks.MakeLaunchCommand(command, appId);
-            return await _processFactory.ExecuteAsync(command, logProcessOutput, cancellationToken: cancellationToken);
         }
 
-        return await _processFactory.ExecuteAsync(command, logProcessOutput, cancellationToken: cancellationToken);
+        return await _processRunner.RunAsync(command, logProcessOutput, cancellationToken: cancellationToken);
     }
 }

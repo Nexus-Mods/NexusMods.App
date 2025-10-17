@@ -1,11 +1,9 @@
-using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.Loadouts.Ids;
-using NexusMods.Abstractions.Settings;
+using NexusMods.Sdk.Settings;
 using NexusMods.App.UI.Controls.Diagnostics;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
@@ -14,6 +12,7 @@ using NexusMods.UI.Sdk.Icons;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Reloaded.Memory.Extensions;
+using ObservableExtensions = R3.ObservableExtensions;
 
 namespace NexusMods.App.UI.Pages.Diagnostics;
 
@@ -49,8 +48,7 @@ internal class DiagnosticListViewModel : APageViewModel<IDiagnosticListViewModel
         TabTitle = Language.DiagnosticListViewModel_DiagnosticListViewModel_Diagnostics;
 
         Settings = settingsManager.Get<DiagnosticSettings>();
-        settingsManager.GetChanges<DiagnosticSettings>().OnUI().BindToVM(this, vm => vm.Settings);
-
+        ObservableExtensions.AsSystemObservable(settingsManager.GetChanges<DiagnosticSettings>(prependCurrent: false)).BindToVM(this, vm => vm.Settings);
 
         this.WhenActivated(disposable =>
         {

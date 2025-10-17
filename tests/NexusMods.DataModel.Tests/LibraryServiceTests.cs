@@ -134,7 +134,7 @@ public class LibraryServiceTests : ACyberpunkIsolatedGameTest<LibraryServiceTest
         var libraryItem = (await _libraryService.AddLocalFile(nestedArchivePath)).AsLibraryFile().AsLibraryItem();
 
         // Add it to our new loadout.
-        await _libraryService.InstallItem(libraryItem, loadout.LoadoutId, parent: collection.AsLoadoutItemGroup().LoadoutItemGroupId);
+        await LoadoutManager.InstallItem(libraryItem, loadout.LoadoutId, parent: collection.AsLoadoutItemGroup().LoadoutItemGroupId);
         var loadouts = _libraryService.LoadoutsWithLibraryItem(libraryItem);
 
         // Assert that we have a single item.
@@ -165,9 +165,9 @@ public class LibraryServiceTests : ACyberpunkIsolatedGameTest<LibraryServiceTest
         var oldItem2 = (await _libraryService.AddLocalFile(secondArchivePath)).AsLibraryFile().AsLibraryItem();
 
         // Install old items in both loadouts
-        await _libraryService.InstallItem(oldItem1, loadout1.LoadoutId, parent: collection1.AsLoadoutItemGroup().LoadoutItemGroupId);
-        await _libraryService.InstallItem(oldItem2, loadout1.LoadoutId, parent: collection1.AsLoadoutItemGroup().LoadoutItemGroupId);
-        await _libraryService.InstallItem(oldItem1, loadout2.LoadoutId, parent: collection2.AsLoadoutItemGroup().LoadoutItemGroupId);
+        await LoadoutManager.InstallItem(oldItem1, loadout1.LoadoutId, parent: collection1.AsLoadoutItemGroup().LoadoutItemGroupId);
+        await LoadoutManager.InstallItem(oldItem2, loadout1.LoadoutId, parent: collection1.AsLoadoutItemGroup().LoadoutItemGroupId);
+        await LoadoutManager.InstallItem(oldItem1, loadout2.LoadoutId, parent: collection2.AsLoadoutItemGroup().LoadoutItemGroupId);
 
         // Act
         // Replace both items across all loadouts
@@ -232,8 +232,8 @@ public class LibraryServiceTests : ACyberpunkIsolatedGameTest<LibraryServiceTest
         var oldItem2 = (await _libraryService.AddLocalFile(secondArchivePath)).AsLibraryFile().AsLibraryItem();
 
         // Install old items in both loadouts - one in mutable collection, one in read-only collection
-        await _libraryService.InstallItem(oldItem1, loadout1.LoadoutId, parent: mutableCollection.AsLoadoutItemGroup().LoadoutItemGroupId);
-        await _libraryService.InstallItem(oldItem2, loadout2.LoadoutId, parent: readOnlyCollection.AsLoadoutItemGroup().LoadoutItemGroupId);
+        await LoadoutManager.InstallItem(oldItem1, loadout1.LoadoutId, parent: mutableCollection.AsLoadoutItemGroup().LoadoutItemGroupId);
+        await LoadoutManager.InstallItem(oldItem2, loadout2.LoadoutId, parent: readOnlyCollection.AsLoadoutItemGroup().LoadoutItemGroupId);
 
         // Act
         // Create new items to replace the old ones

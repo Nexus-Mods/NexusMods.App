@@ -1,7 +1,7 @@
 using System.Text.Json.Serialization;
 using JetBrains.Annotations;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
-using NexusMods.Abstractions.Settings;
+using NexusMods.Sdk.Settings;
 using NexusMods.Sdk;
 
 namespace NexusMods.App.UI.Settings;
@@ -29,21 +29,27 @@ public record ExperimentalSettings : ISettings
     public static ISettingsBuilder Configure(ISettingsBuilder settingsBuilder)
     {
         return settingsBuilder
-            .ConfigureStorageBackend<ExperimentalSettings>(builder => builder.UseJson())
-            .AddToUI<ExperimentalSettings>(builder => builder
-                .AddPropertyToUI(x => x.EnableAllGames, propertyBuilder => propertyBuilder
-                    .AddToSection(Sections.Experimental)
-                    .WithDisplayName("Enable unsupported games")
-                    .WithDescription("Allows you to manage unsupported games.")
-                    .UseBooleanContainer()
-                    .RequiresRestart()
-                )
-                .AddPropertyToUI(x => x.EnableCollectionSharing, b => b
-                    .AddToSection(Sections.Experimental)
-                    .WithDisplayName("Enable sharing collections")
-                    .WithDescription("Allows uploading of collections")
-                    .UseBooleanContainer()
-                )
+            .ConfigureBackend(StorageBackendOptions.Use(StorageBackends.Json))
+            .ConfigureProperty(
+                x => x.EnableAllGames,
+                new PropertyOptions<ExperimentalSettings, bool>
+                {
+                    Section = Sections.Experimental,
+                    DisplayName = "Enable unsupported games",
+                    DescriptionFactory = _ => "Allows you to manage unsupported games.",
+                    RequiresRestart = true,
+                },
+                new BooleanContainerOptions()
+            )
+            .ConfigureProperty(
+                x => x.EnableCollectionSharing,
+                new PropertyOptions<ExperimentalSettings, bool>
+                {
+                    Section = Sections.Experimental,
+                    DisplayName = "Enable sharing collections",
+                    DescriptionFactory = _ => "Allows uploading of collections",
+                },
+                new BooleanContainerOptions()
             );
     }
 }

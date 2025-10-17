@@ -98,7 +98,13 @@
                               ShowColumnHeaders="True"
                               CanUserResizeColumns="True"
                               CanUserSortColumns="True"
-                              Classes="MainListsStyling" />
+                              Classes="MainListsStyling" >
+                    <TreeDataGrid.Styles>
+                        <Style Selector="TreeDataGridRow">
+                            <Setter Property="ContextFlyout" Value="{StaticResource LoadoutItemMenuFlyout}" />
+                        </Style>
+                    </TreeDataGrid.Styles>
+                </TreeDataGrid>
             </Border>
         </DockPanel>
     </reactive:ReactiveUserControl.Resources>

@@ -10,10 +10,6 @@
                            Width="1232" Height="672"
                            Classes="Dialog WithDecorations">
 
-    <Design.DataContext>
-        <ui:AdvancedInstallerWindowDesignViewModel />
-    </Design.DataContext>
-
     <Border>
         <reactiveUi:ViewModelViewHost x:Name="CurrentPage" />
     </Border>

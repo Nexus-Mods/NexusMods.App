@@ -1,7 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.Settings;
+using NexusMods.Sdk.Settings;
 using NexusMods.Games.RedEngine.Cyberpunk2077;
 using NexusMods.Games.RedEngine.Cyberpunk2077.Models;
 using NexusMods.Games.RedEngine.Cyberpunk2077.SortOrder;
@@ -18,10 +18,9 @@ public static class Services
             .AddRedModLoadoutGroupModel()
             .AddRedModSortOrderItemModel()
             .AddRedModQueriesSql()
+            .AddSingleton<RedModSortOrderVariety, RedModSortOrderVariety>()
             .AddSingleton<ITool, RunCyberpunk2077Game>()
             .AddSingleton<ITool, RedModDeployTool>()
-            .AddSingleton<RedModSortableItemProviderFactory>()
-
             // Diagnostics
             
             

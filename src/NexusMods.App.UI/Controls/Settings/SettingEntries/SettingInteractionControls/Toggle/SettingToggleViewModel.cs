@@ -1,6 +1,8 @@
 using System.Reactive.Disposables;
-using NexusMods.Abstractions.Settings;
-using NexusMods.Abstractions.UI;
+using JetBrains.Annotations;
+using NexusMods.Sdk.Settings;
+using NexusMods.UI.Sdk;
+using NexusMods.UI.Sdk.Settings;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -10,7 +12,7 @@ public class SettingToggleViewModel : AViewModel<ISettingToggleViewModel>, ISett
 {
     public BooleanContainer BooleanContainer { get; }
 
-    public IValueContainer ValueContainer => BooleanContainer;
+    public IPropertyValueContainer ValueContainer => BooleanContainer;
 
     [Reactive] public bool HasChanged { get; private set;  }
 
@@ -24,5 +26,20 @@ public class SettingToggleViewModel : AViewModel<ISettingToggleViewModel>, ISett
                 .BindToVM(this, vm => vm.HasChanged)
                 .DisposeWith(disposables);
         });
+    }
+}
+
+[UsedImplicitly]
+public class SettingToggleFactory : IInteractionControlFactory<BooleanContainerOptions>
+{
+    public IInteractionControl Create(IServiceProvider serviceProvider, ISettingsManager settingsManager, BooleanContainerOptions containerOptions, PropertyConfig propertyConfig)
+    {
+        return new SettingToggleViewModel(
+            new BooleanContainer(
+                value: propertyConfig.GetValueCasted<bool>(settingsManager),
+                defaultValue: propertyConfig.GetDefaultValueCasted<bool>(settingsManager),
+                config: propertyConfig
+            )
+        );
     }
 }

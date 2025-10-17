@@ -1,11 +1,11 @@
 using DynamicData.Kernel;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.HttpDownloads;
-using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Paths;
+using NexusMods.Sdk.Jobs;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 

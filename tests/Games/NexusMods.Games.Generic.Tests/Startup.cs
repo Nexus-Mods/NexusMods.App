@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Games;
+using NexusMods.Backend;
 using NexusMods.Games.TestFramework;
 using NexusMods.Sdk;
 
@@ -14,6 +15,7 @@ public class Startup
             .AddDefaultServicesForTesting()
             .AddLogging(builder => builder.AddXUnit())
             .AddGames()
+            .AddGameServices()
             .Validate();
     }
 }

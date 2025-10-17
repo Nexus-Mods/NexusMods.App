@@ -1,5 +1,5 @@
 using JetBrains.Annotations;
-using NexusMods.Abstractions.Settings;
+using NexusMods.Sdk.Settings;
 
 namespace NexusMods.Abstractions.Diagnostics;
 
@@ -17,29 +17,29 @@ public class DiagnosticSettings : ISettings
     /// <inheritdoc/>
     public static ISettingsBuilder Configure(ISettingsBuilder settingsBuilder)
     {
-        var sectionId = Sections.General;
-
-        return settingsBuilder.AddToUI<DiagnosticSettings>(builder => builder
-            .AddPropertyToUI(x => x.MinimumSeverity, propertyBuilder => propertyBuilder
-                .AddToSection(sectionId)
-                .WithDisplayName("Health Check sensitivity")
-                .WithDescription("Set the minimum severity for Health Check diagnostics. You will not be notified about diagnostics with a severity lower than the selected level.")
-                .UseSingleValueMultipleChoiceContainer(
-                    valueComparer: EqualityComparer<DiagnosticSeverity>.Default,
-                    allowedValues: [
-                        DiagnosticSeverity.Suggestion,
-                        DiagnosticSeverity.Warning,
-                        DiagnosticSeverity.Critical,
-                    ],
-                    valueToDisplayString: static severity => severity switch
-                    {
-                        // TODO: translate
-                        DiagnosticSeverity.Suggestion => "Suggestion",
-                        DiagnosticSeverity.Warning => "Warning",
-                        DiagnosticSeverity.Critical => "Critical",
-                        _ => $"Unknown: {severity}",
-                    }
-                )
+        return settingsBuilder.ConfigureProperty(
+            x => x.MinimumSeverity,
+            new PropertyOptions<DiagnosticSettings, DiagnosticSeverity>
+            {
+                Section = Sections.General,
+                DisplayName = "Health Check sensitivity",
+                DescriptionFactory = _ => "Set the minimum severity for Health Check diagnostics. You will not be notified about diagnostics with a severity lower than the selected level.",
+            },
+            SingleValueMultipleChoiceContainerOptions.Create<DiagnosticSeverity>(
+                valueComparer: EqualityComparer<DiagnosticSeverity>.Default,
+                allowedValues: [
+                    DiagnosticSeverity.Suggestion,
+                    DiagnosticSeverity.Warning,
+                    DiagnosticSeverity.Critical,
+                ],
+                valueToDisplayString: static severity => severity switch
+                {
+                    // TODO: translate
+                    DiagnosticSeverity.Suggestion => "Suggestion",
+                    DiagnosticSeverity.Warning => "Warning",
+                    DiagnosticSeverity.Critical => "Critical",
+                    _ => $"Unknown: {severity}",
+                }
             )
         );
     }

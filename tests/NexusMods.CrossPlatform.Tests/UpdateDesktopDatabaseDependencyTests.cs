@@ -1,5 +1,5 @@
 using FluentAssertions;
-using NexusMods.CrossPlatform.Process;
+using NexusMods.Backend.RuntimeDependency;
 
 namespace NexusMods.CrossPlatform.Tests;
 

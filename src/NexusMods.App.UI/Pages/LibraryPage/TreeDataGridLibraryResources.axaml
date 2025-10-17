@@ -5,6 +5,137 @@
                     xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
                     xmlns:abstractions="clr-namespace:NexusMods.MnemonicDB.Abstractions;assembly=NexusMods.MnemonicDB.Abstractions"
                     xmlns:resources="clr-namespace:NexusMods.App.UI.Resources">
+    
+    
+    <!-- LibraryItemMenuFlyout - Reusable MenuFlyout for library items -->
+    <MenuFlyout x:Key="LibraryItemMenuFlyout" FlyoutPresenterClasses="TreeDataGridMenu"
+                x:DataType="{x:Type controls:CompositeItemModel, x:TypeArguments=abstractions:EntityId}">
+        
+        <!-- Update (and Replace) -->
+        <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
+            <controls:ComponentControl.ComponentTemplate>
+                <controls:ComponentTemplate x:TypeArguments="local:LibraryComponents+UpdateAction"
+                                            ComponentKey="{x:Static local:LibraryColumns+Actions.UpdateComponentKey}">
+                    <controls:ComponentTemplate.DataTemplate>
+                        <DataTemplate DataType="{x:Type local:LibraryComponents+UpdateAction}">
+                            <MenuItem Header="{CompiledBinding UpdateButtonText.Value}"
+                                      Command="{CompiledBinding CommandUpdateAndReplace}"
+                                      ToolTip.Tip="{x:Static resources:Language.Library_UpdateModAndReplace_ToolTip}">
+                                <MenuItem.Icon>
+                                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.Download}" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                        </DataTemplate>
+                    </controls:ComponentTemplate.DataTemplate>
+                </controls:ComponentTemplate>
+            </controls:ComponentControl.ComponentTemplate>
+        </controls:ComponentControl>
+        
+        <!-- Update and Keep Old Mod -->
+        <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
+            <controls:ComponentControl.ComponentTemplate>
+                <controls:ComponentTemplate x:TypeArguments="local:LibraryComponents+UpdateAction"
+                                            ComponentKey="{x:Static local:LibraryColumns+Actions.UpdateComponentKey}">
+                    <controls:ComponentTemplate.DataTemplate>
+                        <DataTemplate DataType="{x:Type local:LibraryComponents+UpdateAction}">
+                            <MenuItem Header="{CompiledBinding UpdateAndKeepOldModButtonText.Value}"
+                                      Command="{CompiledBinding CommandUpdateAndKeepOld}">
+                                <MenuItem.Icon>
+                                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.Download}" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                        </DataTemplate>
+                    </controls:ComponentTemplate.DataTemplate>
+                </controls:ComponentTemplate>
+            </controls:ComponentControl.ComponentTemplate>
+        </controls:ComponentControl>
+
+        <!-- Hide Updates -->
+        <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
+            <controls:ComponentControl.ComponentTemplate>
+                <controls:ComponentTemplate x:TypeArguments="local:LibraryComponents+HideUpdatesAction"
+                                            ComponentKey="{x:Static local:LibraryColumns+Actions.HideUpdatesComponentKey}">
+                    <controls:ComponentTemplate.DataTemplate>
+                        <DataTemplate DataType="{x:Type local:LibraryComponents+HideUpdatesAction}">
+                            <MenuItem Header="{CompiledBinding ButtonText.Value}"
+                                      Command="{CompiledBinding CommandHideUpdates}"
+                                      IsEnabled="{CompiledBinding IsEnabled.Value}"
+                                      IsVisible="{CompiledBinding IsVisible.Value}">
+                                <MenuItem.Icon>
+                                    <icons:UnifiedIcon Value="{CompiledBinding Icon.Value}" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                        </DataTemplate>
+                    </controls:ComponentTemplate.DataTemplate>
+                </controls:ComponentTemplate>
+            </controls:ComponentControl.ComponentTemplate>
+        </controls:ComponentControl>
+
+        <!-- View Changelog -->
+        <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
+            <controls:ComponentControl.ComponentTemplate>
+                <controls:ComponentTemplate
+                    x:TypeArguments="local:LibraryComponents+ViewChangelogAction"
+                    ComponentKey="{x:Static local:LibraryColumns+Actions.ViewChangelogComponentKey}">
+                    <controls:ComponentTemplate.DataTemplate>
+                        <DataTemplate DataType="{x:Type local:LibraryComponents+ViewChangelogAction}">
+                            <MenuItem Header="{x:Static resources:Language.Library_ViewChangelog_Text}"
+                                      Command="{CompiledBinding CommandViewChangelog}"
+                                      IsEnabled="{CompiledBinding IsEnabled.Value}">
+                                <MenuItem.Icon>
+                                    <icons:UnifiedIcon
+                                        Value="{x:Static icons:IconValues.FileDocumentOutline}" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                        </DataTemplate>
+                    </controls:ComponentTemplate.DataTemplate>
+                </controls:ComponentTemplate>
+            </controls:ComponentControl.ComponentTemplate>
+        </controls:ComponentControl>
+
+        <Separator/>
+
+        <!-- View Mod Page -->
+        <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
+            <controls:ComponentControl.ComponentTemplate>
+                <controls:ComponentTemplate x:TypeArguments="controls:SharedComponents+ViewModPageAction"
+                                            ComponentKey="{x:Static local:LibraryColumns+Actions.ViewModPageComponentKey}">
+                    <controls:ComponentTemplate.DataTemplate>
+                        <DataTemplate DataType="{x:Type controls:SharedComponents+ViewModPageAction}">
+                            <MenuItem Header="{x:Static resources:Language.Library_ViewModPage_Text}"
+                                      Command="{CompiledBinding CommandViewModPage}"
+                                      IsEnabled="{CompiledBinding IsEnabled.Value}">
+                                <MenuItem.Icon>
+                                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.OpenInNew}" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                        </DataTemplate>
+                    </controls:ComponentTemplate.DataTemplate>
+                </controls:ComponentTemplate>
+            </controls:ComponentControl.ComponentTemplate>
+        </controls:ComponentControl>
+        
+        <!-- Delete item -->
+        <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
+            <controls:ComponentControl.ComponentTemplate>
+                <controls:ComponentTemplate x:TypeArguments="local:LibraryComponents+DeleteItemAction"
+                                            ComponentKey="{x:Static local:LibraryColumns+Actions.DeleteItemComponentKey}">
+                    <controls:ComponentTemplate.DataTemplate>
+                        <DataTemplate DataType="{x:Type local:LibraryComponents+DeleteItemAction}">
+                            <MenuItem Header="{x:Static resources:Language.Library_DeleteItem_Text}"
+                                      Command="{CompiledBinding CommandDeleteItem}"
+                                      IsEnabled="{CompiledBinding IsEnabled.Value}">
+                                <MenuItem.Icon>
+                                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.DeleteOutline}" Classes="Critical"/>
+                                </MenuItem.Icon>
+                            </MenuItem>
+                        </DataTemplate>
+                    </controls:ComponentTemplate.DataTemplate>
+                </controls:ComponentTemplate>
+            </controls:ComponentControl.ComponentTemplate>
+        </controls:ComponentControl>
+        
+    </MenuFlyout>
 
     <!-- Downloaded Date -->
     <DataTemplate x:Key="{x:Static local:LibraryColumns+DownloadedDate.ColumnTemplateResourceKey}">
@@ -191,138 +322,8 @@
                 LeftIcon="{x:Static icons:IconValues.MoreVertical}"
                 ShowIcon="Left"
                 ShowLabel="False"
-                Fill="None">
-                <controls:StandardButton.Flyout>
-
-                    <MenuFlyout FlyoutPresenterClasses="TreeDataGridMenu">
-                        
-                        <!-- Update (and Replace) -->
-                        <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
-                            <controls:ComponentControl.ComponentTemplate>
-                                <controls:ComponentTemplate x:TypeArguments="local:LibraryComponents+UpdateAction"
-                                                            ComponentKey="{x:Static local:LibraryColumns+Actions.UpdateComponentKey}">
-                                    <controls:ComponentTemplate.DataTemplate>
-                                        <DataTemplate DataType="{x:Type local:LibraryComponents+UpdateAction}">
-                                            <MenuItem Header="{CompiledBinding UpdateButtonText.Value}"
-                                                      Command="{CompiledBinding CommandUpdateAndReplace}"
-                                                      ToolTip.Tip="{x:Static resources:Language.Library_UpdateModAndReplace_ToolTip}">
-                                                <MenuItem.Icon>
-                                                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.Download}" />
-                                                </MenuItem.Icon>
-                                            </MenuItem>
-                                        </DataTemplate>
-                                    </controls:ComponentTemplate.DataTemplate>
-                                </controls:ComponentTemplate>
-                            </controls:ComponentControl.ComponentTemplate>
-                        </controls:ComponentControl>
-                        
-                        <!-- Update and Keep Old Mod -->
-                        <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
-                            <controls:ComponentControl.ComponentTemplate>
-                                <controls:ComponentTemplate x:TypeArguments="local:LibraryComponents+UpdateAction"
-                                                            ComponentKey="{x:Static local:LibraryColumns+Actions.UpdateComponentKey}">
-                                    <controls:ComponentTemplate.DataTemplate>
-                                        <DataTemplate DataType="{x:Type local:LibraryComponents+UpdateAction}">
-                                            <MenuItem Header="{CompiledBinding UpdateAndKeepOldModButtonText.Value}"
-                                                      Command="{CompiledBinding CommandUpdateAndKeepOld}">
-                                                <MenuItem.Icon>
-                                                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.Download}" />
-                                                </MenuItem.Icon>
-                                            </MenuItem>
-                                        </DataTemplate>
-                                    </controls:ComponentTemplate.DataTemplate>
-                                </controls:ComponentTemplate>
-                            </controls:ComponentControl.ComponentTemplate>
-                        </controls:ComponentControl>
-
-                        <!-- Hide Updates -->
-                        <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
-                            <controls:ComponentControl.ComponentTemplate>
-                                <controls:ComponentTemplate x:TypeArguments="local:LibraryComponents+HideUpdatesAction"
-                                                            ComponentKey="{x:Static local:LibraryColumns+Actions.HideUpdatesComponentKey}">
-                                    <controls:ComponentTemplate.DataTemplate>
-                                        <DataTemplate DataType="{x:Type local:LibraryComponents+HideUpdatesAction}">
-                                            <MenuItem Header="{CompiledBinding ButtonText.Value}"
-                                                      Command="{CompiledBinding CommandHideUpdates}"
-                                                      IsEnabled="{CompiledBinding IsEnabled.Value}"
-                                                      IsVisible="{CompiledBinding IsVisible.Value}">
-                                                <MenuItem.Icon>
-                                                    <icons:UnifiedIcon Value="{CompiledBinding Icon.Value}" />
-                                                </MenuItem.Icon>
-                                            </MenuItem>
-                                        </DataTemplate>
-                                    </controls:ComponentTemplate.DataTemplate>
-                                </controls:ComponentTemplate>
-                            </controls:ComponentControl.ComponentTemplate>
-                        </controls:ComponentControl>
-
-                        <!-- View Changelog -->
-                        <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
-                            <controls:ComponentControl.ComponentTemplate>
-                                <controls:ComponentTemplate
-                                    x:TypeArguments="local:LibraryComponents+ViewChangelogAction"
-                                    ComponentKey="{x:Static local:LibraryColumns+Actions.ViewChangelogComponentKey}">
-                                    <controls:ComponentTemplate.DataTemplate>
-                                        <DataTemplate DataType="{x:Type local:LibraryComponents+ViewChangelogAction}">
-                                            <MenuItem Header="{x:Static resources:Language.Library_ViewChangelog_Text}"
-                                                      Command="{CompiledBinding CommandViewChangelog}"
-                                                      IsEnabled="{CompiledBinding IsEnabled.Value}">
-                                                <MenuItem.Icon>
-                                                    <icons:UnifiedIcon
-                                                        Value="{x:Static icons:IconValues.FileDocumentOutline}" />
-                                                </MenuItem.Icon>
-                                            </MenuItem>
-                                        </DataTemplate>
-                                    </controls:ComponentTemplate.DataTemplate>
-                                </controls:ComponentTemplate>
-                            </controls:ComponentControl.ComponentTemplate>
-                        </controls:ComponentControl>
-
-                        <Separator/>
-
-                        <!-- View Mod Page -->
-                        <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
-                            <controls:ComponentControl.ComponentTemplate>
-                                <controls:ComponentTemplate x:TypeArguments="controls:SharedComponents+ViewModPageAction"
-                                                            ComponentKey="{x:Static local:LibraryColumns+Actions.ViewModPageComponentKey}">
-                                    <controls:ComponentTemplate.DataTemplate>
-                                        <DataTemplate DataType="{x:Type controls:SharedComponents+ViewModPageAction}">
-                                            <MenuItem Header="{x:Static resources:Language.Library_ViewModPage_Text}"
-                                                      Command="{CompiledBinding CommandViewModPage}"
-                                                      IsEnabled="{CompiledBinding IsEnabled.Value}">
-                                                <MenuItem.Icon>
-                                                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.OpenInNew}" />
-                                                </MenuItem.Icon>
-                                            </MenuItem>
-                                        </DataTemplate>
-                                    </controls:ComponentTemplate.DataTemplate>
-                                </controls:ComponentTemplate>
-                            </controls:ComponentControl.ComponentTemplate>
-                        </controls:ComponentControl>
-                        
-                        <!-- Delete item -->
-                        <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
-                            <controls:ComponentControl.ComponentTemplate>
-                                <controls:ComponentTemplate x:TypeArguments="local:LibraryComponents+DeleteItemAction"
-                                                            ComponentKey="{x:Static local:LibraryColumns+Actions.DeleteItemComponentKey}">
-                                    <controls:ComponentTemplate.DataTemplate>
-                                        <DataTemplate DataType="{x:Type local:LibraryComponents+DeleteItemAction}">
-                                            <MenuItem Header="{x:Static resources:Language.Library_DeleteItem_Text}"
-                                                      Command="{CompiledBinding CommandDeleteItem}"
-                                                      IsEnabled="{CompiledBinding IsEnabled.Value}">
-                                                <MenuItem.Icon>
-                                                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.DeleteOutline}" Classes="Critical"/>
-                                                </MenuItem.Icon>
-                                            </MenuItem>
-                                        </DataTemplate>
-                                    </controls:ComponentTemplate.DataTemplate>
-                                </controls:ComponentTemplate>
-                            </controls:ComponentControl.ComponentTemplate>
-                        </controls:ComponentControl>
-                        
-                    </MenuFlyout>
-                    
-                </controls:StandardButton.Flyout>
+                Fill="None"
+                Flyout="{StaticResource LibraryItemMenuFlyout}">
             </controls:StandardButton>
 
 

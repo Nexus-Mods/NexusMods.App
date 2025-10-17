@@ -1,7 +1,8 @@
+using FluentAssertions;
+using NexusMods.Backend.OS;
+
 namespace NexusMods.CrossPlatform.Tests;
 
-using FluentAssertions;
-using ProtocolRegistration;
 using Xunit;
 
 public class ProtocolRegistrationLinuxTests
@@ -28,8 +29,8 @@ public class ProtocolRegistrationLinuxTests
     public void EscapeDesktopFilePath_ShouldEscapeCorrectly(string input, string expected)
     {
         // Act
-        var result = ProtocolRegistrationLinux.EscapeDesktopFilePath(input);
-        
+        var result = LinuxInterop.EscapeDesktopFilePath(input);
+
         // Assert
         result.Should().Be(expected);
     }
@@ -136,7 +137,7 @@ $
     public void EscapeDesktopExecFilePath_ShouldEscapeCorrectly(string input, string expected)
     {
         // Act
-        var result = ProtocolRegistrationLinux.EscapeDesktopExecFilePath(input);
+        var result = LinuxInterop.EscapeDesktopExecFilePath(input);
         
         // Assert
         result.Should().Be(expected);

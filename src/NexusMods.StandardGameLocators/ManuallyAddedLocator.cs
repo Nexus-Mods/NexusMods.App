@@ -68,7 +68,7 @@ public class ManuallyAddedLocator : IGameLocator
     }
 
     /// <inheritdoc />
-    public IEnumerable<GameLocatorResult> Find(ILocatableGame game)
+    public IEnumerable<GameLocatorResult> Find(ILocatableGame game, bool forceRefreshCache = false)
     {
         var games = ManuallyAddedGame.FindByGameId(_conn.Value.Db, game.GameId)
             .Select(g => new GameLocatorResult(_fileSystem.FromUnsanitizedFullPath(g.Path), _fileSystem,

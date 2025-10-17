@@ -1,27 +1,27 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using NexusMods.CrossPlatform.ProtocolRegistration;
+using NexusMods.Sdk;
 
 namespace NexusMods.Networking.NexusWebApi;
 
 internal class HandlerRegistration : BackgroundService
 {
     private readonly ILogger _logger;
-    private readonly IProtocolRegistration _protocolRegistration;
+    private readonly IOSInterop _osInterop;
 
     public HandlerRegistration(
         ILogger<HandlerRegistration> logger,
-        IProtocolRegistration protocolRegistration)
+        IOSInterop osInterop)
     {
         _logger = logger;
-        _protocolRegistration = protocolRegistration;
+        _osInterop = osInterop;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         try
         {
-            await _protocolRegistration.RegisterHandler(uriScheme: "nxm", cancellationToken: stoppingToken);
+            await _osInterop.RegisterUriSchemeHandler(scheme: "nxm", cancellationToken: stoppingToken);
         }
         catch (Exception e)
         {

@@ -1,4 +1,5 @@
 using JetBrains.Annotations;
+using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.GameLocators.GameCapabilities;
@@ -28,16 +29,16 @@ public class Cyberpunk2077Game : AGame, ISteamGame, IGogGame //, IEpicGame
     public static GameId GameIdStatic => GameId.From(3333);
     private readonly IServiceProvider _serviceProvider;
     private readonly IConnection _connection;
-    private ISortableItemProviderFactory[] _sortableItemProviderFactories;
+    private ISortOrderVariety[] _sortOrderVarieties = [];
 
-    public Cyberpunk2077Game(IServiceProvider provider, IConnection connection, RedModSortableItemProviderFactory redModSortableProviderFactory) : base(provider)
+    public Cyberpunk2077Game(IServiceProvider provider, IConnection connection) : base(provider)
     {
         _serviceProvider = provider;
         _connection = connection;
-        
-        _sortableItemProviderFactories =
+
+        _sortOrderVarieties =
         [
-            redModSortableProviderFactory,
+            provider.GetRequiredService<RedModSortOrderVariety>(),
         ];
     }
 
@@ -101,7 +102,11 @@ public class Cyberpunk2077Game : AGame, ISteamGame, IGogGame //, IEpicGame
         new WinePrefixRequirementsEmitter(),
     ];
 
-    public override ISortableItemProviderFactory[] SortableItemProviderFactories => _sortableItemProviderFactories;
+    /// <inheritdoc />
+    protected override ISortOrderVariety[] GetSortOrderVarieties()
+    {
+        return _sortOrderVarieties;
+    }
     
     /// <inheritdoc />
     public override ILibraryItemInstaller[] LibraryItemInstallers =>

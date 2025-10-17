@@ -1,5 +1,5 @@
-using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls.MarkdownRenderer;
+using NexusMods.UI.Sdk;
 using NexusMods.UI.Sdk.Icons;
 
 namespace NexusMods.App.UI.Dialog;

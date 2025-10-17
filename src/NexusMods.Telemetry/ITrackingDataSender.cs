@@ -6,6 +6,7 @@ namespace NexusMods.Telemetry;
 /// Interface for sending tracking data.
 /// </summary>
 [PublicAPI]
+[Obsolete]
 public interface ITrackingDataSender
 {
     /// <summary>

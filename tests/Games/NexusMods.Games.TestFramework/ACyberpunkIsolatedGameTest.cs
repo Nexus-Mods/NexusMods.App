@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Backend;
 using NexusMods.CrossPlatform;
 using NexusMods.Games.Generic;
 using NexusMods.Games.RedEngine;
@@ -16,7 +17,8 @@ public class ACyberpunkIsolatedGameTest<TTest>(ITestOutputHelper helper) : AIsol
     protected override IServiceCollection AddServices(IServiceCollection services)
     {
         return base.AddServices(services)
-            .AddCrossPlatform()
+            .AddOSInterop()
+            .AddRuntimeDependencies()
             .AddGenericGameSupport()
             .AddUniversalGameLocator<Cyberpunk2077Game>(new Version("1.61"))
             .AddRedEngineGames();

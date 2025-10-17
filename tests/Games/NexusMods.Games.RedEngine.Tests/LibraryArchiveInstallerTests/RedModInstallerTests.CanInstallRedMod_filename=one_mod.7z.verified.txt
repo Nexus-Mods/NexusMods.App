@@ -1,41 +1,5 @@
-﻿+ | 0200000000000000 | Timestamp                | DateTime : 0                                     | 0200000000000000
-+ | 0200000000000001 | Group                    | Null                                             | 0200000000000000
-+ | 0200000000000001 | Loadout                  | 0200000000000002                                 | 0200000000000000
-+ | 0200000000000001 | Name                     | one_mod.7z                                       | 0200000000000000
-+ | 0200000000000003 | Group                    | Null                                             | 0200000000000000
-+ | 0200000000000003 | Loadout                  | 0200000000000002                                 | 0200000000000000
-+ | 0200000000000003 | Name                     | Driver_Shotgun                                   | 0200000000000000
-+ | 0200000000000003 | Parent                   | 0200000000000001                                 | 0200000000000000
-+ | 0200000000000003 | RedModInfoFile           | 0200000000000004                                 | 0200000000000000
-+ | 0200000000000004 | Hash                     | 0x1243BB4EC47FF7D7                               | 0200000000000000
-+ | 0200000000000004 | Loadout                  | 0200000000000002                                 | 0200000000000000
-+ | 0200000000000004 | Name                     | Driver_Shotgun                                   | 0200000000000000
-+ | 0200000000000004 | Name                     | info.json                                        | 0200000000000000
-+ | 0200000000000004 | Parent                   | 0200000000000003                                 | 0200000000000000
-+ | 0200000000000004 | Size                     | 80 B                                             | 0200000000000000
-+ | 0200000000000004 | TargetPath               | (0200000000000002, Game, mods/Driver_Shotguns/info.json) | 0200000000000000
-+ | 0200000000000004 | Version                  | 1.0.0                                            | 0200000000000000
-+ | 0200000000000005 | Hash                     | 0xD0BF0295B8C34F05                               | 0200000000000000
-+ | 0200000000000005 | Loadout                  | 0200000000000002                                 | 0200000000000000
-+ | 0200000000000005 | Name                     | base_crusher.tweak                               | 0200000000000000
-+ | 0200000000000005 | Parent                   | 0200000000000003                                 | 0200000000000000
-+ | 0200000000000005 | Size                     | 128 B                                            | 0200000000000000
-+ | 0200000000000005 | TargetPath               | (0200000000000002, Game, mods/Driver_Shotguns/tweaks/base/gameplay/static_data/database/items/weapons/ranged/revolvers/crusher/base_crusher.tweak) | 0200000000000000
-+ | 0200000000000006 | Hash                     | 0xF4DB695F8D74F188                               | 0200000000000000
-+ | 0200000000000006 | Loadout                  | 0200000000000002                                 | 0200000000000000
-+ | 0200000000000006 | Name                     | base_pozhar.tweak                                | 0200000000000000
-+ | 0200000000000006 | Parent                   | 0200000000000003                                 | 0200000000000000
-+ | 0200000000000006 | Size                     | 128 B                                            | 0200000000000000
-+ | 0200000000000006 | TargetPath               | (0200000000000002, Game, mods/Driver_Shotguns/tweaks/base/gameplay/static_data/database/items/weapons/ranged/rifles/pozhar/base_pozhar.tweak) | 0200000000000000
-+ | 0200000000000007 | Hash                     | 0xC3C61C89EDA96DF8                               | 0200000000000000
-+ | 0200000000000007 | Loadout                  | 0200000000000002                                 | 0200000000000000
-+ | 0200000000000007 | Name                     | base_igla.tweak                                  | 0200000000000000
-+ | 0200000000000007 | Parent                   | 0200000000000003                                 | 0200000000000000
-+ | 0200000000000007 | Size                     | 128 B                                            | 0200000000000000
-+ | 0200000000000007 | TargetPath               | (0200000000000002, Game, mods/Driver_Shotguns/tweaks/base/gameplay/static_data/database/items/weapons/ranged/shotguns/igla/base_igla.tweak) | 0200000000000000
-+ | 0200000000000008 | Hash                     | 0x75BB8350229FA0F3                               | 0200000000000000
-+ | 0200000000000008 | Loadout                  | 0200000000000002                                 | 0200000000000000
-+ | 0200000000000008 | Name                     | base_satara.tweak                                | 0200000000000000
-+ | 0200000000000008 | Parent                   | 0200000000000003                                 | 0200000000000000
-+ | 0200000000000008 | Size                     | 128 B                                            | 0200000000000000
-+ | 0200000000000008 | TargetPath               | (0200000000000002, Game, mods/Driver_Shotguns/tweaks/base/gameplay/static_data/database/items/weapons/ranged/shotguns/satara/base_satara.tweak) | 0200000000000000
+﻿0x1243BB4EC47FF7D7 - 80 B: mods/Driver_Shotguns/info.json -> {Game}/mods/Driver_Shotguns/info.json
+0xD0BF0295B8C34F05 - 128 B: mods/Driver_Shotguns/tweaks/base/gameplay/static_data/database/items/weapons/ranged/revolvers/crusher/base_crusher.tweak -> {Game}/mods/Driver_Shotguns/tweaks/base/gameplay/static_data/database/items/weapons/ranged/revolvers/crusher/base_crusher.tweak
+0xF4DB695F8D74F188 - 128 B: mods/Driver_Shotguns/tweaks/base/gameplay/static_data/database/items/weapons/ranged/rifles/pozhar/base_pozhar.tweak -> {Game}/mods/Driver_Shotguns/tweaks/base/gameplay/static_data/database/items/weapons/ranged/rifles/pozhar/base_pozhar.tweak
+0xC3C61C89EDA96DF8 - 128 B: mods/Driver_Shotguns/tweaks/base/gameplay/static_data/database/items/weapons/ranged/shotguns/igla/base_igla.tweak -> {Game}/mods/Driver_Shotguns/tweaks/base/gameplay/static_data/database/items/weapons/ranged/shotguns/igla/base_igla.tweak
+0x75BB8350229FA0F3 - 128 B: mods/Driver_Shotguns/tweaks/base/gameplay/static_data/database/items/weapons/ranged/shotguns/satara/base_satara.tweak -> {Game}/mods/Driver_Shotguns/tweaks/base/gameplay/static_data/database/items/weapons/ranged/shotguns/satara/base_satara.tweak

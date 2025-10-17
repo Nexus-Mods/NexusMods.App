@@ -1,7 +1,8 @@
 using System.Reactive.Linq;
 using DynamicData;
 using NexusMods.Abstractions.Games;
-using NexusMods.Abstractions.Jobs;
+using NexusMods.Sdk.Jobs;
+
 namespace NexusMods.App.UI;
 
 /// <summary>

@@ -1,0 +1,18 @@
+﻿using NexusMods.Abstractions.FileExtractor;
+using NexusMods.Sdk.Settings;
+using NexusMods.Paths;
+using NexusMods.Sdk.FileExtractor;
+
+namespace NexusMods.FileExtractor;
+
+/// <summary>
+/// Variation of <see cref="TemporaryFileManager"/> with support for injecting settings via DI.
+/// </summary>
+internal class TemporaryFileManagerEx : TemporaryFileManager
+{
+    public TemporaryFileManagerEx(IFileSystem fileSystem, ISettingsManager settingsManager)
+        : base(
+            fileSystem,
+            basePath: settingsManager.Get<FileExtractorSettings>().TempFolderLocation.ToPath(fileSystem)
+        ) { }
+}

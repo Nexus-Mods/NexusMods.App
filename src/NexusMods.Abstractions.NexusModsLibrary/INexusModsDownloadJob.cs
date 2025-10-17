@@ -1,7 +1,7 @@
 using NexusMods.Abstractions.Downloads;
 using NexusMods.Abstractions.HttpDownloads;
-using NexusMods.Abstractions.Jobs;
 using NexusMods.Paths;
+using NexusMods.Sdk.Jobs;
 
 namespace NexusMods.Abstractions.NexusModsLibrary;
 

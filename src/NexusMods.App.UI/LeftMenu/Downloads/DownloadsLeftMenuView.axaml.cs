@@ -20,9 +20,6 @@ public partial class DownloadsLeftMenuView : ReactiveUserControl<IDownloadsLeftM
             
             this.OneWayBind(ViewModel, vm => vm.LeftMenuItemsPerGameDownloads, view => view.PerGameDownloadsItemsControl.ItemsSource)
                 .DisposeWith(d);
-            
-            this.OneWayBind(ViewModel, vm => vm.LeftMenuItemAllCompleted, view => view.AllCompletedItem.ViewModel)
-                .DisposeWith(d);
         });
     }
 }

@@ -30,7 +30,7 @@ public class UniversalStubbedGameLocator<TGame> : IGameLocator, IDisposable
         }
     }
 
-    public IEnumerable<GameLocatorResult> Find(ILocatableGame game)
+    public IEnumerable<GameLocatorResult> Find(ILocatableGame game, bool forceRefreshCache = false)
     {
         if (game is not TGame)
             yield break;

@@ -12,7 +12,7 @@ public class RelativePathConverter : JsonConverter<RelativePath>
     public override RelativePath ReadAsPropertyName(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         var path = reader.GetString();
-        if (path is null) throw new JsonException();
+        if (path is null) return RelativePath.Empty;
 
         return path;
     }
@@ -27,7 +27,7 @@ public class RelativePathConverter : JsonConverter<RelativePath>
     public override RelativePath Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         var path = reader.GetString();
-        if (path is null) throw new JsonException();
+        if (path is null) return RelativePath.Empty;
 
         return path;
     }

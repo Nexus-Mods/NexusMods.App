@@ -4,12 +4,14 @@ using NexusMods.Abstractions.Cli;
 using NexusMods.Abstractions.FileExtractor;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.Settings;
+using NexusMods.Sdk.Settings;
 using NexusMods.CrossPlatform;
 using NexusMods.DataModel;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
+using NexusMods.Sdk.FileExtractor;
 using NexusMods.Sdk.ProxyConsole;
+using NexusMods.Sdk.Tracking;
 
 namespace NexusMods.App.Commandline;
 
@@ -28,8 +30,11 @@ internal static class CleanupVerbs
         [Injected] IRenderer renderer,
         [Injected] IConnection conn,
         [Injected] ISettingsManager settingsManager,
-        [Injected] IFileSystem fileSystem)
+        [Injected] IFileSystem fileSystem,
+        [Injected] ISynchronizerService syncService)
     {
+        Events.AppUninstalled();
+
         // Step 1: Revert the managed games to their original state
         var db = conn.Db;
         var managedInstallations = Loadout.All(db)
@@ -40,8 +45,7 @@ internal static class CleanupVerbs
         {
             try
             {
-                var synchronizer = installation.GetGame().Synchronizer;
-                await synchronizer.UnManage(installation, false);
+                await syncService.UnManage(installation, false);
                 await renderer.Text($"Reverted {installation.Game.Name} to its original state");
             }
             catch (Exception ex)
@@ -76,10 +80,6 @@ internal static class CleanupVerbs
                 dataModelSettings.MnemonicDBPath.ToPath(fileSystem),
                 fileExtractorSettings.TempFolderLocation.ToPath(fileSystem),
                 LoggingSettings.GetLogBaseFolder(OSInformation.Shared, fileSystem),
-
-                // Note: This references backend directly in case we ever have
-                // switching backends out. At that point you'd add others here too.
-                JsonStorageBackend.GetConfigsFolderPath(fileSystem),
 
                 // The DataModel folder.
                 DataModelSettings.GetStandardDataModelFolder(fileSystem),

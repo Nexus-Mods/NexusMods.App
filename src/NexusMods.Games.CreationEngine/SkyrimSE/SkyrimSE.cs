@@ -48,10 +48,14 @@ public partial class SkyrimSE : AGame, ISteamGame, IGogGame, ICreationEngineGame
 
     protected override IReadOnlyDictionary<LocationId, AbsolutePath> GetLocations(IFileSystem fileSystem, GameLocatorResult installation)
     {
+        string postfix = "";
+        if (installation.Store == GameStore.GOG)
+            postfix = " GOG";
         return new Dictionary<LocationId, AbsolutePath>()
         {
             { LocationId.Game, installation.Path },
             { LocationId.AppData, fileSystem.GetKnownPath(KnownPath.LocalApplicationDataDirectory) / "Skyrim Special Edition" },
+            { LocationId.Preferences, fileSystem.GetKnownPath(KnownPath.MyGamesDirectory) / ("Skyrim Special Edition" + postfix)},
         };
     }
 

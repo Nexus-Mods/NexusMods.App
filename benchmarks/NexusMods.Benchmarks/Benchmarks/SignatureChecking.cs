@@ -1,7 +1,8 @@
 using BenchmarkDotNet.Attributes;
 using NexusMods.Abstractions.FileExtractor;
+using NexusMods.Backend.FileExtractor.FileSignatures;
 using NexusMods.Benchmarks.Interfaces;
-using NexusMods.FileExtractor.FileSignatures;
+using NexusMods.Sdk.FileExtractor;
 
 namespace NexusMods.Benchmarks.Benchmarks;
 

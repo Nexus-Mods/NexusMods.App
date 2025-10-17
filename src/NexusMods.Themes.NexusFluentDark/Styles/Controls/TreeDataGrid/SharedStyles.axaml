@@ -1,14 +1,16 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:icons="clr-namespace:NexusMods.UI.Sdk.Icons;assembly=NexusMods.UI.Sdk">
-    
+
     <!-- name column -->
-    <Style Selector="TreeDataGridTemplateCell.SharedColumn_Name /template/ ContentPresenter#PART_ContentPresenter">
+    <Style
+        Selector="TreeDataGridTemplateCell.SharedColumn_Name /template/ ContentPresenter#PART_ContentPresenter, 
+    TreeDataGridTemplateCell.DownloadColumns_Name /template/ ContentPresenter#PART_ContentPresenter">
 
         <Style Selector="^ StackPanel">
-            <Setter Property="Spacing" Value="{StaticResource Spacing-3}"/>
+            <Setter Property="Spacing" Value="{StaticResource Spacing-3}" />
         </Style>
-        
+
         <!-- fallback icon -->
         <Style Selector="^ icons|UnifiedIcon#FallbackIcon">
             <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
@@ -17,7 +19,7 @@
         </Style>
 
         <!-- thumbnail -->
-        <Style Selector="^ Border.SharedColumn_Name_ImageComponent">
+        <Style Selector="^ Border.SharedColumn_Name_ImageComponent, ^ Border.DownloadColumns_Name_ImageComponent">
             <Setter Property="Background" Value="{StaticResource SurfaceTranslucentMidBrush}" />
             <Setter Property="BorderThickness" Value="0" />
             <Setter Property="CornerRadius" Value="{StaticResource Rounded}" />
@@ -25,36 +27,36 @@
             <Setter Property="Height" Value="26" />
             <!-- easy way to get the rounded corner to mask the image below -->
             <Setter Property="ClipToBounds" Value="True" />
-                        
+
             <Style Selector="^ > Panel > icons|UnifiedIcon">
                 <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
                 <Setter Property="Size" Value="16" />
             </Style>
-                        
+
             <Style Selector="^ > Panel > Image">
                 <Setter Property="Stretch" Value="UniformToFill" />
                 <Setter Property="StretchDirection" Value="Both" />
             </Style>
-            
+
             <!-- The below aren't used yet but thought I'd placeholder it for future -->
             <Style Selector="^ Border#ModFileCountBadgeBorder">
                 <Setter Property="Width" Value="14" />
                 <Setter Property="Height" Value="14" />
                 <Setter Property="Background" Value="{StaticResource BrandTranslucentDark600Brush}" />
                 <Setter Property="CornerRadius" Value="0,0,4,0" />
-                
+
                 <Style Selector="^ > TextBlock">
                     <Setter Property="HorizontalAlignment" Value="Center" />
                     <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
                 </Style>
             </Style>
-            
+
             <Style Selector="^ Border#UpdateAvailableBadgeBorder">
                 <Setter Property="Width" Value="14" />
                 <Setter Property="Height" Value="14" />
                 <Setter Property="Background" Value="{StaticResource InfoModerateBrush}" />
                 <Setter Property="CornerRadius" Value="0,0,0,4" />
-                
+
                 <Style Selector="^ > icons|UnifiedIcon">
                     <Setter Property="Size" Value="12" />
                     <Setter Property="Foreground" Value="{StaticResource NeutralInvertedBrush}" />
@@ -63,14 +65,16 @@
         </Style>
 
         <!-- name -->
-        <Style Selector="^ Border.SharedColumn_Name_NameComponent TextBlock">
+        <Style
+            Selector="^ Border.SharedColumn_Name_NameComponent TextBlock, ^ Border.DownloadColumns_Name_NameComponent TextBlock">
             <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
         </Style>
 
     </Style>
 
     <!-- NameWithFileIcon.ColumnTemplateResourceKey column -->
-    <Style Selector="TreeDataGridTemplateCell.SharedColumn_NameWithFileIcon /template/ ContentPresenter#PART_ContentPresenter">
+    <Style
+        Selector="TreeDataGridTemplateCell.SharedColumn_NameWithFileIcon /template/ ContentPresenter#PART_ContentPresenter">
         <!-- Styles specific to the 'NameWithFileIcon' template (root is Grid) -->
         <Style Selector="^ icons|UnifiedIcon.FileTypeIcon">
             <Setter Property="Margin" Value="0" />
@@ -83,4 +87,3 @@
         </Style>
     </Style>
 </Styles>
-

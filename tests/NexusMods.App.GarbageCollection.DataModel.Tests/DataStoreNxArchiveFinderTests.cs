@@ -1,7 +1,7 @@
 using System.Text;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.Settings;
+using NexusMods.Sdk.Settings;
 using NexusMods.App.GarbageCollection.Nx;
 using NexusMods.DataModel;
 using NexusMods.Hashing.xxHash3;

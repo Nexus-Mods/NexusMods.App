@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Telemetry;
+using NexusMods.Sdk.Tracking;
 using OpenTelemetry.Exporter;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
@@ -9,8 +10,8 @@ namespace NexusMods.Telemetry;
 public static class OpenTelemetryRegistration
 {
     public static IServiceCollection AddTelemetry(
-        this IServiceCollection serviceCollection,
-        TelemetrySettings settings)
+        this IServiceCollection serviceCollection, 
+        TrackingSettings? settings)
     {
         // NOTE(erri120): see this for debugging:
         // https://github.com/open-telemetry/opentelemetry-dotnet/blob/main/src/OpenTelemetry/README.md#self-diagnostics
@@ -18,7 +19,7 @@ public static class OpenTelemetryRegistration
         // OpenTelemetry gets added to DI and can't be disabled at runtime.
         // If OpenTelemetry isn't added to the DI container, none of the listeners for
         // Activities and Meters will be added as well.
-        if (!settings.IsEnabled) return serviceCollection;
+        if (settings is null || !settings.EnableTracking) return serviceCollection;
 
         var openTelemetryBuilder = serviceCollection.AddOpenTelemetry();
 

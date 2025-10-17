@@ -189,7 +189,13 @@
                                       CanUserResizeColumns="True"
                                       CanUserSortColumns="True"
                                       HorizontalAlignment="Stretch"
-                                      Margin="0,12,0,0" />
+                                      Margin="0,12,0,0" >
+                            <TreeDataGrid.Styles>
+                                <Style Selector="TreeDataGridRow">
+                                    <Setter Property="ContextFlyout" Value="{StaticResource LibraryItemMenuFlyout}" />
+                                </Style>
+                            </TreeDataGrid.Styles>
+                        </TreeDataGrid>
                     </controls:EmptyState>
                 </Grid>
             </TabItem>

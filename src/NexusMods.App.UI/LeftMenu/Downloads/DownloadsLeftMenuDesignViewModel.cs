@@ -1,9 +1,9 @@
 using System.Collections.ObjectModel;
-using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.LeftMenu.Items;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.UI.Sdk;
 using NexusMods.UI.Sdk.Icons;
 
 namespace NexusMods.App.UI.LeftMenu.Downloads;
@@ -19,12 +19,6 @@ public class DownloadsLeftMenuDesignViewModel : AViewModel<IDownloadsLeftMenuVie
     };
 
     public ReadOnlyObservableCollection<ILeftMenuItemViewModel> LeftMenuItemsPerGameDownloads { get; }
-
-    public ILeftMenuItemViewModel LeftMenuItemAllCompleted { get; } = new LeftMenuItemDesignViewModel
-    {
-        Text = new StringComponent(Language.DownloadsLeftMenu_AllCompleted),
-        Icon = IconValues.CheckCircle,
-    };
 
     public DownloadsLeftMenuDesignViewModel()
     {

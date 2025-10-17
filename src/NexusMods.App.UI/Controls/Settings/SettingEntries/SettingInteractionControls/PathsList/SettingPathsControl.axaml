@@ -11,10 +11,6 @@
     mc:Ignorable="d"
     x:Class="NexusMods.App.UI.Controls.Settings.SettingEntries.PathsList.SettingPathsControl">
 
-    <reactiveUi:ReactiveUserControl.DataContext>
-        <pathsList:SettingPathsDesignViewModel />
-    </reactiveUi:ReactiveUserControl.DataContext>
-
     <controls:StandardButton
         x:Name="ButtonChangeLocation"
         Text="Change location"

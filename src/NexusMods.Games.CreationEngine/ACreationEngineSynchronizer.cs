@@ -21,8 +21,12 @@ public abstract class ACreationEngineSynchronizer : ALoadoutSynchronizer
             {pluginsFile.Path, pluginsFile},
         };
     }
- 
-    protected override Dictionary<GamePath, IIntrinsicFile> IntrinsicFiles(Loadout.ReadOnly _) => _intrinsicFiles;
+
+    
+    private static readonly GamePath SavesPath = new GamePath(LocationId.Preferences, "Saves");
+    protected override IGamePathFilter GamePathFilter { get; } = NexusMods.Abstractions.Loadouts.Synchronizers.GamePathFilters.Create(path => path.InFolder(SavesPath));
+
+    public override Dictionary<GamePath, IIntrinsicFile> IntrinsicFiles(Loadout.ReadOnly _) => _intrinsicFiles;
     
     public override bool IsIgnoredBackupPath(GamePath path)
     {

@@ -1,20 +1,23 @@
 using System.Text.Json.Serialization;
+using FomodInstaller.Utils.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.Settings;
+using NexusMods.Sdk.Settings;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.GC;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Sorting;
+using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.Serialization.ExpressionGenerator;
 using NexusMods.DataModel.CommandLine.Verbs;
 using NexusMods.DataModel.Diagnostics;
 using NexusMods.DataModel.JsonConverters;
 using NexusMods.DataModel.SchemaVersions;
-using NexusMods.DataModel.Settings;
 using NexusMods.DataModel.Sorting;
 using NexusMods.DataModel.Synchronizer;
+using NexusMods.DataModel.Synchronizer.DbFunctions;
 using NexusMods.DataModel.Undo;
+using NexusMods.HyperDuck;
 using NexusMods.HyperDuck.Adaptor.Impls.ValueAdaptor;
 using NexusMods.MnemonicDB;
 using NexusMods.MnemonicDB.Abstractions;
@@ -24,6 +27,8 @@ using NexusMods.Paths;
 using NexusMods.Sdk;
 using NexusMods.Sdk.FileStore;
 using NexusMods.Sdk.Resources;
+
+using IFileSystem = NexusMods.Paths.IFileSystem;
 
 namespace NexusMods.DataModel;
 
@@ -40,12 +45,13 @@ public static class Services
         coll.AddMigrations();
 
         coll.AddAmbientQueriesSql();
+        coll.AddSynchronizerSql();
+        coll.AddSingleton<ATableFunction, IntrinsicFiles>();
+        coll.AddSingleton<AScalarFunction, FNV1aHashScalar>();
         coll.AddValueAdaptor<ushort, LocationId>(LocationId.From);
 
         // Settings
         coll.AddSettings<DataModelSettings>();
-        coll.AddSettingsStorageBackend<MnemonicDBSettingsBackend>(isDefault: true);
-        coll.AddAttributeCollection(typeof(Setting));
 
         coll.AddSingleton<DatomStoreSettings>(sp =>
             {
@@ -109,6 +115,8 @@ public static class Services
         
         // Undo
         coll.AddSingleton<UndoService>();
+
+        coll.AddSingleton<ILoadoutManager, LoadoutManager>();
 
         // Verbs
         coll.AddLoadoutManagementVerbs()

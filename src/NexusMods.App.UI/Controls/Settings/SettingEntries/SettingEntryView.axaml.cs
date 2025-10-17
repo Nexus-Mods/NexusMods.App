@@ -21,12 +21,10 @@ public partial class SettingEntryView : ReactiveUserControl<ISettingEntryViewMod
                 .Do(PopulateFromViewModel)
                 .Subscribe()
                 .DisposeWith(disposables);
-            
-
 
             this.WhenAnyValue(x =>
                     x.ViewModel!.InteractionControlViewModel.ValueContainer.HasChanged,
-                    x => x.ViewModel!.PropertyUIDescriptor.RequiresRestart,
+                    x => x.ViewModel!.Config.Options.RequiresRestart,
                     (hasChanged, requiresRestart) => requiresRestart && hasChanged
                 )
                 .BindToView(this, view => view.RequiresRestartBanner.IsVisible)
@@ -39,15 +37,12 @@ public partial class SettingEntryView : ReactiveUserControl<ISettingEntryViewMod
 
     private void PopulateFromViewModel(ISettingEntryViewModel viewModel)
     {
-        var descriptor = viewModel.PropertyUIDescriptor;
+        EntryName.Text = viewModel.Config.Options.DisplayName;
+        RequiresRestartMessage.Text = viewModel.Config.Options.RestartMessage ?? Language.SettingEntryView_NeedRestartMessage;
 
         InteractionControl.ViewModel = viewModel.InteractionControlViewModel;
 
-        EntryName.Text = descriptor.DisplayName;
-
         LinkViewModel.ViewModel = viewModel.LinkRenderer;
         LinkViewModel.IsVisible = viewModel.LinkRenderer is not null;
-
-        RequiresRestartMessage.Text = descriptor.RestartMessage ?? Language.SettingEntryView_NeedRestartMessage;
     }
 }

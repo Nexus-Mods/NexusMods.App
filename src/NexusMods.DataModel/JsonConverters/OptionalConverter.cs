@@ -50,7 +50,7 @@ public class OptionalConverterFactory : JsonConverterFactory
         public override Optional<TValue> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             if (reader.TokenType == JsonTokenType.Null) return Optional<TValue>.None;
-            var value = _valueConverter.Read(ref reader, typeToConvert, options);
+            var value = _valueConverter.Read(ref reader, typeof(TValue), options);
             return Optional<TValue>.Create(value);
         }
 

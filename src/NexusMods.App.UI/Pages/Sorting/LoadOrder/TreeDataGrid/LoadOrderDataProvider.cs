@@ -27,16 +27,25 @@ public class LoadOrderDataProvider : ILoadOrderDataProvider
         _connection = serviceProvider.GetRequiredService<IConnection>();
         _thumbnailLoader = new Lazy<IResourceLoader<EntityId, Bitmap>>(() => ImagePipelines.GetModPageThumbnailPipeline(serviceProvider));
     }
-
+    
+    // TODO: support CollectionGroupId for observing load orders for collection groups
     public IObservable<IChangeSet<CompositeItemModel<ISortItemKey>, ISortItemKey>> ObserveLoadOrder(
-        ILoadoutSortableItemProvider sortableItemProvider,
+        ISortOrderVariety sortOrderVariety,
+        LoadoutId loadoutId,
         Observable<ListSortDirection> sortDirectionObservable)
     {
-        var lastIndexObservable = sortableItemProvider.SortableItemsChangeSet
+        var sortOrderId = sortOrderVariety.GetSortOrderIdFor(loadoutId);
+        if (!sortOrderId.HasValue)
+            throw new InvalidOperationException($"No sort order found for loadout {loadoutId} and variety {sortOrderVariety.SortOrderVarietyId}");
+        
+        var refCountedItemsChangeSet = sortOrderVariety.GetSortOrderItemsChangeSet(sortOrderId.Value)
+            .RefCount();
+        
+        var lastIndexObservable = refCountedItemsChangeSet
             .QueryWhenChanged(query => GetLastIndex(query.Items.ToList()))
             .ToObservable()
-            .Prepend(GetLastIndex(sortableItemProvider.GetCurrentSorting()));
-
+            .Prepend(GetLastIndex(sortOrderVariety.GetSortOrderItems(sortOrderId.Value)));
+        
         var topMostIndexObservable = R3.Observable.CombineLatest(
                 sortDirectionObservable,
                 lastIndexObservable,
@@ -53,7 +62,7 @@ public class LoadOrderDataProvider : ILoadOrderDataProvider
             .Replay(1)
             .RefCount();;
 
-        return sortableItemProvider.SortableItemsChangeSet
+        return refCountedItemsChangeSet
             .Transform(item => ToLoadOrderItemModel(item, topMostIndexObservable, bottomMostIndexObservable, _connection, _thumbnailLoader));
 
         static int GetLastIndex(IReadOnlyList<IReactiveSortItem> items)

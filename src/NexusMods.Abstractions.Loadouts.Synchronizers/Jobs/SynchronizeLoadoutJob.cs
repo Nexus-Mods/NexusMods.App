@@ -1,4 +1,4 @@
-using NexusMods.Abstractions.Jobs;
+using NexusMods.Sdk.Jobs;
 using R3;
 
 namespace NexusMods.Abstractions.Loadouts.Synchronizers;

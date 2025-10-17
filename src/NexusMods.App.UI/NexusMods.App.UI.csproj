@@ -96,11 +96,9 @@
     <ItemGroup>
         <ProjectReference Include="..\NexusMods.Abstractions.Logging\NexusMods.Abstractions.Logging.csproj" />
         <ProjectReference Include="..\NexusMods.Abstractions.NexusModsLibrary\NexusMods.Abstractions.NexusModsLibrary.csproj" />
-        <ProjectReference Include="..\NexusMods.Abstractions.Settings\NexusMods.Abstractions.Settings.csproj" />
         <ProjectReference Include="..\NexusMods.Abstractions.Games.Diagnostics\NexusMods.Abstractions.Games.Diagnostics.csproj" />
         <ProjectReference Include="..\NexusMods.Abstractions.GuidedInstallers\NexusMods.Abstractions.GuidedInstallers.csproj" />
         <ProjectReference Include="..\NexusMods.Abstractions.Telemetry\NexusMods.Abstractions.Telemetry.csproj" />
-        <ProjectReference Include="..\NexusMods.Abstractions.UI\NexusMods.Abstractions.UI.csproj" />
         <ProjectReference Include="..\NexusMods.Networking.NexusWebApi\NexusMods.Networking.NexusWebApi.csproj" />
         <ProjectReference Include="..\NexusMods.App.Cli\NexusMods.App.Cli.csproj" />
         <ProjectReference Include="..\NexusMods.Collections\NexusMods.Collections.csproj" />
@@ -475,12 +473,6 @@
         <Compile Update="Controls\MarkdownRenderer\MarkdownRendererViewModel.cs">
           <DependentUpon>IMarkdownRendererViewModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="Pages\Settings\SettingsPageDesignViewModel.cs">
-          <DependentUpon>ISettingsPageViewModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="Controls\Settings\SettingEntries\SettingEntryDesignViewModel.cs">
-          <DependentUpon>ISettingEntryViewModel.cs</DependentUpon>
-        </Compile>
         <Compile Update="Pages\Settings\SettingsPageViewModel.cs">
           <DependentUpon>ISettingsPageViewModel.cs</DependentUpon>
         </Compile>
@@ -730,9 +722,6 @@
           <DependentUpon>ILoadoutGroupFilesViewModel.cs</DependentUpon>
          </Compile>
         <Compile Update="Controls\Settings\SettingEntries\SettingInteractionControls\PathsList\SettingPathsViewModel.cs">
-          <DependentUpon>ISettingPathsViewModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="Controls\Settings\SettingEntries\SettingInteractionControls\PathsList\SettingPathsDesignViewModel.cs">
           <DependentUpon>ISettingPathsViewModel.cs</DependentUpon>
         </Compile>
         <Compile Update="Dialog\DialogStandardContentView.axaml.cs">

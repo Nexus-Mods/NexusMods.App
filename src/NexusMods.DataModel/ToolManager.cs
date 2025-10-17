@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
+using NexusMods.Sdk.Jobs;
 
 namespace NexusMods.DataModel;
 

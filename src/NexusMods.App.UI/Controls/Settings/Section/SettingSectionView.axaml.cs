@@ -23,7 +23,7 @@ public partial class SettingSectionView : ReactiveUserControl<ISettingSectionVie
 
     private void PopulateFromViewModel(ISettingSectionViewModel viewModel)
     {
-        Icon.Value = viewModel.Descriptor.Icon;
+        Icon.Value = viewModel.Descriptor.IconFunc();
         Text.Text = viewModel.Descriptor.Name;
     }
 }

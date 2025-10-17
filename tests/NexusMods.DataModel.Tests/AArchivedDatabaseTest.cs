@@ -13,12 +13,12 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Abstractions.Serialization;
-using NexusMods.Abstractions.Settings;
+using NexusMods.Backend;
+using NexusMods.Backend.FileExtractor.FileSignatures;
 using NexusMods.Collections;
 using NexusMods.CrossPlatform;
 using NexusMods.DataModel.SchemaVersions;
 using NexusMods.FileExtractor;
-using NexusMods.FileExtractor.FileSignatures;
 using NexusMods.Games.FileHashes;
 using NexusMods.Games.StardewValley;
 using NexusMods.Hashing.xxHash3;
@@ -29,7 +29,7 @@ using NexusMods.Networking.NexusWebApi;
 using NexusMods.Networking.NexusWebApi.Errors;
 using NexusMods.Paths;
 using NexusMods.Sdk;
-using NexusMods.Settings;
+using NexusMods.Sdk.Settings;
 using NexusMods.StandardGameLocators;
 using NexusMods.StandardGameLocators.TestHelpers;
 using NSubstitute;
@@ -78,7 +78,8 @@ public abstract class AArchivedDatabaseTest
             .AddHttpDownloader()
             .AddSettingsManager()
             .AddSettings<LoggingSettings>()
-            .AddCrossPlatform()
+            .AddOSInterop()
+            .AddRuntimeDependencies()
             .AddRocksDbBackend()
             .AddFileHashes()
             .AddFileSystem()

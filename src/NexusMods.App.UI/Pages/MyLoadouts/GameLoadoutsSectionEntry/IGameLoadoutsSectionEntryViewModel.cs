@@ -1,6 +1,6 @@
 using System.Collections.ObjectModel;
-using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls.LoadoutCard;
+using NexusMods.UI.Sdk;
 
 namespace NexusMods.App.UI.Pages.MyLoadouts.GameLoadoutsSectionEntry;
 

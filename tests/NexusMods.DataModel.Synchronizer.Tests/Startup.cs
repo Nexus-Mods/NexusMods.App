@@ -1,9 +1,9 @@
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.Settings;
+using NexusMods.Backend;
 using NexusMods.CrossPlatform;
 using NexusMods.Games.Generic;
 using NexusMods.Paths;
-using NexusMods.Settings;
+using NexusMods.Sdk.Settings;
 
 namespace NexusMods.DataModel.Synchronizer.Tests;
 
@@ -20,7 +20,8 @@ public class Startup
             .AddSettings<LoggingSettings>()
             .AddSettingsManager()
             .AddFileSystem()
-            .AddCrossPlatform()
+            .AddOSInterop()
+            .AddRuntimeDependencies()
             .AddGenericGameSupport();
     }
 }

@@ -2,8 +2,9 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.Settings;
+using NexusMods.Sdk.Settings;
 using NexusMods.App.UI.WorkspaceSystem;
+using R3;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -25,7 +26,7 @@ public class HealthCheckLeftMenuItemViewModel : LeftMenuItemViewModel
     {
         var healthCheckCountsObservable = diagnosticManager
             .CountDiagnostics(loadoutId)
-            .CombineLatest(settingsManager.GetChanges<DiagnosticSettings>(prependCurrent: true))
+            .CombineLatest(settingsManager.GetChanges<DiagnosticSettings>(prependCurrent: true).AsSystemObservable())
             .OnUI()
             .Do(update =>
                 {

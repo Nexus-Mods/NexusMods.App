@@ -1,5 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.Settings;
+using NexusMods.Sdk.Settings;
 using NexusMods.Paths;
 
 namespace NexusMods.SingleProcess;
@@ -12,18 +12,16 @@ public class CliSettings() : ISettings
     /// <inheritdoc />
     public static ISettingsBuilder Configure(ISettingsBuilder settingsBuilder)
     {
-        var sectionId = Sections.DeveloperTools;
-        return settingsBuilder
-                .ConfigureDefault(CreateDefault)
-                .ConfigureStorageBackend<CliSettings>(builder => builder.UseJson())
-                .AddToUI<CliSettings>(builder => builder
-                    .AddPropertyToUI(x => x.StartCliBackend, propertyBuilder => propertyBuilder
-                        .AddToSection(sectionId)
-                        .WithDisplayName("Start CLI Backend")
-                        .WithDescription("On application start, opens a localhost TCP connection that accepts CLI commands.")
-                        .UseBooleanContainer()
-                        .RequiresRestart()
-                    ));
+        return settingsBuilder.ConfigureDefault(CreateDefault).ConfigureProperty(
+            x => x.StartCliBackend,
+            new PropertyOptions<CliSettings, bool>
+            {
+                Section = Sections.DeveloperTools,
+                DisplayName = "Start CLI Backend",
+                DescriptionFactory = _ => "On application start, opens a localhost TCP connection that accepts CLI commands.",
+            },
+            new BooleanContainerOptions()
+        );
     }
 
     /// <summary>

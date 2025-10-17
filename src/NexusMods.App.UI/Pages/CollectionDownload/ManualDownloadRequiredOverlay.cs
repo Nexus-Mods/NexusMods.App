@@ -9,7 +9,6 @@ using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.Telemetry;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Overlays;
-using NexusMods.CrossPlatform.Process;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Sdk;
@@ -79,12 +78,7 @@ public class ManualDownloadRequiredOverlayViewModel : AOverlayViewModel<IManualD
         var revisionBugsUri = NexusModsUrlBuilder.GetCollectionBugsUri(gameDomain, revision.Collection.Slug, revision.RevisionNumber, campaign: NexusModsUrlBuilder.CampaignCollections);
 
         CommandCancel = new ReactiveCommand(_ => { base.Close(); });
-
-        CommandOpenBrowser = new ReactiveCommand(
-            executeAsync: async (_, cancellationToken) => { await osInterop.OpenUrl(downloadEntity.Uri, cancellationToken: cancellationToken); },
-            awaitOperation: AwaitOperation.Parallel,
-            configureAwait: false
-        );
+        CommandOpenBrowser = new ReactiveCommand(execute: _ => osInterop.OpenUri(downloadEntity.Uri));
 
         CommandAddFile = new ReactiveCommand(
             executeAsync: async (_, _) =>
@@ -133,11 +127,7 @@ public class ManualDownloadRequiredOverlayViewModel : AOverlayViewModel<IManualD
             ReceivedHash = string.Empty;
         });
 
-        CommandReportBug = new ReactiveCommand(
-            executeAsync: async (_, cancellationToken) => await osInterop.OpenUrl(revisionBugsUri, cancellationToken: cancellationToken),
-            awaitOperation: AwaitOperation.Parallel,
-            configureAwait: false
-        );
+        CommandReportBug = new ReactiveCommand(execute: _ => osInterop.OpenUri(revisionBugsUri));
     }
 
     public string DownloadName { get; }

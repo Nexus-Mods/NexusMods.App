@@ -1,5 +1,5 @@
 using FluentAssertions;
-using NexusMods.CrossPlatform.Process;
+using NexusMods.Backend.RuntimeDependency;
 
 namespace NexusMods.CrossPlatform.Tests;
 
@@ -11,7 +11,7 @@ public class XDGSettingsDependencyTests
     [InlineData("xdg-settings", null)]
     public void TestTryParseVersion(string input, string? expectedRawVersion)
     {
-        _ = XDGSettingsDependency.TryParseVersion(input, out var rawVersion, out _);
+        _ = XdgSettingsDependency.TryParseVersion(input, out var rawVersion, out _);
         rawVersion.Should().Be(expectedRawVersion);
     }
 }

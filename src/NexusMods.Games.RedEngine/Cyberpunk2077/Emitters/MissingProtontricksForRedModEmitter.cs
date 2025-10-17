@@ -4,7 +4,7 @@ using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.Diagnostics.Values;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.CrossPlatform.Process;
+using NexusMods.Games.Generic.Dependencies;
 using NexusMods.Generators.Diagnostics;
 using NexusMods.Paths;
 using static NexusMods.Games.RedEngine.Constants;

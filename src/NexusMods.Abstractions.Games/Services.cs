@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.Loadouts.Synchronizers.Conflicts;
 
 namespace NexusMods.Abstractions.Games;
 
@@ -13,7 +14,9 @@ public static class Services
     public static IServiceCollection AddGames(this IServiceCollection services)
     {
         return services
+            .AddSingleton<SortOrderManager>()
             .AddSortOrderItemModel()
-            .AddSortOrderQueriesSql();
+            .AddSortOrderQueriesSql()
+            .AddLoadoutItemGroupPriorityModel();
     }
 }

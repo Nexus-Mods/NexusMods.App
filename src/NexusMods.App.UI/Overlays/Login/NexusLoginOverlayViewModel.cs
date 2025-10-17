@@ -1,5 +1,5 @@
-﻿using NexusMods.Abstractions.Jobs;
-using NexusMods.Abstractions.NexusWebApi;
+﻿using NexusMods.Abstractions.NexusWebApi;
+using NexusMods.Sdk.Jobs;
 using R3;
 using ReactiveUI.Fody.Helpers;
 

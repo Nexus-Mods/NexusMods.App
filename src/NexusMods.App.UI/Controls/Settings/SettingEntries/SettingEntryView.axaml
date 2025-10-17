@@ -8,9 +8,6 @@
                                 xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
                                 mc:Ignorable="d" d:DesignWidth="1232" 
                                 x:Class="NexusMods.App.UI.Controls.Settings.SettingEntries.SettingEntryView">
-    <Design.DataContext>
-        <settingEntries:SettingEntryDesignViewModel />
-    </Design.DataContext>
 
     <Border Padding="16,12"
             Background="{StaticResource SurfaceMidBrush}"
