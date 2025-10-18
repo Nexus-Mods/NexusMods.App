@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
 using DynamicData;
 using JetBrains.Annotations;
@@ -18,6 +19,8 @@ public sealed class JobMonitor : IJobMonitor, IDisposable
 
     private readonly CompositeDisposable _compositeDisposable = new();
     private readonly ILogger<JobMonitor> _logger;
+
+    private readonly ConcurrentDictionary<JobId, SemaphoreSlim> _jobLocks = new();
 
     public JobMonitor(ILogger<JobMonitor> logger)
     {
@@ -84,13 +87,24 @@ public sealed class JobMonitor : IJobMonitor, IDisposable
     
     public void Pause(JobId jobId)
     {
-        var job = _allJobs.Lookup(jobId);
-        if (job.HasValue)
-            job.Value.AsContext().Pause();
+        var semaphore = GetJobLock(jobId);
+        semaphore.Wait();
+        try
+        {
+            var job = _allJobs.Lookup(jobId);
+            if (!job.HasValue || job.Value.Status != JobStatus.Running) return;
+            var ctx = job.Value.AsContext();
+            if (!ctx.TryTransitionStatus(JobStatus.Running, JobStatus.Paused)) return;
+            ctx.Pause();
+        }
+        finally
+        {
+            semaphore.Release();
+        }
     }
     
     public void Pause(IJobTask jobTask) => Pause(jobTask.Job.Id);
-    
+
     public void PauseGroup(IJobGroup group) => group.Pause();
     
     public void PauseAll()
@@ -104,10 +118,21 @@ public sealed class JobMonitor : IJobMonitor, IDisposable
     
     public void Resume(JobId jobId)
     {
-        var job = _allJobs.Lookup(jobId);
-        if (!job.HasValue || job.Value.Status != JobStatus.Paused) return;
-        job.Value.AsContext().Resume(); // Clear pause flag
-        ExecuteJob(job.Value.AsContext()); // Restart execution
+        var semaphore = GetJobLock(jobId);
+        semaphore.Wait();
+        try
+        {
+            var job = _allJobs.Lookup(jobId);
+            if (!job.HasValue || job.Value.Status != JobStatus.Paused) return;
+            var ctx = job.Value.AsContext();
+            if (!ctx.TryTransitionStatus(JobStatus.Paused, JobStatus.Running)) return;
+            ctx.Resume(); // Clear pause flag
+            ExecuteJob(ctx); // Restart execution
+        }
+        finally
+        {
+            semaphore.Release();
+        }
     }
     
     public void Resume(IJobTask jobTask)
@@ -165,4 +190,11 @@ public sealed class JobMonitor : IJobMonitor, IDisposable
                 _allJobs.Remove(job.Id);
         });
     }
+    
+    /// <summary>
+    /// Get the semaphore lock for a specific job; if it doesn't exist, create it
+    /// </summary>
+    /// <param name="jobId">The ID of the job to find</param>
+    /// <returns>The semaphore lock for the specific job</returns>
+    private SemaphoreSlim GetJobLock(JobId jobId) => _jobLocks.GetOrAdd(jobId, _ => new SemaphoreSlim(1, 1));
 }
