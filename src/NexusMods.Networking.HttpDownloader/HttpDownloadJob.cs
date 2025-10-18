@@ -121,14 +121,16 @@ public record HttpDownloadJob : IJobDefinitionWithStart<HttpDownloadJob, Absolut
             fileStream,
             context,
             (state, tuple) =>
-        {
-            var (bytesWritten, speed) = tuple;
+            {
+                var (bytesWritten, speed) = tuple;
 
-            _state.TotalBytesDownloaded = bytesWritten;
-            
-            state.SetPercent(bytesWritten, _state.ContentLength.ValueOr(static () => Size.One));
-            state.SetRateOfProgress(speed);
-        });
+                if (bytesWritten > 0)
+                    _state.TotalBytesDownloaded = bytesWritten;
+
+                state.SetPercent(bytesWritten, _state.ContentLength.ValueOr(static () => Size.One));
+                state.SetRateOfProgress(speed);
+            }
+        );
 
         if (_state.ContentLength.HasValue)
         {
@@ -205,7 +207,8 @@ public record HttpDownloadJob : IJobDefinitionWithStart<HttpDownloadJob, Absolut
         }
         finally
         {
-            _state.TotalBytesDownloaded = Size.FromLong(outputStream.Position);
+            if (Size.FromLong(outputStream.Position) > _state.TotalBytesDownloaded.Value)
+                _state.TotalBytesDownloaded = Size.FromLong(outputStream.Position);
         }
 
         // Ensure progress is set to 100% when download completes
