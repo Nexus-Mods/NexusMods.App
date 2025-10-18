@@ -4,7 +4,6 @@ using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.GC;
 using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Library.Models;
-using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Sdk.Jobs;
 
 namespace NexusMods.Abstractions.Loadouts.Synchronizers;
@@ -56,7 +55,6 @@ public interface ILoadoutManager
     /// <param name="parent">If specified the installed item will be placed in this group, otherwise it will default to the user's local collection</param>
     /// <param name="installer">The Library will use this installer to install the item</param>
     /// <param name="fallbackInstaller">The installer to use if the default installer fails</param>
-    /// <param name="transaction">The transaction to attach the installation to. Install is only completed when transaction is completed.</param>
     /// <remarks>
     /// Job returns a result with null <see cref="LoadoutItemGroup.ReadOnly"/> after
     /// if supplied an external transaction via <paramref name="transaction"/>,
@@ -67,13 +65,7 @@ public interface ILoadoutManager
         LoadoutId targetLoadout,
         Optional<LoadoutItemGroupId> parent = default,
         ILibraryItemInstaller? installer = null,
-        ILibraryItemInstaller? fallbackInstaller = null,
-        ITransaction? transaction = null);
-
-    /// <summary>
-    /// Removes the items from their Loadouts.
-    /// </summary>
-    void RemoveItems(ITransaction tx, LoadoutItemGroupId[] groupIds);
+        ILibraryItemInstaller? fallbackInstaller = null);
 
     /// <summary>
     /// Removes the items from their Loadouts.
@@ -84,4 +76,6 @@ public interface ILoadoutManager
     /// Removes a collection.
     /// </summary>
     ValueTask RemoveCollection(LoadoutId loadoutId, CollectionGroupId collection);
+
+    ValueTask ReplaceItems(LoadoutId loadoutId, LoadoutItemGroupId[] groupsToRemove, LibraryItem.ReadOnly libraryItemToInstall);
 }

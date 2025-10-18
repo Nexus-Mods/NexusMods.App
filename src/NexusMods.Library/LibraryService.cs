@@ -161,9 +161,11 @@ public sealed class LibraryService : ILibraryService
 
     public async Task RemoveLibraryItems(IEnumerable<LibraryItem.ReadOnly> libraryItems, GarbageCollectorRunMode gcRunMode = GarbageCollectorRunMode.RunAsynchronously)
     {
-        using var tx = _connection.BeginTransaction();
         var items = libraryItems.ToArray();
-        RemoveLinkedItemsFromAllLoadouts(items, tx);
+        var groupIds = items.SelectMany(LoadoutsWithLibraryItem).Select(tuple => tuple.linkedItem.AsLoadoutItemGroup().LoadoutItemGroupId).ToArray();
+        await _loadoutManager.RemoveItems(groupIds);
+
+        using var tx = _connection.BeginTransaction();
 
         foreach (var item in items)
             tx.Delete(item.Id, recursive: true);
@@ -172,58 +174,12 @@ public sealed class LibraryService : ILibraryService
         await _gcRunner.RunWithMode(gcRunMode);
     }
 
-    public async Task RemoveLinkedItemFromLoadout(LibraryLinkedLoadoutItemId itemId)
-    {
-        using var tx = _connection.BeginTransaction();
-        RemoveLinkedItemFromLoadout(itemId, tx);
-        await tx.Commit();
-    }
-
-    public async Task RemoveLinkedItemsFromLoadout(IEnumerable<LibraryLinkedLoadoutItemId> itemIds)
-    {
-        using var tx = _connection.BeginTransaction();
-        RemoveLinkedItemsFromLoadout(itemIds, tx);
-        await tx.Commit();
-    }
-
-    public void RemoveLinkedItemFromLoadout(LibraryLinkedLoadoutItemId itemId, ITransaction tx)
-    {
-        _loadoutManager.RemoveItems(tx, [itemId.Value]);
-    }
-
-    public void RemoveLinkedItemsFromLoadout(IEnumerable<LibraryLinkedLoadoutItemId> itemIds, ITransaction tx)
-    {
-        _loadoutManager.RemoveItems(tx, itemIds.Select(LoadoutItemGroupId (x) => x.Value).ToArray());
-    }
-
-    public void RemoveLinkedItemsFromAllLoadouts(IEnumerable<LibraryItem.ReadOnly> libraryItems, ITransaction tx)
-    {
-        var groupIds = libraryItems.SelectMany(LoadoutsWithLibraryItem).Select(tuple => tuple.linkedItem.AsLoadoutItemGroup().LoadoutItemGroupId).ToArray();
-        _loadoutManager.RemoveItems(tx, groupIds);
-    }
-
-    public async Task RemoveLinkedItemsFromAllLoadouts(IEnumerable<LibraryItem.ReadOnly> libraryItems)
-    {
-        using var tx = _connection.BeginTransaction();
-        RemoveLinkedItemsFromAllLoadouts(libraryItems, tx);
-        await tx.Commit();
-    }
-
-    public async ValueTask<LibraryItemReplacementResult> ReplaceLinkedItemsInAllLoadouts(
-        LibraryItem.ReadOnly oldItem, LibraryItem.ReadOnly newItem, ReplaceLibraryItemOptions options)
-    {
-        using var tx = _connection.BeginTransaction();
-        var result = await ReplaceLinkedItemsInAllLoadouts(oldItem, newItem, options, tx);
-        await tx.Commit();
-        return result;
-    }
-
-    public async ValueTask<LibraryItemReplacementResult> ReplaceLinkedItemsInAllLoadouts(LibraryItem.ReadOnly oldItem, LibraryItem.ReadOnly newItem, ReplaceLibraryItemOptions options, ITransaction tx)
+    public async ValueTask<LibraryItemReplacementResult> ReplaceLinkedItemsInAllLoadouts(LibraryItem.ReadOnly oldItem, LibraryItem.ReadOnly newItem, ReplaceLibraryItemOptions options)
     {
         try
         {
             // 1. Find affected loadouts using existing method
-            var items = LoadoutsWithLibraryItem(oldItem)
+            var itemsPerLoadout = LoadoutsWithLibraryItem(oldItem)
                 .Where(tuple =>
                 {
                     if (options.IgnoreReadOnlyCollections)
@@ -235,34 +191,14 @@ public sealed class LibraryService : ILibraryService
 
                     return true;
                 })
-                .ToArray();
+                .GroupBy(tuple => tuple.loadout.LoadoutId)
+                .ToDictionary(grouping => grouping.Key, grouping => grouping.ToArray());
 
-            // 2. Unlink old mod using bulk removal
-            foreach (var (_, libraryLinkedItem) in items)
-                RemoveLinkedItemFromLoadout(libraryLinkedItem.Id, tx);
-
-            // 3. Reinstall new mod in original loadouts
-            foreach (var (loadout, _) in items)
-                await _loadoutManager.InstallItem(libraryItem: newItem, targetLoadout: loadout.Id, transaction: tx);
-        }
-        catch
-        {
-            return LibraryItemReplacementResult.FailedUnknownReason;
-        }
-
-        return LibraryItemReplacementResult.Success;
-    }
-    
-    public async ValueTask<LibraryItemReplacementResult> ReplaceLinkedItemsInAllLoadouts(IEnumerable<(LibraryItem.ReadOnly oldItem, LibraryItem.ReadOnly newItem)> replacements, ReplaceLibraryItemsOptions options, ITransaction tx)
-    {
-        var replacementsArr = replacements.ToArray();
-        try
-        {
-            foreach (var (oldItem, newItem) in replacementsArr)
+            foreach (var kv in itemsPerLoadout)
             {
-                var result = await ReplaceLinkedItemsInAllLoadouts(oldItem, newItem, options.ToReplaceLibraryItemOptions(), tx);
-                if (result != LibraryItemReplacementResult.Success)
-                    return result; // failed due to some reason.
+                var (loadoutId, items) = kv;
+                var groupIds = items.Select(x => x.linkedItem.AsLoadoutItemGroup().LoadoutItemGroupId).ToArray();
+                await _loadoutManager.ReplaceItems(loadoutId, groupIds, newItem);
             }
         }
         catch
@@ -275,11 +211,21 @@ public sealed class LibraryService : ILibraryService
     
     public async ValueTask<LibraryItemReplacementResult> ReplaceLinkedItemsInAllLoadouts(IEnumerable<(LibraryItem.ReadOnly oldItem, LibraryItem.ReadOnly newItem)> replacements, ReplaceLibraryItemsOptions options)
     {
-        using var tx = _connection.BeginTransaction();
-        var result = await ReplaceLinkedItemsInAllLoadouts(replacements, options, tx);
-        if (result == LibraryItemReplacementResult.Success)
-            await tx.Commit();
+        var replacementsArr = replacements.ToArray();
+        try
+        {
+            foreach (var (oldItem, newItem) in replacementsArr)
+            {
+                var result = await ReplaceLinkedItemsInAllLoadouts(oldItem, newItem, options.ToReplaceLibraryItemOptions());
+                if (result != LibraryItemReplacementResult.Success)
+                    return result; // failed due to some reason.
+            }
+        }
+        catch
+        {
+            return LibraryItemReplacementResult.FailedUnknownReason;
+        }
 
-        return result;
+        return LibraryItemReplacementResult.Success;
     }
 }

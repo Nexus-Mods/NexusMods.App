@@ -12,6 +12,7 @@ using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using NexusMods.Sdk;
 using NexusMods.Sdk.FileStore;
+using NexusMods.Sdk.IO;
 
 namespace NexusMods.Games.StardewValley.Installers;
 
@@ -25,18 +26,21 @@ public class SMAPIInstaller : ALibraryArchiveInstaller
     private readonly TemporaryFileManager _temporaryFileManager;
     private readonly IFileStore _fileStore;
     private readonly IFileHashesService _fileHashesService;
+    private readonly IStreamSourceDispatcher _streamSource;
 
     public SMAPIInstaller(
         IServiceProvider serviceProvider,
         ILogger<SMAPIInstaller> logger,
         TemporaryFileManager temporaryFileManager,
         IFileHashesService fileHashesService,
-        IFileStore fileStore)
+        IFileStore fileStore,
+        IStreamSourceDispatcher streamSourceDispatcher)
         : base(serviceProvider, logger)
     {
         _temporaryFileManager = temporaryFileManager;
         _fileStore = fileStore;
         _fileHashesService = fileHashesService;
+        _streamSource = streamSourceDispatcher;
     }
 
     public override async ValueTask<InstallerResult> ExecuteAsync(
@@ -182,6 +186,12 @@ public class SMAPIInstaller : ALibraryArchiveInstaller
                     },
                 },
             };
+
+            if (!await _fileStore.HaveFile(fileHash))
+            {
+                var streamFactory = new SourceDispatcherStreamFactory(to.FileName, fileHash, _streamSource);
+                await _fileStore.BackupFiles([new ArchivedFileEntry(streamFactory, fileHash, fileSize)], deduplicate: false, token: cancellationToken);
+            }
         }
 
         _ = new SMAPILoadoutItem.New(transaction, loadoutGroup.Id)
