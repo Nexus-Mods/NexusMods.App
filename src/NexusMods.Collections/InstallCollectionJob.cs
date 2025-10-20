@@ -9,6 +9,7 @@ using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.MnemonicDB.Abstractions;
@@ -36,6 +37,7 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
     public required IServiceProvider ServiceProvider { get; init; }
     public required IFileStore FileStore { get; init; }
     public required ILibraryService LibraryService { get; init; }
+    public required ILoadoutManager LoadoutManager { get; init; }
     public required IConnection Connection { get; init; }
     public required LoadoutId TargetLoadout { get; init; }
     public required NexusModsLibrary NexusModsLibrary { get; init; }
@@ -68,6 +70,7 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
             Connection = connection,
             FileStore = provider.GetRequiredService<IFileStore>(),
             LibraryService = provider.GetRequiredService<ILibraryService>(),
+            LoadoutManager = provider.GetRequiredService<ILoadoutManager>(),
             NexusModsLibrary = provider.GetRequiredService<NexusModsLibrary>(),
             Logger = provider.GetRequiredService<ILogger<InstallCollectionJob>>(),
         };
@@ -206,6 +209,7 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
             Connection = Connection,
             FileStore = FileStore,
             LibraryService = LibraryService,
+            LoadoutManager = LoadoutManager,
 
             FallbackInstaller = fallbackInstaller,
             FallbackCollectionInstallDirectory = fallbackCollectionInstallDirectory,

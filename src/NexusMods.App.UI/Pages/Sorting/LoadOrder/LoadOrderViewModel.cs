@@ -26,6 +26,7 @@ namespace NexusMods.App.UI.Pages.Sorting;
 
 public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderViewModel
 {
+    public ISortOrderVariety SortOrderVariety { get; }
     public string SortOrderName { get; }
     public string InfoAlertTitle { get; }
     public string InfoAlertBody { get; }
@@ -54,12 +55,12 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
         var osInterop = serviceProvider.GetRequiredService<IOSInterop>();
         var settingsManager = serviceProvider.GetRequiredService<ISettingsManager>();
 
+        SortOrderVariety = sortOrderVariety;
         var optionalSortOrderId = sortOrderVariety.GetSortOrderIdFor(loadoutId);
         if (!optionalSortOrderId.HasValue)
             throw new InvalidOperationException($"No sort order found for loadout {loadoutId} and variety {sortOrderVariety.SortOrderVarietyId}");
         var sortOrderId = optionalSortOrderId.Value;
         
-        SortOrderName = sortOrderVariety.SortOrderUiMetadata.SortOrderName;
         SortOrderName = sortOrderVariety.SortOrderUiMetadata.SortOrderName;
         InfoAlertTitle = sortOrderVariety.SortOrderUiMetadata.OverrideInfoTitle;
         InfoAlertBody = sortOrderVariety.SortOrderUiMetadata.OverrideInfoMessage;
