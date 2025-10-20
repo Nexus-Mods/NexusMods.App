@@ -199,7 +199,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     private static Query<(LocationId Location, RelativePath Path, List<(EntityId Id, bool IsEnabled, bool IsDeleted)>)> FileConflictsQuery(IDb db, LoadoutId loadoutId, bool removeDuplicates)
     {
         return db.Connection.Query<(LocationId Location, RelativePath Path, List<(EntityId Id, bool IsEnabled, bool IsDeleted)>)>(
-            $"SELECT Path.Item2, Path.Item3, Conflicts FROM synchronizer.FileConflicts({db}, {loadoutId}, {removeDuplicates})"
+            $"SELECT Path.Location, Path.Path, Conflicts FROM synchronizer.FileConflicts({db}, {loadoutId}, {removeDuplicates})"
         );
     }
 
