@@ -12,9 +12,9 @@ public class ActionMapping
     /// </summary>
     public static Actions MapActions(Signature signature)
     {
-        return MapActions((SignatureShorthand)signature);
+        return signature == 0 ? DoNothing : MapActions((SignatureShorthand)signature);
     }
-    
+
     /// <summary>
     /// Maps a shorthand signature to the corresponding actions
     /// </summary>
