@@ -22,9 +22,23 @@ FROM
   LEFT JOIN MDB_LOADOUTITEMGROUP (Db => db) loadout_item_group ON loadout_item.Parent = loadout_item_group.Id
   LEFT JOIN MDB_COLLECTIONGROUP (Db => db) collection_group ON loadout_item_group.Parent = collection_group.Id
   LEFT JOIN MDB_DELETEDFILE (Db => db) deleted_file ON loadout_item.Id = deleted_file.Id
-  LEFT JOIN MDB_LOADOUTFILE (Db => db) loadout_file on loadout_item.Id = loadout_file.Id
+  LEFT JOIN MDB_LOADOUTFILE (Db => db) loadout_file on loadout_item.Id = loadout_file.Id;
+
+-- All winning leaf loadout items with a target path
+CREATE OR REPLACE MACRO synchronizer.WinningLeafLoadoutItem (db) AS TABLE
+SELECT
+  loadout_item.Loadout,
+  arg_max(loadout_item.Id, coalesce(group_priority.Priority, 0)) AS Id,
+  arg_max(loadout_item.Parent, coalesce(group_priority.Priority, 0)) AS Parent,
+  arg_max(loadout_item.TargetPath, coalesce(group_priority.Priority, 0)) AS TargetPath,
+  arg_max(loadout_item.Hash, coalesce(group_priority.Priority, 0)) AS Hash,
+  arg_max(loadout_item.Size, coalesce(group_priority.Priority, 0)) AS Size,
+  arg_max(loadout_item.IsEnabled, coalesce(group_priority.Priority, 0)) AS IsEnabled,
+  arg_max(loadout_item.IsDeleted, coalesce(group_priority.Priority, 0)) AS IsDeleted
+FROM
+  synchronizer.LeafLoadoutItems (db) loadout_item
   LEFT JOIN MDB_LOADOUTITEMGROUPPRIORITY(DB => db) group_priority ON loadout_item.Parent = group_priority.Target
-  ORDER BY group_priority.Priority DESC;
+GROUP BY loadout_item.Loadout, loadout_item.TargetPath.Item2, loadout_item.TargetPath.Item3;
 
 -- All the files in the overrides group
 CREATE OR REPLACE MACRO synchronizer.OverrideFiles (db) AS TABLE
@@ -60,7 +74,7 @@ WITH all_files AS
     loadout_item.Size,
     (CASE WHEN loadout_item.IsDeleted THEN 'Deleted' ELSE 'Loadout' END)::synchronizer.ItemType ItemType,
     1 Layer
-  FROM synchronizer.LeafLoadoutItems(db) loadout_item
+  FROM synchronizer.WinningLeafLoadoutItem(db) loadout_item
     WHERE loadout_item.IsEnabled
   UNION
   -- Override files on Layer 2
