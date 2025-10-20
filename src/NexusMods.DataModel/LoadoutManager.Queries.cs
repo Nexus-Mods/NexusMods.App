@@ -13,7 +13,8 @@ internal partial class LoadoutManager
 
         // TODO: https://github.com/Nexus-Mods/NexusMods.MnemonicDB/issues/181
         var results = query.ToArray();
-        Debug.Assert(results.Length == 1, $"scalar query should return 1 element, found {results.Length} elements instead");
+        if (results.Length == 0) return ConflictPriority.From(1);
+
         var max = results[0];
         return ConflictPriority.From(max + 1);
     }
