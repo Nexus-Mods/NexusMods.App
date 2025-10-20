@@ -23,6 +23,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="System.CommandLine" VersionOverride="2.0.0-rc.2.25502.107" />
       <Compile Update="TreeDataGrid\SingleColumn\FileColumn\FileColumnView.axaml.cs">
         <DependentUpon>FileTreeNodeView.axaml</DependentUpon>
         <SubType>Code</SubType>
