@@ -283,8 +283,10 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
         foreach (var tuple in WinningFilesQuery(Connection.Db, loadout))
         {
-            var gamePath = new GamePath(tuple.Location, tuple.Path);
             var itemType = ToItemType(tuple.ItemType);
+
+            var gamePath = new GamePath(tuple.Location, tuple.Path);
+            if (gamePath == default(GamePath)) throw new Exception($"Item of type `{itemType}` with ID `{tuple.Id}` has no valid game path!");
 
             ref var syncTreeEntry = ref CollectionsMarshal.GetValueRefOrAddDefault(syncTree, gamePath, out var exists);
             if (exists) continue;
