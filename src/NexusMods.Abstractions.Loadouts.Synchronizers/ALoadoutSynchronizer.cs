@@ -224,7 +224,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     {
         // TODO: https://github.com/Nexus-Mods/NexusMods.MnemonicDB/issues/183
         return db.Connection.Query<(EntityId Id, Hash Hash, Size Size, LocationId LocationId, RelativePath Path, string ItemType)>(
-            $"SELECT Id, Hash, Size, Path.Location, Path.Path, ItemType::VARCHAR FROM synchronizer.WinningFiles({db}) WHERE Loadout = {loadoutId}"
+            $"SELECT Id, Hash, Size, Path.Location, Path.Path, ItemType::VARCHAR FROM synchronizer.WinningFiles({db}) WHERE Loadout = {loadoutId} ORDER BY ItemType"
         );
     }
 
@@ -285,6 +285,9 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         {
             var itemType = ToItemType(tuple.ItemType);
 
+            // NOTE(erri120): deleted files are not added to the sync tree
+            if (itemType == LoadoutSourceItemType.Deleted) continue;
+
             var gamePath = new GamePath(tuple.Location, tuple.Path);
             if (gamePath == default(GamePath)) throw new Exception($"Item of type `{itemType}` with ID `{tuple.Id}` has no valid game path!");
 
@@ -320,18 +323,8 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                         LastModifiedTicks = 0,
                     },
                 },
-                LoadoutSourceItemType.Deleted => new SyncNode
-                {
-                    SourceItemType = itemType,
-                    Loadout = new SyncNodePart
-                    {
-                        EntityId = tuple.Id,
-                        Hash = Hash.Zero,
-                        Size = Size.Zero,
-                        LastModifiedTicks = 0,
-                    },
-                },
                 LoadoutSourceItemType.Intrinsic => CreateIntrinsic(gamePath),
+                LoadoutSourceItemType.Deleted => throw new UnreachableException(),
             };
         }
 
@@ -343,8 +336,9 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             if (!IntrinsicFiles(loadout).TryGetValue(gamePath, out var intrinsicFile))
                 throw new ArgumentException($"Unknown intrinsic file: `{gamePath}`", nameof(gamePath));
 
+            // TODO: this is whack and needs change
             using var stream = new MemoryStream();
-            // TODO: depends on the ordering, is expected to be called last
+            // NOTE(erri120): expected to be called last
             // TODO: async call inside a sync method...
             intrinsicFile.Write(stream, loadout, syncTree).Wait();
 
@@ -513,7 +507,6 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 loadoutArchived: item.Loadout.Hash != Hash.Zero && HaveArchive(item.Loadout.Hash),
                 pathIsIgnored: IsIgnoredBackupPath(path),
                 item.SourceItemType);
-
 
             item.Signature = signature;
             item.Actions = ActionMapping.MapActions(signature);

@@ -12,7 +12,7 @@ public class ActionMapping
     /// </summary>
     public static Actions MapActions(Signature signature)
     {
-        return signature == 0 ? DoNothing : MapActions((SignatureShorthand)signature);
+        return MapActions((SignatureShorthand)signature);
     }
 
     /// <summary>
