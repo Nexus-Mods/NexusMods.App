@@ -1,5 +1,7 @@
 # v0.19.4 2025-10-20
+
 This update focuses on quality-of-life improvements, including the addition of right-click context menus, and several critical bug fixes for a smoother experience.
+
 ---
 ### Context Menus Are Here:
 We've added the ability to open a **context menu** by right-clicking on items in the **Loadout** and **Library** pages. This streamlines your workflow by providing quick access to common actions like "Remove" or "View Mod Page."
