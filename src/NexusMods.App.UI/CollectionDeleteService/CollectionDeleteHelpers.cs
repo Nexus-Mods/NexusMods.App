@@ -121,17 +121,14 @@ public static class CollectionDeleteHelpers
     /// <summary>
     /// Shows a delete confirmation dialog for the collection.
     /// </summary>
-    /// <param name="collectionId">The collection group identifier.</param>
+    /// <param name="collectionName">The name of the collection to be deleted.</param>
     /// <param name="windowManager">The window manager to show the dialog.</param>
     /// <returns>True if the user confirms deletion; otherwise, false.</returns>
     public static async Task<bool> ShowDeleteConfirmationDialogAsync(
-        CollectionGroupId collectionId, 
+        string collectionName, 
         IWindowManager windowManager,
         IConnection connection)
     {
-        var group = CollectionGroup.Load(connection.Db, collectionId);
-        var collectionName = group.AsLoadoutItemGroup().AsLoadoutItem().Name;
-
         var dialog = DialogFactory.CreateStandardDialog(
             title: Language.Loadout_DeleteCollection_Confirmation_Title,
             new StandardDialogParameters()

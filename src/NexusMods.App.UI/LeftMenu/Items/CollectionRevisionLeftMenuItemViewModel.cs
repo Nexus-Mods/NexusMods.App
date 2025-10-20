@@ -3,19 +3,15 @@ using System.Reactive.Linq;
 using Avalonia.Threading;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
+using NexusMods.App.UI.CollectionDeleteService;
 using NexusMods.App.UI.Controls.Navigation;
-using NexusMods.App.UI.Dialog;
-using NexusMods.App.UI.Dialog.Enums;
 using NexusMods.App.UI.Pages.CollectionDownload;
-using NexusMods.App.UI.Pages.LoadoutPage;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Collections;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.UI.Sdk;
-using NexusMods.UI.Sdk.Dialog;
-using NexusMods.UI.Sdk.Dialog.Enums;
 using NexusMods.UI.Sdk.Icons;
 using ReactiveUI;
 
@@ -71,7 +67,11 @@ public class CollectionRevisionLeftMenuItemViewModel : LeftMenuItemWithRightIcon
 
         return ReactiveCommand.CreateFromTask(async () =>
         {
-            var confirmed = await ShowDeleteConfirmationDialogAsync();
+            var revision = CollectionRevisionMetadata.Load(_connection.Db, _collectionRevisionMetadataId);
+            
+            var confirmed = await CollectionDeleteHelpers.ShowDeleteConfirmationDialogAsync(
+                revision.Collection.Name, _windowManager, _connection);
+            
             if (!confirmed)
                 return;
 
@@ -97,32 +97,5 @@ public class CollectionRevisionLeftMenuItemViewModel : LeftMenuItemWithRightIcon
                 );
             }
         }, canExecute: canExecute);
-    }
-
-    private async Task<bool> ShowDeleteConfirmationDialogAsync()
-    {
-        var db = _connection.Db;
-        var revision = CollectionRevisionMetadata.Load(db, _collectionRevisionMetadataId);
-        var collectionName = revision.Collection.Name;
-
-        var dialog = DialogFactory.CreateStandardDialog(
-            title: Language.Loadout_DeleteCollection_Confirmation_Title,
-            new StandardDialogParameters()
-            {
-                Text = string.Format(Language.Loadout_DeleteCollection_Confirmation_Message, collectionName),
-            },
-            buttonDefinitions:
-            [
-                DialogStandardButtons.Cancel,
-                new DialogButtonDefinition(Language.Loadout_DeleteCollection_Confirmation_Delete,
-                    ButtonDefinitionId.Accept,
-                    ButtonAction.Accept,
-                    ButtonStyling.Destructive
-                )
-            ]
-        );
-
-        var result = await _windowManager.ShowDialog(dialog, DialogWindowType.Modal);
-        return result.ButtonId == ButtonDefinitionId.Accept;
     }
 }
