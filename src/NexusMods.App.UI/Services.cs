@@ -94,7 +94,6 @@ public static class Services
             // Services
             .AddSingleton<IOverlayController, OverlayController>()
             .AddSingleton<IWindowNotificationService, WindowNotificationService>()
-            .AddSingleton<ICollectionDeleteService, CollectionDeleteService.CollectionDeleteService>()
 
             // View Models
             .AddTransient<MainWindowViewModel>()

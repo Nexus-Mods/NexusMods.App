@@ -11,6 +11,7 @@ using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
+using NexusMods.UI.Sdk;
 using NexusMods.UI.Sdk.Icons;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -28,10 +29,10 @@ public class CollectionLeftMenuItemViewModel : LeftMenuItemViewModel, ILeftMenuI
     
     public CollectionGroupId CollectionGroupId { get; }
     
-    private readonly ICollectionDeleteService _collectionDeleteService;
     private readonly IConnection _connection;
     private readonly IWorkspaceController _workspaceController;
     private readonly bool _isNexusCollection;
+    private readonly IWindowNotificationService _toastNotificationService;
 
     public CollectionLeftMenuItemViewModel(
         IWorkspaceController workspaceController,
@@ -41,7 +42,7 @@ public class CollectionLeftMenuItemViewModel : LeftMenuItemViewModel, ILeftMenuI
         CollectionGroupId collectionGroupId) : base(workspaceController, workspaceId, pageData)
     {
         _connection = serviceProvider.GetRequiredService<IConnection>();
-        _collectionDeleteService = serviceProvider.GetRequiredService<ICollectionDeleteService>();
+        _toastNotificationService = serviceProvider.GetRequiredService<IWindowNotificationService>();
         _workspaceController = workspaceController;
 
         CollectionGroupId = collectionGroupId;
@@ -114,27 +115,12 @@ public class CollectionLeftMenuItemViewModel : LeftMenuItemViewModel, ILeftMenuI
         // Nexus collections can always be uninstalled, regular collections follow CanDeleteCollection logic
         var canExecute = _isNexusCollection 
             ? Observable.Return(true)
-            : _collectionDeleteService.ObserveCanDeleteCollection(CollectionGroupId);
+            : CollectionDeleteHelpers.ObserveCanDeleteCollection(CollectionGroupId, _connection);
 
         return ReactiveCommand.CreateFromTask(async () =>
         {
-            if (_isNexusCollection)
-            {
-                var collectionGroup = CollectionGroup.Load(_connection.Db, CollectionGroupId);
-                if (collectionGroup.TryGetAsNexusCollectionLoadoutGroup(out var nexusCollectionGroup))
-                {
-                    // For Nexus collections, we need to navigate away before deletion
-                    await _collectionDeleteService.DeleteNexusCollectionAsync(
-                        nexusCollectionGroup, 
-                        _workspaceController
-                    );
-                }
-            }
-            else
-            {
-                // For regular collections, just delete without navigation
-                await _collectionDeleteService.DeleteCollectionAsync(CollectionGroupId);
-            }
+            await CollectionDeleteHelpers.DeleteCollectionAsync(CollectionGroupId, _workspaceController, _connection, 
+                _toastNotificationService);
         }, canExecute: canExecute);
     }
 }

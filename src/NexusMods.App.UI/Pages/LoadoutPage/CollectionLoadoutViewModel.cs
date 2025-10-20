@@ -42,7 +42,7 @@ public class CollectionLoadoutViewModel : APageViewModel<ICollectionLoadoutViewM
         CollectionLoadoutPageContext pageContext) : base(windowManager)
     {
         var connection = serviceProvider.GetRequiredService<IConnection>();
-        var collectionDeleteService = serviceProvider.GetRequiredService<ICollectionDeleteService>();
+        var toastNotificationService = serviceProvider.GetRequiredService<IWindowNotificationService>();
 
         var tilePipeline = ImagePipelines.GetCollectionTileImagePipeline(serviceProvider);
         var backgroundPipeline = ImagePipelines.GetCollectionBackgroundImagePipeline(serviceProvider);
@@ -112,7 +112,8 @@ public class CollectionLoadoutViewModel : APageViewModel<ICollectionLoadoutViewM
             executeAsync: async (_, _) =>
             {
                 var workspaceController = GetWorkspaceController();
-                await collectionDeleteService.DeleteNexusCollectionAsync(nexusCollectionGroup, workspaceController);
+                await CollectionDeleteHelpers.DeleteCollectionAsync(nexusCollectionGroup.AsCollectionGroup(), 
+                    workspaceController, connection, toastNotificationService);
             },
             awaitOperation: AwaitOperation.Drop,
             configureAwait: false

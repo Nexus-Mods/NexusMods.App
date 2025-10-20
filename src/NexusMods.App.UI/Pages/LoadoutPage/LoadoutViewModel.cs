@@ -1,15 +1,8 @@
 using System.Reactive.Disposables;
-using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Controls.ApplicationLifetimes;
-using Avalonia.Input.Platform;
-using Avalonia.Threading;
 using DynamicData;
 using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Collections;
-using NexusMods.Abstractions.Games;
-using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Extensions;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
@@ -26,7 +19,6 @@ using NexusMods.App.UI.Dialog;
 using NexusMods.App.UI.Dialog.Enums;
 using NexusMods.App.UI.Pages.LibraryPage;
 using NexusMods.App.UI.Pages.LoadoutGroupFilesPage;
-using NexusMods.App.UI.Pages.LoadoutPage.Dialogs;
 using NexusMods.App.UI.Pages.LoadoutPage.Dialogs.CollectionPublished;
 using NexusMods.App.UI.Pages.LoadoutPage.Dialogs.ShareCollection;
 using NexusMods.App.UI.Pages.Sorting;
@@ -106,7 +98,6 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
     private readonly IConnection _connection;
     private readonly IAvaloniaInterop _avaloniaInterop;
     private readonly IWindowNotificationService _notificationService;
-    private readonly ICollectionDeleteService _collectionDeleteService;
     private readonly ILoadoutManager _loadoutManager;
 
     public LoadoutViewModel(
@@ -117,12 +108,10 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
         Optional<LoadoutPageSubTabs> selectedSubTab = default) : base(windowManager)
     {
         _serviceProvider = serviceProvider;
-        var libraryService = serviceProvider.GetRequiredService<ILibraryService>();
         _connection = serviceProvider.GetRequiredService<IConnection>();
         _nexusModsLibrary = serviceProvider.GetRequiredService<NexusModsLibrary>();
         _avaloniaInterop = serviceProvider.GetRequiredService<IAvaloniaInterop>();
         _notificationService = serviceProvider.GetRequiredService<IWindowNotificationService>();
-        _collectionDeleteService = serviceProvider.GetRequiredService<ICollectionDeleteService>();
         _loadoutManager = serviceProvider.GetRequiredService<ILoadoutManager>();
 
         var settingsManager = serviceProvider.GetRequiredService<ISettingsManager>();
@@ -418,14 +407,15 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                 }
             );
 
-            var canDelete = _collectionDeleteService.ObserveCanDeleteCollection(collectionGroupId.Value).ToObservable();
+            var canDelete = CollectionDeleteHelpers.ObserveCanDeleteCollection(collectionGroupId.Value, _connection)
+                .ToObservable();
 
             CommandDeleteGroup = canDelete.ToReactiveCommand<Unit>(async (_, _) =>
             {
-                var confirmed = await _collectionDeleteService.ShowDeleteConfirmationDialogAsync(collectionGroupId.Value, WindowManager);
+                var confirmed = await CollectionDeleteHelpers.ShowDeleteConfirmationDialogAsync(collectionGroupId.Value, WindowManager, _connection);
                 if (confirmed)
                 {
-                    await _collectionDeleteService.DeleteCollectionAsync(collectionGroupId.Value);
+                    await CollectionDeleteHelpers.DeleteCollectionAsync(collectionGroupId.Value, GetWorkspaceController(), _connection, _notificationService);
                     CommandOpenLibraryPage?.Execute(NavigationInformation.From(OpenPageBehaviorType.ReplaceTab));
                 }
             });
