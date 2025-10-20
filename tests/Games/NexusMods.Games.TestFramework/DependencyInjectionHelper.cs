@@ -88,10 +88,15 @@ public static class DependencyInjectionHelper
         
         if (stubbedFileHashService)
             serviceCollection
-                .AddHashRelationModel()
                 .AddPathHashRelationModel()
+                .AddVersionDefinitionModel()
                 .AddGogBuildModel()
+                .AddGogDepotModel()
+                .AddGogManifestModel()
                 .AddSteamManifestModel()
+                .AddEpicGameStoreBuildModel()
+                .AddFileHashesQueriesSql()
+                .AddHashRelationModel()
                 .AddSingleton<IFileHashesService, StubbedFileHasherService>();
         else 
             serviceCollection
