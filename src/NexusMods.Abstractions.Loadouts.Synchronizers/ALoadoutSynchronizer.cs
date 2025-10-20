@@ -1,6 +1,5 @@
 using System.Collections.Concurrent;
 using System.Collections.Frozen;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -9,24 +8,16 @@ using DynamicData.Kernel;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.Collections;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.FileHashes;
-using NexusMods.Abstractions.Games.FileHashes.Models;
 using NexusMods.Abstractions.GC;
-using NexusMods.Sdk.Hashes;
-using NexusMods.Abstractions.Loadouts.Extensions;
 using NexusMods.Abstractions.Loadouts.Files.Diff;
 using NexusMods.Abstractions.Loadouts.Sorting;
 using NexusMods.Abstractions.Loadouts.Synchronizers.Rules;
-using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Hashing.xxHash3;
-using NexusMods.Hashing.xxHash3.Paths;
 using NexusMods.HyperDuck;
 using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.MnemonicDB.Abstractions.DatomIterators;
 using NexusMods.MnemonicDB.Abstractions.IndexSegments;
-using NexusMods.MnemonicDB.Abstractions.Internals;
 using NexusMods.MnemonicDB.Abstractions.Query;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Paths;
@@ -45,7 +36,6 @@ using DiskState = Entities<DiskStateEntry.ReadOnly>;
 /// Base class for loadout synchronizers, provides some common functionality. Does not have to be user,
 /// but reduces a lot of boilerplate, and is highly recommended.
 /// </summary>
-[PublicAPI]
 public class ALoadoutSynchronizer : ILoadoutSynchronizer
 {
     /// <summary>
@@ -367,24 +357,6 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         }
     }
 
-    public IEnumerable<LoadoutSourceItem> GetNormalGameState(IDb referenceDb, Loadout.ReadOnly loadout)
-    {
-        var locatorIds = loadout.LocatorIds.Distinct().ToArray();
-        if (locatorIds.Length != loadout.LocatorIds.Count)
-            Logger.LogWarning("Found duplicate locator IDs `{LocatorIds}` on Loadout {Name} for game `{Game}` when getting game state", loadout.LocatorIds, loadout.Name, loadout.InstallationInstance.Game.Name);
-        
-        foreach (var item in _fileHashService.GetGameFiles((loadout.InstallationInstance.Store, locatorIds)))
-        {
-            yield return new LoadoutSourceItem
-            {
-                Path = item.Path,
-                Size = item.Size,
-                Hash = item.Hash,
-                Type = LoadoutSourceItemType.Game,
-            };
-        }
-    }
-
     /// <inheritdoc />
     public void MergeStates(IEnumerable<PathPartPair> currentState, IEnumerable<PathPartPair> previousTree, Dictionary<GamePath, SyncNode> loadoutItems)
     {
@@ -421,14 +393,6 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         }
     }
 
-    /// <summary>
-    /// Returns true if the file and all its parents are not disabled.
-    /// </summary>
-    private static bool FileIsEnabled(LoadoutItem.ReadOnly arg)
-    {
-        return !arg.GetThisAndParents().Any(f => f.Contains(LoadoutItem.Disabled));
-    }
-
     /// <inheritdoc />
     public async Task<Dictionary<GamePath, SyncNode>> BuildSyncTree(Loadout.ReadOnly loadout)
     {
@@ -440,8 +404,6 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         return BuildSyncTree(currentItems, prevItems, loadout);
     }
 
-
-    
     /// <summary>
     /// This is a highly optimized way to load all the disk state for a game. It's a sorted merge
     /// join over all the required attributes for the results
@@ -1172,120 +1134,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     {
         return _fileStore.HaveFile(hash).Result;
     }
-    
-    /// <summary>
-    /// Return true if the replacement should win over the existing item.
-    /// </summary>
-    private bool ShouldWinWrapper(IDb db, in GamePath path, in SyncNodePart existing, LoadoutSourceItemType existingItemType, in SyncNodePart replacement, LoadoutSourceItemType replacementItemType)
-    {
-        // Game files always lose
-        if (existingItemType == LoadoutSourceItemType.Game)
-            return true;
-        
-        // TODO: we don't often have many files that conflict by name, but we should speed this code up at some point
-        var existingLoadoutItem = LoadoutItem.Load(db, existing.EntityId);
-        var existingInOverrides = existingLoadoutItem
-            .GetThisAndParents()
-            .OfTypeLoadoutItemGroup()
-            .OfTypeLoadoutOverridesGroup()
-            .Any();
-        
-        var replacementLoadoutItem = LoadoutItem.Load(db, replacement.EntityId);
-        var replacementInOverrides = replacementLoadoutItem
-            .GetThisAndParents()
-            .OfTypeLoadoutItemGroup()
-            .OfTypeLoadoutOverridesGroup()
-            .Any();
-        
-        // Overrides always win
-        if (existingInOverrides && !replacementInOverrides)
-            return false;
-        else if (!existingInOverrides && replacementInOverrides)
-            return true;
-        else if (existingInOverrides && replacementInOverrides)
-            return false;
-        
-        // Return the newer one
-        return ShouldWin(path, existingLoadoutItem, replacementLoadoutItem);
-    }
 
-    /// <summary>
-    /// Returns true if <paramref name="b"/> should win over <paramref name="a"/> based
-    /// on rules defined in a collection.
-    /// </summary>
-    protected Optional<bool> ShouldOtherWinWithCollectionRules(LoadoutItem.ReadOnly a, LoadoutItem.ReadOnly b)
-    {
-        var hasDownloadA = a
-            .GetThisAndParents()
-            .OfTypeLoadoutItemGroup()
-            .OfTypeNexusCollectionItemLoadoutGroup()
-            .Select(static item => item.Download)
-            .TryGetFirst(out var downloadA);
-
-        if (!hasDownloadA) return Optional<bool>.None;
-        var hasDownloadB = b
-            .GetThisAndParents()
-            .OfTypeLoadoutItemGroup()
-            .OfTypeNexusCollectionItemLoadoutGroup()
-            .Select(static item => item.Download)
-            .TryGetFirst(out var downloadB);
-
-        if (!hasDownloadB) return Optional<bool>.None;
-        if (downloadA.CollectionRevisionId != downloadB.CollectionRevisionId) return Optional<bool>.None;
-
-        var db = downloadA.Db;
-
-        // use `downloadA` as `source` and `downloadB` as `other`
-        var ids = db.Datoms(
-            (CollectionDownloadRules.Source, downloadA),
-            (CollectionDownloadRules.Other, downloadB)
-        );
-
-        foreach (var id in ids)
-        {
-            var rule = CollectionDownloadRules.Load(db, id);
-            if (!rule.IsValid()) continue;
-
-            // `source` goes before `other`, meaning `a` doesn't win over `b`
-            if (rule.RuleType == CollectionDownloadRuleType.Before) return true;
-
-            // `source` goes after `other`, meaning `a` wins over `b`
-            if (rule.RuleType == CollectionDownloadRuleType.After) return false;
-        }
-
-        // use `downloadB` as `source` and `downloadA` as `other`
-        ids = db.Datoms(
-            (CollectionDownloadRules.Source, downloadB),
-            (CollectionDownloadRules.Other, downloadA)
-        );
-
-        foreach (var id in ids)
-        {
-            var rule = CollectionDownloadRules.Load(db, id);
-            if (!rule.IsValid()) continue;
-
-            // `source` goes after `other`, meaning `b` wins over `a`
-            if (rule.RuleType == CollectionDownloadRuleType.After) return true;
-
-            // `source` goes before `other`, meaning `b` doesn't win over `a`
-            if (rule.RuleType == CollectionDownloadRuleType.Before) return false;
-        }
-
-        return Optional<bool>.None;
-    }
-
-    /// <summary>
-    /// Override this method to provide custom logic for determining which file should win in a conflict. Return true if the
-    /// replacement should win over the existing item.
-    /// </summary>
-    protected virtual bool ShouldWin(in GamePath path, LoadoutItem.ReadOnly existing, LoadoutItem.ReadOnly replacement)
-    {
-        var optional = ShouldOtherWinWithCollectionRules(existing, replacement);
-        if (optional.HasValue) return optional.Value;
-
-        return replacement.Id > existing.Id;
-    }
-    
     /// <summary>
     /// Returns true if the loadout state doesn't match the last scanned disk state.
     /// </summary>
