@@ -10,12 +10,6 @@ namespace NexusMods.App.UI.CollectionDeleteService;
 /// </summary>
 public interface ICollectionDeleteService
 {
-    /// <summary>
-    /// Gets the action text for the collection delete operation.
-    /// </summary>
-    /// <param name="collectionId">The collection group identifier.</param>
-    /// <returns>The action text to display.</returns>
-    string GetActionText(CollectionGroupId collectionId);
     
     /// <summary>
     /// Determines whether the collection can be deleted.

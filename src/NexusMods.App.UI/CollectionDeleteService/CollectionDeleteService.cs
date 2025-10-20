@@ -23,13 +23,7 @@ public class CollectionDeleteService(
     IConnection connection,
     IWindowNotificationService notificationService) : ICollectionDeleteService
 {
-    /// <inheritdoc />
-    public string GetActionText(CollectionGroupId collectionId)
-    {
-        var group = CollectionGroup.Load(connection.Db, collectionId);
-        return group.IsReadOnly ? Language.Loadout_UninstallItem_Menu_Text__Uninstall_read_only : Language.Library_DeleteItem_Text;
-    }
-
+    
     /// <inheritdoc />
     public bool CanDeleteCollection(CollectionGroupId collectionId)
     {
