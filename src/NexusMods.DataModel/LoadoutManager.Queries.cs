@@ -9,7 +9,7 @@ internal partial class LoadoutManager
 {
     private static ConflictPriority GetNextPriority(LoadoutId loadoutId, IDb db)
     {
-        var query = db.Connection.Query<ulong>($"SELECT MaxPriority FROM synchronizer.MaxPriority({db}, {loadoutId})");
+        var query = db.Connection.Query<ulong>($"SELECT MaxPriority FROM synchronizer.MaxPriority({db}) WHERE Loadout = {loadoutId}");
 
         // TODO: https://github.com/Nexus-Mods/NexusMods.MnemonicDB/issues/181
         var results = query.ToArray();

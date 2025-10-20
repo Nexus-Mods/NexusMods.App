@@ -35,7 +35,7 @@ GROUP BY manifests.AppId
 Having DepotId is not null;
 
 -- ENUM of all the store names
-CREATE TYPE file_hashes.Stores AS ENUM ('GOG', 'Steam');
+CREATE TYPE file_hashes.Stores AS ENUM ('Unknown', 'GOG', 'Steam');
 
 -- gets all the loadouts, locatorids, and stores
 CREATE MACRO file_hashes.loadout_locatorids(db) AS TABLE
