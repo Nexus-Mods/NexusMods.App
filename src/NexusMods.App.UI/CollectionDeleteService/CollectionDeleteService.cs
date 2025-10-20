@@ -1,3 +1,4 @@
+using Avalonia.Threading;
 using DynamicData;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Collections;
@@ -110,9 +111,9 @@ public class CollectionDeleteService(
             },
         };
 
-        await workspaceController.ReplaceTabsMatchingAcrossAllWorkspacesAsync<CollectionLoadoutPageContext>(
-            context => context.GroupId == CollectionGroupId.From(group.Id),
-            pageData
+        await Dispatcher.UIThread.InvokeAsync(() =>
+            workspaceController.ReplacePages<CollectionLoadoutPageContext>(
+                context => context.GroupId == CollectionGroupId.From(group.Id), pageData)
         );
         
         using var tx = connection.BeginTransaction();

@@ -1,5 +1,6 @@
 using System.Reactive;
 using System.Reactive.Linq;
+using Avalonia.Threading;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.App.UI.Controls.Navigation;
@@ -83,8 +84,9 @@ public class CollectionRevisionLeftMenuItemViewModel : LeftMenuItemWithRightIcon
                 );
 
                 // Navigate away from the deleted revision page to default new tab
-                await _workspaceController.ReplaceTabsMatchingAcrossAllWorkspacesAsync<CollectionDownloadPageContext>(
-                    context => context.CollectionRevisionMetadataId == _collectionRevisionMetadataId
+                await Dispatcher.UIThread.InvokeAsync(() =>
+                    _workspaceController.ReplacePages<CollectionDownloadPageContext>(
+                    context => context.CollectionRevisionMetadataId == _collectionRevisionMetadataId)
                 );
             }
             catch (Exception ex)

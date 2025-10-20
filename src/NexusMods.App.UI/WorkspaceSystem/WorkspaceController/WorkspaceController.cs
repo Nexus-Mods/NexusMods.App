@@ -443,36 +443,31 @@ internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
         return workspace.GetDefaultPageData();
     }
 
-    /// <inheritdoc/>
-    public Task ReplaceTabsMatchingAcrossAllWorkspacesAsync(Func<PageData, bool> predicate, Optional<PageData> targetPageData = default)
+    public void ReplacePages<TContext>(Func<TContext, bool> matchPredicate, Optional<PageData> targetPageData = default) where TContext : IPageFactoryContext
     {
-        return Dispatcher.UIThread.InvokeAsync(() =>
-        {
-            foreach (var workspace in AllWorkspaces)
-            {
-                var replacementPageData = targetPageData.HasValue ? targetPageData.Value : GetDefaultPageData(workspace.Id);
-
-                foreach (var panel in workspace.Panels)
-                {
-                    foreach (var tab in panel.Tabs)
-                    {
-                        if (!predicate(tab.Contents.PageData)) continue;
-                        var behavior = new OpenPageBehavior.ReplaceTab(panel.Id, tab.Id);
-                        OpenPage(workspace.Id, replacementPageData, behavior, checkOtherPanels: false);
-                    }
-                }
-            }
-        }).GetTask();
-    }
-
-    /// <inheritdoc/>
-    public Task ReplaceTabsMatchingAcrossAllWorkspacesAsync<TContext>(
-        Func<TContext, bool> predicate, 
-        Optional<PageData> targetPageData = default) where TContext : IPageFactoryContext
-    {
-        return ReplaceTabsMatchingAcrossAllWorkspacesAsync(
-            pageData => pageData.Context is TContext context && predicate(context), 
+        ReplacePagesCore(
+            pageData => pageData.Context is TContext context && matchPredicate(context), 
             targetPageData
         );
+    }
+
+    private void ReplacePagesCore(Func<PageData, bool> predicate, Optional<PageData> targetPageData = default)
+    {
+        Dispatcher.UIThread.VerifyAccess();
+        
+        foreach (var workspace in AllWorkspaces)
+        {
+            var replacementPageData = targetPageData.HasValue ? targetPageData.Value : GetDefaultPageData(workspace.Id);
+
+            foreach (var panel in workspace.Panels)
+            {
+                foreach (var tab in panel.Tabs)
+                {
+                    if (!predicate(tab.Contents.PageData)) continue;
+                    var behavior = new OpenPageBehavior.ReplaceTab(panel.Id, tab.Id);
+                    OpenPage(workspace.Id, replacementPageData, behavior, checkOtherPanels: false);
+                }
+            }
+        }
     }
 }
