@@ -110,12 +110,7 @@ public class CollectionDeleteService(
                 context => context.GroupId == CollectionGroupId.From(group.Id), pageData)
         );
         
-        using var tx = connection.BeginTransaction();
-        
-        // Delete collection loadout group and all installed mods inside it
-        tx.Delete(nexusCollectionGroup.Id, recursive: true);
-        
-        await tx.Commit();
+        await CollectionCreator.DeleteCollectionGroup(connection, group.Id, CancellationToken.None);
         
         notificationService.ShowToast(Language.ToastNotification_Collection_removed);
     }
