@@ -36,7 +36,7 @@ using DiskState = Entities<DiskStateEntry.ReadOnly>;
 /// Base class for loadout synchronizers, provides some common functionality. Does not have to be user,
 /// but reduces a lot of boilerplate, and is highly recommended.
 /// </summary>
-public class ALoadoutSynchronizer : ILoadoutSynchronizer
+public partial class ALoadoutSynchronizer : ILoadoutSynchronizer
 {
     /// <summary>
     /// We'll limit backups to 2GB, for now we should never see much more than this
@@ -194,38 +194,6 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         };
 
         return newOverrides.Id;
-    }
-
-    private static Query<(LocationId Location, RelativePath Path, List<(EntityId Id, bool IsEnabled, bool IsDeleted)>)> FileConflictsQuery(IDb db, LoadoutId loadoutId, bool removeDuplicates)
-    {
-        return db.Connection.Query<(LocationId Location, RelativePath Path, List<(EntityId Id, bool IsEnabled, bool IsDeleted)>)>(
-            $"SELECT Path.Location, Path.Path, Conflicts FROM synchronizer.FileConflicts({db}, {loadoutId}, {removeDuplicates})"
-        );
-    }
-
-    private static Query<(EntityId GroupId, List<(EntityId Id, LocationId Location, RelativePath Path)>)> FileConflictsByParentGroupQuery(IDb db, LoadoutId loadoutId, bool removeDuplicates)
-    {
-        return db.Connection.Query<(EntityId GroupId, List<(EntityId Id, LocationId Location, RelativePath Path)>)>(
-            $"SELECT * FROM synchronizer.FileConflictsByParentGroup({db}, {loadoutId}, {removeDuplicates})"
-        );
-    }
-
-    // TODO: https://github.com/Nexus-Mods/NexusMods.MnemonicDB/issues/183
-    private static LoadoutSourceItemType ToItemType(string value) => value switch
-    {
-        "Loadout" => LoadoutSourceItemType.Loadout,
-        "Game" => LoadoutSourceItemType.Game,
-        "Deleted" => LoadoutSourceItemType.Deleted,
-        "Intrinsic" => LoadoutSourceItemType.Intrinsic,
-        _ => throw new ArgumentException($"Unknown item type: `{value}`", nameof(value)),
-    };
-
-    private static Query<(EntityId Id, Hash Hash, Size Size, LocationId Location, RelativePath Path, string ItemType)> WinningFilesQuery(IDb db, LoadoutId loadoutId)
-    {
-        // TODO: https://github.com/Nexus-Mods/NexusMods.MnemonicDB/issues/183
-        return db.Connection.Query<(EntityId Id, Hash Hash, Size Size, LocationId LocationId, RelativePath Path, string ItemType)>(
-            $"SELECT Id, Hash, Size, Path.Location, Path.Path, ItemType::VARCHAR FROM synchronizer.WinningFiles({db}) WHERE Loadout = {loadoutId} ORDER BY ItemType"
-        );
     }
 
     public Dictionary<GamePath, FileConflictGroup> GetFileConflicts(Loadout.ReadOnly loadout, bool removeDuplicates = true)
