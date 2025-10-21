@@ -108,25 +108,33 @@ public class FileConflictsTreeDataGridAdapter : TreeDataGridAdapter<CompositeIte
             })
         );
         
+        
+        // Move up command
         model.SubscribeToComponentAndTrack<SharedComponents.IndexComponent, FileConflictsTreeDataGridAdapter>(
-            key: FileConflictsColumns.IndexColumn.IndexComponentKey,
+            key: LoadOrderColumns.IndexColumn.IndexComponentKey,
             state: this,
-            factory: static (self, itemModel, component) =>
-            {
-                component.MoveUp.Subscribe((self, itemModel), static (_, state) =>
-                {
-                    var (self, itemModel) = state;
-                    self.MessageSubject.OnNext(new MoveUpCommandPayload(itemModel));
-                });
-
-                component.MoveDown.Subscribe((self, itemModel), static (_, state) =>
-                {
-                    var (self, itemModel) = state;
-                    self.MessageSubject.OnNext(new MoveDownCommandPayload(itemModel));
-                });
-                
-                return Disposable.Empty;
-            }
+            factory: static (adapter, itemModel, component) => component.MoveUp
+                .Subscribe((adapter, itemModel, component),
+                    static (_, tuple) =>
+                    {
+                        var (adapter, itemModel, _) = tuple;
+                        adapter.MessageSubject.OnNext(new MoveUpCommandPayload(itemModel));
+                    }
+                )
+        );
+        
+        // Move down command
+        model.SubscribeToComponentAndTrack<SharedComponents.IndexComponent, FileConflictsTreeDataGridAdapter>(
+            key: LoadOrderColumns.IndexColumn.IndexComponentKey,
+            state: this,
+            factory: static (adapter, itemModel, component) => component.MoveDown
+                .Subscribe((adapter, itemModel, component),
+                    static (_, tuple) =>
+                    {
+                        var (adapter, itemModel, _) = tuple;
+                        adapter.MessageSubject.OnNext(new MoveDownCommandPayload(itemModel));
+                    }
+                )
         );
     }
 
