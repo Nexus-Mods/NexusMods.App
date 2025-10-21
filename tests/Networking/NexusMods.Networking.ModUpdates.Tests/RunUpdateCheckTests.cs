@@ -6,10 +6,8 @@ using NexusMods.Games.RedEngine.Cyberpunk2077;
 using NexusMods.Games.TestFramework;
 using NexusMods.Networking.ModUpdates.Tests.Helpers;
 using NexusMods.Networking.NexusWebApi;
-using Xunit;
+using NexusMods.Sdk.NexusModsApi;
 using Xunit.Abstractions;
-using FileId = NexusMods.Abstractions.NexusWebApi.Types.V2.FileId;
-using ModId = NexusMods.Sdk.NexusModsApi.ModId;
 
 namespace NexusMods.Networking.ModUpdates.Tests;
 

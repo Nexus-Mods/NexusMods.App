@@ -16,7 +16,7 @@ public class NXMModUrl : NXMUrl
     /// <summary>
     /// id of the file (within that game domain)
     /// </summary>
-    public V2.FileId FileId { get; set; }
+    public FileId FileId { get; set; }
 
     /// <summary>
     /// game domain (name of the game within the Nexus Mods page)
@@ -39,7 +39,7 @@ public class NXMModUrl : NXMUrl
         try
         {
             ModId = ModId.From(uint.Parse(uri.Segments[2].TrimEnd('/')));
-            FileId = V2.FileId.From(uint.Parse(uri.Segments[4].TrimEnd('/')));
+            FileId = FileId.From(uint.Parse(uri.Segments[4].TrimEnd('/')));
         }
         catch (FormatException)
         {

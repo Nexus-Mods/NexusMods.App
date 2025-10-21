@@ -14,7 +14,6 @@ using NexusMods.Paths;
 using NexusMods.Sdk.ProxyConsole;
 using NexusMods.StandardGameLocators;
 using StrawberryShake;
-using ModId = NexusMods.Sdk.NexusModsApi.ModId;
 
 namespace NexusMods.Games.TestHarness.Verbs;
 
@@ -43,7 +42,7 @@ public class StressTest
 
         var domain = domainToIdCache[game.GameId].Value;
         var mods = await nexusApiClient.ModUpdatesAsync(domain, PastTime.Day, token);
-        var results = new List<(string FileName, ModId ModId, Abstractions.NexusWebApi.Types.V2.FileId FileId, Hash Hash, bool Passed, Exception? exception)>();
+        var results = new List<(string FileName, Sdk.NexusModsApi.ModId ModId, Sdk.NexusModsApi.FileId FileId, Hash Hash, bool Passed, Exception? exception)>();
 
         await using var gameFolder = temporaryFileManager.CreateFolder();
         var (manualId, install) = await manualLocator.Add(game, new Version(1, 0), gameFolder);
