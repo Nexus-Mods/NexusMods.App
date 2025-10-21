@@ -13,12 +13,18 @@ public partial class FileConflictsView : R3UserControl<IFileConflictsViewModel>
         InitializeComponent();
 
         TreeDataGridViewHelper.SetupTreeDataGridAdapter<FileConflictsView, IFileConflictsViewModel, CompositeItemModel<EntityId>, EntityId>(
-            this, TreeDataGrid, vm => vm.TreeDataGridAdapter);
+            this, 
+            TreeDataGrid, 
+            vm => vm.TreeDataGridAdapter,
+            enableDragAndDrop: true);
 
         this.WhenActivated(disposables =>
         {
-            this.OneWayR3Bind(view => view.BindableViewModel, vm => vm.TreeDataGridAdapter.Source, (view, source) => view.TreeDataGrid.Source = source)
+            this.OneWayR3Bind(view => view.BindableViewModel, vm => vm.TreeDataGridAdapter.Source, 
+                    (view, source) => view.TreeDataGrid.Source = source)
                 .AddTo(disposables);
+            
+            
         });
     }
 }

@@ -1,7 +1,6 @@
 using System.Collections.Frozen;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Reactive.Disposables;
 using Avalonia.Controls;
 using Avalonia.Controls.Models.TreeDataGrid;
 using Avalonia.Media.Imaging;
@@ -22,15 +21,16 @@ using NexusMods.Sdk.Resources;
 using NexusMods.UI.Sdk;
 using R3;
 using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.Pages.Sorting;
 
 public class FileConflictsViewModel : AViewModel<IFileConflictsViewModel>, IFileConflictsViewModel
 {
+    private BindableReactiveProperty<ListSortDirection> _sortDirectionCurrent { get; set; }
+
     public FileConflictsTreeDataGridAdapter TreeDataGridAdapter { get; }
-    
-    [Reactive] public ListSortDirection SortDirectionCurrent { get; set; }
+
+    public IReadOnlyBindableReactiveProperty<ListSortDirection> SortDirectionCurrent => _sortDirectionCurrent;
 
     public FileConflictsViewModel(IServiceProvider serviceProvider, IWindowManager windowManager, LoadoutId loadoutId)
     {
@@ -40,6 +40,9 @@ public class FileConflictsViewModel : AViewModel<IFileConflictsViewModel>, IFile
         Debug.Assert(loadout.IsValid());
 
         var synchronizer = loadout.InstallationInstance.GetGame().Synchronizer;
+
+        _sortDirectionCurrent = new BindableReactiveProperty<ListSortDirection>(ListSortDirection.Ascending);
+        
         TreeDataGridAdapter = new FileConflictsTreeDataGridAdapter(serviceProvider, connection, synchronizer, loadoutId);
 
         this.WhenActivated(disposables =>
@@ -89,18 +92,18 @@ public class FileConflictsViewModel : AViewModel<IFileConflictsViewModel>, IFile
                             TargetRelativePosition relativePosition;
                             switch (eventArgs.Position)
                             {
-                                case TreeDataGridRowDropPosition.Before when SortDirectionCurrent == ListSortDirection.Ascending:
-                                case TreeDataGridRowDropPosition.After when SortDirectionCurrent == ListSortDirection.Descending:
+                                case TreeDataGridRowDropPosition.Before when SortDirectionCurrent.Value == ListSortDirection.Ascending:
+                                case TreeDataGridRowDropPosition.After when SortDirectionCurrent.Value == ListSortDirection.Descending:
                                     relativePosition = TargetRelativePosition.BeforeTarget;
                                     break;
-                                case TreeDataGridRowDropPosition.After when SortDirectionCurrent == ListSortDirection.Ascending:
-                                case TreeDataGridRowDropPosition.Before when SortDirectionCurrent == ListSortDirection.Descending:
+                                case TreeDataGridRowDropPosition.After when SortDirectionCurrent.Value == ListSortDirection.Ascending:
+                                case TreeDataGridRowDropPosition.Before when SortDirectionCurrent.Value == ListSortDirection.Descending:
                                     relativePosition = TargetRelativePosition.AfterTarget;
                                     break;
-                                case TreeDataGridRowDropPosition.Inside when SortDirectionCurrent == ListSortDirection.Ascending:
+                                case TreeDataGridRowDropPosition.Inside when SortDirectionCurrent.Value == ListSortDirection.Ascending:
                                     relativePosition = PointerIsInVerticalTopHalf(eventArgs) ? TargetRelativePosition.BeforeTarget : TargetRelativePosition.AfterTarget;
                                     break;
-                                case TreeDataGridRowDropPosition.Inside when SortDirectionCurrent == ListSortDirection.Descending:
+                                case TreeDataGridRowDropPosition.Inside when SortDirectionCurrent.Value == ListSortDirection.Descending:
                                     relativePosition = PointerIsInVerticalTopHalf(eventArgs) ? TargetRelativePosition.AfterTarget : TargetRelativePosition.BeforeTarget;
                                     break;
                                 case TreeDataGridRowDropPosition.None:
