@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Xml;
 using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -6,8 +7,11 @@ using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Games.FileHashes;
 using NexusMods.Abstractions.GC;
+using NexusMods.Abstractions.Library.Installers;
+using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
+using NexusMods.Abstractions.Loadouts.Synchronizers.Conflicts;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.DatomIterators;
 using NexusMods.MnemonicDB.Abstractions.Internals;
@@ -16,9 +20,10 @@ using NexusMods.Sdk.Jobs;
 
 namespace NexusMods.DataModel;
 
-internal class LoadoutManager : ILoadoutManager
+internal partial class LoadoutManager : ILoadoutManager
 {
     private readonly ILogger _logger;
+    private readonly IServiceProvider _serviceProvider;
     private readonly IJobMonitor _jobMonitor;
     private readonly IFileHashesService _fileHashesService;
     private readonly IConnection _connection;
@@ -28,6 +33,7 @@ internal class LoadoutManager : ILoadoutManager
     public LoadoutManager(IServiceProvider serviceProvider)
     {
         _logger = serviceProvider.GetRequiredService<ILogger<LoadoutManager>>();
+        _serviceProvider = serviceProvider;
         _jobMonitor = serviceProvider.GetRequiredService<IJobMonitor>();
         _fileHashesService = serviceProvider.GetRequiredService<IFileHashesService>();
         _connection = serviceProvider.GetRequiredService<IConnection>();
@@ -219,6 +225,11 @@ internal class LoadoutManager : ILoadoutManager
             tx.Delete(item.Id, recursive: false);
         }
 
+        foreach (var priorityEntity in LoadoutItemGroupPriority.FindByLoadout(loadout.Db, loadout))
+        {
+            tx.Delete(priorityEntity, recursive: false);
+        }
+
         await tx.Commit();
         
         // Execute the garbage collector
@@ -230,7 +241,7 @@ internal class LoadoutManager : ILoadoutManager
         var loadout = Loadout.Load(_connection.Db, loadoutId);
         var synchronizer = loadout.InstallationInstance.GetGame().Synchronizer;
 
-        var state = await synchronizer.ReindexState(loadout.InstallationInstance, ignoreModifiedDates: false);
+        var state = await synchronizer.ReindexState(loadout.InstallationInstance);
         await synchronizer.BuildProcessRun(loadout, state, cancellationToken);
     }
 
@@ -322,5 +333,104 @@ internal class LoadoutManager : ILoadoutManager
             if (runGc) _garbageCollectorRunner.Run();
             return installation;
         });
+    }
+
+    public IJobTask<IInstallLoadoutItemJob, InstallLoadoutItemJobResult> InstallItem(
+        LibraryItem.ReadOnly libraryItem,
+        LoadoutId targetLoadout,
+        Optional<LoadoutItemGroupId> parent = default,
+        ILibraryItemInstaller? installer = null,
+        ILibraryItemInstaller? fallbackInstaller = null)
+    {
+        return InstallItem(libraryItem, targetLoadout, inputTx: null, parent: parent, installer: installer, fallbackInstaller: fallbackInstaller);
+    }
+
+    private IJobTask<IInstallLoadoutItemJob, InstallLoadoutItemJobResult> InstallItem(
+        LibraryItem.ReadOnly libraryItem,
+        LoadoutId targetLoadout,
+        ITransaction? inputTx,
+        Optional<LoadoutItemGroupId> parent = default,
+        ILibraryItemInstaller? installer = null,
+        ILibraryItemInstaller? fallbackInstaller = null)
+    {
+        var mainTransaction = inputTx is null ? _connection.BeginTransaction() : null;
+        var tx = inputTx ?? mainTransaction!;
+
+        var job = InstallLoadoutItemJob.Create(_serviceProvider, libraryItem, targetLoadout, tx, groupId: parent, installer: installer, fallbackInstaller: fallbackInstaller);
+        return _jobMonitor.Begin(job, async context =>
+        {
+            var result = await job.StartAsync(context);
+            var targetId = result.GroupTxId;
+            tx.Add(new AddPriorityTxFunc(targetLoadout, targetId));
+
+            if (mainTransaction is null) return new InstallLoadoutItemJobResult(null, targetId);
+
+            var commitResult = await mainTransaction.Commit();
+            var remapped = commitResult[targetId];
+            mainTransaction.Dispose();
+
+            return new InstallLoadoutItemJobResult(LoadoutItemGroup.Load(commitResult.Db, remapped), LoadoutItemGroupId.From(0));
+        });
+    }
+
+    public async ValueTask RemoveItems(LoadoutItemGroupId[] groupIds)
+    {
+        using var tx = _connection.BeginTransaction();
+        RemoveItems(tx, groupIds);
+        await tx.Commit();
+    }
+
+    private void RemoveItems(ITransaction tx, LoadoutItemGroupId[] groupIds)
+    {
+        var db = _connection.Db;
+        var loadouts = new Dictionary<LoadoutId, List<LoadoutItemGroupId>>();
+
+        foreach (var groupId in groupIds)
+        {
+            var group = LoadoutItemGroup.Load(db, groupId);
+            if (!group.IsValid()) continue;
+
+            tx.Delete(groupId, recursive: true);
+
+            var priorities = LoadoutItemGroupPriority.FindByTarget(db, groupId);
+            foreach (var priority in priorities)
+            {
+                tx.Delete(priority.Id, recursive: false);
+            }
+
+            var loadoutId = group.AsLoadoutItem().LoadoutId;
+            if (!loadouts.TryGetValue(loadoutId, out var list))
+            {
+                list = new List<LoadoutItemGroupId>(capacity: groupIds.Length);
+                loadouts[loadoutId] = list;
+            }
+
+            list.Add(groupId);
+        }
+
+        foreach (var kv in loadouts)
+        {
+            tx.Add(new RebalancePrioritiesTxFunc(kv.Key, kv.Value.Select(x => x.Value).ToArray()));
+        }
+    }
+
+    public async ValueTask RemoveCollection(LoadoutId loadoutId, CollectionGroupId collection)
+    {
+        var db = _connection.Db;
+        using var tx = _connection.BeginTransaction();
+
+        tx.Delete(collection, recursive: true);
+        var groupIds = LoadoutItem.FindByParent(db, collection).OfTypeLoadoutItemGroup().Select(x => x.LoadoutItemGroupId).ToArray();
+        RemoveItems(tx, groupIds);
+
+        await tx.Commit();
+    }
+
+    public async ValueTask ReplaceItems(LoadoutId loadoutId, LoadoutItemGroupId[] groupsToRemove, LibraryItem.ReadOnly libraryItemToInstall)
+    {
+        using var tx = _connection.BeginTransaction();
+        RemoveItems(tx, groupsToRemove);
+        await InstallItem(libraryItemToInstall, loadoutId, inputTx: tx);
+        await tx.Commit();
     }
 }

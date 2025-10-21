@@ -7,6 +7,7 @@ using NexusMods.Backend;
 using NexusMods.CrossPlatform;
 using NexusMods.DataModel;
 using NexusMods.FileExtractor;
+using NexusMods.Games.FileHashes;
 using NexusMods.Library;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.HttpDownloader.Tests;
@@ -37,6 +38,7 @@ public class Startup
             .AddLibrary()
             .AddLibraryModels()
             .AddFileExtractors()
+            .AddFileHashes()
             .AddDataModel() // this is required because we're also using NMA integration
             .OverrideSettingsForTests<DataModelSettings>(settings => settings with
             {
