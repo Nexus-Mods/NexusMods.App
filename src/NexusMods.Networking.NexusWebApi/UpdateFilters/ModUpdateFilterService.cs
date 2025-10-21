@@ -4,6 +4,7 @@ using System.Reactive.Subjects;
 using NexusMods.Abstractions.NexusWebApi.Types.V2.Uid;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
+using NexusMods.Sdk.NexusModsApi;
 
 namespace NexusMods.Networking.NexusWebApi.UpdateFilters;
 

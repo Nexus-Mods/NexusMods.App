@@ -1,6 +1,7 @@
 using JetBrains.Annotations;
 using NexusMods.Abstractions.NexusWebApi.Types.V2.Uid;
 using NexusMods.MnemonicDB.Abstractions.Models;
+using NexusMods.Sdk.NexusModsApi;
 
 namespace NexusMods.Networking.NexusWebApi.UpdateFilters;
 

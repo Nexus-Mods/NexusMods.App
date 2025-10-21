@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Time.Testing;
 using NexusMods.Abstractions.NexusWebApi;
 using DynamicData.Kernel;
+using NexusMods.Sdk.NexusModsApi;
 
 namespace NexusMods.Networking.NexusWebApi.Tests.Filters;
 

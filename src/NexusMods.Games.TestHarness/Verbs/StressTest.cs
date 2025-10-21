@@ -11,6 +11,7 @@ using NexusMods.Games.AdvancedInstaller.UI;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Paths;
+using NexusMods.Sdk.NexusModsApi;
 using NexusMods.Sdk.ProxyConsole;
 using NexusMods.StandardGameLocators;
 using StrawberryShake;

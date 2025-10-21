@@ -8,6 +8,8 @@ using NexusMods.Networking.ModUpdates;
 using NexusMods.Networking.ModUpdates.Mixins;
 using NexusMods.Networking.ModUpdates.Traits;
 using NexusMods.Networking.NexusWebApi.Extensions;
+using NexusMods.Sdk.NexusModsApi;
+
 namespace NexusMods.Networking.NexusWebApi;
 
 /// <summary>
