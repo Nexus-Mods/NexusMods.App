@@ -481,7 +481,7 @@ public partial class NexusModsLibrary
         ICollectionRevision collectionRevision)
     {
         var res = new ResolvedEntitiesLookup();
-        var modPageIds = new Dictionary<UidForMod, EntityId>();
+        var modPageIds = new Dictionary<ModUid, EntityId>();
 
         foreach (var modFile in collectionRevision.ModFiles)
         {
@@ -492,7 +492,7 @@ public partial class NexusModsLibrary
             // method. Otherwise, if a collection contains two files from the same mod page
             // and the mod page isn't in the DB, we'll end up creating two mod pages, one for
             // each file.
-            var uidForMod = UidForMod.FromV2Api(file.Mod.Uid);
+            var uidForMod = ModUid.FromV2Api(file.Mod.Uid);
             if (!modPageIds.TryGetValue(uidForMod, out var modEntityId))
             {
                 modEntityId = file.Mod.Resolve(db, tx, setFilesTimestamp: false);
@@ -590,7 +590,7 @@ public partial class NexusModsLibrary
         GameIdCache gameIds,
         ResolvedEntitiesLookup resolvedEntitiesLookup)
     {
-        var modId = new UidForMod(collectionMod.Source.ModId, gameIds[collectionMod.DomainName]);
+        var modId = new ModUid(collectionMod.Source.ModId, gameIds[collectionMod.DomainName]);
 
         var fileId = new FileUid(fileId: collectionMod.Source.FileId, gameId: gameIds[collectionMod.DomainName]);
 

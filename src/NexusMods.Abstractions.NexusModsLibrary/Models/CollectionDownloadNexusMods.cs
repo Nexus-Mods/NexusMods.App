@@ -24,9 +24,9 @@ public partial class CollectionDownloadNexusMods : IModelDefinition
     public static readonly FileUidAttribute FileUid = new(Namespace, nameof(FileUid)) { IsIndexed = true };
 
     /// <summary>
-    /// <see cref="UidForMod"/>.
+    /// <see cref="NexusWebApi.Types.V2.Uid.ModUid"/>.
     /// </summary>
-    public static readonly UidForModAttribute ModUid = new(Namespace, nameof(ModUid)) { IsIndexed = true };
+    public static readonly ModUidAttribute ModUid = new(Namespace, nameof(ModUid)) { IsIndexed = true };
 
     /// <summary>
     /// Reference to the file metadata.

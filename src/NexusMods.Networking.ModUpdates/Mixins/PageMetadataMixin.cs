@@ -13,7 +13,7 @@ public struct PageMetadataMixin : IModFeedItem
     private PageMetadataMixin(NexusModsModPageMetadata.ReadOnly metadata) => _metadata = metadata;
 
     /// <inheritodc/>
-    public UidForMod GetModPageId() => _metadata.Uid;
+    public ModUid GetModPageId() => _metadata.Uid;
 
     /// <summary/>
     public EntityId GetModPageEntityId() => _metadata.Id;

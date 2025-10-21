@@ -70,7 +70,7 @@ public static class FragmentExtensions
     /// </summary>
     public static EntityId Resolve(this IMod modFragment, IDb db, ITransaction tx, bool setFilesTimestamp = false)
     {
-        var nexusModResolver = GraphQLResolver.Create(db, tx, NexusModsModPageMetadata.Uid, UidForMod.FromV2Api(modFragment.Uid));
+        var nexusModResolver = GraphQLResolver.Create(db, tx, NexusModsModPageMetadata.Uid, ModUid.FromV2Api(modFragment.Uid));
         nexusModResolver.Add(NexusModsModPageMetadata.Name, modFragment.Name);
         nexusModResolver.Add(NexusModsModPageMetadata.GameDomain, GameDomain.From(modFragment.Game.DomainName));
         nexusModResolver.Add(NexusModsModPageMetadata.UpdatedAt, modFragment.UpdatedAt.UtcDateTime);

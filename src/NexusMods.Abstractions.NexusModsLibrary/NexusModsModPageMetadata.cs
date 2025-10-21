@@ -20,7 +20,7 @@ public partial class NexusModsModPageMetadata : IModelDefinition
     /// <summary>
     /// The ID of the mod page.
     /// </summary>
-    public static readonly UidForModAttribute Uid = new(Namespace, nameof(Uid)) { IsIndexed = true };
+    public static readonly ModUidAttribute Uid = new(Namespace, nameof(Uid)) { IsIndexed = true };
 
     /// <summary>
     /// The name of the mod page.

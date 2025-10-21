@@ -61,7 +61,7 @@ public partial class NexusModsLibrary
         GameId gameId,
         CancellationToken cancellationToken = default)
     {
-        var uid = new UidForMod(modId, gameId);
+        var uid = new ModUid(modId, gameId);
         var modPageEntities = NexusModsModPageMetadata.FindByUid(_connection.Db, uid);
         if (modPageEntities.TryGetFirst(x => x.Uid.GameId == gameId, out var modPage)) return modPage;
 
@@ -78,7 +78,7 @@ public partial class NexusModsLibrary
         return NexusModsModPageMetadata.Load(txResults.Db, txResults[modEntityId]);
     }
 
-    private async Task ResolveAllFilesInModPage(UidForMod uid, ITransaction tx, EntityId modPageId, CancellationToken cancellationToken)
+    private async Task ResolveAllFilesInModPage(ModUid modUid, ITransaction tx, EntityId modPageId, CancellationToken cancellationToken)
     {
         // Note(sewer):
         // Make sure to also fetch all files on the mod page.
@@ -86,7 +86,7 @@ public partial class NexusModsLibrary
         // If our initial mod page item does not contain info on all the files,
         // then updates are not visible unless an actual change is made to the
         // mod page, this is somewhat undesireable.
-        var result = await _graphQlClient.QueryModFiles(uid.ModId, uid.GameId, cancellationToken: cancellationToken);
+        var result = await _graphQlClient.QueryModFiles(modUid.ModId, modUid.GameId, cancellationToken: cancellationToken);
 
         // TODO: handle errors
         var modFiles = result.AssertHasData();

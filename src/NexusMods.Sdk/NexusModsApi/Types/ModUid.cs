@@ -22,7 +22,7 @@ namespace NexusMods.Abstractions.NexusWebApi.Types.V2.Uid;
 /// expected to change.
 /// </summary>
 [StructLayout(LayoutKind.Sequential, Pack = 1)]
-public readonly struct UidForMod : IEquatable<UidForMod>
+public readonly struct ModUid : IEquatable<ModUid>
 {
     /// <summary>
     /// Unique identifier for the mod, within the specific <see cref="GameId"/>.
@@ -37,7 +37,7 @@ public readonly struct UidForMod : IEquatable<UidForMod>
     /// <summary>
     /// Constructor.
     /// </summary>
-    public UidForMod(ModId modId, GameId gameId)
+    public ModUid(ModId modId, GameId gameId)
     {
         ModId = modId;
         GameId = gameId;
@@ -50,7 +50,7 @@ public readonly struct UidForMod : IEquatable<UidForMod>
     /// <remarks>
     /// This throws if <paramref name="uid"/> is not a valid number.
     /// </remarks>
-    public static UidForMod FromV2Api(string uid) => FromUlong(ulong.Parse(uid));
+    public static ModUid FromV2Api(string uid) => FromUlong(ulong.Parse(uid));
     
     /// <summary>
     /// Converts the UID to a string accepted by the V2 API.
@@ -58,17 +58,17 @@ public readonly struct UidForMod : IEquatable<UidForMod>
     public string ToV2Api() => AsUlong.ToString();
 
     /// <summary>
-    /// Reinterprets the current <see cref="UidForMod"/> as a single <see cref="ulong"/>.
+    /// Reinterprets the current <see cref="ModUid"/> as a single <see cref="ulong"/>.
     /// </summary>
-    public ulong AsUlong => Unsafe.As<UidForMod, ulong>(ref Unsafe.AsRef(in this));
+    public ulong AsUlong => Unsafe.As<ModUid, ulong>(ref Unsafe.AsRef(in this));
 
     /// <summary>
-    /// Reinterprets a given <see cref="ulong"/> into a <see cref="UidForMod"/>.
+    /// Reinterprets a given <see cref="ulong"/> into a <see cref="ModUid"/>.
     /// </summary>
-    public static UidForMod FromUlong(ulong value) => Unsafe.As<ulong, UidForMod>(ref value);
+    public static ModUid FromUlong(ulong value) => Unsafe.As<ulong, ModUid>(ref value);
 
     /// <inheritdoc/>
-    public bool Equals(UidForMod other)
+    public bool Equals(ModUid other)
     {
         return ModId.Equals(other.ModId) && GameId.Equals(other.GameId);
     }
@@ -76,7 +76,7 @@ public readonly struct UidForMod : IEquatable<UidForMod>
     /// <inheritdoc/>
     public override bool Equals([NotNullWhen(true)] object? obj)
     {
-        return obj is UidForMod other && Equals(other);
+        return obj is ModUid other && Equals(other);
     }
 
     /// <inheritdoc/>
@@ -91,7 +91,7 @@ public readonly struct UidForMod : IEquatable<UidForMod>
     /// <summary>
     /// Equality.
     /// </summary>
-    public static bool operator ==(UidForMod left, UidForMod right)
+    public static bool operator ==(ModUid left, ModUid right)
     {
         return left.Equals(right);
     }
@@ -99,20 +99,20 @@ public readonly struct UidForMod : IEquatable<UidForMod>
     /// <summary>
     /// Inequality.
     /// </summary>
-    public static bool operator !=(UidForMod left, UidForMod right)
+    public static bool operator !=(ModUid left, ModUid right)
     {
         return !(left == right);
     }
 }
 
 /// <summary>
-/// Attribute for <see cref="UidForMod"/>.
+/// Attribute for <see cref="ModUid"/>.
 /// </summary>
-public class UidForModAttribute(string ns, string name) : ScalarAttribute<UidForMod, ulong, UInt64Serializer>(ns, name)
+public class ModUidAttribute(string ns, string name) : ScalarAttribute<ModUid, ulong, UInt64Serializer>(ns, name)
 {
     /// <inheritdoc />
-    protected override ulong ToLowLevel(UidForMod value) => value.AsUlong;
+    protected override ulong ToLowLevel(ModUid value) => value.AsUlong;
 
     /// <inheritdoc />
-    protected override UidForMod FromLowLevel(ulong value, AttributeResolver resolver) => UidForMod.FromUlong(value);
+    protected override ModUid FromLowLevel(ulong value, AttributeResolver resolver) => ModUid.FromUlong(value);
 } 

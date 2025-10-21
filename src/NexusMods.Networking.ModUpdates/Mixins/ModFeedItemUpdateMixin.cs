@@ -34,5 +34,5 @@ public readonly struct ModFeedItemUpdateMixin : IModFeedItem
     public DateTimeOffset GetLastUpdatedDate() => _lastUpdatedDate;
 
     /// <inheritdoc />
-    public UidForMod GetModPageId() => new(_modId, _gameId);
+    public ModUid GetModPageId() => new(_modId, _gameId);
 }

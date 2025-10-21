@@ -8,17 +8,17 @@ namespace NexusMods.Networking.ModUpdates.Tests.Helpers;
 public class TestModFeedItem : IModFeedItem
 {
     public DateTime LastUpdated { get; set; }
-    public UidForMod Uid { get; set; }
+    public ModUid Uid { get; set; }
 
     public DateTimeOffset GetLastUpdatedDate() => LastUpdated;
-    public UidForMod GetModPageId() => Uid;
+    public ModUid GetModPageId() => Uid;
     
     // Helper method to create a test item
     public static TestModFeedItem Create(uint gameId, uint modId, DateTime lastUpdated)
     {
         return new TestModFeedItem
         {
-            Uid = new UidForMod(ModId.From(modId), GameId.From(gameId)),
+            Uid = new ModUid(ModId.From(modId), GameId.From(gameId)),
             LastUpdated = lastUpdated,
         };
     }

@@ -12,7 +12,7 @@ public interface IModFeedItem
     /// Returns a unique identifier for the given item, based on the ID format
     /// used in the NexusMods V2 API.
     /// </summary>
-    public UidForMod GetModPageId();
+    public ModUid GetModPageId();
     
     /// <summary>
     /// Retrieves the time the item was last updated.
