@@ -160,7 +160,7 @@ public class FileConflictsViewModel : AViewModel<IFileConflictsViewModel>, IFile
 
 
 
-public class FileConflictsTreeDataGridAdapter : TreeDataGridAdapter<CompositeItemModel<EntityId>, EntityId>, 
+public class FileConflictsTreeDataGridAdapter : TreeDataGridAdapter<CompositeItemModel<EntityId>, EntityId>,
     ITreeDataGirdMessageAdapter<OneOf.OneOf<
         FileConflictsTreeDataGridAdapter.ViewConflictsMessage,
         FileConflictsTreeDataGridAdapter.MoveUpCommandPayload,
@@ -175,7 +175,7 @@ public class FileConflictsTreeDataGridAdapter : TreeDataGridAdapter<CompositeIte
     private readonly ILoadoutSynchronizer _synchronizer;
     private readonly IResourceLoader<EntityId, Bitmap> _modPageThumbnailPipeline;
     private readonly LoadoutId _loadoutId;
-    private readonly CompositeDisposable _disposables = new();
+    private readonly IDisposable _activationDisposable;
 
     public Subject<OneOf.OneOf<ViewConflictsMessage, MoveUpCommandPayload, MoveDownCommandPayload>> MessageSubject { get; } = new();
 
@@ -202,7 +202,7 @@ public class FileConflictsTreeDataGridAdapter : TreeDataGridAdapter<CompositeIte
             .Select(direction => direction == ListSortDirection.Ascending ? ascendingComparer : descendingComparer)
             .DistinctUntilChanged();
         
-        this.WhenActivated( (self, disposables)  =>
+        _activationDisposable = this.WhenActivated( (self, disposables)  =>
             {
                 comparerObservable
                     .Subscribe(comparer => CustomSortComparer.Value = comparer)
@@ -319,5 +319,22 @@ public class FileConflictsTreeDataGridAdapter : TreeDataGridAdapter<CompositeIte
             ColumnCreator.Create<EntityId, SharedColumns.Name>(canUserSortColumn: false),
             ColumnCreator.Create<EntityId, FileConflictsColumns.Actions>(canUserSortColumn: false),
         ];
+    }
+    
+    
+    private bool _isDisposed;
+    protected override void Dispose(bool disposing)
+    {
+        if (!_isDisposed)
+        {
+            if (disposing)
+            {
+                R3.Disposable.Dispose(_activationDisposable, MessageSubject);
+            }
+
+            _isDisposed = true;
+        }
+
+        base.Dispose(disposing);
     }
 }
