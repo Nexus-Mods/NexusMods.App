@@ -1,4 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
+    <!-- NuGet Package Shared Details -->
+    <Import Project="$([MSBuild]::GetPathOfFileAbove('NuGet.Build.props', '$(MSBuildThisFileDirectory)../'))" />
 
     <ItemGroup>
         <InternalsVisibleTo Include="NexusMods.Games.AdvancedInstaller.Tests"/>

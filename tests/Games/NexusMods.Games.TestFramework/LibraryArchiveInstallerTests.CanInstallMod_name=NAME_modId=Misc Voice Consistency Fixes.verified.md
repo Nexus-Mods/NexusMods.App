@@ -1,0 +1,12 @@
+﻿| {Game}/Data/sound/voice/skyrim.esm/femalecondescending/tgfencecar_tgfencecaravand_000d8e32_1.fuz | 0x4AF35F252D2D7FE3 | 37.521 KB  | 
+| {Game}/Data/sound/voice/skyrim.esm/femalecondescending/tgfencecar_tgfencecaravand_000d8e32_2.fuz | 0x9EBB695263D3FA63 | 30.624 KB  | 
+| {Game}/Data/sound/voice/skyrim.esm/femaleelfhaughty/dialoguewi_dialoguewinterh_00107ab3_1.fuz    | 0x9243B96EEDC8A914 | 32.181 KB  | 
+| {Game}/Data/sound/voice/skyrim.esm/femaleelfhaughty/dialoguewi_dialoguewinterh_00107ab3_2.fuz    | 0xF8C4BAA0E2044B12 | 47.255 KB  | 
+| {Game}/Data/sound/voice/skyrim.esm/femaleelfhaughty/dialoguewi_dialoguewinterh_00107ab3_3.fuz    | 0xE13DF3502956E5BE | 29.216 KB  | 
+| {Game}/Data/sound/voice/skyrim.esm/femaleelfhaughty/dialoguewi_dialoguewinterh_00107ab3_4.fuz    | 0x3827CA9962ADEF6A | 27.232 KB  | 
+| {Game}/Data/sound/voice/skyrim.esm/femaleelfhaughty/tgtq04_tgtq04niranyetruthb_000d77e2_1.fuz    | 0x1CE9631104E90B82 | 53.395 KB  | 
+| {Game}/Data/sound/voice/skyrim.esm/femaleelfhaughty/tgtq04_tgtq04niranyetruthb_000d77e2_2.fuz    | 0xB0A7BDC48CEDDFA3 | 53.447 KB  | 
+| {Game}/Data/sound/voice/skyrim.esm/femaleuniqueastrid/darkbrotherhood__000fe513_1.fuz            | 0x17C8BA528A7E99D2 | 235.138 KB | 
+| {Game}/Data/sound/voice/skyrim.esm/femaleuniqueastrid/darkbrothe_dbastridwakeupt_00058fd1_1.fuz  | 0xD124A289CF87FD1F | 67.751 KB  | 
+| {Game}/Data/sound/voice/skyrim.esm/maleslycynical/tg03_tg03malluspostscenebr_00109baa_1.fuz      | 0x22594CF19DCAFE76 | 66.455 KB  | 
+| {Game}/Data/sound/voice/skyrim.esm/maleslycynical/tg03_tg03malluspostscenebr_00109baa_2.fuz      | 0x8C17A1A0D6C1B33C | 67.009 KB  | 

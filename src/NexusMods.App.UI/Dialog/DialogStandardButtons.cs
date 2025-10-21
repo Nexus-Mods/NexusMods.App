@@ -1,4 +1,5 @@
-using NexusMods.App.UI.Dialog.Enums;
+using NexusMods.UI.Sdk.Dialog;
+using NexusMods.UI.Sdk.Dialog.Enums;
 
 namespace NexusMods.App.UI.Dialog;
 
@@ -43,5 +44,11 @@ public static class DialogStandardButtons
         Text: "Cancel",
         Id: ButtonDefinitionId.Cancel,
         ButtonAction: ButtonAction.Reject
+    );
+
+    public static readonly DialogButtonDefinition Close = new(
+        Text: "Close",
+        Id: ButtonDefinitionId.Close,
+        ButtonAction.Reject
     );
 }

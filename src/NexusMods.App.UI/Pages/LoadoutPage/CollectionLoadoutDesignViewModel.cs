@@ -1,11 +1,11 @@
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
-using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Paths;
+using NexusMods.Sdk.Jobs;
 using R3;
 
 namespace NexusMods.App.UI.Pages.LoadoutPage;
@@ -30,6 +30,8 @@ public class CollectionLoadoutDesignViewModel : APageViewModel<ICollectionLoadou
     public Bitmap BackgroundImage { get; } = new(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/DesignTime/header-background.webp")));
     public ReactiveCommand<Unit> CommandToggle { get; } = new ReactiveCommand();
     public ReactiveCommand<Unit> CommandDeleteCollection { get; } = new ReactiveCommand();
+    public ReactiveCommand<Unit> CommandMakeLocalEditableCopy { get; } = new ReactiveCommand();
+
     public ReactiveUI.ReactiveCommand<NavigationInformation, System.Reactive.Unit> CommandViewCollectionDownloadPage { get; } 
         = ReactiveUI.ReactiveCommand.Create<NavigationInformation, System.Reactive.Unit>(_ => System.Reactive.Unit.Default);
     public bool IsLocalCollection { get; } = false;

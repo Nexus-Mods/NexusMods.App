@@ -1,5 +1,6 @@
 using System.IO.Compression;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 using FluentAssertions;
 using NexusMods.Abstractions.GameLocators;
@@ -12,6 +13,7 @@ using NexusMods.Hashing.xxHash3;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 using NexusMods.Paths;
+using NexusMods.Sdk;
 using Xunit.Abstractions;
 using PathTuple = (NexusMods.MnemonicDB.Abstractions.EntityId, NexusMods.Abstractions.GameLocators.LocationId, NexusMods.Paths.RelativePath);
 
@@ -42,8 +44,7 @@ public abstract class ALibraryArchiveInstallerTests<TTest, TGame>(ITestOutputHel
         return await RegisterLocalArchive(file);
     }
 
-
-
+    
     protected Task<LoadoutItemGroup.ReadOnly> Install<TInstaller>(Loadout.ReadOnly loadout, LibraryArchive.ReadOnly archive)
         where TInstaller : ILibraryArchiveInstaller
     {
@@ -193,5 +194,54 @@ public abstract class ALibraryArchiveInstallerTests<TTest, TGame>(ITestOutputHel
         }
 
         return sb.ToString();
+    }
+    
+    protected static IEnumerable<LoadoutFile.ReadOnly> GetFiles(LoadoutItemGroup.ReadOnly group)
+    {
+        foreach (var loadoutItem in group.Children)
+        {
+            loadoutItem.TryGetAsLoadoutItemWithTargetPath(out var targetPath).Should().BeTrue();
+            targetPath.IsValid().Should().BeTrue();
+
+            targetPath.TryGetAsLoadoutFile(out var loadoutFile).Should().BeTrue();
+            loadoutFile.IsValid().Should().BeTrue();
+
+            yield return loadoutFile;
+        }
+    }
+    
+    protected static SettingsTask VerifyGroup(LibraryArchive.ReadOnly libraryArchive, LoadoutItemGroup.ReadOnly group, [CallerFilePath] string sourceFile = "")
+    {
+        var sb = new StringBuilder();
+
+        var paths = GetFiles(group)
+            .Select(file =>
+            {
+                libraryArchive.Children
+                    .Where(x => x.AsLibraryFile().Hash == file.Hash)
+                    .TryGetFirst(x => x.Path.FileName == file.AsLoadoutItemWithTargetPath().TargetPath.Item3.FileName, out var libraryArchiveFileEntry)
+                    .Should().BeTrue();
+
+                libraryArchiveFileEntry.AsLibraryFile().Size.Value.Should().Be(file.Size.Value);
+                libraryArchiveFileEntry.IsValid().Should().BeTrue();
+                return (libraryArchiveFileEntry, file.AsLoadoutItemWithTargetPath().TargetPath);
+            })
+            .OrderBy(static targetPath => targetPath.Item2.Item2)
+            .ThenBy(static targetPath => targetPath.Item2.Item3)
+            .ToArray();
+
+        foreach (var tuple in paths)
+        {
+            var (libraryArchiveFileEntry, targetPath) = tuple;
+            var (_, locationId, path) = targetPath;
+            var gamePath = new GamePath(locationId, path);
+
+            sb.AppendLine($"{libraryArchiveFileEntry.AsLibraryFile().Hash} - {libraryArchiveFileEntry.AsLibraryFile().Size}: {libraryArchiveFileEntry.Path} -> {gamePath}");
+        }
+
+        var result = sb.ToString();
+
+        // ReSharper disable once ExplicitCallerInfoArgument
+        return Verify(result, sourceFile: sourceFile);
     }
 }

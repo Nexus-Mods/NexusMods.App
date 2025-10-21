@@ -1,7 +1,7 @@
 using System.Reactive;
 using System.Reactive.Disposables;
 using Avalonia;
-using NexusMods.Abstractions.UI;
+using NexusMods.UI.Sdk;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 

@@ -6,11 +6,11 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.GameLocators.Stores.GOG;
 using NexusMods.Abstractions.GameLocators.Stores.Steam;
-using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
-using NexusMods.CrossPlatform.Process;
 using NexusMods.Paths;
+using NexusMods.Sdk;
+using NexusMods.Sdk.Jobs;
 using R3;
 
 namespace NexusMods.Abstractions.Games;
@@ -29,9 +29,9 @@ public class RunGameTool<T> : IRunGameTool
 {
     private readonly ILogger<RunGameTool<T>> _logger;
     private readonly T _game;
-    private readonly IProcessFactory _processFactory;
+    private readonly IProcessRunner _processRunner;
     private readonly IOSInterop _osInterop;
-    
+
     /// <summary>
     /// Whether this tool should be started through the shell instead of directly.
     /// This allows tools to start their own console, allowing users to interact with it.
@@ -45,7 +45,7 @@ public class RunGameTool<T> : IRunGameTool
     {
         _game = game;
         _logger = serviceProvider.GetRequiredService<ILogger<RunGameTool<T>>>();
-        _processFactory = serviceProvider.GetRequiredService<IProcessFactory>();
+        _processRunner = serviceProvider.GetRequiredService<IProcessRunner>();
         _osInterop = serviceProvider.GetRequiredService<IOSInterop>();
     }
 
@@ -106,25 +106,29 @@ public class RunGameTool<T> : IRunGameTool
             _ = await RunCommand(cancellationToken, commandLineArgs, program);
         }
 
-        // Check if the process has spawned any new processes that we need to wait for (e.g. Launcher -> Game)
-        var newProcesses = FindMatchingProcesses(names)
-            .Where(p => !existing.Contains(p.Id))
-            .ToHashSet();
 
-        if (newProcesses.Count > 0)
+        var maxProcessCount = 0;
+        _logger.LogInformation("Waiting for processes to exit");
+        while (true)
         {
-            _logger.LogInformation("Waiting for {Count} processes to exit", newProcesses.Count);
-            while (true)
-            {
-                await Task.Delay(500, cancellationToken);
-                if (newProcesses.All(p => p.HasExited))
-                    break;
-            }
-            _logger.LogInformation("All {Count} processes have exited", newProcesses.Count);
+            var newProcesses = CheckForNewProcesses();
+            if (newProcesses.Count == 0)
+                break;
+            maxProcessCount = Math.Max(maxProcessCount, newProcesses.Count);
+            await Task.Delay(2000, cancellationToken);
         }
+        _logger.LogInformation("All {Count} processes have exited", maxProcessCount);
 
         _logger.LogInformation("Finished running {Program}", program);
-        
+
+        HashSet<Process> CheckForNewProcesses()
+        {
+            // Check if the process has spawned any new processes that we need to wait for (e.g. Launcher -> Game)
+            var hashSet = FindMatchingProcesses(names)
+                .Where(p => !existing.Contains(p.Id))
+                .ToHashSet();
+            return hashSet;
+        }
     }
 
     private async Task<CommandResult> RunCommand(CancellationToken cancellationToken, string[] arguments, AbsolutePath program)
@@ -133,7 +137,7 @@ public class RunGameTool<T> : IRunGameTool
             .WithArguments(arguments)
             .WithWorkingDirectory(program.Parent.ToString());
 
-        var result = await _processFactory.ExecuteAsync(command, cancellationToken: cancellationToken);
+        var result = await _processRunner.RunAsync(command, cancellationToken: cancellationToken);
         return result;
     }
 
@@ -153,7 +157,7 @@ public class RunGameTool<T> : IRunGameTool
         
         try
         {
-            await _processFactory.ExecuteProcessAsync(process, cancellationToken);
+            await _processRunner.RunAsync(process, cancellationToken);
         }
         catch (Exception e)
         {
@@ -187,7 +191,7 @@ public class RunGameTool<T> : IRunGameTool
             steamUrl += $"//{encodedArgs}/";
         }
 
-        await _osInterop.OpenUrl(new Uri(steamUrl), fireAndForget: true, cancellationToken: cancellationToken);
+        _osInterop.OpenUri(new Uri(steamUrl));
 
         var steam = await WaitForProcessToStart("steam", timeout, existingProcesses: null, cancellationToken);
         if (steam is null) return;
@@ -209,7 +213,7 @@ public class RunGameTool<T> : IRunGameTool
             _logger.LogError("Heroic does not currently support command line arguments: https://github.com/Nexus-Mods/NexusMods.App/issues/2264 . " +
                              $"Args {string.Join(',', commandLineArgs)} were specified but will be ignored.");
 
-        await _osInterop.OpenUrl(new Uri($"heroic://launch/{type}/{appId.ToString(CultureInfo.InvariantCulture)}"), fireAndForget: true, cancellationToken: cancellationToken);
+        _osInterop.OpenUri(new Uri($"heroic://launch/{type}/{appId.ToString(CultureInfo.InvariantCulture)}"));
     }
 
     private async ValueTask<Process?> WaitForProcessToStart(

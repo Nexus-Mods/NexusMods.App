@@ -34,6 +34,7 @@ public abstract class AGameTest<TGame> where TGame : AGame
     protected readonly TemporaryFileManager TemporaryFileManager;
     protected readonly IFileStore FileStore;
     protected readonly IGameRegistry GameRegistry;
+    protected readonly ILoadoutManager LoadoutManager;
 
     protected readonly IConnection Connection;
 
@@ -65,6 +66,7 @@ public abstract class AGameTest<TGame> where TGame : AGame
         FileStore = serviceProvider.GetRequiredService<IFileStore>();
         TemporaryFileManager = serviceProvider.GetRequiredService<TemporaryFileManager>();
         Connection = serviceProvider.GetRequiredService<IConnection>();
+        LoadoutManager = serviceProvider.GetRequiredService<ILoadoutManager>();
 
         DiagnosticManager = serviceProvider.GetRequiredService<IDiagnosticManager>();
 
@@ -261,13 +263,14 @@ public abstract class AGameTest<TGame> where TGame : AGame
             await GenerateGameFiles();
             _gameFilesWritten = true;
         }
-        return await GameInstallation.GetGame().Synchronizer.CreateLoadout(GameInstallation, Guid.NewGuid().ToString());
+
+        return await LoadoutManager.CreateLoadout(GameInstallation, Guid.NewGuid().ToString());
     }
     
     /// <summary>
     /// Deletes a loadout with a given ID.
     /// </summary>
-    protected Task DeleteLoadoutAsync(LoadoutId loadoutId, GarbageCollectorRunMode gcRunMode = GarbageCollectorRunMode.DoNotRun) => GameInstallation.GetGame().Synchronizer.DeleteLoadout(loadoutId, gcRunMode);
+    protected ValueTask DeleteLoadoutAsync(LoadoutId loadoutId, GarbageCollectorRunMode gcRunMode = GarbageCollectorRunMode.DoNotRun) => LoadoutManager.DeleteLoadout(loadoutId, gcRunMode);
 
     /// <summary>
     /// Reloads the entity from the database.
@@ -346,7 +349,7 @@ public abstract class AGameTest<TGame> where TGame : AGame
         if (FileStore is not NxFileStore store)
             throw new NotSupportedException("GetArchivePath is not currently supported in stubbed file stores.");
 
-        store.TryGetLocation(Connection.Db, hash, null, out var archivePath, out _).Should().BeTrue("Archive should exist");
+        store.TryGetLocation(hash, out var archivePath, out _).Should().BeTrue("Archive should exist");
         return archivePath;
     }
 }

@@ -3,17 +3,17 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Serialization;
-using NexusMods.Abstractions.Settings;
+using NexusMods.Backend;
 using NexusMods.CrossPlatform;
 using NexusMods.DataModel;
 using NexusMods.FileExtractor;
-using NexusMods.Jobs;
+using NexusMods.Games.FileHashes;
 using NexusMods.Library;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.HttpDownloader.Tests;
 using NexusMods.Paths;
 using NexusMods.Sdk;
-using NexusMods.Settings;
+using NexusMods.Sdk.Settings;
 using Xunit.DependencyInjection.Logging;
 
 namespace NexusMods.Networking.NexusWebApi.Tests;
@@ -30,13 +30,15 @@ public class Startup
             .AddSingleton<TemporaryFileManager>()
             .AddSingleton<LocalHttpServer>()
             .AddNexusWebApi(true)
-            .AddCrossPlatform()
+            .AddOSInterop()
+            .AddRuntimeDependencies()
             .AddSettings<LoggingSettings>()
             .AddLoadoutAbstractions()
             .AddJobMonitor()
             .AddLibrary()
             .AddLibraryModels()
             .AddFileExtractors()
+            .AddFileHashes()
             .AddDataModel() // this is required because we're also using NMA integration
             .OverrideSettingsForTests<DataModelSettings>(settings => settings with
             {

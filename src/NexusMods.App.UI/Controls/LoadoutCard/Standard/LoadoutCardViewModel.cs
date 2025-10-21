@@ -12,12 +12,13 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.UI;
+using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.App.UI.Controls.LoadoutBadge;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Pages;
 using NexusMods.App.UI.Resources;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.UI.Sdk;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -26,11 +27,13 @@ namespace NexusMods.App.UI.Controls.LoadoutCard;
 public class LoadoutCardViewModel : AViewModel<ILoadoutCardViewModel>, ILoadoutCardViewModel
 {
     private readonly ILogger<LoadoutCardViewModel> _logger;
-    
+    private readonly ILoadoutManager _loadoutManager;
+
     public LoadoutCardViewModel(Loadout.ReadOnly loadout, IConnection conn, IServiceProvider serviceProvider)
     {
         LoadoutVal = loadout;
         _logger = serviceProvider.GetRequiredService<ILogger<LoadoutCardViewModel>>();
+        _loadoutManager = serviceProvider.GetRequiredService<ILoadoutManager>();
         var applyService = serviceProvider.GetRequiredService<ISynchronizerService>();
         LoadoutName = loadout.Name;
         var badgeVm = serviceProvider.GetRequiredService<ILoadoutBadgeViewModel>();
@@ -158,14 +161,13 @@ public class LoadoutCardViewModel : AViewModel<ILoadoutCardViewModel>, ILoadoutC
         });
     }
     
-    private static Task DeleteLoadout(Loadout.ReadOnly loadout)
+    private Task DeleteLoadout(Loadout.ReadOnly loadout)
     {
-        return Task.Run(() => loadout.InstallationInstance.GetGame().Synchronizer.DeleteLoadout(loadout));
+        return Task.Run(() => _loadoutManager.DeleteLoadout(loadout));
     }
 
-    private static Task CopyLoadout(Loadout.ReadOnly loadout)
+    private Task CopyLoadout(Loadout.ReadOnly loadout)
     {
-        return Task.Run(() => loadout.InstallationInstance.GetGame().Synchronizer.CopyLoadout(loadout));
+        return Task.Run(() => _loadoutManager.CopyLoadout(loadout));
     }
-    
 }

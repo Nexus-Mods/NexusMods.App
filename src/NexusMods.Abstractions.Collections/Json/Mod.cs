@@ -3,6 +3,8 @@ using JetBrains.Annotations;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
+using NexusMods.Paths;
+using NexusMods.Sdk.Hashes;
 
 namespace NexusMods.Abstractions.Collections.Json;
 
@@ -42,7 +44,7 @@ public class Mod
     /// be installed later via MD5 hash. If the file appears in the Hashes array.
     /// </summary>
     [JsonPropertyName("patches")]
-    public Dictionary<string, PatchHash> Patches { get; init; } = new();
+    public Dictionary<RelativePath, Crc32Value> Patches { get; init; } = new();
 
     /// <summary>
     /// Written instruction by the collection author for users.

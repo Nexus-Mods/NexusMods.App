@@ -6,9 +6,8 @@
         <InternalsVisibleTo Include="NexusMods.Telemetry"/>
     </ItemGroup>
     <ItemGroup>
-      <ProjectReference Include="..\NexusMods.Abstractions.GameLocators\NexusMods.Abstractions.GameLocators.csproj" />
       <ProjectReference Include="..\NexusMods.Abstractions.NexusWebApi\NexusMods.Abstractions.NexusWebApi.csproj" />
-      <ProjectReference Include="..\NexusMods.Abstractions.Settings\NexusMods.Abstractions.Settings.csproj" />
+      <ProjectReference Include="..\NexusMods.Sdk\NexusMods.Sdk.csproj" />
     </ItemGroup>
     <ItemGroup>
       <Compile Update="Counters.ActiveUsers.cs">

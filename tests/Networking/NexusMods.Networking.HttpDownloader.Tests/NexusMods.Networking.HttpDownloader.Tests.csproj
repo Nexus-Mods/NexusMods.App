@@ -6,8 +6,6 @@
     <ItemGroup>
         <ProjectReference Include="..\..\..\src\NexusMods.Networking.HttpDownloader\NexusMods.Networking.HttpDownloader.csproj" />
         <ProjectReference Include="..\..\..\src\NexusMods.DataModel\NexusMods.DataModel.csproj" />
-        <ProjectReference Include="..\..\..\src\NexusMods.Jobs\NexusMods.Jobs.csproj" />
-        <ProjectReference Include="..\..\..\src\NexusMods.Settings\NexusMods.Settings.csproj" />
         <ProjectReference Include="..\..\Games\NexusMods.Games.TestFramework\NexusMods.Games.TestFramework.csproj" />
     </ItemGroup>
 </Project>

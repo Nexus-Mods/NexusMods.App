@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.CLI.Types;
-using NexusMods.CrossPlatform.ProtocolRegistration;
+using NexusMods.Sdk;
 using NexusMods.Sdk.ProxyConsole;
 
 namespace NexusMods.CLI;
@@ -21,9 +21,9 @@ public static class ProtocolVerbs
 
 
     [Verb("associate-nxm", "Associate the nxm:// protocol with this application")]
-    private static async Task<int> AssociateNxm([Injected] IProtocolRegistration protocolRegistration)
+    private static async Task<int> AssociateNxm([Injected] IOSInterop osInterop)
     {
-        await protocolRegistration.RegisterHandler("nxm");
+        await osInterop.RegisterUriSchemeHandler("nxm");
         return 0;
     }
     

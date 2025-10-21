@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary;
+using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Sdk.Resources;
 using NexusMods.App.UI.Controls;
@@ -14,13 +15,13 @@ using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Pages.LibraryPage;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.DatomIterators;
-using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 using NexusMods.MnemonicDB.Abstractions.Query;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Networking.NexusWebApi.UpdateFilters;
 using NuGet.Versioning;
 using NexusMods.Paths;
 using R3;
+using Observable = System.Reactive.Linq.Observable;
 
 namespace NexusMods.App.UI.Pages;
 
@@ -103,7 +104,7 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
             HasChildrenObservable = hasChildrenObservable,
             ChildrenObservable = childrenObservable,
         };
-
+        
         parentItemModel.Add(SharedColumns.Name.NameComponentKey, new NameComponent(value: modPage.Name));
         parentItemModel.Add(SharedColumns.Name.ImageComponentKey, ImageComponent.FromPipeline(_thumbnailLoader.Value, modPage.Id, initialValue: ImagePipelines.ModPageThumbnailFallback));
 
@@ -150,7 +151,10 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
             initialValue: string.Empty,
             valueObservable: currentVersionObservable
         ));
-
+        
+        // Collections column
+        AddRelatedCollectionsComponentToParent(libraryItems, linkedLoadoutItemsObservable, parentItemModel);
+        
         // Update available
         var newestModPageObservable = _modUpdateService.GetNewestModPageVersionObservable(modPage);
         var currentUpdateVersionObservable = newestModPageObservable
@@ -199,8 +203,10 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
 
                 return new MatchesData(numInstalled, numTotal);
             });
-
-        LibraryDataProviderHelper.AddInstallActionComponent(parentItemModel, matchesObservable, libraryItems.TransformImmutable(static x => x.AsLibraryItem()));
+        
+        
+        parentItemModel.Add(LibraryColumns.Actions.LibraryItemIdsComponentKey, new LibraryComponents.LibraryItemIds(libraryItems.TransformImmutable(static x => x.AsLibraryItem().LibraryItemId)));
+        LibraryDataProviderHelper.AddInstallActionComponent(parentItemModel, matchesObservable);
         LibraryDataProviderHelper.AddViewChangelogActionComponent(parentItemModel);
         LibraryDataProviderHelper.AddViewModPageActionComponent(parentItemModel);
 
@@ -216,6 +222,8 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
             .Select(optional => optional.HasValue && optional.Value.HasAnyUpdates)
             .ToObservable();
         LibraryDataProviderHelper.AddHideUpdatesActionComponent(parentItemModel, updatesOnPageUnfiltered, _modUpdateFilterService, isVisibleObservable);
+        
+        LibraryDataProviderHelper.AddDeleteItemActionComponent(parentItemModel);
 
         return parentItemModel;
     }
@@ -230,6 +238,7 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
 
         var itemModel = new CompositeItemModel<EntityId>(libraryItem.Id);
 
+        itemModel.Add(LibraryColumns.Actions.LibraryItemIdsComponentKey, new LibraryComponents.LibraryItemIds(libraryItem.AsLibraryItem()));
         itemModel.Add(SharedColumns.Name.NameComponentKey, new NameComponent(value: fileMetadata.Name));
         itemModel.Add(LibraryColumns.DownloadedDate.ComponentKey, new DateComponent(value: libraryItem.GetCreatedAt()));
         itemModel.Add(LibraryColumns.ItemVersion.CurrentVersionComponentKey, new VersionComponent(value: fileMetadata.Version));
@@ -238,9 +247,12 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
             itemModel.Add(SharedColumns.ItemSize.ComponentKey, new SizeComponent(value: size));
 
         LibraryDataProviderHelper.AddInstalledDateComponent(itemModel, linkedLoadoutItemsObservable);
-        LibraryDataProviderHelper.AddInstallActionComponent(itemModel, libraryItem.AsLibraryItem(), linkedLoadoutItemsObservable);
+        LibraryDataProviderHelper.AddInstallActionComponent(itemModel, linkedLoadoutItemsObservable);
         LibraryDataProviderHelper.AddViewChangelogActionComponent(itemModel);
         LibraryDataProviderHelper.AddViewModPageActionComponent(itemModel);
+        
+        // Collections column
+        AddRelatedCollectionsComponentToChild(libraryItem, linkedLoadoutItemsObservable, itemModel);
 
         // Update available
         var newestVersionObservable = _modUpdateService
@@ -283,8 +295,46 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
             .ToObservable();
         
         LibraryDataProviderHelper.AddHideUpdatesActionComponent(itemModel, newestFileUnfiltered, _modUpdateFilterService, isVisibleObservable);
+        
+        LibraryDataProviderHelper.AddDeleteItemActionComponent(itemModel);
 
         return itemModel;
+    }
+
+    private void AddRelatedCollectionsComponentToChild(
+        NexusModsLibraryItem.ReadOnly libraryItem,
+        IObservable<IChangeSet<LoadoutItem.ReadOnly, EntityId>> linkedLoadoutItemsObservable,
+        CompositeItemModel<EntityId> itemModel)
+    {
+        var relatedDownloadedCollectionsObservable = _connection
+            .ObserveDatoms(CollectionDownloadNexusMods.FileMetadataId, libraryItem.FileMetadataId)
+            .AsEntityIds()
+            .Distinct()
+            .Transform(datom => NexusMods.Abstractions.NexusModsLibrary.Models.CollectionDownload.Load(_connection.Db, datom.E).CollectionRevision.Collection)
+            .ChangeKey(collection => collection.Id);
+
+        LibraryDataProviderHelper.AddRelatedCollectionsComponent(itemModel, linkedLoadoutItemsObservable, relatedDownloadedCollectionsObservable);
+    }
+
+    private void AddRelatedCollectionsComponentToParent(
+        IObservable<IChangeSet<NexusModsLibraryItem.ReadOnly, EntityId>> libraryItems,
+        IObservable<IChangeSet<LoadoutItem.ReadOnly, EntityId>> linkedLoadoutItemsObservable,
+        CompositeItemModel<EntityId> itemModel)
+    {
+        var relatedDownloadedCollectionsObservable = libraryItems
+            .MergeManyChangeSets(libraryItem =>
+                _connection.ObserveDatoms(CollectionDownloadNexusMods.FileMetadataId, libraryItem.FileMetadataId)
+                    .AsEntityIds()
+                    .Distinct()
+                    .Transform(datom => NexusMods.Abstractions.NexusModsLibrary.Models.CollectionDownload
+                        .Load(_connection.Db, datom.E)
+                        .CollectionRevision.Collection
+                    )
+                    .ChangeKey(collection => collection.Id)
+                    .Distinct()
+            );
+
+        LibraryDataProviderHelper.AddRelatedCollectionsComponent(itemModel, linkedLoadoutItemsObservable, relatedDownloadedCollectionsObservable);
     }
 
     private IObservable<IChangeSet<NexusModsModPageMetadata.ReadOnly, EntityId>> FilterLoadoutItems(LoadoutFilter loadoutFilter)
@@ -316,7 +366,7 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
                 .RefCount();
 
             var hasChildrenObservable = linkedItemsObservable.IsNotEmpty();
-            var childrenObservable = linkedItemsObservable.Transform(loadoutItem => LoadoutDataProviderHelper.ToChildItemModel(_connection, loadoutItem));
+            var childrenObservable = linkedItemsObservable.Transform(loadoutItem => ToNexusChildLoadoutItemModel(_connection, loadoutItem));
 
             var parentItemModel = new CompositeItemModel<EntityId>(modPage.Id)
             {
@@ -334,9 +384,19 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
             LoadoutDataProviderHelper.AddLockedEnabledStates(parentItemModel, linkedItemsObservable);
             LoadoutDataProviderHelper.AddEnabledStateToggle(_connection, parentItemModel, linkedItemsObservable);
             LoadoutDataProviderHelper.AddLoadoutItemIds(parentItemModel, linkedItemsObservable);
+            LoadoutDataProviderHelper.AddViewModPageActionComponent(parentItemModel, isEnabled: true);
+            LoadoutDataProviderHelper.AddViewModFilesActionComponent(parentItemModel, linkedItemsObservable);
+            LoadoutDataProviderHelper.AddUninstallItemComponent(parentItemModel, linkedItemsObservable);
 
             return parentItemModel;
         });
+    }
+    
+    private static CompositeItemModel<EntityId> ToNexusChildLoadoutItemModel(IConnection connection, LoadoutItem.ReadOnly loadoutItem)
+    {
+        var childModel = LoadoutDataProviderHelper.ToChildItemModel(connection, loadoutItem);
+        LoadoutDataProviderHelper.AddViewModPageActionComponent(childModel, isEnabled: true);
+        return childModel;
     }
 
     public IObservable<int> CountLoadoutItems(LoadoutFilter loadoutFilter)

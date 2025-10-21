@@ -2,11 +2,11 @@ using System.Net;
 using System.Text.Json;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.NexusWebApi.DTOs.OAuth;
 using NexusMods.Abstractions.NexusWebApi.Types;
-using NexusMods.CrossPlatform.Process;
 using NexusMods.Networking.NexusWebApi.Auth;
+using NexusMods.Sdk;
+using NexusMods.Sdk.Jobs;
 using NSubstitute;
 
 namespace NexusMods.Networking.NexusWebApi.Tests;
@@ -26,7 +26,7 @@ public class OAuthTests
     }
 
     [Fact]
-    public async void AuthorizeRequestTest()
+    public async Task AuthorizeRequestTest()
     {
         #region Setup
         var stateId = "00000000-0000-0000-0000-000000000000";
@@ -58,13 +58,13 @@ public class OAuthTests
         #region Verification
 
         _ = idGen.Received(2).UUIDv4();
-        _ = os.Received(1).OpenUrl(ExpectedAuthURL, cancellationToken: Arg.Any<CancellationToken>());
+        os.Received(1).OpenUri(ExpectedAuthURL);
         result.Should().BeEquivalentTo(ReplyToken);
         #endregion
     }
 
     [Fact]
-    public async void RefreshTokenTest()
+    public async Task RefreshTokenTest()
     {
         #region Setup
         var stateId = "00000000-0000-0000-0000-000000000000";
@@ -94,14 +94,14 @@ public class OAuthTests
         #region Verification
 
         _ = idGen.DidNotReceive().UUIDv4();
-        _ = os.DidNotReceive().OpenUrl(Arg.Any<Uri>(), cancellationToken: Arg.Any<CancellationToken>());
+        os.DidNotReceive().OpenUri(Arg.Any<Uri>());
         token.Should().BeEquivalentTo(ReplyToken);
 
         #endregion
     }
 
     [Fact]
-    public async void ThrowsOnInvalidResponse()
+    public async Task ThrowsOnInvalidResponse()
     {
         #region Setup
         var stateId = "00000000-0000-0000-0000-000000000000";
@@ -134,7 +134,7 @@ public class OAuthTests
 
     // TODO: requires jobs to be cancellable
     // [Fact]
-    // public async void AuthorizationCanBeCanceled()
+    // public async Task AuthorizationCanBeCanceled()
     // {
     //     #region Setup
     //     var stateId = "00000000-0000-0000-0000-000000000000";

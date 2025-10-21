@@ -1,3 +1,111 @@
+# v0.19.4 2025-10-20
+This update focuses on quality-of-life improvements, including the addition of right-click context menus, and several critical bug fixes for a smoother experience.
+
+---
+### Context Menus Are Here:
+We've added the ability to open a **context menu** by right-clicking on items in the **Loadout** and **Library** pages. This streamlines your workflow by providing quick access to common actions like "Remove" or "View Mod Page."
+
+### Stardew Valley FOMOD Installer Support:
+We've added support for running interactive **FOMOD installers** when managing Stardew Valley. This allows you to install more complex mods with configuration options directly within the app.
+
+---
+## Bug Fixes and Performance:
+
+* Fixed an issue causing Stardew Valley **SMAPI to be installed incorrectly**, which resulted in SMAPI crashing on start. *If you were experiencing this problem, please uninstall SMAPI from the app and install it again to fix the corrupted file.*
+* Fixed an issue with **Stardew Valley.exe** not being backed up and restored correctly after uninstalling SMAPI.
+* Fixed a file-time comparison bug that caused **performance slowdowns** when applying a loadout.
+* Fixed errors that occurred when trying to **unmanage a game** while a loadout was actively applying.
+* Improved game updates and DLC changes detection without requiring a restart of the app. 
+
+---
+## Under The Hood:
+
+* Our privacy policy and telemetry changed with this release. You can click the question mark in the top bar and go to the about page to read more about our privacy policy and to accept the changes.
+* **Load Order Rework:** We reworked the Load Order backend used for Cyberpunk **REDmods**, in preparation for adding **Bethesda Load Order** support (required for games like Skyrim and Fallout).
+* **Settings Clean-up:** Removed some development and experimental settings from the main Settings page to focus the user experience on stable features.
+
+# v0.18.2 2025-10-08
+This update introduces some powerful new features and important fixes to make managing your mods smoother than ever. You’ll now find a dedicated Downloads page with full control over your active downloads, the ability to create editable copies of read-only Nexus Mods Collections, and a new view that helps you spot file conflicts between mods. Alongside these upgrades, we’ve resolved several issues to improve stability, prevent unnecessary backups, and ensure a more seamless experience throughout the app.
+
+### New Downloads Page:
+
+- Keep an eye on all your downloads in one place! You can now access a dedicated Downloads page directly from the download speed indicator in the sidebar. Filter by game, pause, resume, or cancel downloads as you like. (#3286)
+
+### Editable Collections:
+
+- You can now create your own editable copy of a Nexus Mods Collection that was previously read-only; perfect for adding or removing mods in your personal version. (#3517)
+
+### Conflict Viewer (Early Version):
+
+- A new basic view lets you see which mods contain file conflicts. While you can’t change the winners just yet, this is the first step toward full conflict management tools coming soon. (#3850)
+
+### Fixes and Improvements:
+
+- Resolved an issue that caused errors when adding some Nexus Mods Collections. (#3886)
+- Fixed unnecessary updates to the game hash database. (#3918)
+- Stopped the app from backing up game files when correct hashing info was already available. (#3455)
+- Fixed a stuck selection issue after clearing filters on Library or Loadout pages. (#3900)
+- Fixed a rare freeze that could occur when downloading mods while the app wasn’t in focus. (#3836)
+
+# v0.17.2 2025-09-29
+This update brings a smoother, more reliable experience along with some exciting quality-of-life improvements. We’ve tidied up a few behind-the-scenes issues and introduced tools to help you keep your game folders clean and organized. You’ll also notice a more informative Library, early glimpses of the upcoming Downloads page, some handy new menus, plus performance boosts to keep everything running fast and responsive.
+
+- General bug fixes including erroneously backing up game folder. 
+- The Nexus Mods App now detects if your game folder is not in a base state and gives you the option to clean it. (#3323)
+- Downloads page placeholder: While full functionality isn't quite here yet, clicking the button in the bottom left will now open the downloads area with placeholder text. We look forward to showing you more soon.
+- Library improvements: You'll now find a new Collection column showing you what collections your mod is installed into, with an icon that show if the collection is installed or in progress. (#3786)
+- Kebab menus are now in place in Loadout and Installed Collections pages as well as to the Library. (#3743)
+- Performance improvements. (#3761)
+
+# v0.16.4 2025-09-04
+HOTFIX : reworked the Nexus Mods login code. Caches are invalidated sooner and in a more predictable manner. This fixes an issue where users would not see their new premium status appear after subscribing. Also fixes an issue where users would appear to lose their premium status after the app was active for a few hours. 
+
+# v0.16.3 2025-09-04
+This update contains a selection of bug fixes and quality of life improvements.
+
+## Skyrim Support Work Begins!
+**⚠️ Warning: Do not enable Skyrim SE support in the app unless you are prepared to rebuild your mod setup from scratch. This is an early developer preview only - it’s not ready for normal use or testing.**
+
+It's been the #1 most requested game to mod with the app (and rightfully so!), so we're pleased to announce that work on support for Skyrim Special Edition has begun. The road ahead is long and winding, but we've got the foundations in place now and will be building on them in future releases. 
+
+Right now, Skyrim SE will appear in the My Games section when installed from Steam or GOG Galaxy, but no other features are currently implemented.
+
+## Select All for Batch Actions
+You can now quickly select every item in the current view with `Ctrl + A`, alongside the existing `Ctrl + Click` and `Shift + Click` options. This makes batch installing, updating, or deleting mods faster and more convenient.
+
+## Toast Notifications
+When you take actions within the app, you will start to see a subtle little "toast" message at the bottom of the screen to confirm what has just happened. Toast will fade out automatically after a few seconds to avoid cluttering the screen. 
+
+## More Features
+- Added a "Delete" option to the menu in the Library. 
+- Updated the "Apply" button to show a progress indicator rather than simply pulsing. 
+- Added a new dialog to better explain the benefits of downloading a collection with a Premium membership. 
+
+## Technical Changes
+- Improved detection of WINE games on Linux. 
+- Made some progress towards better support for Linux-native games from GOG.com.
+- Added support for pausing and resuming jobs (e.g. downloads) on the backend. This isn't available in the UI yet. 
+- Switched to a new query engine on the backend, which will increase app performance and unlock future feature work. 
+
+## Bug Fixes
+- Implemented a fix to avoid further "Missing Archive" errors. Unfortunately, this fix isn't retrospective, but if the affected mods are re-downloaded, it should no longer appear.
+- Fixed an issue where an unintended dialog popped up for free users each time they updated a mod.
+- Fixed an exception when installing SMAPI if `Stardew Valley.deps.json` could not be located.
+- Fixed an "Object Disposed" error on the Loadouts page.
+- Fixed an exception in the Library caused by the background mod update check.
+
+## Known Issues
+The following are issues that we are already aware of in this build and will address in a future release:
+### Stardew Valley (GOG via Heroic on Linux)
+* Native version cannot be managed by the app.
+### Cyberpunk 2077
+* Epic Games version cannot be managed due to metadata issues in v2.3.
+### General 
+* Once a collection created by the user is removed from the app, it can no longer be edited, even if it was exported to the website.
+* The game version is not checked when adding a collection, meaning you can install outdated mods without being warned. 
+* The table header sorting and active tab states are not saved and are reset each time the view is loaded.
+* Some toast messages incorrectly appear more than once.
+
 # v0.15.2 2025-08-12
 This update expands search to more screens, streamlines the mod update process, and includes several bug fixes for a smoother experience.
 

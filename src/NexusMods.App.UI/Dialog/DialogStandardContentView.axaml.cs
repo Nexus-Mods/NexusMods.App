@@ -6,7 +6,6 @@ using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Dialog.Enums;
 using ReactiveUI;
 using Avalonia.ReactiveUI;
-using NexusMods.Abstractions.UI;
 
 namespace NexusMods.App.UI.Dialog;
 
@@ -21,6 +20,12 @@ public partial class DialogStandardContentView : ReactiveUserControl<IDialogStan
                 // COMMANDS
 
                 CopyDetailsButton.Command = ReactiveCommand.CreateFromTask(async () => { await TopLevel.GetTopLevel(this)!.Clipboard!.SetTextAsync(ViewModel?.MarkdownRenderer?.Contents); });
+                
+                this.OneWayBind(ViewModel,
+                        vm => vm.ShowMarkdownCopyButton,
+                        view => view.CopyDetailsButton.IsVisible
+                    )
+                    .DisposeWith(disposables);
 
                 // BINDINGS
 

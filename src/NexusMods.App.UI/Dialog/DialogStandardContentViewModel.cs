@@ -1,11 +1,6 @@
-using System.Collections.ObjectModel;
-using System.Reactive;
-using Avalonia.Threading;
-using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls.MarkdownRenderer;
-using NexusMods.App.UI.Dialog.Enums;
+using NexusMods.UI.Sdk;
 using NexusMods.UI.Sdk.Icons;
-using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using ReactiveCommand = R3.ReactiveCommand;
 
@@ -17,6 +12,7 @@ public class DialogStandardContentViewModel : AViewModel<IDialogStandardContentV
     public string Heading { get; }
     public IconValue? Icon { get; }
     public IMarkdownRendererViewModel? MarkdownRenderer { get; }
+    public bool ShowMarkdownCopyButton { get; }
     [Reactive] public string InputText { get; set; }
     public string InputLabel { get; set; }
     public string InputWatermark { get; set; }
@@ -33,6 +29,7 @@ public class DialogStandardContentViewModel : AViewModel<IDialogStandardContentV
         InputText = standardDialogParameters.InputText;
         InputWatermark = standardDialogParameters.InputWatermark;
         BottomText = standardDialogParameters.BottomText;
+        ShowMarkdownCopyButton = standardDialogParameters.ShowMarkdownCopyButton;
 
         ClearInputCommand = new R3.ReactiveCommand(
             executeAsync: (_, cancellationToken) =>

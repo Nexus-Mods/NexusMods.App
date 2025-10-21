@@ -7,19 +7,19 @@ using NexusMods.Abstractions.Games.FileHashes.Models;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.Serialization;
-using NexusMods.Abstractions.Settings;
+using NexusMods.Backend;
 using NexusMods.Collections;
 using NexusMods.CrossPlatform;
 using NexusMods.DataModel;
 using NexusMods.FileExtractor;
 using NexusMods.Games.FileHashes;
 using NexusMods.Games.Generic;
-using NexusMods.Jobs;
 using NexusMods.Library;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Paths;
-using NexusMods.Settings;
+using NexusMods.Sdk;
+using NexusMods.Sdk.Settings;
 using NexusMods.StandardGameLocators;
 using NexusMods.StandardGameLocators.TestHelpers;
 using Xunit.DependencyInjection.Logging;
@@ -62,7 +62,8 @@ public static class DependencyInjectionHelper
             .AddSingleton<TemporaryFileManager>(_ => new TemporaryFileManager(FileSystem.Shared, prefix))
             .AddNexusWebApi(true)
             .AddNexusModsCollections()
-            .AddCrossPlatform()
+            .AddOSInterop()
+            .AddRuntimeDependencies()
             .AddGenericGameSupport()
             .AddSettings<LoggingSettings>()
             .AddHttpDownloader()
@@ -70,7 +71,6 @@ public static class DependencyInjectionHelper
             .AddLibrary()
             .AddLibraryModels()
             .AddJobMonitor()
-            .AddLoadoutsSynchronizers()
             .OverrideSettingsForTests<DataModelSettings>(settings => settings with
             {
                 UseInMemoryDataModel = true,

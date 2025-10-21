@@ -36,7 +36,7 @@ public abstract class AGame : IGame
         _gameLocators = provider.GetServices<IGameLocator>();
         // In a Lazy so we don't get a circular dependency
         _synchronizer = new Lazy<ILoadoutSynchronizer>(() => MakeSynchronizer(provider));
-        _sortOrderManager = new Lazy<ISortOrderManager>(() => MakeSortOrderManager(provider));
+        _sortOrderManager = new Lazy<ISortOrderManager>(() => MakeSortOrderManager(provider, this));
         _fs = provider.GetRequiredService<IFileSystem>();
     }
 
@@ -48,10 +48,10 @@ public abstract class AGame : IGame
         return new DefaultSynchronizer(provider);
     }
     
-    private ISortOrderManager MakeSortOrderManager(IServiceProvider provider)
+    private ISortOrderManager MakeSortOrderManager(IServiceProvider provider, IGame game)
     {
-        var manager = new SortOrderManager(provider);
-        manager.RegisterSortOrderVarieties(GetSortOrderVarieties());
+        var manager = provider.GetRequiredService<SortOrderManager>();
+        manager.RegisterSortOrderVarieties(GetSortOrderVarieties(), game);
         return manager;
     }
 
@@ -82,11 +82,10 @@ public abstract class AGame : IGame
     /// <inheritdoc/>
     public virtual IDiagnosticEmitter[] DiagnosticEmitters { get; } = [];
 
-    /// <inheritdoc/>
-    public virtual ISortableItemProviderFactory[] SortableItemProviderFactories { get; } = [];
-
     /// <inheritdoc />
     public virtual ILoadoutSynchronizer Synchronizer => _synchronizer.Value;
+    
+    public virtual ISortOrderManager SortOrderManager => _sortOrderManager.Value;
 
     /// <inheritdoc />
     public GameInstallation InstallationFromLocatorResult(GameLocatorResult metadata, EntityId dbId, IGameLocator locator)

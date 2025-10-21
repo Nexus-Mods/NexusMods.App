@@ -1,7 +1,7 @@
 using System.Reactive;
-using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.UI;
+using NexusMods.Sdk.Jobs;
+using NexusMods.UI.Sdk;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.LeftMenu.Items;

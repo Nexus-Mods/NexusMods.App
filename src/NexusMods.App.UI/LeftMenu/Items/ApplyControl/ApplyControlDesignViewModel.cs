@@ -1,7 +1,7 @@
 ﻿using System.Reactive;
-using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.Resources;
+using NexusMods.UI.Sdk;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -21,6 +21,8 @@ public class ApplyControlDesignViewModel : AViewModel<IApplyControlViewModel>, I
     public bool IsLaunchButtonEnabled { get; } = true;
     public bool IsProcessing { get; } = false;
     public string ApplyButtonText { get; } = Language.ApplyControlViewModel__APPLY;
+
+    public string ProcessingText { get; } = "PROCESSING TEXT";
 
     public ApplyControlDesignViewModel()
     {

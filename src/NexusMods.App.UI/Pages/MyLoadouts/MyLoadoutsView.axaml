@@ -11,6 +11,7 @@
                                 xmlns:ui1="clr-namespace:NexusMods.Abstractions.UI;assembly=NexusMods.Abstractions.UI"
                                 xmlns:icons="clr-namespace:NexusMods.UI.Sdk.Icons;assembly=NexusMods.UI.Sdk"
                                 xmlns:pageHeader="clr-namespace:NexusMods.App.UI.Controls.PageHeader"
+                                xmlns:sdk="clr-namespace:NexusMods.UI.Sdk;assembly=NexusMods.UI.Sdk"
                                 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                                 x:Class="NexusMods.App.UI.Pages.MyLoadouts.MyLoadoutsView">
     <Design.DataContext>
@@ -61,7 +62,7 @@
                                         </ItemsControl.ItemsPanel>
 
                                         <ItemsControl.ItemTemplate>
-                                            <DataTemplate DataType="ui1:IViewModelInterface">
+                                            <DataTemplate DataType="sdk:IViewModelInterface">
                                                 <reactiveUi:ViewModelViewHost ViewModel="{CompiledBinding}"
                                                                               ClipToBounds="False" />
                                             </DataTemplate>

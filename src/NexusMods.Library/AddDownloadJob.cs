@@ -1,11 +1,10 @@
-using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Downloads;
-using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Library.Jobs;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
+using NexusMods.Sdk.Jobs;
 
 namespace NexusMods.Library;
 
@@ -30,6 +29,8 @@ internal class AddDownloadJob : IJobDefinitionWithStart<AddDownloadJob, LibraryF
     public async ValueTask<LibraryFile.ReadOnly> StartAsync(IJobContext<AddDownloadJob> context)
     {
         await context.YieldAsync();
+
+        // This throws if download cancelled, will be caught downstream.
         await DownloadJob;
 
         await context.YieldAsync();

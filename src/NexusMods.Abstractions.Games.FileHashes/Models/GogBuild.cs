@@ -15,12 +15,17 @@ public partial class GogBuild : IModelDefinition
     /// <summary>
     /// The GOG build ID.
     /// </summary>
-    public static readonly BuildIdAttribute BuildId = new(Namespace, nameof(BuildId)) { IsIndexed = true };
+    public static readonly BuildIdAttribute BuildId = new(Namespace, nameof(BuildId)) { IsIndexed = true, IsOptional = true };
     
     /// <summary>
     /// The GOG product ID.
     /// </summary>
     public static readonly ProductIdAttribute ProductId = new(Namespace, nameof(ProductId)) { IsIndexed = true };
+    
+    /// <summary>
+    /// The unique manifest ID for this build.
+    /// </summary>
+    public static readonly StringAttribute ManifestId = new(Namespace, nameof(ManifestId)) { IsIndexed = true };
     
     /// <summary>
     /// The Operating System the build is for.
@@ -43,7 +48,12 @@ public partial class GogBuild : IModelDefinition
     public static readonly BooleanAttribute Public = new(Namespace, nameof(Public));
     
     /// <summary>
-    /// The files in the GOG build.
+    /// (Deprecated) The files in the GOG build, use Depots instead.
     /// </summary>
     public static readonly ReferencesAttribute<PathHashRelation> Files = new(Namespace, nameof(Files));
+    
+    /// <summary>
+    /// All the depots in this build
+    /// </summary>
+    public static readonly ReferencesAttribute<GogDepot> Depots = new(Namespace, nameof(Depots));
 }

@@ -2,7 +2,6 @@
     <ItemGroup>
         <ProjectReference Include="..\NexusMods.Abstractions.Games.Diagnostics\NexusMods.Abstractions.Games.Diagnostics.csproj" />
         <ProjectReference Include="..\NexusMods.Abstractions.Games\NexusMods.Abstractions.Games.csproj" />
-        <ProjectReference Include="..\NexusMods.Abstractions.Settings\NexusMods.Abstractions.Settings.csproj" />
         <ProjectReference Include="..\NexusMods.Abstractions.Telemetry\NexusMods.Abstractions.Telemetry.csproj" />
         <ProjectReference Include="..\NexusMods.Games.Generic\NexusMods.Games.Generic.csproj" />
         <ProjectReference Include="..\NexusMods.App.Generators.Diagnostics\NexusMods.App.Generators.Diagnostics.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
@@ -12,6 +11,14 @@
       <EmbeddedResource Include="Resources\SkyrimSE\thumbnail.webp" />
       <None Remove="Resources\SkyrimSE\tile.webp" />
       <EmbeddedResource Include="Resources\SkyrimSE\tile.webp" />
+      <None Remove="Resources\Fallout4\thumbnail.webp" />
+      <EmbeddedResource Include="Resources\Fallout4\thumbnail.webp" />
+      <None Remove="Resources\Fallout4\tile.webp" />
+      <EmbeddedResource Include="Resources\Fallout4\tile.webp" />
+    </ItemGroup>
+    <ItemGroup>
+      <PackageReference Include="Mutagen.Bethesda.Fallout4" />
+      <PackageReference Include="Mutagen.Bethesda.Skyrim" />
     </ItemGroup>
 
 </Project>

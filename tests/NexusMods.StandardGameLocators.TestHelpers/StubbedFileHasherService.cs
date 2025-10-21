@@ -67,8 +67,8 @@ public class StubbedFileHasherService : IFileHashesService
                 await using var stream = entry.Open();
                 var memoryStream = new MemoryStream();
                 await stream.CopyToAsync(memoryStream);
-                var hasher = new MultiHasher();
-                var hashResult = await hasher.HashStream(memoryStream);
+
+                var hashResult = await MultiHasher.HashStream(memoryStream);
 
                 memoryStream.Position = 0;
                 archiveFiles.Add(new ArchivedFileEntry(new MemoryStreamFactory(RelativePath.FromUnsanitizedInput(entry.FullName), memoryStream), hashResult.XxHash3, hashResult.Size));
@@ -213,5 +213,10 @@ public class StubbedFileHasherService : IFileHashesService
             .OrderByDescending(t => t.Matches)
             .Select(t => t.VersionData)
             .FirstOrOptional(_ => true);
+    }
+
+    public LocatorId[] GetLocatorIdsForGame(GameInstallation loadoutInstallationInstance)
+    {
+        throw new NotImplementedException();
     }
 }

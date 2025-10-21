@@ -1,6 +1,7 @@
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.GC;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusWebApi;
@@ -75,6 +76,15 @@ public class CollectionInstallTests(ITestOutputHelper helper) : ACyberpunkIsolat
                 }
             )
             .ToDictionary();
+
+        // Run the GC 
+        var gc = ServiceProvider.GetRequiredService<IGarbageCollectorRunner>();
+        await gc.RunAsync();
+        
+        // Make sure the collection files (Json and others) still exist after
+        collectionFile = collectionFile.Rebase();
+        var json = await NexusModsLibrary.ParseCollectionJsonFile(collectionFile, CancellationToken.None);
+        json.Should().NotBe(null, "The collection file should exist");
 
         await Verify(new
             {

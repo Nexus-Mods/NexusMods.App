@@ -1,5 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.Settings;
+using NexusMods.Sdk.Settings;
 
 namespace NexusMods.SingleProcess;
 
@@ -33,6 +33,7 @@ public static class Services
         switch (mode)
         {
             case Mode.Main:
+                services.AddTransient<CliClient>();
                 services.AddSingleton<CliServer>();
                 services.AddHostedService(s => s.GetRequiredService<CliServer>());
                 break;

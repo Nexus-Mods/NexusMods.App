@@ -1,5 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts.Files;
+using NexusMods.HyperDuck.Adaptor.Impls.ValueAdaptor;
+using NexusMods.HyperDuck.BindingConverters;
 using NexusMods.MnemonicDB.Abstractions;
 
 namespace NexusMods.Abstractions.Loadouts;
@@ -15,6 +18,9 @@ public static class Services
     public static IServiceCollection AddLoadoutAbstractions(this IServiceCollection services)
     {
         return services
+            .AddBindingConverter<LoadoutId, ulong>(l => l.Value.Value)
+            .AddBindingConverter<LocationId, ushort>(l => l.Value)
+            .AddValueAdaptor<ushort, LocationId>(LocationId.From)
             .AddLoadoutModel()
             .AddLoadoutItemModel()
             .AddLoadoutItemGroupModel()
@@ -27,6 +33,7 @@ public static class Services
             .AddDeletedFileModel()
             .AddCollectionGroupModel()
             .AddSortOrderModel()
-            .AddGameBackedUpFileModel();
+            .AddGameBackedUpFileModel()
+            .AddLoadoutQueriesSql();
     }
 }

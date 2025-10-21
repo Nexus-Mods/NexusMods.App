@@ -5,8 +5,8 @@ using Avalonia.ReactiveUI;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.GuidedInstallers;
-using NexusMods.Abstractions.Jobs;
 using NexusMods.App.UI;
+using NexusMods.Sdk.Jobs;
 using ReactiveUI;
 
 namespace NexusMods.Games.FOMOD.UI;

@@ -182,6 +182,27 @@
     <data name="DownloadsView_UnderDevelopment" xml:space="preserve">
         <value>The Downloads page is currently being reworked and will be replaced in a future update. We apologise for the inconvenience.</value>
     </data>
+    <data name="DownloadsLeftMenu_AllDownloads" xml:space="preserve">
+        <value>All Downloads</value>
+    </data>
+    <data name="DownloadsLeftMenu_AllCompleted" xml:space="preserve">
+        <value>All Completed</value>
+    </data>
+    <data name="DownloadsLeftMenu_GameSpecificDownloads" xml:space="preserve">
+        <value>{0} Downloads</value>
+    </data>
+    <data name="DownloadsPage_AllDownloads_Description" xml:space="preserve">
+        <value>Monitor your downloads.</value>
+    </data>
+    <data name="DownloadsPage_AllCompleted_Description" xml:space="preserve">
+        <value>View your completed downloads.</value>
+    </data>
+    <data name="DownloadsPage_GameSpecificDownloads_Description" xml:space="preserve">
+        <value>Monitor your downloads.</value>
+    </data>
+    <data name="DownloadsPage_Default_Description" xml:space="preserve">
+        <value>Manage your active and completed downloads</value>
+    </data>
     <data name="NexusLoginOverlayView__Please_Click_Authorize" xml:space="preserve">
         <value>Please click "Authorise" on the website</value>
     </data>
@@ -970,18 +991,20 @@ To apply changes or launch the game again, please close the game first.</value>
         <value>Go Premium for one-click collection downloads</value>
     </data>
     <data name="UpgradeToPremiumView_Desc1" xml:space="preserve">
-        <value>Download an entire mod collection at full speed with one click without leaving the app. Free users can install mods individually from the list.</value>
+        <value>Download this entire collection automatically, at full speed, without leaving the app.</value>
     </data>
 
     <data name="UpgradeToPremiumView_Desc2" xml:space="preserve">
-        <value>Premium users also get:</value>
+        <value>With Premium you also get:</value>
     </data>
-
+    <data name="UpgradeToPremiumView_Bullet0" xml:space="preserve">
+        <value>Seamless in-app mod updates, no websites or manual downloads.</value>
+    </data>
     <data name="UpgradeToPremiumView_Bullet1" xml:space="preserve">
         <value>Uncapped downloads speeds</value>
     </data>
     <data name="UpgradeToPremiumView_Bullet2" xml:space="preserve">
-        <value>No Ads for life, even if you cancel!</value>
+        <value>Ad-free for life, even if you cancel later</value>
     </data>
     <data name="UpgradeToPremiumView_Bullet3" xml:space="preserve">
         <value>Support the creators - Premium helps reward mod authors</value>
@@ -1071,7 +1094,7 @@ Keep the downloaded files in your library in case you want to retry the installa
     <data name="Library_UpdateMod_ToolTip" xml:space="preserve">
         <value>Update mod</value>
     </data>
-    <data name="Library_MoreOptions_ToolTip" xml:space="preserve">
+    <data name="Menu_MoreOptions_ToolTip" xml:space="preserve">
         <value>More options</value>
     </data>
     <data name="Library_UpdateModAndReplace_ToolTip" xml:space="preserve">
@@ -1093,9 +1116,23 @@ Keep the downloaded files in your library in case you want to retry the installa
     <data name="PremiumDialog_UpdateManuallyButton" xml:space="preserve">
         <value>Update mods manually</value>
     </data>
+    <data name="DialogPremiumCollection_DialogTitle" xml:space="preserve">
+        <value>Unlock 1-click collections with Premium</value>
+    </data>
+    <data name="DialogPremiumCollection_UpgradeToPremium" xml:space="preserve">
+        <value>Unlock Auto-download</value>
+    </data>
+    <data name="DialogPremiumCollection_LearnMore" xml:space="preserve">
+        <value>Learn more</value>
+    </data>
+    <data name="DialogPremiumCollection_Cancel" xml:space="preserve">
+        <value>Continue with manual install</value>
+    </data>
+    
     <data name="PremiumDialog_GoPremiumButton" xml:space="preserve">
         <value>Go Premium</value>
     </data>
+    
     <data name="Library_Update_SomeDownloadsFailed_Title" xml:space="preserve">
         <value>Some Mod Updates Failed to Download</value>
     </data>
@@ -1141,4 +1178,109 @@ Keep the downloaded files in your library in case you want to retry the installa
     <data name="Loadout_Dialog_ShareCollection_ChangeVisibilityMessage" xml:space="preserve">
         <value>You can change the visibility at any time in your collection settings.</value>
     </data>
+    <data name="Library_DeleteItem_Text" xml:space="preserve">
+        <value>Delete</value>
+    </data>
+    <data name="ToastNotification_Settings_saved" xml:space="preserve">
+        <value>Settings saved</value>
+    </data>
+    <data name="ToastNotification_Signed_in_successfully" xml:space="preserve">
+        <value>Signed in successfully</value>
+    </data>
+    <data name="ToastNotification_Items_deleted" xml:space="preserve">
+        <value>Mod deleted</value>
+    </data>
+    <data name="ToastNotification_Mods_removed" xml:space="preserve">
+        <value>Mod uninstalled</value>
+    </data>
+    <data name="ToastNotification_Installed_to__0_" xml:space="preserve">
+        <value>Installed to {0}</value>
+    </data>
+    <data name="ToastNotification_Applied__0__successfully" xml:space="preserve">
+        <value>Loadout applied successfully</value>
+    </data>
+    <data name="ToastNotification_Collection_removed" xml:space="preserve">
+        <value>Collection removed</value>
+    </data>
+    <data name="ToastNotification_Collection_deleted" xml:space="preserve">
+        <value>Collection deleted</value>
+    </data>
+    <data name="ToastNotification_Collection_installed" xml:space="preserve">
+        <value>Collection installed</value>
+    </data>
+    <data name="ToastNotification_Draft_revision_uploaded_successfully" xml:space="preserve">
+        <value>Draft Revision uploaded successfully</value>
+    </data>
+    <data name="ToastNotification_Mod_updated____0_" xml:space="preserve">
+        <value>Mod updated - {0}</value>
+    </data>
+    <data name="ToastNotification_Adding_collection____0_" xml:space="preserve">
+        <value>Collection added successfully - {0}</value>
+    </data>
+    <data name="ToastNotification_Mod_Download_started" xml:space="preserve">
+        <value>Mod Download started</value>
+    </data>
+    <data name="ToastNotification_Mod_Download_Completed____0_" xml:space="preserve">
+        <value>Mod Download Completed - {0}</value>
+    </data>
+    <data name="ToastNotification_Adding_new_Collection_to_Library" xml:space="preserve">
+        <value>Adding new Collection to Library</value>
+    </data>
+    <data name="ToastNotification_Collection_Add_failed___0__is_not_a_managed_game" xml:space="preserve">
+        <value>Collection add failed: app isn't managing {0}</value>
+    </data>
+    <data name="ToastNotification_Collection_Add_failed__An_unknown_error_occurred" xml:space="preserve">
+        <value>Failed to add Collection</value>
+    </data>
+    <data name="ToastNotification_Download_failed__User_is_not_logged_in" xml:space="preserve">
+        <value>Download failed: not logged in to Nexus Mods</value>
+    </data>
+    <data name="ToastNotification_Download_skipped__file_already_exists____0__" xml:space="preserve">
+        <value>Download skipped: file already exists - {0} </value>
+    </data>
+    <data name="ToastNotification_Download_failed__game_is_not_managed____0_" xml:space="preserve">
+        <value>Download failed: app isn't managing {0}</value>
+    </data>
+    <data name="ToastNotification_Download_failed__An_unknown_error_occurred" xml:space="preserve">
+        <value>Download failed</value>
+    </data>
+    <data name="ToastNotification_Uploading_new_collection_revision___" xml:space="preserve">
+        <value>Uploading new Collection Revision...</value>
+    </data>
+    <data name="ToastNotification_Collection_status_changed_to__0__" xml:space="preserve">
+        <value>Collection status changed to {0} </value>
+    </data>
+    <data name="CollectionStatus_Listed" xml:space="preserve">
+        <value>Listed</value>
+    </data>
+    <data name="CollectionStatus_Unlisted" xml:space="preserve">
+        <value>Unlisted</value>
+    </data>
+    <data name="ToastNotification_Uploading_draft_collection_revision___" xml:space="preserve">
+        <value>Uploading draft Collection Revision...</value>
+    </data>
+    <data name="Loadout_UninstallItem_Menu_Text" xml:space="preserve">
+        <value>Uninstall</value>
+    </data>
+    <data name="Loadout_UninstallItem_Menu_Text__Uninstall_read_only" xml:space="preserve">
+        <value>Uninstall read-only</value>
+    </data>
+    <data name="Downloads_SizeProgress_Of" xml:space="preserve">
+        <value> of </value>
+        <comment>Used in size progress display: "15.6MB of 56MB"</comment>
+    </data>
+    <data name="Downloads_Speed_Inactive" xml:space="preserve">
+        <value>--</value>
+        <comment>Displayed when download speed is inactive or zero</comment>
+    </data>
+    <data name="Downloads_UnknownGame" xml:space="preserve">
+        <value>Unknown Game</value>
+    </data>
+    <data name="Downloads_UnknownDownload" xml:space="preserve">
+        <value>Unknown Download</value>
+    </data>
+    <data name="GameWidget_VersionUnknown" xml:space="preserve">
+        <value>Version: Unknown</value>
+    </data>
+
 </root>

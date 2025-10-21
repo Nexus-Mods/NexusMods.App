@@ -3,10 +3,9 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
-using NexusMods.Abstractions.Settings;
+using NexusMods.Sdk.Settings;
 using NexusMods.Games.RedEngine.Cyberpunk2077.Emitters;
-using NexusMods.Games.RedEngine.Cyberpunk2077.Models;
-using NexusMods.Paths;
+using R3;
 
 namespace NexusMods.Games.RedEngine.Cyberpunk2077;
 
@@ -41,7 +40,7 @@ public class Cyberpunk2077Synchronizer : ALoadoutSynchronizer
         var settingsManager = provider.GetRequiredService<ISettingsManager>();
 
         _settings = settingsManager.Get<Cyberpunk2077Settings>();
-        settingsManager.GetChanges<Cyberpunk2077Settings>().Subscribe(value => _settings = value);
+        settingsManager.GetChanges<Cyberpunk2077Settings>(prependCurrent: false).Subscribe(value => _settings = value);
         _redModTool = provider.GetServices<ITool>().OfType<RedModDeployTool>().First();
     }
 
@@ -51,9 +50,9 @@ public class Cyberpunk2077Synchronizer : ALoadoutSynchronizer
         ArchivePcEp1Folder,
     ];
 
-    public override async Task<Loadout.ReadOnly> Synchronize(Loadout.ReadOnly loadout)
+    public override async Task<Loadout.ReadOnly> Synchronize(Loadout.ReadOnly loadout, SynchronizeLoadoutJob? job)
     {
-        loadout = await base.Synchronize(loadout);
+        loadout = await base.Synchronize(loadout, job);
         if (!MissingRedModEmitter.HasRedMods(loadout, out _, out var numRedModDirs)) return loadout;
         if (!MissingRedModEmitter.HasRedModToolInstalled(loadout, out _))
         {
@@ -62,7 +61,7 @@ public class Cyberpunk2077Synchronizer : ALoadoutSynchronizer
         }
 
         await _redModTool.Execute(loadout, CancellationToken.None);
-        return await base.Synchronize(loadout);
+        return await base.Synchronize(loadout, job);
     }
 
 

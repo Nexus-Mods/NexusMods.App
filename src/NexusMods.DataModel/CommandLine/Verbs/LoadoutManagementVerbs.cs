@@ -44,11 +44,12 @@ public static class LoadoutManagementVerbs
             .AddVerb(() => BackupFiles)
             .AddVerb(() => ListGroupContents)
             .AddVerb(() => ListGroups)
+            .AddVerb(() => ListFileConflicts)
             .AddVerb(() => DeleteGroupItems)
             .AddVerb(() => CreateLoadout)
             .AddVerb(() => ListRevisions)
             .AddVerb(() => Revert);
-    
+
     [Verb("loadout version set", "Sets the game version for a loadout")]
     private static async Task<int> SetVersion([Injected] IRenderer renderer,
         [Option("l", "loadout", "Loadout to set the version for")] Loadout.ReadOnly loadout,
@@ -128,12 +129,13 @@ public static class LoadoutManagementVerbs
         [Option("f", "file", "Mod file to install")] AbsolutePath file,
         [Option("n", "name", "Name of the mod after installing")] string name,
         [Injected] ILibraryService libraryService,
+        [Injected] ILoadoutManager loadoutManager,
         [Injected] CancellationToken token)
     {
         return await renderer.WithProgress(token, async () =>
         {
             var localFile = await libraryService.AddLocalFile(file); 
-            await libraryService.InstallItem(localFile.AsLibraryFile().AsLibraryItem(), loadout);
+            await loadoutManager.InstallItem(localFile.AsLibraryFile().AsLibraryItem(), loadout);
             return 0;
         });
     }
@@ -145,10 +147,9 @@ public static class LoadoutManagementVerbs
     {
         await renderer.Text("Reindexing {0}", loadout.Name);
         var synchronizer = loadout.InstallationInstance.GetGame().Synchronizer;
-        await synchronizer.RescanFiles(loadout.InstallationInstance, true);
+        await synchronizer.RescanFiles(loadout.InstallationInstance);
         return 0;
     }
-
 
     [Verb("loadouts list", "Lists all the loadouts")]
     private static async Task<int> ListLoadouts([Injected] IRenderer renderer,
@@ -250,6 +251,20 @@ public static class LoadoutManagementVerbs
 
         return 0;
     }
+
+    [Verb("loadout list-conflicts", "Lists file conflicts")]
+    private static async Task<int> ListFileConflicts(
+        [Injected] IRenderer renderer,
+        [Option("l", "loadout", "Loadout")] Loadout.ReadOnly loadout)
+    {
+        var synchronizer = loadout.InstallationInstance.GetGame().Synchronizer;
+        await synchronizer
+            .GetFileConflicts(loadout)
+            .Select(kv => (kv.Key, kv.Value.Items.Length))
+            .RenderTable(renderer, "Path", "Num Conflicts");
+
+        return 0;
+    }
     
     [Verb("loadout revisions", "Lists revisions for a loadout")]
     private static async Task<int> ListRevisions([Injected] IRenderer renderer,
@@ -295,16 +310,15 @@ public static class LoadoutManagementVerbs
         [Option("v", "version", "Version of the game to manage")] string version,
         [Option("n", "name", "The name of the new loadout")] string name,
         [Injected] IGameRegistry registry,
-        [Injected] CancellationToken token)
+        [Injected] CancellationToken token,
+        [Injected] ILoadoutManager loadoutManager)
     {
-        
         var install = registry.Installations.Values.FirstOrDefault(g => g.Game == game);
-        if (install == null)
-            throw new Exception("Game installation not found");
+        if (install == null) throw new Exception("Game installation not found");
 
         return await renderer.WithProgress(token, async () =>
         {
-            await game.Synchronizer.CreateLoadout(install, name);
+            await loadoutManager.CreateLoadout(install, name);
             return 0;
         });
     }

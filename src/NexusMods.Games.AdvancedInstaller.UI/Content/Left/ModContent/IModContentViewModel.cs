@@ -1,6 +1,6 @@
 ﻿using DynamicData;
-using NexusMods.Abstractions.UI;
 using NexusMods.Paths;
+using NexusMods.UI.Sdk;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.ModContent;
 

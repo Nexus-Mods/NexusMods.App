@@ -1,10 +1,10 @@
 using System.Diagnostics.CodeAnalysis;
+using System.Reactive.Linq;
 using DynamicData;
+using DynamicData.Aggregation;
 using DynamicData.Kernel;
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Library.Models;
-using NexusMods.Abstractions.UI;
-using NexusMods.Abstractions.UI.Extensions;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Controls.Filters;
 using NexusMods.App.UI.Controls.TreeDataGrid.Filters;
@@ -12,6 +12,7 @@ using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Resources;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.NexusWebApi;
+using NexusMods.UI.Sdk;
 using NexusMods.UI.Sdk.Icons;
 using ObservableCollections;
 using OneOf;
@@ -22,6 +23,7 @@ namespace NexusMods.App.UI.Pages.LibraryPage;
 
 public static class LibraryColumns
 {
+    
     [UsedImplicitly]
     public sealed class ItemVersion : ICompositeColumnDefinition<ItemVersion>
     {
@@ -66,6 +68,22 @@ public static class LibraryColumns
         public static string GetColumnHeader() => "Downloaded";
         public static string GetColumnTemplateResourceKey() => ColumnTemplateResourceKey;
     }
+    
+    [UsedImplicitly]
+    public sealed class Collections : ICompositeColumnDefinition<Collections>
+    {
+        public static int Compare<TKey>(CompositeItemModel<TKey> a, CompositeItemModel<TKey> b) where TKey : notnull
+        {
+            var aValue = a.GetOptional<LibraryComponents.RelatedCollectionsComponent>(key: RelatedCollectionsComponentKey);
+            var bValue = b.GetOptional<LibraryComponents.RelatedCollectionsComponent>(key: RelatedCollectionsComponentKey);
+            return aValue.Compare(bValue);
+        }
+
+        public const string ColumnTemplateResourceKey = nameof(LibraryColumns) + "_" + nameof(Collections);
+        public static readonly ComponentKey RelatedCollectionsComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(LibraryComponents.RelatedCollectionsComponent));
+        public static string GetColumnHeader() => "Collections";
+        public static string GetColumnTemplateResourceKey() => ColumnTemplateResourceKey;
+    }
 
     [UsedImplicitly]
     public sealed class Actions : ICompositeColumnDefinition<Actions>
@@ -81,18 +99,27 @@ public static class LibraryColumns
             var aViewChangelog = a.GetOptional<LibraryComponents.ViewChangelogAction>(key: ViewChangelogComponentKey);
             var bViewChangelog = b.GetOptional<LibraryComponents.ViewChangelogAction>(key: ViewChangelogComponentKey);
 
-            var aViewModPage = a.GetOptional<LibraryComponents.ViewModPageAction>(key: ViewModPageComponentKey);
-            var bViewModPage = b.GetOptional<LibraryComponents.ViewModPageAction>(key: ViewModPageComponentKey);
+            var aViewModPage = a.GetOptional<SharedComponents.ViewModPageAction>(key: ViewModPageComponentKey);
+            var bViewModPage = b.GetOptional<SharedComponents.ViewModPageAction>(key: ViewModPageComponentKey);
 
             var aHideUpdates = a.GetOptional<LibraryComponents.HideUpdatesAction>(key: HideUpdatesComponentKey);
             var bHideUpdates = b.GetOptional<LibraryComponents.HideUpdatesAction>(key: HideUpdatesComponentKey);
+            
+            var aDeleteItem = a.GetOptional<LibraryComponents.DeleteItemAction>(key: DeleteItemComponentKey);
+            var bDeleteItem = b.GetOptional<LibraryComponents.DeleteItemAction>(key: DeleteItemComponentKey);
 
-            var orderA = GetOrder(aInstall, aUpdate, aViewChangelog, aViewModPage, aHideUpdates);
-            var orderB = GetOrder(bInstall, bUpdate, bViewChangelog, bViewModPage, bHideUpdates);
+            var orderA = GetOrder(aInstall, aUpdate, aViewChangelog, aViewModPage, aHideUpdates, aDeleteItem);
+            var orderB = GetOrder(bInstall, bUpdate, bViewChangelog, bViewModPage, bHideUpdates, bDeleteItem);
 
             return orderA.CompareTo(orderB);
             
-            int GetOrder(Optional<LibraryComponents.InstallAction> install, Optional<LibraryComponents.UpdateAction> update, Optional<LibraryComponents.ViewChangelogAction> viewChangelog, Optional<LibraryComponents.ViewModPageAction> viewModPage, Optional<LibraryComponents.HideUpdatesAction> hideUpdates)
+            int GetOrder(
+                Optional<LibraryComponents.InstallAction> install, 
+                Optional<LibraryComponents.UpdateAction> update, 
+                Optional<LibraryComponents.ViewChangelogAction> viewChangelog, 
+                Optional<SharedComponents.ViewModPageAction> viewModPage, 
+                Optional<LibraryComponents.HideUpdatesAction> hideUpdates, 
+                Optional<LibraryComponents.DeleteItemAction> deleteItem)
             {
                 var isUpdateAvailable = update.HasValue;
                 var hasInstallButton = install is { HasValue: true, Value.IsInstalled.Value: false };
@@ -100,22 +127,26 @@ public static class LibraryColumns
                 var hasViewChangelog = viewChangelog.HasValue;
                 var hasViewModPage = viewModPage.HasValue;
                 var hasHideUpdates = hideUpdates.HasValue;
+                var hasDeleteItem = deleteItem.HasValue;
 
                 if (isUpdateAvailable && hasInstallButton) return 1;
                 if (hasInstallButton) return 2;
                 if (isUpdateAvailable) return 3;
                 if (isInstalled) return 4;
                 if (hasViewChangelog || hasViewModPage || hasHideUpdates) return 5;
-                return 6;
+                if (hasDeleteItem) return 6;
+                return 7;
             }
         }
 
         public const string ColumnTemplateResourceKey = nameof(LibraryColumns) + "_" + nameof(Actions);
-
+        
+        public static readonly ComponentKey LibraryItemIdsComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(LibraryComponents.LibraryItemIds));
         public static readonly ComponentKey InstallComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(Actions) + "_" + "Install");
         public static readonly ComponentKey UpdateComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(Actions) + "_" + "Update");
         public static readonly ComponentKey ViewChangelogComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(Actions) + "_" + "ViewChangelog");
         public static readonly ComponentKey ViewModPageComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(Actions) + "_" + "ViewModPage");
+        public static readonly ComponentKey DeleteItemComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(Actions) + "_" + "DeleteItem");
         public static readonly ComponentKey HideUpdatesComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(Actions) + "_" + "HideUpdates");
         public static string GetColumnHeader() => "Actions";
         public static string GetColumnTemplateResourceKey() => ColumnTemplateResourceKey;
@@ -124,6 +155,47 @@ public static class LibraryColumns
 
 public static class LibraryComponents
 {
+    
+    public sealed class LibraryItemIds : ReactiveR3Object, IItemModelComponent<LibraryItemIds>, IComparable<LibraryItemIds>
+    {
+        public int CompareTo(LibraryItemIds? other) => 0;
+
+        private readonly OneOf<ObservableHashSet<LibraryItemId>, LibraryItemId[]> _ids;
+        private readonly IDisposable? _idsObservable;
+
+        public IEnumerable<LibraryItemId> ItemIds => _ids.Match(
+            f0: static x => x.AsEnumerable(),
+            f1: static x => x.AsEnumerable()
+        );
+
+        public LibraryItemIds(LibraryItemId itemId)
+        {
+            _ids = new[] { itemId };
+        }
+
+        public LibraryItemIds(IObservable<IChangeSet<LibraryItemId, EntityId>> childrenItemIdsObservable)
+        {
+            _ids = new ObservableHashSet<LibraryItemId>();
+            _idsObservable = childrenItemIdsObservable.SubscribeWithErrorLogging(changeSet => _ids.AsT0.ApplyChanges(changeSet));
+        }
+
+        private bool _isDisposed;
+        protected override void Dispose(bool disposing)
+        {
+            if (!_isDisposed)
+            {
+                _isDisposed = true;
+
+                if (disposing)
+                {
+                    Disposable.Dispose(_idsObservable ?? Disposable.Empty);
+                }
+            }
+
+            base.Dispose(disposing);
+        }
+    }
+    
     public sealed class NewVersionAvailable : ReactiveR3Object, IItemModelComponent<NewVersionAvailable>, IComparable<NewVersionAvailable>
     {
         public VersionComponent CurrentVersion { get; }
@@ -193,18 +265,81 @@ public static class LibraryComponents
             base.Dispose(disposing);
         }
     }
+    
+    public sealed class RelatedCollectionsComponent : ReactiveR3Object, IItemModelComponent<RelatedCollectionsComponent>, IComparable<RelatedCollectionsComponent>
+    {
+        private readonly IDisposable _activationDisposable; 
+        
+        public StringComponent InstalledCollections { get; }
+        public StringComponent DownloadedCollections { get; }
+
+        public ValueComponent<bool> ShowSeparator { get; }
+        public ValueComponent<bool> HasInstalledCollections { get; }
+        public ValueComponent<bool> HasDownloadedCollections { get; }
+
+        public RelatedCollectionsComponent(IObservable<IChangeSet<string>> installedCollections, IObservable<IChangeSet<string>> downloadedCollections)
+        {
+            InstalledCollections = new StringComponent("", installedCollections.QueryWhenChanged(items => string.Join(", ", items)));
+            DownloadedCollections = new StringComponent("", downloadedCollections.QueryWhenChanged(items => string.Join(", ", items)));
+            
+            ShowSeparator = new ValueComponent<bool>(false, installedCollections.IsNotEmpty().CombineLatest(downloadedCollections.IsNotEmpty(),
+                (hasInstalled, hasDownloaded) => hasDownloaded && hasInstalled));
+            HasInstalledCollections = new ValueComponent<bool>(false, installedCollections.IsNotEmpty());
+            HasDownloadedCollections = new ValueComponent<bool>(false, downloadedCollections.IsNotEmpty());
+            
+            _activationDisposable = this.WhenActivated(static (self, disposables) =>
+            {
+                self.InstalledCollections.Activate().AddTo(disposables);
+                self.DownloadedCollections.Activate().AddTo(disposables);
+                self.ShowSeparator.Activate().AddTo(disposables);
+                self.HasInstalledCollections.Activate().AddTo(disposables);
+                self.HasDownloadedCollections.Activate().AddTo(disposables);
+            });
+        }
+        
+        public int CompareTo(RelatedCollectionsComponent? other)
+        {
+            if (other is null) return 1;
+            var installedCompare = InstalledCollections.CompareTo(other.InstalledCollections);
+            return installedCompare != 0 ? installedCompare : DownloadedCollections.CompareTo(other.DownloadedCollections);
+        }
+
+        public FilterResult MatchesFilter(Filter filter)
+        {
+            var installedResult = InstalledCollections.MatchesFilter(filter);
+            if (installedResult == FilterResult.Pass) return FilterResult.Pass;
+
+            var downloadedResult = DownloadedCollections.MatchesFilter(filter);
+            if (downloadedResult == FilterResult.Pass) return FilterResult.Pass;
+
+            if (installedResult == FilterResult.Fail || downloadedResult == FilterResult.Fail)
+                return FilterResult.Fail;
+
+            return FilterResult.Indeterminate;
+        }
+        
+        private bool _isDisposed;
+        protected override void Dispose(bool disposing)
+        {
+            if (!_isDisposed)
+            {
+                if (disposing)
+                {
+                    Disposable.Dispose(_activationDisposable, ShowSeparator, InstalledCollections, HasInstalledCollections, HasDownloadedCollections);
+                }
+
+                _isDisposed = true;
+            }
+
+            base.Dispose(disposing);
+        }
+    }
 
     public sealed class InstallAction : ReactiveR3Object, IItemModelComponent<InstallAction>, IComparable<InstallAction>
     {
         public IReadOnlyBindableReactiveProperty<bool> IsInstalled { get; }
         public IReadOnlyBindableReactiveProperty<string> ButtonText { get; }
         public ReactiveCommand<Unit> CommandInstall { get; }
-
-        private readonly OneOf<ObservableHashSet<LibraryItemId>, LibraryItemId[]> _ids;
-        public IEnumerable<LibraryItemId> ItemIds => _ids.Match(
-            f0: static x => x.AsEnumerable(),
-            f1: static x => x.AsEnumerable()
-        );
 
         public int CompareTo(InstallAction? other)
         {
@@ -230,14 +365,11 @@ public static class LibraryComponents
 
         private readonly ReactiveR3Object _source;
         private readonly IDisposable _activationDisposable;
-        private readonly IDisposable? _idsObservable;
 
         public InstallAction(
-            ValueComponent<bool> isInstalled,
-            LibraryItemId itemId)
+            ValueComponent<bool> isInstalled)
         {
             _source = isInstalled;
-            _ids = new[] { itemId };
 
             IsInstalled = isInstalled.Value;
 
@@ -256,11 +388,9 @@ public static class LibraryComponents
         }
 
         public InstallAction(
-            ValueComponent<MatchesData> matches,
-            IObservable<IChangeSet<LibraryItemId, EntityId>> childrenItemIdsObservable)
+            ValueComponent<MatchesData> matches)
         {
             _source = matches;
-            _ids = new ObservableHashSet<LibraryItemId>();
 
             IsInstalled = matches.Value
                 .Select(static data => data.NumMatches > 0)
@@ -279,8 +409,6 @@ public static class LibraryComponents
             {
                 self._source.Activate().AddTo(disposables);
             });
-
-            _idsObservable = childrenItemIdsObservable.SubscribeWithErrorLogging(changeSet => _ids.AsT0.ApplyChanges(changeSet));
         }
 
         internal static string GetButtonText(bool isInstalled) => isInstalled
@@ -320,7 +448,7 @@ public static class LibraryComponents
             {
                 if (disposing)
                 {
-                    Disposable.Dispose(_activationDisposable, _idsObservable ?? Disposable.Empty, CommandInstall, ButtonText, _source);
+                    Disposable.Dispose(_activationDisposable, CommandInstall, ButtonText, _source);
                 }
 
                 _isDisposed = true;
@@ -376,7 +504,7 @@ public static class LibraryComponents
         {
             var initialUpdates = (ModUpdatesOnModPage)initialValue;
             _newFiles = new BindableReactiveProperty<ModUpdatesOnModPage>(value: initialUpdates);
-            _buttonText = new BindableReactiveProperty<string>();
+            _buttonText = new BindableReactiveProperty<string>("");
             _updateButtonText = new BindableReactiveProperty<string>(value: GetUpdateButtonText(initialUpdates.NumberOfModFilesToUpdate));
             _updateAndKeepOldModButtonText = new BindableReactiveProperty<string>(value: GetUpdateAndKeepOldModButtonText(initialUpdates.NumberOfModFilesToUpdate));
 
@@ -474,18 +602,19 @@ public static class LibraryComponents
         }
     }
 
-    public sealed class ViewModPageAction : ReactiveR3Object, IItemModelComponent<ViewModPageAction>, IComparable<ViewModPageAction>
+    
+    public sealed class DeleteItemAction : ReactiveR3Object, IItemModelComponent<DeleteItemAction>, IComparable<DeleteItemAction>
     {
-        public ReactiveCommand<Unit> CommandViewModPage { get; } = new();
+        public ReactiveCommand<Unit> CommandDeleteItem { get; } = new();
         public IReadOnlyBindableReactiveProperty<bool> IsEnabled { get; }
 
-        public int CompareTo(ViewModPageAction? other)
+        public int CompareTo(DeleteItemAction? other)
         {
             if (other is null) return 1;
-            return 0; // All view mod page actions are considered equal for sorting
+            return 0; // All DeleteItemAction items are considered equal for sorting
         }
 
-        public ViewModPageAction(bool isEnabled = true)
+        public DeleteItemAction(bool isEnabled = true)
         {
             IsEnabled = new BindableReactiveProperty<bool>(isEnabled);
         }
@@ -497,7 +626,7 @@ public static class LibraryComponents
             {
                 if (disposing)
                 {
-                    Disposable.Dispose(CommandViewModPage, IsEnabled);
+                    Disposable.Dispose(CommandDeleteItem, IsEnabled);
                 }
 
                 _isDisposed = true;

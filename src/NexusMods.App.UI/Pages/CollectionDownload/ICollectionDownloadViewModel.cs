@@ -1,6 +1,5 @@
 using Avalonia.Media.Imaging;
 using DynamicData.Kernel;
-using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.App.UI.Controls.MarkdownRenderer;
@@ -8,6 +7,7 @@ using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Collections;
 using NexusMods.Paths;
+using NexusMods.Sdk.Jobs;
 using R3;
 
 namespace NexusMods.App.UI.Pages.CollectionDownload;

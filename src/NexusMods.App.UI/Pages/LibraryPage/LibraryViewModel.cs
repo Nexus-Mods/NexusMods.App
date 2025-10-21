@@ -13,10 +13,11 @@ using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi;
-using NexusMods.Abstractions.Settings;
+using NexusMods.Sdk.Settings;
 using NexusMods.Abstractions.Telemetry;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Dialog;
@@ -27,15 +28,19 @@ using NexusMods.App.UI.Overlays;
 using NexusMods.App.UI.Pages.Library;
 using NexusMods.App.UI.Pages.LibraryPage.Collections;
 using NexusMods.App.UI.Resources;
+using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Collections;
-using NexusMods.CrossPlatform.Process;
 using NexusMods.UI.Sdk.Icons;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Networking.NexusWebApi.UpdateFilters;
 using NexusMods.Paths;
+using NexusMods.Sdk;
+using NexusMods.UI.Sdk;
+using NexusMods.UI.Sdk.Dialog;
+using NexusMods.UI.Sdk.Dialog.Enums;
 using ObservableCollections;
 using OneOf;
 using R3;
@@ -88,6 +93,8 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
     private readonly ILoginManager _loginManager;
     private readonly NexusModsLibrary _nexusModsLibrary;
     private readonly TemporaryFileManager _temporaryFileManager;
+    private readonly IWindowNotificationService _notificationService;
+    private readonly ILoadoutManager _loadoutManager;
 
     public LibraryTreeDataGridAdapter Adapter { get; }
     private ReadOnlyObservableCollection<ICollectionCardViewModel> _collections = new([]);
@@ -112,6 +119,8 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         _modUpdateService = serviceProvider.GetRequiredService<IModUpdateService>();
         _loginManager = serviceProvider.GetRequiredService<ILoginManager>();
         _temporaryFileManager = serviceProvider.GetRequiredService<TemporaryFileManager>();
+        _notificationService = serviceProvider.GetRequiredService<IWindowNotificationService>();
+        _loadoutManager = serviceProvider.GetRequiredService<ILoadoutManager>();
 
         var collectionDownloader = new CollectionDownloader(serviceProvider);
         var tileImagePipeline = ImagePipelines.GetCollectionTileImagePipeline(serviceProvider);
@@ -222,26 +231,19 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         );
 
         var osInterop = serviceProvider.GetRequiredService<IOSInterop>();
-        OpenNexusModsCommand = new ReactiveCommand<Unit>(
-            executeAsync: async (_, cancellationToken) =>
-            {
-                var gameDomain = _gameIdMappingCache[game.GameId];
-                var gameUri = NexusModsUrlBuilder.GetGameUri(gameDomain);
-                await osInterop.OpenUrl(gameUri, cancellationToken: cancellationToken);
-            },
-            awaitOperation: AwaitOperation.Parallel,
-            configureAwait: false
-        );
-        OpenNexusModsCollectionsCommand = new ReactiveCommand<Unit>(
-            executeAsync: async (_, cancellationToken) =>
-            {
-                var gameDomain = _gameIdMappingCache[game.GameId];
-                var gameUri = NexusModsUrlBuilder.GetBrowseCollectionsUri(gameDomain);
-                await osInterop.OpenUrl(gameUri, cancellationToken: cancellationToken);
-            },
-            awaitOperation: AwaitOperation.Parallel,
-            configureAwait: false
-        );
+        OpenNexusModsCommand = new ReactiveCommand<Unit>(execute: _ =>
+        {
+            var gameDomain = _gameIdMappingCache[game.GameId];
+            var gameUri = NexusModsUrlBuilder.GetGameUri(gameDomain);
+            osInterop.OpenUri(gameUri);
+        });
+
+        OpenNexusModsCollectionsCommand = new ReactiveCommand<Unit>(execute: _ =>
+        {
+            var gameDomain = _gameIdMappingCache[game.GameId];
+            var gameUri = NexusModsUrlBuilder.GetBrowseCollectionsUri(gameDomain);
+            osInterop.OpenUri(gameUri);
+        });
 
         this.WhenActivated(disposables =>
         {
@@ -265,7 +267,8 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
                         async updateAndKeepOldMessage => await HandleUpdateAndKeepOldMessage(updateAndKeepOldMessage, cancellationToken),
                         async viewChangelogMessage => await HandleViewChangelogMessage(viewChangelogMessage, cancellationToken),
                         async viewModPageMessage => await HandleViewModPageMessage(viewModPageMessage, cancellationToken),
-                        async hideUpdatesMessage => await HandleHideUpdatesMessage(hideUpdatesMessage, cancellationToken)
+                        async hideUpdatesMessage => await HandleHideUpdatesMessage(hideUpdatesMessage, cancellationToken),
+                        async deleteItemMessage => await HandleDeleteItemMessage(deleteItemMessage, cancellationToken)
                     );
                 },
                 awaitOperation: AwaitOperation.Parallel,
@@ -315,7 +318,11 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
                 .AddTo(disposables);
 
             // Auto check updates on entering library.
-            RefreshUpdatesCommand.Execute(Unit.Default);
+            R3.Observable
+                .Return(Unit.Default)
+                .ObserveOnThreadPool()
+                .Subscribe(this,static (_, self) => self.RefreshUpdatesCommand.Execute(Unit.Default))
+                .AddTo(disposables);
         });
     }
 
@@ -323,33 +330,21 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
     {
         var isPremium = _loginManager.IsPremium;
         if (!isPremium)
-            // Note(sewer): Per design, in the future this will expand the mod rows.
-            //              But, due to the TreeDataGrid bug, we can't do that today, yet.
+        {
             await UpdateAndReplaceForMultiModPagesFreeOnly(cancellationToken, [updateAndReplaceMessage.Updates]);
+        }
         else
+        {
             await UpdateAndReplaceForMultiModPagesPremiumOnly(cancellationToken, [updateAndReplaceMessage.Updates]);
+        }
     }
 
     private async ValueTask UpdateAndReplaceForMultiModPagesFreeOnly(CancellationToken cancellationToken, IEnumerable<ModUpdatesOnModPage> updatesOnPageCollection)
     {
-        // Show the original dialog
-        var dialog = DialogFactory.CreateStandardDialog(
-            Language.Dialog_ReplaceNotSupported_Title,
-            new StandardDialogParameters()
-            {
-                Text = Language.Dialog_ReplaceNotSupported_Text,
-            },
-            [DialogStandardButtons.Ok, DialogStandardButtons.Cancel]
-        );
-        
-        var dialogResult = await WindowManager.ShowDialog(dialog, DialogWindowType.Modal);
-        if (dialogResult.ButtonId != DialogStandardButtons.Ok.Id)
-        {
-            // User cancelled, don't proceed
-            return;
-        }
-        
-        await UpdateAndKeepOldFree(updatesOnPageCollection, cancellationToken);
+        // Note(sewer): Per design, in the future this will expand the mod rows.
+        //              But, due to the TreeDataGrid bug, we can't do that today, yet.
+        // Instead update and keep old for free users.
+        UpdateAndKeepOldFree(updatesOnPageCollection);
     }
 
     private async ValueTask UpdateAndReplaceForMultiModPagesPremiumOnly(CancellationToken cancellationToken, IEnumerable<ModUpdatesOnModPage> updatesOnPageCollection)
@@ -593,6 +588,9 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
                             NewItem = newLibraryItem,
                             InstallResult = result,
                         });
+
+                        if (result == LibraryItemReplacementResult.Success)
+                            _notificationService.ShowToast(string.Format(Language.ToastNotification_Mod_updated____0_, newLibraryItem.Name), ToastNotificationVariant.Success);
                     }
                 }
             }
@@ -662,7 +660,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
                }
             */
 
-            await UpdateAndKeepOldFree([updatesOnPage], cancellationToken);
+            UpdateAndKeepOldFree([updatesOnPage]);
         }
         else
         {
@@ -670,7 +668,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         }
     }
 
-    private async Task UpdateAndKeepOldFree(IEnumerable<ModUpdatesOnModPage> updatesOnPages, CancellationToken cancellationToken)
+    private void UpdateAndKeepOldFree(IEnumerable<ModUpdatesOnModPage> updatesOnPages)
     {
         // Aggregate all unique files across all mod pages
         var newestToCurrentMapping = new Dictionary<NexusModsFileMetadata.ReadOnly, List<NexusModsFileMetadata.ReadOnly>>();
@@ -682,7 +680,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         foreach (var newestFile in newestToCurrentMapping.Keys)
         {
             var uri = NexusModsUrlBuilder.GetFileDownloadUri(newestFile.ModPage.GameDomain, newestFile.ModPage.Uid.ModId, newestFile.Uid.FileId, useNxmLink: true, campaign: NexusModsUrlBuilder.CampaignUpdates);
-            await osInterop.OpenUrl(uri, cancellationToken: cancellationToken);
+            osInterop.OpenUri(uri);
         }
     }
 
@@ -723,17 +721,28 @@ A summarised quote/explanation from myself below:
 After asking design, we're choosing to simply open the mod page for now.
 */
         return viewChangelogMessage.Id.Match(
-            modPageMetadataId => OpenModPage(modPageMetadataId, cancellationToken),
-            libraryItemId => OpenModPage(new NexusModsLibraryItem.ReadOnly(_connection.Db, libraryItemId).ModPageMetadataId, cancellationToken)
+            modPageMetadataId => OpenModPage(modPageMetadataId),
+            libraryItemId => OpenModPage(new NexusModsLibraryItem.ReadOnly(_connection.Db, libraryItemId).ModPageMetadataId)
         );
     }
-    
+
     private ValueTask HandleViewModPageMessage(ViewModPageMessage viewModPageMessage, CancellationToken cancellationToken)
     {
         return viewModPageMessage.Id.Match(
-            modPageMetadataId => OpenModPage(modPageMetadataId, cancellationToken),
-            libraryItemId => OpenModPage(new NexusModsLibraryItem.ReadOnly(_connection.Db, libraryItemId).ModPageMetadataId, cancellationToken)
+            modPageMetadataId => OpenModPage(modPageMetadataId),
+            libraryItemId => OpenModPage(new NexusModsLibraryItem.ReadOnly(_connection.Db, libraryItemId).ModPageMetadataId)
         );
+    }
+    
+    private async ValueTask HandleDeleteItemMessage(DeleteItemMessage deleteItemMessage, CancellationToken cancellationToken)
+    {
+        var ids = deleteItemMessage.Ids;
+        if (ids.Length == 0) return;
+        
+        var toRemove = ids.Select(id => LibraryItem.Load(_connection.Db, id)).ToArray();
+        await LibraryItemRemover.RemoveAsync(_connection, _serviceProvider.GetRequiredService<IOverlayController>(), _libraryService, toRemove);
+
+        _notificationService.ShowToast(Language.ToastNotification_Items_deleted);
     }
     
     private async ValueTask HandleHideUpdatesMessage(HideUpdatesMessage hideUpdatesMessage, CancellationToken cancellationToken)
@@ -800,13 +809,12 @@ After asking design, we're choosing to simply open the mod page for now.
         );
     }
 
-    private ValueTask OpenModPage(NexusModsModPageMetadataId modPageMetadataId, CancellationToken cancellationToken)
+    private ValueTask OpenModPage(NexusModsModPageMetadataId modPageMetadataId)
     {
         var modPage = new NexusModsModPageMetadata.ReadOnly(_connection.Db, modPageMetadataId);
         var url = NexusModsUrlBuilder.GetModUri(modPage.GameDomain, modPage.Uid.ModId);
         var os = _serviceProvider.GetRequiredService<IOSInterop>();
-        // Note(sewer): Don't await, we don't want to block the UI thread when user pops a webpage.
-        _ = os.OpenUrl(url, cancellationToken: cancellationToken);
+        os.OpenUri(url);
         return ValueTask.CompletedTask;
     }
 
@@ -830,18 +838,23 @@ After asking design, we're choosing to simply open the mod page for now.
             body: (i, innerCancellationToken) => InstallLibraryItem(items[i], _loadout, targetLoadoutGroup, innerCancellationToken, useAdvancedInstaller),
             cancellationToken: cancellationToken
         );
+        
+        var targetCollection = LoadoutItem.Load(db, targetLoadoutGroup);
     }
 
     private LibraryItemId[] GetSelectedIds()
     {
         var ids = Adapter.SelectedModels
-            .Select(static model => model.GetOptional<LibraryComponents.InstallAction>(LibraryColumns.Actions.InstallComponentKey))
-            .Where(static optional => optional.HasValue)
-            .SelectMany(static optional => optional.Value.ItemIds)
+            .SelectMany(static model => GetLibraryItemIds(model))
             .Distinct()
             .ToArray();
 
         return ids;
+    }
+    
+    private static IEnumerable<LibraryItemId> GetLibraryItemIds(CompositeItemModel<EntityId> itemModel)
+    {
+        return itemModel.Get<LibraryComponents.LibraryItemIds>(LibraryColumns.Actions.LibraryItemIdsComponentKey).ItemIds;
     }
 
     private IEnumerable<CompositeItemModel<EntityId>> GetSelectedModelsWithUpdates()
@@ -870,7 +883,8 @@ After asking design, we're choosing to simply open the mod page for now.
     {
         try
         {
-            await _libraryService.InstallItem(libraryItem, loadout, parent: targetLoadoutGroup, installer: useAdvancedInstaller ? _advancedInstaller : null);
+            await _loadoutManager.InstallItem(libraryItem, loadout, parent: targetLoadoutGroup, installer: useAdvancedInstaller ? _advancedInstaller : null);
+            var targetCollection  = LoadoutItem.Load(_connection.Db, targetLoadoutGroup);
         }
         catch (OperationCanceledException)
         {
@@ -885,6 +899,8 @@ After asking design, we're choosing to simply open the mod page for now.
         var db = _connection.Db;
         var toRemove = GetSelectedIds().Select(id => LibraryItem.Load(db, id)).ToArray();
         await LibraryItemRemover.RemoveAsync(_connection, _serviceProvider.GetRequiredService<IOverlayController>(), _libraryService, toRemove);
+        
+        _notificationService.ShowToast(Language.ToastNotification_Items_deleted);
     }
 
     private async ValueTask AddFilesFromDisk(IStorageProvider storageProvider, CancellationToken cancellationToken)
@@ -924,7 +940,10 @@ After asking design, we're choosing to simply open the mod page for now.
 
     private ValueTask UpdateSelectedItems(CancellationToken cancellationToken)
     {
-        return UpdateSelectedItemsInternal(useUpdateAndReplace: true, cancellationToken);
+        // TEMPORARY: Use conditional default behavior based on Premium status to avoid unwanted dialog for free users
+        // Original: return UpdateSelectedItemsInternal(useUpdateAndReplace: true, cancellationToken);
+        var isPremium = _loginManager.IsPremium;
+        return UpdateSelectedItemsInternal(useUpdateAndReplace: isPremium, cancellationToken);
     }
 
     private ValueTask UpdateAndKeepOldSelectedItems(CancellationToken cancellationToken)
@@ -967,8 +986,7 @@ After asking design, we're choosing to simply open the mod page for now.
             }
             else
             {
-                if (!isPremium)
-                    await UpdateAndKeepOldFree(withUpdatesOnPage, cancellationToken);
+                if (!isPremium) UpdateAndKeepOldFree(withUpdatesOnPage);
                 else
                     await UpdateAndKeepOldPremium(withUpdatesOnPage, cancellationToken);
             }
@@ -1046,16 +1064,17 @@ public readonly record struct UpdateAndKeepOldMessage(ModUpdatesOnModPage Update
 public readonly record struct ViewChangelogMessage(OneOf<NexusModsModPageMetadataId, NexusModsLibraryItemId> Id);
 public readonly record struct ViewModPageMessage(OneOf<NexusModsModPageMetadataId, NexusModsLibraryItemId> Id);
 public readonly record struct HideUpdatesMessage(OneOf<NexusModsModPageMetadataId, NexusModsLibraryItemId> Id);
+public readonly record struct DeleteItemMessage(LibraryItemId[] Ids);
 
 public class LibraryTreeDataGridAdapter :
     TreeDataGridAdapter<CompositeItemModel<EntityId>, EntityId>,
-    ITreeDataGirdMessageAdapter<OneOf<InstallMessage, UpdateAndReplaceMessage, UpdateAndKeepOldMessage, ViewChangelogMessage, ViewModPageMessage, HideUpdatesMessage>>
+    ITreeDataGirdMessageAdapter<OneOf<InstallMessage, UpdateAndReplaceMessage, UpdateAndKeepOldMessage, ViewChangelogMessage, ViewModPageMessage, HideUpdatesMessage, DeleteItemMessage>>
 {
     private readonly ILibraryDataProvider[] _libraryDataProviders;
     private readonly LibraryFilter _libraryFilter;
     private readonly IConnection _connection;
 
-    public Subject<OneOf<InstallMessage, UpdateAndReplaceMessage, UpdateAndKeepOldMessage, ViewChangelogMessage, ViewModPageMessage, HideUpdatesMessage>> MessageSubject { get; } = new();
+    public Subject<OneOf<InstallMessage, UpdateAndReplaceMessage, UpdateAndKeepOldMessage, ViewChangelogMessage, ViewModPageMessage, HideUpdatesMessage, DeleteItemMessage>> MessageSubject { get; } = new();
 
     public LibraryTreeDataGridAdapter(IServiceProvider serviceProvider, LibraryFilter libraryFilter)
     {
@@ -1078,8 +1097,8 @@ public class LibraryTreeDataGridAdapter :
             state: this,
             factory: static (self, itemModel, component) => component.CommandInstall.Subscribe((self, itemModel, component), static (_, state) =>
             {
-                var (self, _, component) = state;
-                var ids = component.ItemIds.ToArray();
+                var (self, model, component) = state;
+                var ids = GetLibraryItemIds(model).ToArray();
 
                 self.MessageSubject.OnNext(new InstallMessage(ids));
             })
@@ -1137,7 +1156,7 @@ public class LibraryTreeDataGridAdapter :
             })
         );
 
-        model.SubscribeToComponentAndTrack<LibraryComponents.ViewModPageAction, LibraryTreeDataGridAdapter>(
+        model.SubscribeToComponentAndTrack<SharedComponents.ViewModPageAction, LibraryTreeDataGridAdapter>(
             key: LibraryColumns.Actions.ViewModPageComponentKey,
             state: this,
             factory: static (self, itemModel, component) => component.CommandViewModPage.Subscribe((self, itemModel, component), static (_, state) =>
@@ -1146,6 +1165,18 @@ public class LibraryTreeDataGridAdapter :
                 var entityId = model.Key;
 
                 self.MessageSubject.OnNext(new ViewModPageMessage(GetModPageIdOneOfType(self._connection.Db, entityId)));
+            })
+        );
+        
+        model.SubscribeToComponentAndTrack<LibraryComponents.DeleteItemAction, LibraryTreeDataGridAdapter>(
+            key: LibraryColumns.Actions.DeleteItemComponentKey,
+            state: this,
+            factory: static (self, itemModel, component) => component.CommandDeleteItem.Subscribe((self, itemModel, component), static (_, state) =>
+            {
+                var (self, model, component) = state;
+                var ids = GetLibraryItemIds(model).ToArray();
+
+                self.MessageSubject.OnNext(new DeleteItemMessage(ids));
             })
         );
 
@@ -1161,6 +1192,11 @@ public class LibraryTreeDataGridAdapter :
             })
         );
     }
+    
+    private static IEnumerable<LibraryItemId> GetLibraryItemIds(CompositeItemModel<EntityId> itemModel)
+    {
+        return itemModel.Get<LibraryComponents.LibraryItemIds>(LibraryColumns.Actions.LibraryItemIdsComponentKey).ItemIds;
+    }
 
     protected override IColumn<CompositeItemModel<EntityId>>[] CreateColumns(bool viewHierarchical)
     {
@@ -1173,6 +1209,7 @@ public class LibraryTreeDataGridAdapter :
             ColumnCreator.Create<EntityId, SharedColumns.ItemSize>(),
             ColumnCreator.Create<EntityId, LibraryColumns.DownloadedDate>(sortDirection: ListSortDirection.Descending),
             ColumnCreator.Create<EntityId, SharedColumns.InstalledDate>(),
+            ColumnCreator.Create<EntityId, LibraryColumns.Collections>(),
             ColumnCreator.Create<EntityId, LibraryColumns.Actions>(),
         ];
     }

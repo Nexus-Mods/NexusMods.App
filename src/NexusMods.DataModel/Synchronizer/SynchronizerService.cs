@@ -1,9 +1,9 @@
 ﻿using System.Reactive.Linq;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Games.FileHashes;
-using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Files.Diff;
 using NexusMods.Abstractions.Loadouts.Exceptions;
@@ -12,6 +12,7 @@ using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.BuiltInEntities;
 using NexusMods.Paths;
+using NexusMods.Sdk.Jobs;
 using ReactiveUI;
 using R3;
 using Reloaded.Memory.Utilities;
@@ -27,13 +28,14 @@ public class SynchronizerService : ISynchronizerService
     private readonly IJobMonitor _jobMonitor;
     private readonly Dictionary<EntityId, SynchronizerState> _gameStates;
     private readonly Dictionary<LoadoutId, SynchronizerState> _loadoutStates;
+    private readonly Lazy<ILoadoutManager> _loadoutManager;
     private readonly SemaphoreSlim _semaphore = new(1, 1);
     private readonly object _lock = new();
 
     /// <summary>
     /// DI Constructor
     /// </summary>
-    public SynchronizerService(IConnection conn, ILogger<SynchronizerService> logger, IGameRegistry gameRegistry, IFileHashesService fileHashesService, IJobMonitor jobMonitor)
+    public SynchronizerService(IConnection conn, ILogger<SynchronizerService> logger, IGameRegistry gameRegistry, IFileHashesService fileHashesService, IJobMonitor jobMonitor, IServiceProvider serviceProvider)
     {
         _logger = logger;
         _conn = conn;
@@ -42,6 +44,7 @@ public class SynchronizerService : ISynchronizerService
         _gameStates = _gameRegistry.Installations.ToDictionary(e => e.Key, _ => new SynchronizerState());
         _loadoutStates = Loadout.All(conn.Db).ToDictionary(e => e.LoadoutId, _ => new SynchronizerState());
         _fileHashesService = fileHashesService;
+        _loadoutManager = new Lazy<ILoadoutManager>(serviceProvider.GetRequiredService<ILoadoutManager>);
     }
     
     /// <inheritdoc />
@@ -53,8 +56,8 @@ public class SynchronizerService : ISynchronizerService
         var metaData = GameInstallMetadata.Load(db, loadout.InstallationInstance.GameMetadataId);
         var hasPreviousLoadout = GameInstallMetadata.LastSyncedLoadoutTransaction.TryGetValue(metaData, out var lastId);
 
-        var lastScannedDiskState = metaData.DiskStateAsOf(metaData.LastScannedDiskStateTransaction);
-        var previousDiskState = hasPreviousLoadout ? metaData.DiskStateAsOf(Transaction.Load(db, lastId)) : lastScannedDiskState;
+        var lastScannedDiskState = synchronizer.GetLastScannedDiskState(metaData);
+        var previousDiskState = hasPreviousLoadout ? synchronizer.GetPreviouslyAppliedDiskState(metaData) : lastScannedDiskState;
         
         return synchronizer.LoadoutToDiskDiff(loadout, previousDiskState, lastScannedDiskState);
     }
@@ -67,12 +70,14 @@ public class SynchronizerService : ISynchronizerService
             {
                 var db = _conn.Db;
                 var loadout = Loadout.Load(db, loadoutId);
+                if (!loadout.IsValid())
+                    return ValueTask.FromResult(false);
                 var synchronizer = loadout.InstallationInstance.GetGame().Synchronizer;
                 var metaData = GameInstallMetadata.Load(db, loadout.InstallationInstance.GameMetadataId);
                 var hasPreviousLoadout = GameInstallMetadata.LastSyncedLoadoutTransaction.TryGetValue(metaData, out var lastId);
 
-                var lastScannedDiskState = metaData.DiskStateEntries;
-                var previousDiskState = hasPreviousLoadout ? metaData.DiskStateAsOf(Transaction.Load(db, lastId)) : lastScannedDiskState;
+                var lastScannedDiskState = synchronizer.GetDiskStateForGame(metaData);
+                var previousDiskState = hasPreviousLoadout ? synchronizer.GetLastScannedDiskState(metaData) : lastScannedDiskState;
         
                 return ValueTask.FromResult(synchronizer.ShouldSynchronize(loadout, previousDiskState, lastScannedDiskState));
             });
@@ -84,10 +89,15 @@ public class SynchronizerService : ISynchronizerService
         await _jobMonitor.Begin(new SynchronizeLoadoutJob(loadoutId),
             async ctx =>
             {
+                var job = ctx.Definition;
                 await _semaphore.WaitAsync();
                 try
                 {
                     var loadout = Loadout.Load(_conn.Db, loadoutId);
+                    if (!loadout.IsValid())
+                    {
+                        return Unit.Default;
+                    }
                     ThrowIfMainBinaryInUse(loadout);
 
                     var loadoutState = GetOrAddLoadoutState(loadoutId);
@@ -96,7 +106,7 @@ public class SynchronizerService : ISynchronizerService
                     var gameState = GetOrAddGameState(loadout.InstallationInstance.GameMetadataId);
                     using var _2 = gameState.WithLock();
 
-                    await loadout.InstallationInstance.GetGame().Synchronizer.Synchronize(loadout);
+                    await loadout.InstallationInstance.GetGame().Synchronizer.Synchronize(loadout, job);
                 }
                 finally
                 {
@@ -106,6 +116,27 @@ public class SynchronizerService : ISynchronizerService
                 return Unit.Default;
             }
         );
+    }
+
+    /// <inheritdoc />
+    public async Task UnManage(GameInstallation installation, bool runGc = true, bool cleanGameFolder = true)
+    {
+        await _semaphore.WaitAsync();
+        try
+        {
+            var metadata = installation.GetMetadata(_conn);
+
+            if (!metadata.IsValid())
+            {
+                return;
+            }
+
+            await _loadoutManager.Value.UnManage(installation, runGc, cleanGameFolder);
+        }
+        finally
+        {
+            _semaphore.Release();
+        }
     }
 
     private SynchronizerState GetOrAddLoadoutState(LoadoutId loadoutId)
@@ -170,7 +201,7 @@ public class SynchronizerService : ISynchronizerService
     public IObservable<GameSynchronizerState> StatusForGame(GameInstallMetadataId gameInstallId)
     {
         var gameState = GetOrAddGameState(gameInstallId);
-        return gameState.ObservableForProperty(s => s.Busy, skipInitial: false)
+        return gameState.ObservableForProperty(s => s.Busy, beforeChange: false, skipInitial: false)
             .Select(e => e.Value ? GameSynchronizerState.Busy : GameSynchronizerState.Idle);
     } 
     

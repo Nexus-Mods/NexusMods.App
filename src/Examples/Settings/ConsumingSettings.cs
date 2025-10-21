@@ -1,4 +1,6 @@
-using NexusMods.Abstractions.Settings;
+using NexusMods.Sdk.Settings;
+using R3;
+
 // ReSharper disable All
 
 namespace Examples.Settings;
@@ -41,7 +43,7 @@ file class MyService
         // if you're already doing reactive work that depends on the settings.
         // This allows you to refresh data or re-trigger another observable stream.
         _settingsManager
-            .GetChanges<MyCoolSettings>()
+            .GetChanges<MyCoolSettings>(prependCurrent: false)
             .Subscribe(newValue =>
             {
                 Console.WriteLine($"Settings changed to {newValue}");

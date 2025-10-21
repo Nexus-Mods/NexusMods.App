@@ -7,12 +7,15 @@ using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.HttpDownloads;
-using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using Polly;
 using Polly.Retry;
+using System.ComponentModel;
+using NexusMods.Sdk.Jobs;
+using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.Networking.HttpDownloader;
 
@@ -57,12 +60,13 @@ public record HttpDownloadJob : IJobDefinitionWithStart<HttpDownloadJob, Absolut
         return ValueTask.CompletedTask;
     }
 
-    private Optional<Size> ContentLength { get; set; }
-    private Optional<EntityTagHeaderValue> ETag { get; set; }
-    private Optional<bool> AcceptRanges { get; set; }
+    private readonly HttpDownloadState _state = new();
     
-    private Size TotalBytesDownloaded { get; set; }
     public bool SupportsPausing => true;
+    /// <summary>
+    /// Implementation for external job state data access
+    /// </summary>
+    public IPublicJobStateData? GetJobStateData() => _state;
     
     /// <summary>
     /// Constructor for the job
@@ -105,6 +109,9 @@ public record HttpDownloadJob : IJobDefinitionWithStart<HttpDownloadJob, Absolut
     private async ValueTask<AbsolutePath> StartAsyncImpl(IJobContext<HttpDownloadJob> context)
     {
         await context.YieldAsync();
+        if (_state.TotalBytesDownloaded > Size.Zero)
+            Logger.LogInformation("Resuming download from {Bytes} bytes", _state.TotalBytesDownloaded);
+        
         await FetchMetadata(context);
 
         await context.YieldAsync();
@@ -117,18 +124,19 @@ public record HttpDownloadJob : IJobDefinitionWithStart<HttpDownloadJob, Absolut
         {
             var (bytesWritten, speed) = tuple;
 
-            TotalBytesDownloaded = bytesWritten;
-            state.SetPercent(bytesWritten, ContentLength.ValueOr(static () => Size.One));
+            _state.TotalBytesDownloaded = bytesWritten;
+            
+            state.SetPercent(bytesWritten, _state.ContentLength.ValueOr(static () => Size.One));
             state.SetRateOfProgress(speed);
         });
 
-        if (ContentLength.HasValue)
+        if (_state.ContentLength.HasValue)
         {
-            var contentLength = (long)ContentLength.Value.Value;
+            var contentLength = (long)_state.ContentLength.Value.Value;
             if (outputStream.Length != contentLength) outputStream.SetLength(contentLength);
         }
 
-        outputStream.Position = (long)TotalBytesDownloaded.Value;
+        outputStream.Position = (long)_state.TotalBytesDownloaded.Value;
 
         await context.YieldAsync();
         using var request = PrepareRequest(out var isRangeRequest);
@@ -143,20 +151,20 @@ public record HttpDownloadJob : IJobDefinitionWithStart<HttpDownloadJob, Absolut
         if (response.StatusCode == HttpStatusCode.OK)
         {
             // NOTE(erri120): We might've not gotten the content length in the initial HEAD request.
-            if (!ContentLength.HasValue)
+            if (!_state.ContentLength.HasValue)
             {
                 // For full requests only, the response should contain the content length at this point.
                 // For range requests, the content length equals the length of the range, so we can't use that here.
                 var newContentLength = response.Content.Headers.ContentLength;
                 if (newContentLength is not null)
                 {
-                    ContentLength = Size.FromLong(newContentLength.Value);
+                    _state.ContentLength = Size.FromLong(newContentLength.Value);
                     outputStream.SetLength(newContentLength.Value);
                 }
             }
         } else if (response.StatusCode == HttpStatusCode.PartialContent)
         {
-            if (!ContentLength.HasValue)
+            if (!_state.ContentLength.HasValue)
             {
                 // Responses to range requests should have this header
                 // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Range
@@ -164,7 +172,7 @@ public record HttpDownloadJob : IJobDefinitionWithStart<HttpDownloadJob, Absolut
                 var length = contentRange?.Length;
                 if (length is not null)
                 {
-                    ContentLength = Size.FromLong(length.Value);
+                    _state.ContentLength = Size.FromLong(length.Value);
                     outputStream.SetLength(length.Value);
                 }
             }
@@ -177,14 +185,18 @@ public record HttpDownloadJob : IJobDefinitionWithStart<HttpDownloadJob, Absolut
             Logger.LogWarning("Server `{ServerName}` responded with 200 to a valid range request for download from `{PageUri}`. The download will be reset", response.Headers.Server.ToString(), DownloadPageUri);
 
             // NOTE(erri120): The only thing we can do here is to reset everything and start from scratch.
-            TotalBytesDownloaded = Size.Zero;
+            _state.TotalBytesDownloaded = Size.Zero;
             outputStream.Position = 0;
-            AcceptRanges = false;
+            _state.AcceptRanges = false;
         }
 
         try
         {
             await response.Content.CopyToAsync(outputStream, context.CancellationToken);
+        }
+        catch (TaskCanceledException)
+        {
+            throw;
         }
         catch (Exception e)
         {
@@ -193,8 +205,14 @@ public record HttpDownloadJob : IJobDefinitionWithStart<HttpDownloadJob, Absolut
         }
         finally
         {
-            TotalBytesDownloaded = Size.FromLong(outputStream.Position);
+            _state.TotalBytesDownloaded = Size.FromLong(outputStream.Position);
         }
+
+        // Ensure progress is set to 100% when download completes
+        if (_state.ContentLength.HasValue)
+            context.SetPercent(_state.ContentLength.Value, _state.ContentLength.Value);
+        else
+            context.SetPercent(Size.One, Size.One);
 
         return Destination;
     }
@@ -204,13 +222,13 @@ public record HttpDownloadJob : IJobDefinitionWithStart<HttpDownloadJob, Absolut
         var request = new HttpRequestMessage(HttpMethod.Get, Uri);
 
         // NOTE(erri120): use a normal GET request for the entire file
-        if (!AcceptRanges.Value || TotalBytesDownloaded == Size.Zero)
+        if (!_state.AcceptRanges.Value || _state.TotalBytesDownloaded == Size.Zero)
         {
             // NOTE(erri120): Using If-Match to ensure that what we're downloading didn't suddenly change
-            if (ETag.HasValue)
+            if (_state.ETag.HasValue)
             {
                 // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/If-Match
-                request.Headers.IfMatch.Add(ETag.Value);
+                request.Headers.IfMatch.Add(_state.ETag.Value);
             }
 
             isRangeRequest = false;
@@ -218,10 +236,10 @@ public record HttpDownloadJob : IJobDefinitionWithStart<HttpDownloadJob, Absolut
         else
         {
             // NOTE(erri120): Using If-Range for range requests instead of If-Match
-            if (ETag.HasValue)
+            if (_state.ETag.HasValue)
             {
                 // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/If-Range
-                request.Headers.IfRange = new RangeConditionHeaderValue(ETag.Value);
+                request.Headers.IfRange = new RangeConditionHeaderValue(_state.ETag.Value);
             }
 
             // A server MAY send a Content-Length header field in a response to a HEAD request
@@ -229,13 +247,13 @@ public record HttpDownloadJob : IJobDefinitionWithStart<HttpDownloadJob, Absolut
 
             // NOTE(erri120): As such, we might not know the content length, but since we download
             // in serial, we can omit the end position to request all remaining bytes
-            var range = ContentLength.HasValue
+            var range = _state.ContentLength.HasValue
                 ? new RangeHeaderValue(
-                    from: (long)TotalBytesDownloaded.Value,
-                    to: (long)ContentLength.Value.Value
+                    from: (long)_state.TotalBytesDownloaded.Value,
+                    to: (long)_state.ContentLength.Value.Value
                 )
                 : new RangeHeaderValue(
-                    from: (long)TotalBytesDownloaded.Value,
+                    from: (long)_state.TotalBytesDownloaded.Value,
                     to: null
                 );
 
@@ -261,11 +279,11 @@ public record HttpDownloadJob : IJobDefinitionWithStart<HttpDownloadJob, Absolut
         // https://datatracker.ietf.org/doc/html/rfc7233#section-5.1.2
         // "bytes" and "none" are the only range units we care about,
         // "none" meaning the server doesn't support ranges
-        AcceptRanges = response.Headers.AcceptRanges.Contains("bytes");
-        ETag = response.Headers.ETag;
+        _state.AcceptRanges = response.Headers.AcceptRanges.Contains("bytes");
+        _state.ETag = response.Headers.ETag;
 
         var contentLength = response.Content.Headers.ContentLength;
-        ContentLength = contentLength is not null ? Size.FromLong(contentLength.Value) : Optional<Size>.None;
+        _state.ContentLength = contentLength is not null ? Size.FromLong(contentLength.Value) : Optional<Size>.None;
     }
 
     private static ResiliencePipeline<AbsolutePath> BuildResiliencePipeline()
@@ -290,4 +308,32 @@ public record HttpDownloadJob : IJobDefinitionWithStart<HttpDownloadJob, Absolut
 
         return pipeline;
     }
+}
+
+/// <summary>
+/// Public interface for external access to download information
+/// </summary>
+[PublicAPI]
+public interface IHttpDownloadState : IPublicJobStateData, INotifyPropertyChanged
+{
+    /// <summary>
+    /// Content length from HTTP headers
+    /// </summary>
+    Optional<Size> ContentLength { get; }
+    
+    /// <summary>
+    /// Total bytes downloaded so far
+    /// </summary>
+    Size TotalBytesDownloaded { get; }
+}
+
+/// <summary>
+/// Internal mutable state that persists across pause/resume cycles
+/// </summary>
+internal sealed class HttpDownloadState : ReactiveObject, IHttpDownloadState
+{
+    [Reactive] public Optional<Size> ContentLength { get; set; }
+    [Reactive] public Size TotalBytesDownloaded { get; set; }
+    public Optional<EntityTagHeaderValue> ETag { get; set; }
+    public Optional<bool> AcceptRanges { get; set; }
 }

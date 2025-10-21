@@ -1,0 +1,40 @@
+name: "Report a bug"
+description: "Use this form to report a bug"
+type: "Bug"
+labels:
+  - "user raised"
+body:
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: "What happened?"
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: "Version"
+      description: "What version of the app did you use?"
+      placeholder: "latest"
+    validations:
+      required: true
+  - type: dropdown
+    id: os
+    attributes:
+      label: "Operating System"
+      description: "Which operating system are you using?"
+      options:
+        - Windows
+        - Steam Deck
+        - Linux (generic)
+    validations:
+      required: true
+  - type: textarea
+    id: log-files
+    attributes:
+      label: "Attach Log Files"
+      description: >-
+        Please attach your logs. If you are having issues finding your log
+        files, see [this guide](https://nexus-mods.github.io/NexusMods.App/users/faq/LogFiles/).
+    validations:
+      required: true

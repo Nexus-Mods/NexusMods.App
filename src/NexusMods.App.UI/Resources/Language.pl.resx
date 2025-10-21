@@ -39,18 +39,12 @@
 	<data name="Updater_UpdateAvailable" xml:space="preserve">
 		<value>Dostępna aktualizacja {0}</value>
 	</data>
-	<data name="Updater_MainMessage" xml:space="preserve">
-		<value>Aktualna wersja {0} może zostać zaktualizowana do najnowszej wersji {1}. Przed przystąpieniem do aktualizacji należy całkowicie zamknąć aplikację.</value>
-	</data>
-	<data name="Updater_UseSystemUpdater" xml:space="preserve">
-		<value>Aplikację można zaktualizować za pomocą menedżera pakietów, który został użyty do jej zainstalowania.</value>
-	</data>
-	<data name="Updater_UseInnoSetup" xml:space="preserve">
+    <data name="Updater_UseInnoSetup" xml:space="preserve">
 		<value>Aplikację można zaktualizować, pobierając instalator i uruchamiając go po zamknięciu aplikacji.</value>
 	</data>
-	<data name="Updater_UseFlatpak" xml:space="preserve">
-		<value>Aplikację można zaktualizować za pomocą Flatpaka.</value>
-	</data>
+    <data name="Updater_UseFlatpak" xml:space="preserve">
+        <value>Aplikację można zaktualizować za pośrednictwem Flatpaka.</value>
+    </data>
 	<data name="LoadoutGridView_AddMod_FilePicker_Title" xml:space="preserve">
 		<value>Proszę wybrać plik moda do zainstalowania</value>
 	</data>
@@ -78,30 +72,30 @@
 	<data name="CancelDownloadOverlayView_Title" xml:space="preserve">
 		<value>Anulować pobieranie?</value>
 	</data>
-	<data name="Helpers_GenerateHeader_NAME" xml:space="preserve">
-		<value>NAZWA</value>
-	</data>
-	<data name="Helpers_GenerateHeader_VERSION" xml:space="preserve">
-		<value>WERSJA</value>
-	</data>
-	<data name="Helpers_GenerateHeader_CATEGORY" xml:space="preserve">
-		<value>KATEGORIA</value>
-	</data>
-	<data name="Helpers_GenerateHeader_INSTALLED" xml:space="preserve">
-		<value>ZAINSTALOWANE</value>
-	</data>
-	<data name="Helpers_GenerateHeader_MOD_NAME" xml:space="preserve">
-		<value>NAZWA MODA</value>
-	</data>
+    <data name="Helpers_GenerateHeader_NAME" xml:space="preserve">
+        <value>Nazwa</value>
+    </data>
+    <data name="Helpers_GenerateHeader_VERSION" xml:space="preserve">
+        <value>Wersja</value>
+    </data>
+    <data name="Helpers_GenerateHeader_CATEGORY" xml:space="preserve">
+        <value>Kategoria</value>
+    </data>
+    <data name="Helpers_GenerateHeader_INSTALLED" xml:space="preserve">
+        <value>Zainstalowane</value>
+    </data>
+    <data name="Helpers_GenerateHeader_MOD_NAME" xml:space="preserve">
+        <value>Nazwa moda</value>
+    </data>
 	<data name="Helpers_GenerateHeader_GAME" xml:space="preserve">
 		<value>GRA</value>
 	</data>
-	<data name="Helpers_GenerateHeader_SIZE" xml:space="preserve">
-		<value>ROZMIAR</value>
-	</data>
-	<data name="Helpers_GenerateHeader_STATUS" xml:space="preserve">
-		<value>STATUS</value>
-	</data>
+    <data name="Helpers_GenerateHeader_SIZE" xml:space="preserve">
+        <value>Rozmiar</value>
+    </data>
+    <data name="Helpers_GenerateHeader_STATUS" xml:space="preserve">
+        <value>Status</value>
+    </data>
 	<data name="LaunchButtonViewModel_LaunchGame_RUNNING" xml:space="preserve">
 		<value>URUCHAMIANIE GRY...</value>
 	</data>
@@ -410,9 +404,9 @@
 	<data name="ApplyDiff_Refresh" xml:space="preserve">
 		<value>Odśwież</value>
 	</data>
-	<data name="Helpers_GenerateHeader_State" xml:space="preserve">
-		<value>STAN</value>
-	</data>
+    <data name="Helpers_GenerateHeader_State" xml:space="preserve">
+        <value>Stan</value>
+    </data>
 	<data name="IFileTreeNodeViewModel_ToFormattedChangeState_Added" xml:space="preserve">
 		<value>Dodane</value>
 	</data>
@@ -673,10 +667,10 @@
 	<data name="SettingsView_Description" xml:space="preserve">
 		<value>Zarządzaj swoimi preferencjami</value>
 	</data>
-	<data name="MyLoadoutsGameSectionHeading" xml:space="preserve">
-		<value>Zestawy {0}</value>
-		<comment>Where {0} is the name of the game</comment>
-	</data>
+    <data name="MyLoadoutsGameSectionHeading" xml:space="preserve">
+        <value>Zestawy: {0}</value>
+        <comment>Where {0} is the name of the game</comment>
+    </data>
 	<data name="CreateNewLoadoutCarViewTexBlock" xml:space="preserve">
 		<value>Utwórz nowy</value>
 	</data>
@@ -930,9 +924,9 @@
 	<data name="UpgradeToPremiumView_Desc1" xml:space="preserve">
 		<value>Pobierz całą kolekcję modów z pełną prędkością jednym kliknięciem, nie opuszczając aplikacji. Użytkownicy darmowych kont mogą instalować mody pojedynczo z listy.</value>
 	</data>
-	<data name="UpgradeToPremiumView_Desc2" xml:space="preserve">
-		<value>Użytkownicy Premium otrzymują także:</value>
-	</data>
+    <data name="UpgradeToPremiumView_Desc2" xml:space="preserve">
+        <value>Z Premium otrzymujesz również:</value>
+    </data>
 	<data name="UpgradeToPremiumView_Bullet1" xml:space="preserve">
 		<value>Nieograniczona prędkość pobierania.</value>
 	</data>
@@ -1026,7 +1020,7 @@ Zachować pobrane pliki w bibliotece na wypadek późniejszej próby instalacji?
 	<data name="Library_UpdateMod_ToolTip" xml:space="preserve">
 		<value>Zaktualizuj mod</value>
 	</data>
-	<data name="Library_MoreOptions_ToolTip" xml:space="preserve">
+	<data name="Menu_MoreOptions_ToolTip" xml:space="preserve">
 		<value>Więcej opcji</value>
 	</data>
 	<data name="Library_UpdateModAndReplace_ToolTip" xml:space="preserve">
@@ -1095,4 +1089,148 @@ Zachować pobrane pliki w bibliotece na wypadek późniejszej próby instalacji?
 	<data name="Loadout_Dialog_ShareCollection_ChangeVisibilityMessage" xml:space="preserve">
 		<value>Widoczność możesz zmienić w dowolnym momencie w ustawieniach kolekcji.</value>
 	</data>
+    <data name="ToastNotification_Adding_new_Collection_to_Library" xml:space="preserve">
+        <value>Dodawanie nowej kolekcji do biblioteki</value>
+    </data>
+    <data name="ToastNotification_Adding_collection____0_" xml:space="preserve">
+        <value>Kolekcja dodana pomyślnie - {0}</value>
+    </data>
+    <data name="Loadout_UninstallItem_Menu_Text" xml:space="preserve">
+        <value>Odinstaluj</value>
+    </data>
+    <data name="Loadout_UninstallItem_Menu_Text__Uninstall_read_only" xml:space="preserve">
+        <value>Odinstaluj tylko do odczytu</value>
+    </data>
+    <data name="Library_DeleteItem_Text" xml:space="preserve">
+        <value>Usuń</value>
+    </data>
+    <data name="DialogPremiumCollection_LearnMore" xml:space="preserve">
+        <value>Dowiedz się więcej</value>
+    </data>
+    <data name="DialogPremiumCollection_UpgradeToPremium" xml:space="preserve">
+        <value>Odblokuj autopobieranie</value>
+    </data>
+    <data name="DialogPremiumCollection_DialogTitle" xml:space="preserve">
+        <value>Odblokuj kolekcje jednym kliknięciem z Premium</value>
+    </data>
+    <data name="DialogPremiumCollection_Cancel" xml:space="preserve">
+        <value>Kontynuuj ręczną instalację</value>
+    </data>
+    <data name="CollectionStatus_Listed" xml:space="preserve">
+        <value>Widoczna</value>
+    </data>
+    <data name="CollectionStatus_Unlisted" xml:space="preserve">
+        <value>Niewidoczna</value>
+    </data>
+    <data name="ToastNotification_Uploading_new_collection_revision___" xml:space="preserve">
+        <value>Przesyłanie nowej wersji kolekcji...</value>
+    </data>
+    <data name="ToastNotification_Uploading_draft_collection_revision___" xml:space="preserve">
+        <value>Przesyłanie roboczej wersji kolekcji..</value>
+    </data>
+    <data name="Updater_GenericMessage" xml:space="preserve">
+        <value>Aktualna wersja {0} może zostać zaktualizowana do najnowszej wersji {1}. Przed przystąpieniem do aktualizacji należy całkowicie zamknąć aplikację.</value>
+    </data>
+    <data name="Updater_UsePackageManager" xml:space="preserve">
+        <value>Aplikację można zaktualizować za pośrednictwem menedżera pakietów, którego użyto do jej zainstalowania.</value>
+    </data>
+    <data name="UpgradeToPremiumView_Bullet0" xml:space="preserve">
+        <value>Bezproblemowe aktualizacje modów w aplikacji, bez potrzeby odwiedzania witryn czy ręcznego pobierania.</value>
+    </data>
+    <data name="ToastNotification_Applied__0__successfully" xml:space="preserve">
+        <value>Zestaw został pomyślnie zastosowany</value>
+    </data>
+    <data name="ToastNotification_Collection_Add_failed__An_unknown_error_occurred" xml:space="preserve">
+        <value>Nie udało się dodać kolekcji</value>
+    </data>
+    <data name="ToastNotification_Collection_Add_failed___0__is_not_a_managed_game" xml:space="preserve">
+        <value>Dodanie kolekcji nie powiodło się: aplikacja nie zarządza {0}</value>
+    </data>
+    <data name="ToastNotification_Collection_deleted" xml:space="preserve">
+        <value>Kolekcja usunięta</value>
+    </data>
+    <data name="ToastNotification_Collection_installed" xml:space="preserve">
+        <value>Kolekcja zainstalowana</value>
+    </data>
+    <data name="ToastNotification_Collection_removed" xml:space="preserve">
+        <value>Kolekcja odinstalowana</value>
+    </data>
+    <data name="ToastNotification_Collection_status_changed_to__0__" xml:space="preserve">
+        <value>Status kolekcji został zmieniony na {0} </value>
+    </data>
+    <data name="ToastNotification_Download_failed__An_unknown_error_occurred" xml:space="preserve">
+        <value>Pobieranie nie powiodło się</value>
+    </data>
+    <data name="ToastNotification_Download_failed__game_is_not_managed____0_" xml:space="preserve">
+        <value>Pobieranie nie powiodło się: aplikacja nie zarządza {0}</value>
+    </data>
+    <data name="ToastNotification_Download_failed__User_is_not_logged_in" xml:space="preserve">
+        <value>Pobieranie nie powiodło się: nie zalogowano do Nexus Mods</value>
+    </data>
+    <data name="ToastNotification_Download_skipped__file_already_exists____0__" xml:space="preserve">
+        <value>Pobieranie pominięte: plik już istnieje - {0} </value>
+    </data>
+    <data name="ToastNotification_Draft_revision_uploaded_successfully" xml:space="preserve">
+        <value>Wersja robocza została pomyślnie przesłana</value>
+    </data>
+    <data name="ToastNotification_Installed_to__0_" xml:space="preserve">
+        <value>Zainstalowano w {0}</value>
+    </data>
+    <data name="ToastNotification_Items_deleted" xml:space="preserve">
+        <value>Mod usunięty</value>
+    </data>
+    <data name="ToastNotification_Mods_removed" xml:space="preserve">
+        <value>Mod odinstalowany</value>
+    </data>
+    <data name="ToastNotification_Mod_Download_Completed____0_" xml:space="preserve">
+        <value>Pobieranie moda ukończone – {0}</value>
+    </data>
+    <data name="ToastNotification_Mod_Download_started" xml:space="preserve">
+        <value>Pobieranie moda rozpoczęte</value>
+    </data>
+    <data name="ToastNotification_Mod_updated____0_" xml:space="preserve">
+        <value>Mod zaktualizowany – {0}</value>
+    </data>
+    <data name="ToastNotification_Settings_saved" xml:space="preserve">
+        <value>Ustawienia zapisane</value>
+    </data>
+    <data name="ToastNotification_Signed_in_successfully" xml:space="preserve">
+        <value>Pomyślnie zalogowano</value>
+    </data>
+    <data name="DownloadsLeftMenu_AllCompleted" xml:space="preserve">
+        <value>Wszystkie ukończone</value>
+    </data>
+    <data name="DownloadsLeftMenu_AllDownloads" xml:space="preserve">
+        <value>Wszystkie pobrania</value>
+    </data>
+    <data name="DownloadsLeftMenu_GameSpecificDownloads" xml:space="preserve">
+        <value>{0}</value>
+    </data>
+    <data name="Downloads_SizeProgress_Of" xml:space="preserve">
+        <value> z </value>
+    </data>
+    <data name="Downloads_Speed_Inactive" xml:space="preserve">
+        <value>--</value>
+    </data>
+    <data name="Downloads_UnknownDownload" xml:space="preserve">
+        <value>Nieznane pobranie</value>
+    </data>
+    <data name="Downloads_UnknownGame" xml:space="preserve">
+        <value>Nieznana gra</value>
+    </data>
+    <data name="GameWidget_VersionUnknown" xml:space="preserve">
+        <value>Wersja: Nieznana</value>
+    </data>
+    <data name="DownloadsPage_AllCompleted_Description" xml:space="preserve">
+        <value>Zobacz ukończone pobrania.</value>
+    </data>
+    <data name="DownloadsPage_AllDownloads_Description" xml:space="preserve">
+        <value>Monitoruj postęp pobierania.</value>
+    </data>
+    <data name="DownloadsPage_Default_Description" xml:space="preserve">
+        <value>Zarządzaj bieżącymi i ukończonymi pobraniami.</value>
+    </data>
+    <data name="DownloadsPage_GameSpecificDownloads_Description" xml:space="preserve">
+        <value>Monitoruj postęp pobierania.</value>
+    </data>
 </root>

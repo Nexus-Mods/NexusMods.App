@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -5,16 +6,18 @@ using NexusMods.Abstractions.Collections;
 using NexusMods.Abstractions.Collections.Json;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
-using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Sdk.FileStore;
+using NexusMods.Sdk.Jobs;
+using NexusMods.Sdk.Tracking;
 
 namespace NexusMods.Collections;
 
@@ -34,6 +37,7 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
     public required IServiceProvider ServiceProvider { get; init; }
     public required IFileStore FileStore { get; init; }
     public required ILibraryService LibraryService { get; init; }
+    public required ILoadoutManager LoadoutManager { get; init; }
     public required IConnection Connection { get; init; }
     public required LoadoutId TargetLoadout { get; init; }
     public required NexusModsLibrary NexusModsLibrary { get; init; }
@@ -66,6 +70,7 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
             Connection = connection,
             FileStore = provider.GetRequiredService<IFileStore>(),
             LibraryService = provider.GetRequiredService<ILibraryService>(),
+            LoadoutManager = provider.GetRequiredService<ILoadoutManager>(),
             NexusModsLibrary = provider.GetRequiredService<NexusModsLibrary>(),
             Logger = provider.GetRequiredService<ILogger<InstallCollectionJob>>(),
         };
@@ -90,6 +95,14 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
 
         var isFullyDownloaded = CollectionDownloader.IsFullyDownloaded(items, db: Connection.Db);
         if (!isFullyDownloaded) throw new InvalidOperationException("The collection hasn't fully been downloaded!");
+
+        var sw = Stopwatch.StartNew();
+        Events.CollectionsInstallationStarted(
+            collectionId: RevisionMetadata.Collection.CollectionId.Value,
+            revisionId: RevisionMetadata.RevisionId.Value,
+            gameId: RevisionMetadata.Collection.GameId.Value,
+            modCount: items.Length
+        );
 
         var root = await NexusModsLibrary.ParseCollectionJsonFile(SourceCollection, context.CancellationToken);
         var modsAndDownloads = GatherDownloads(items, root);
@@ -148,13 +161,20 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
         var allRequiredItemsInstalled = allRequiredItems.All(item => CollectionDownloader
             .GetStatus(item, collectionGroup.AsCollectionGroup(), db: Connection.Db)
             .IsInstalled(out _));
-
         {
             using var tx = Connection.BeginTransaction();
 
             if (allRequiredItemsInstalled)
             {
                 tx.Retract(collectionGroup.Id, LoadoutItem.Disabled, Null.Instance);
+
+                Events.CollectionsInstallationCompleted(
+                    collectionId: RevisionMetadata.Collection.CollectionId.Value,
+                    revisionId: RevisionMetadata.RevisionId.Value,
+                    gameId: RevisionMetadata.Collection.GameId.Value,
+                    modCount: items.Length,
+                    duration: sw
+                );
             }
             else
             {
@@ -178,6 +198,7 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
 
         var job = new InstallCollectionDownloadJob
         {
+            Logger = ServiceProvider.GetRequiredService<ILogger<InstallCollectionJob>>(),
             Item = modAndDownload.Download,
             CollectionMod = modAndDownload.Mod,
             Group = collectionGroup.AsCollectionGroup(),
@@ -188,6 +209,7 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
             Connection = Connection,
             FileStore = FileStore,
             LibraryService = LibraryService,
+            LoadoutManager = LoadoutManager,
 
             FallbackInstaller = fallbackInstaller,
             FallbackCollectionInstallDirectory = fallbackCollectionInstallDirectory,

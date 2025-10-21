@@ -3,7 +3,7 @@ using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.ValueSerializers;
 
-namespace NexusMods.Networking.EpicGameStore.Attributes;
+namespace NexusMods.Abstractions.EpicGameStore.Attributes;
 
 public sealed class ItemIdAttribute(string ns, string name) : ScalarAttribute<ItemId, string, Utf8InsensitiveSerializer>(ns, name)
 {

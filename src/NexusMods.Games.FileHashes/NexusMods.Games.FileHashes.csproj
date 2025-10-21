@@ -4,6 +4,7 @@
     
     <ItemGroup>
       <PackageReference Include="NexusMods.MnemonicDB" />
+      <PackageReference Include="NexusMods.MnemonicDB.SourceGenerator" />
       <PackageReference Include="NexusMods.Paths" />
       <PackageReference Include="YamlDotNet" />
     </ItemGroup>
@@ -14,7 +15,6 @@
       <ProjectReference Include="..\NexusMods.Abstractions.Games.Diagnostics\NexusMods.Abstractions.Games.Diagnostics.csproj" />
       <ProjectReference Include="..\NexusMods.Abstractions.Games.FileHashes\NexusMods.Abstractions.Games.FileHashes.csproj" />
       <ProjectReference Include="..\NexusMods.Abstractions.Games\NexusMods.Abstractions.Games.csproj" />
-      <ProjectReference Include="..\NexusMods.Abstractions.Settings\NexusMods.Abstractions.Settings.csproj" />
       <ProjectReference Include="..\NexusMods.App.Generators.Diagnostics\NexusMods.App.Generators.Diagnostics.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"  />
       <ProjectReference Include="..\NexusMods.Networking.EpicGameStore\NexusMods.Networking.EpicGameStore.csproj" />
     </ItemGroup>
@@ -38,5 +38,9 @@
             <EmbeddedResource Include="$(HashesDatabaseOutput)" LogicalName="games_hashes_db.zip" />
         </ItemGroup>
     </Target>
-
+    
+    <ItemGroup>
+        <AdditionalFiles Include="**\*.sql" />
+        <UpToDateCheckInput Include="**\*.sql"/>
+    </ItemGroup>
 </Project>

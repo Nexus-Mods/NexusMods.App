@@ -31,9 +31,10 @@ public abstract class AWineGameLocator<TPrefix> : IGameLocator
     }
 
     /// <inheritdoc/>
-    public IEnumerable<GameLocatorResult> Find(ILocatableGame game)
+    public IEnumerable<GameLocatorResult> Find(ILocatableGame game, bool forceRefreshCache = false)
     {
-        _cachedGames ??= FindAllGames();
+        if (_cachedGames is null || forceRefreshCache)
+            _cachedGames = FindAllGames();
 
         var foundGame = _storeHandlerWrapper.FindMatchingGame(_cachedGames, game);
         if (foundGame is not null) yield return foundGame;

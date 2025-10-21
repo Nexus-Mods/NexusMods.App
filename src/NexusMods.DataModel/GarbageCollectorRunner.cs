@@ -1,9 +1,11 @@
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GC;
-using NexusMods.Abstractions.Settings;
+using NexusMods.Sdk.Settings;
 using NexusMods.App.GarbageCollection.DataModel;
 using NexusMods.CrossPlatform;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.Sdk;
+
 namespace NexusMods.DataModel;
 
 /// <inheritdoc />
@@ -17,7 +19,7 @@ public class GarbageCollectorRunner(ISettingsManager settings, NxFileStore store
     /// <inheritdoc />
     public void Run()
     {
-        RunGarbageCollector.Do(_settings.ArchiveLocations, _store, _connection);
+        RunGarbageCollector.Do(logger, _settings.ArchiveLocations, _store, _connection);
     }
     
     /// <inheritdoc />

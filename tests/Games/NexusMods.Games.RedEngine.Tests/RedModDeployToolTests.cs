@@ -8,7 +8,9 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Games.RedEngine.Cyberpunk2077;
 using NexusMods.Games.RedEngine.Cyberpunk2077.SortOrder;
 using NexusMods.Games.TestFramework;
+using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 using NexusMods.Paths;
+using OneOf;
 using R3;
 using Xunit.Abstractions;
 
@@ -28,8 +30,45 @@ public class RedModDeployToolTests : ACyberpunkIsolatedGameTest<Cyberpunk2077Gam
     [Fact]
     public async Task LoadorderFileIsWrittenCorrectly()
     {
+        // Ensure the SortOrderManager is created and subscribed to loadout changes
+        _ = InitAndGetSortOrderManager(); 
         var loadout = await CreateLoadout();
         loadout = await AddRedMods(loadout);
+        await Verify(await WriteLoadoutFile(loadout));
+    }
+    
+    [Fact]
+    public async Task LoadorderFileDoesNotContainDisabledMods()
+    {
+        // Ensure the SortOrderManager is created and subscribed to loadout changes
+        _ = InitAndGetSortOrderManager();
+        var redModSortOrderVariety = ServiceProvider.GetRequiredService<RedModSortOrderVariety>();
+        var loadout = await CreateLoadout();
+        
+        loadout = await AddRedMods(loadout);
+        await Task.Delay(TimeSpan.FromSeconds(2));
+
+        var optionalSortOrderId = redModSortOrderVariety.GetSortOrderIdFor(loadout.LoadoutId);
+        optionalSortOrderId.HasValue.Should().BeTrue("RedModSortOrderVariety should have a SortOrderId for the loadout");
+        var sortOrderId = optionalSortOrderId.Value;
+        
+        var sortOrder = redModSortOrderVariety.GetSortOrderItems(sortOrderId, Connection.Db);
+        
+        var driverMod = sortOrder.Single(g => g.DisplayName == "Driver_Shotguns").ModGroupId;
+        driverMod.HasValue.Should().BeTrue("Driver_Shotguns mod should have a ModGroupId");
+        var driverModGroupId = driverMod.Value;
+        
+        // Find the Driver_Shotguns mod
+        var modToDisable = LoadoutItemGroup.All(Connection.Db).Single(g => g.LoadoutItemGroupId == driverModGroupId);
+        
+        // Disable the mod
+        using var tx = Connection.BeginTransaction();
+        tx.Add(modToDisable.Id, LoadoutItem.Disabled, Null.Instance);
+        await tx.Commit();
+        
+        // Give some time for the SortOrderManager to process the change
+        await Task.Delay(TimeSpan.FromSeconds(2)); 
+        
         await Verify(await WriteLoadoutFile(loadout));
     }
 
@@ -46,28 +85,29 @@ public class RedModDeployToolTests : ACyberpunkIsolatedGameTest<Cyberpunk2077Gam
         try
         {
             var loadout = await CreateLoadout();
-    
-            var factory = ServiceProvider.GetRequiredService<RedModSortableItemProviderFactory>();
-            // Wait for the factory to pick up the loadouts
-            await Task.Delay(TimeSpan.FromSeconds(1));
-        
-            var provider = factory.GetLoadoutSortableItemProvider(loadout);
+            
+            // Ensure the SortOrderManager is created and subscribed to loadout changes
+            var sortOrderManager = InitAndGetSortOrderManager();
+            
+            var redModSortOrderVariety = ServiceProvider.GetRequiredService<RedModSortOrderVariety>();
         
             // NOTE(Al12rs): Correctness of test depends also on order of mods added to the loadout,
             // e.g. if RedMods are added one by one rather than in batch, that can affect the order.
             loadout = await AddRedMods(loadout);
-            
-            await Task.Delay(TimeSpan.FromSeconds(1));
-        
-            // wait for the order to be updated, but avoid stalling
 
-            await Task.Delay(TimeSpan.FromSeconds(1));
-        
             // create a cancellation token that will time out after 30 seconds
-            var cts1 = new CancellationTokenSource(TimeSpan.FromSeconds(30));
-        
-            // get the updated sort order for the loadout with the mods installed
-            var sortOrder = await provider.RefreshSortOrder(cts1.Token, loadout.Db);
+            using var cts1 = new CancellationTokenSource(TimeSpan.FromSeconds(30));
+            
+            // ensure sort order is updated with the latest loadout changes
+            await sortOrderManager.UpdateLoadOrders(loadout.LoadoutId, token: cts1.Token);
+            
+            loadout = loadout.Rebase();
+            
+            var optionalSortOrderId = redModSortOrderVariety.GetSortOrderIdFor(OneOf<LoadoutId, CollectionGroupId>.FromT0(loadout.LoadoutId), Connection.Db);
+            optionalSortOrderId.HasValue.Should().BeTrue("RedModSortOrderVariety should have a SortOrderId for the loadout");
+            
+            var sortOrderId = optionalSortOrderId.Value;
+            var sortOrder = redModSortOrderVariety.GetSortOrderItems(sortOrderId, Connection.Db);
             
             loadout = loadout.Rebase();
             
@@ -79,13 +119,15 @@ public class RedModDeployToolTests : ACyberpunkIsolatedGameTest<Cyberpunk2077Gam
             sb.AppendLine($"Moved Item:");
             sb.AppendLine(name);
             sb.AppendLine($"Delta: {delta}");
-
-            var specificRedMod = sortOrder.OfType<RedModReactiveSortItem>().Single(g => g.DisplayName == name);
+            
+            var specificRedMod = sortOrder.Single(g => g.DisplayName == name);
     
-            var cts2 = new CancellationTokenSource(TimeSpan.FromSeconds(30));
-            var token = cts2.Token;
-            var setPositionTask = provider.SetRelativePosition(specificRedMod, delta, token);
+            using var cts2 = new CancellationTokenSource(TimeSpan.FromSeconds(30));
+            var setPositionTask = redModSortOrderVariety.MoveItemDelta(sortOrderId, specificRedMod.Key, delta, token: cts2.Token);
+            
+            
             var timeoutTask2 = Task.Delay(TimeSpan.FromSeconds(30));
+            // TODO: Change MoveItemDelta to task
             if (await Task.WhenAny(setPositionTask, timeoutTask2) == timeoutTask2)
             {
                 throw new TimeoutException($"Timed out waiting for SetRelativePosition to complete");
@@ -116,29 +158,33 @@ public class RedModDeployToolTests : ACyberpunkIsolatedGameTest<Cyberpunk2077Gam
     {
         var loadout = await CreateLoadout();
         
-        var factory = ServiceProvider.GetRequiredService<RedModSortableItemProviderFactory>();
-        
-        // Wait for the factory to pick up the loadouts
-        await Task.Delay(TimeSpan.FromSeconds(1));
-        
-        var provider = factory.GetLoadoutSortableItemProvider(loadout);
+        // Ensure the SortOrderManager is created and subscribed to loadout changes
+        var sortOrderManager = InitAndGetSortOrderManager();
+            
+        var redModSortOrderVariety = ServiceProvider.GetRequiredService<RedModSortOrderVariety>();
         
         // NOTE(Al12rs): Correctness of test depends also on order of mods added to the loadout,
         // e.g. if RedMods are added one by one rather than in batch, that can affect the order.
         loadout = await AddRedMods(loadout);
         
-        await Task.Delay(TimeSpan.FromSeconds(1));
-        
         // create a cancellation token that will time out after 30 seconds
         var cts1 = new CancellationTokenSource(TimeSpan.FromSeconds(30));
         
-        // get the updated sort order for the loadout with the mods installed
-        var sortOrder = await provider.RefreshSortOrder(cts1.Token, loadout.Db);
+        // ensure sort order is updated with the latest loadout changes
+        await sortOrderManager.UpdateLoadOrders(loadout.LoadoutId, token: cts1.Token);
         
         loadout = loadout.Rebase();
+            
+        var optionalSortOrderId = redModSortOrderVariety.GetSortOrderIdFor(OneOf<LoadoutId, CollectionGroupId>.FromT0(loadout.LoadoutId), Connection.Db);
+        optionalSortOrderId.HasValue.Should().BeTrue("RedModSortOrderVariety should have a SortOrderId for the loadout");
+        
+        var sortOrderId = optionalSortOrderId.Value;
+        var sortOrder = redModSortOrderVariety.GetSortOrderItems(sortOrderId, Connection.Db);
         
         var sourceItems = sortOrder.Where(item => sourceIndices.Contains(item.SortIndex)).ToArray();
         var targetItem = sortOrder.Single(g => g.SortIndex == targetIndex);
+        
+        loadout = loadout.Rebase();
         
         var sb = new StringBuilder();
         sb.AppendLine("Starting Order:");
@@ -152,7 +198,7 @@ public class RedModDeployToolTests : ACyberpunkIsolatedGameTest<Cyberpunk2077Gam
         var cts2 = new CancellationTokenSource(TimeSpan.FromSeconds(30));
         var token = cts2.Token;
         
-        var moveItemsTask = provider.MoveItemsTo(sourceItems, targetItem, position, token);
+        var moveItemsTask = redModSortOrderVariety.MoveItems(sortOrderId, sourceItems.Select(item => item.Key).ToArray(), targetItem.Key, position, token: token);
         var timeoutTask2 = Task.Delay(TimeSpan.FromSeconds(30));
         if (await Task.WhenAny(moveItemsTask, timeoutTask2) == timeoutTask2)
         {
@@ -204,7 +250,7 @@ public class RedModDeployToolTests : ACyberpunkIsolatedGameTest<Cyberpunk2077Gam
             File.Copy(sourcePath.ToString(), copyPath.ToString(), overwrite: true);
 
             var libraryArchive = await RegisterLocalArchive(copyPath);
-            await LibraryService.InstallItem(libraryArchive.AsLibraryFile().AsLibraryItem(), loadout);
+            var result = await LoadoutManager.InstallItem(libraryArchive.AsLibraryFile().AsLibraryItem(), loadout);
         }
 
         loadout = loadout.Rebase();

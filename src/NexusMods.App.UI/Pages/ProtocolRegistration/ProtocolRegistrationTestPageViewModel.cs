@@ -3,7 +3,7 @@ using NexusMods.Sdk.EventBus;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.CLI;
-using NexusMods.CrossPlatform.Process;
+using NexusMods.Sdk;
 using R3;
 
 namespace NexusMods.App.UI.Pages;
@@ -36,7 +36,7 @@ public sealed class ProtocolRegistrationTestPageViewModel : APageViewModel<IProt
             _hasTestResult.Value = false;
 
             _testRunId = Guid.NewGuid();
-            osInterop.OpenUrl(new Uri($"nxm://protocol-test/?id={_testRunId}"), fireAndForget: true);
+            osInterop.OpenUri(new Uri($"nxm://protocol-test/?id={_testRunId}"));
         });
 
         CommandStopTest = IsTestRunning.AsObservable().ToReactiveCommand(_ => _isTestRunning.Value = false);

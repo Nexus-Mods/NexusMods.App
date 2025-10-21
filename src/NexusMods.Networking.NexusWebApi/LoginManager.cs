@@ -5,7 +5,6 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.DTOs.OAuth;
 using NexusMods.Abstractions.NexusWebApi.Types;
-using NexusMods.CrossPlatform.ProtocolRegistration;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Query;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
@@ -25,7 +24,6 @@ public sealed class LoginManager : IDisposable, ILoginManager
 {
     private readonly ILogger<LoginManager> _logger;
     private readonly OAuth _oauth;
-    private readonly IProtocolRegistration _protocolRegistration;
     private readonly NexusApiClient _nexusApiClient;
     private readonly IAuthenticatingMessageFactory _msgFactory;
 
@@ -39,6 +37,29 @@ public sealed class LoginManager : IDisposable, ILoginManager
 
     private readonly IDisposable _observeDatomDisposable;
 
+    // Timing Constants
+    
+    /// <summary>
+    /// How long UserInfo is cached before requiring refresh (in minutes).
+    /// </summary>
+    private const int CacheExpiryMinutes = 60;
+
+    /// <summary>
+    /// How often to proactively refresh UserInfo to prevent cache expiry (in minutes).
+    /// Must be less than CacheExpiryMinutes to prevent cache expiration.
+    /// </summary>
+    private const int PeriodicRefreshIntervalMinutes = 59;
+
+    /// <summary>
+    /// Maximum number of retry attempts when refreshing UserInfo fails.
+    /// </summary>
+    private const int MaxRefreshRetries = 3;
+
+    /// <summary>
+    /// Initial delay between retry attempts when refreshing UserInfo fails (in seconds).
+    /// </summary>
+    private const int InitialRetryDelaySeconds = 3;
+
     /// <summary>
     /// Constructor.
     /// </summary>
@@ -47,14 +68,12 @@ public sealed class LoginManager : IDisposable, ILoginManager
         NexusApiClient nexusApiClient,
         IAuthenticatingMessageFactory msgFactory,
         OAuth oauth,
-        IProtocolRegistration protocolRegistration,
         ILogger<LoginManager> logger)
     {
         _oauth = oauth;
         _conn = conn;
         _msgFactory = msgFactory;
         _nexusApiClient = nexusApiClient;
-        _protocolRegistration = protocolRegistration;
         _logger = logger;
 
         _observeDatomDisposable = _conn
@@ -76,10 +95,19 @@ public sealed class LoginManager : IDisposable, ILoginManager
                     _userInfo.OnNext(userInfo);
                 }
             }, awaitOperation: AwaitOperation.Sequential, configureAwait: false);
+
+        // Set up periodic refresh to prevent cache expiry
+        _periodicRefreshDisposable = Observable
+            .Timer(TimeSpan.FromMinutes(PeriodicRefreshIntervalMinutes), TimeSpan.FromMinutes(PeriodicRefreshIntervalMinutes))
+            .SubscribeAwait(async (_, cancellationToken) =>
+            {
+                await TryRefreshUserInfoSafely(cancellationToken, "periodic update");
+            }, configureAwait: false);
     }
 
-    private CachedObject<UserInfo> _cachedUserInfo = new(TimeSpan.FromHours(1));
+    private CachedObject<UserInfo> _cachedUserInfo = new(TimeSpan.FromMinutes(CacheExpiryMinutes));
     private readonly SemaphoreSlim _verifySemaphore = new(initialCount: 1, maxCount: 1);
+    private readonly IDisposable _periodicRefreshDisposable;
     private readonly IConnection _conn;
 
     private async ValueTask<UserInfo?> Verify(CancellationToken cancellationToken)
@@ -87,7 +115,7 @@ public sealed class LoginManager : IDisposable, ILoginManager
         var cachedValue = _cachedUserInfo.Get();
         if (cachedValue is not null) return cachedValue;
 
-        using var _ = _verifySemaphore.WaitDisposable(cancellationToken);
+        using var _ = await _verifySemaphore.WaitAsyncDisposable(cancellationToken);
         cachedValue = _cachedUserInfo.Get();
         if (cachedValue is not null) return cachedValue;
 
@@ -99,6 +127,63 @@ public sealed class LoginManager : IDisposable, ILoginManager
 
         if (userInfo is not null) await AddUserToDb(userInfo);
         return userInfo;
+    }
+
+    private async Task RefreshUserInfoWithRetry(CancellationToken cancellationToken)
+    {
+        const int maxRetries = MaxRefreshRetries;
+        var delay = TimeSpan.FromSeconds(InitialRetryDelaySeconds);
+        
+        for (var attempt = 0; attempt < maxRetries; attempt++)
+        {
+            try
+            {
+                // Force cache eviction to trigger a fresh API call
+                _cachedUserInfo.Evict();
+                var userInfo = await Verify(cancellationToken);
+
+                if (userInfo is null) 
+                    continue;
+
+                _cachedUserInfo.Store(userInfo);
+                _userInfo.OnNext(userInfo);
+                return; // Success, exit retry loop
+            }
+            catch (TaskCanceledException)
+            {
+                // Cancellation requested, exit gracefully
+                return;
+            }
+            catch (Exception ex) when (attempt < maxRetries - 1)
+            {
+                _logger.LogWarning(ex, "Error refreshing user info, attempt {Attempt}/{MaxAttempts}", 
+                    attempt + 1, maxRetries);
+                
+                // Exponential backoff for all retryable exceptions
+                // Base delay: 3s, multiplied by 2^attempt
+                // Attempt 0: 3s, Attempt 1: 6s, Attempt 2: 12s
+                // Total delay if all retries fail: 21 seconds
+                var exponentialDelay = TimeSpan.FromMilliseconds(
+                    delay.TotalMilliseconds * Math.Pow(2, attempt));
+                await Task.Delay(exponentialDelay, cancellationToken);
+            }
+        }
+        
+        _logger.LogWarning("Failed to refresh user info after {MaxAttempts} attempts", maxRetries);
+    }
+
+    private async Task TryRefreshUserInfoSafely(CancellationToken cancellationToken, string context)
+    {
+        try
+        {
+            // Only refresh if we have a cached value (user is logged in)
+            if (_cachedUserInfo.Get() is not null)
+                await RefreshUserInfoWithRetry(cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Failed to refresh user info during {Context}", context);
+        }
     }
 
     private async ValueTask AddUserToDb(UserInfo userInfo)
@@ -134,6 +219,22 @@ public sealed class LoginManager : IDisposable, ILoginManager
     public async Task<bool> GetIsUserLoggedInAsync(CancellationToken token = default)
     {
         return await GetUserInfoAsync(token) is not null;
+    }
+
+    /// <summary>
+    /// Enables automatic refresh of user info based on an observable boolean trigger.
+    /// </summary>
+    /// <param name="triggerObservable">Observable that triggers refresh when true</param>
+    /// <returns>IDisposable to stop the refresh subscription</returns>
+    public IDisposable RefreshOnObservable(Observable<bool> triggerObservable)
+    {
+        return triggerObservable
+            .DistinctUntilChanged()
+            .Where(isActive => isActive)
+            .SubscribeAwait(async (_, cancellationToken) =>
+            {
+                await TryRefreshUserInfoSafely(cancellationToken, "window focus");
+            }, configureAwait: false);
     }
 
     /// <summary>
@@ -212,5 +313,6 @@ public sealed class LoginManager : IDisposable, ILoginManager
     {
         _verifySemaphore.Dispose();
         _observeDatomDisposable.Dispose();
+        _periodicRefreshDisposable.Dispose();
     }
 }

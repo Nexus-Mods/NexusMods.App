@@ -124,7 +124,7 @@ public class LoadoutGroupFilesTreeFolderModelInitializer : IFolderModelInitializ
     {
        // Add name
         model.Add(SharedColumns.NameWithFileIcon.FileEntryComponentKey, 
-            new FileEntryComponent(new StringComponent(folder.FolderName.ToString()), isDeleted: new ValueComponent<bool>(false)));
+            new FileEntryComponent(new StringComponent(folder.DisplayName), isDeleted: new ValueComponent<bool>(false)));
 
         // Add the icon for the folder, making it flip on 'IsExpanded'.
         var iconStream = model.ObservePropertyChanged(m => m.IsExpanded)

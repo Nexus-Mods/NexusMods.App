@@ -1,5 +1,5 @@
-using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Overlays;
+using NexusMods.UI.Sdk;
 
 namespace NexusMods.App.UI.Windows;
 

@@ -12,10 +12,12 @@ using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Extensions;
+using NexusMods.Abstractions.Loadouts.Synchronizers;
+using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.Types;
-using NexusMods.Abstractions.Settings;
+using NexusMods.Sdk.Settings;
 using NexusMods.Abstractions.Telemetry;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Controls.Navigation;
@@ -32,12 +34,16 @@ using NexusMods.App.UI.Settings;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Collections;
-using NexusMods.CrossPlatform.Process;
 using NexusMods.UI.Sdk.Icons;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 using NexusMods.MnemonicDB.Abstractions.Query;
+using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Networking.NexusWebApi;
+using NexusMods.Sdk;
+using NexusMods.UI.Sdk;
+using NexusMods.UI.Sdk.Dialog;
+using NexusMods.UI.Sdk.Dialog.Enums;
 using ObservableCollections;
 using R3;
 using ReactiveUI;
@@ -98,6 +104,8 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
     private readonly NexusModsLibrary _nexusModsLibrary;
     private readonly IConnection _connection;
     private readonly IAvaloniaInterop _avaloniaInterop;
+    private readonly IWindowNotificationService _notificationService;
+    private readonly ILoadoutManager _loadoutManager;
 
     public LoadoutViewModel(
         IWindowManager windowManager,
@@ -111,6 +119,8 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
         _connection = serviceProvider.GetRequiredService<IConnection>();
         _nexusModsLibrary = serviceProvider.GetRequiredService<NexusModsLibrary>();
         _avaloniaInterop = serviceProvider.GetRequiredService<IAvaloniaInterop>();
+        _notificationService = serviceProvider.GetRequiredService<IWindowNotificationService>();
+        _loadoutManager = serviceProvider.GetRequiredService<ILoadoutManager>();
 
         var settingsManager = serviceProvider.GetRequiredService<ISettingsManager>();
         EnableCollectionSharing = settingsManager.Get<ExperimentalSettings>().EnableCollectionSharing;
@@ -241,19 +251,25 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                     if (collectionPublishedResult.ButtonId != ButtonDefinitionId.Accept) return;
 
                     var uri = GetCollectionUri(collection);
-                    await serviceProvider.GetRequiredService<IOSInterop>().OpenUrl(uri, cancellationToken: cancellationToken);
+                    serviceProvider.GetRequiredService<IOSInterop>().OpenUri(uri);
                 }
             );
 
             CommandUploadDraftRevision = IsCollectionUploaded.ToReactiveCommand<Unit>(async (unit, cancellationToken) =>
                 {
+                    _notificationService.ShowToast(Language.ToastNotification_Uploading_draft_collection_revision___);
+                    
                     _ = await CollectionCreator.UploadDraftRevision(serviceProvider, collectionGroupId.Value.Value, cancellationToken);
                     HasOutstandingChanges.Value = false;
+                    
+                    _notificationService.ShowToast(Language.ToastNotification_Draft_revision_uploaded_successfully, ToastNotificationVariant.Success);
                 }, maxSequential: 1, configureAwait: false
             );
 
             CommandUploadAndPublishRevision = IsCollectionUploaded.ToReactiveCommand<Unit>(async (unit, cancellationToken) =>
                 {
+                    _notificationService.ShowToast(Language.ToastNotification_Uploading_new_collection_revision___);
+                    
                     _ = await CollectionCreator.UploadAndPublishRevision(serviceProvider, collectionGroupId.Value.Value, cancellationToken);
                     HasOutstandingChanges.Value = false;
 
@@ -298,7 +314,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
 
                     // open up changelog URL in browser
                     var uri = GetCollectionChangelogUri(managedCollectionLoadoutGroup.Collection);
-                    await serviceProvider.GetRequiredService<IOSInterop>().OpenUrl(uri, cancellationToken: cancellationToken);
+                    serviceProvider.GetRequiredService<IOSInterop>().OpenUri(uri);
                 }, maxSequential: 1, configureAwait: false
             );
 
@@ -333,9 +349,24 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                         ? Abstractions.NexusModsLibrary.Models.CollectionStatus.Listed
                         : Abstractions.NexusModsLibrary.Models.CollectionStatus.Unlisted;
 
-                    _ = await CollectionCreator.ChangeCollectionStatus(serviceProvider, collectionGroupId.Value.Value, CollectionStatus.Value,
+                    var result = await CollectionCreator.ChangeCollectionStatus(serviceProvider, collectionGroupId.Value.Value, CollectionStatus.Value,
                         cancellationToken
                     );
+                    
+                    if (result.TryGetData(out var data))
+                    {
+                        var newStatus = data switch
+                        {
+                            Abstractions.NexusModsLibrary.Models.CollectionStatus.Listed => Language.CollectionStatus_Listed,
+                            Abstractions.NexusModsLibrary.Models.CollectionStatus.Unlisted => Language.CollectionStatus_Unlisted,
+                            _ => throw new ArgumentOutOfRangeException(),
+                        };
+
+                        _notificationService.ShowToast(
+                            string.Format(Language.ToastNotification_Collection_status_changed_to__0__, newStatus),
+                            ToastNotificationVariant.Success
+                        );
+                    }
                 }, configureAwait: false
             );
 
@@ -345,9 +376,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                     if (!managedCollectionLoadoutGroup.IsValid()) return;
 
                     var uri = GetCollectionUri(managedCollectionLoadoutGroup.Collection);
-
-                    // open collection URL in browser
-                    await serviceProvider.GetRequiredService<IOSInterop>().OpenUrl(uri, cancellationToken: cancellationToken);
+                    serviceProvider.GetRequiredService<IOSInterop>().OpenUri(uri);
                 }, configureAwait: false
             );
 
@@ -398,6 +427,8 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
             {
                 await CollectionCreator.DeleteCollectionGroup(connection: _connection, managedCollectionGroup: collectionGroupId.Value, cancellationToken: cancellationToken);
                 CommandOpenLibraryPage?.Execute(NavigationInformation.From(OpenPageBehaviorType.ReplaceTab));
+                
+                _notificationService.ShowToast(Language.ToastNotification_Collection_removed);
             });
         }
         else
@@ -446,12 +477,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
             }
         );
 
-        var numSortableItemProviders = loadout
-            .InstallationInstance
-            .GetGame()
-            .SortableItemProviderFactories.Length;
-
-        HasRulesSection = numSortableItemProviders > 0;
+        HasRulesSection = true;
 
         SelectedSubTab = selectedSubTab switch
         {
@@ -465,23 +491,8 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                 {
                     var group = viewModFilesArgumentsSubject.Value;
                     if (!group.HasValue) return;
-
-                    var isReadonly = group.Value.AsLoadoutItem()
-                        .GetThisAndParents()
-                        .Any(item => IsRequired(item.LoadoutItemId, _connection));
-
-                    var pageData = new PageData
-                    {
-                        FactoryId = LoadoutGroupFilesPageFactory.StaticId,
-                        Context = new LoadoutGroupFilesPageContext
-                        {
-                            GroupIds = [group.Value.Id],
-                            IsReadOnly = isReadonly,
-                        },
-                    };
-                    var workspaceController = GetWorkspaceController();
-                    var behavior = workspaceController.GetOpenPageBehavior(pageData, info);
-                    workspaceController.OpenPage(workspaceController.ActiveWorkspaceId, pageData, behavior);
+                    
+                    OpenViewModFilesPage(group.Value, info, GetWorkspaceController(), _connection);
                 },
                 false
             );
@@ -507,40 +518,16 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                         .SelectMany(static itemModel => GetLoadoutItemIds(itemModel))
                         .ToHashSet()
                         .Where(id => !IsRequired(id, _connection))
-                        .Select(x => (LibraryLinkedLoadoutItemId)x.Value)
+                        .Select(x => (LoadoutItemGroupId)x.Value)
                         .ToArray();
 
                     if (ids.Length == 0) return;
-
-                    var dialog = DialogFactory.CreateStandardDialog(
-                        title: "Uninstall mod(s)",
-                        new StandardDialogParameters()
-                        {
-                            Text = $"""
-                         This will remove the selected mod(s) from:
-                         
-                         {CollectionName}
-                         
-                         ✓ The mod(s) will stay in your Library
-                         ✓ You can reinstall anytime
-                         """,
-                        },
-                        buttonDefinitions:
-                        [
-                            DialogStandardButtons.Cancel,
-                            new DialogButtonDefinition("Uninstall",
-                                ButtonDefinitionId.Accept,
-                                ButtonAction.Accept,
-                                ButtonStyling.Default
-                            )
-                        ]
-                    );
-
-                    var result = await windowManager.ShowDialog(dialog, DialogWindowType.Modal);
-
+                    
+                    var result = await ShowUninstallModsConformationDialog(ids, windowManager, _connection);
                     if (result.ButtonId != ButtonDefinitionId.Accept) return;
 
-                    await libraryService.RemoveLinkedItemsFromLoadout(ids);
+                    await _loadoutManager.RemoveItems(ids);
+                    _notificationService.ShowToast(Language.ToastNotification_Mods_removed);
                 },
                 awaitOperation: AwaitOperation.Sequential,
                 initialCanExecute: false,
@@ -551,23 +538,34 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
             {
                 Adapter.Activate().AddTo(disposables);
 
-                Adapter.MessageSubject.SubscribeAwait(async (message, _) =>
+                Adapter.MessageSubject.SubscribeAwait(async (message, cancellationToken) =>
                     {
-                        // Toggle item state
-                        if (message.IsT0)
-                        {
-                            await ToggleItemEnabledState(message.AsT0.Ids, _connection);
-                            return;
-                        }
-
-                        // Open collection
-                        if (message.IsT1)
-                        {
-                            var data = message.AsT1;
-                            OpenItemCollectionPage(data.Ids, data.NavigationInformation, loadoutId,
-                                GetWorkspaceController(), _connection
-                            );
-                        }
+                        await message.Match<Task>(
+                            toggleEnableStateMessage => 
+                                HandleToggleItemEnabledState(toggleEnableStateMessage.Ids, _connection),
+                            openCollectionMessage =>
+                            {
+                                HandleOpenItemCollectionPage(openCollectionMessage.Ids, 
+                                    openCollectionMessage.NavigationInformation, 
+                                    loadoutId, GetWorkspaceController(), _connection);
+                                return Task.CompletedTask;
+                            },
+                            viewModPageMessage =>
+                            {
+                                HandleOpenModPageFor(viewModPageMessage.Ids, _connection, 
+                                    _serviceProvider.GetRequiredService<IOSInterop>(), 
+                                    cancellationToken);
+                                return Task.CompletedTask;
+                            },
+                            viewModFilesMessage =>
+                            {
+                                HandleViewModFiles(viewModFilesMessage.Ids, 
+                                    viewModFilesMessage.NavigationInformation, 
+                                    _connection, GetWorkspaceController());
+                                return Task.CompletedTask;
+                            },
+                            uninstallItemMessage => HandleUninstallItem(uninstallItemMessage.Ids, windowManager, _connection)
+                        );
                     }, awaitOperation: AwaitOperation.Parallel, configureAwait: false
                 ).AddTo(disposables);
 
@@ -639,6 +637,62 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
         );
     }
 
+    private static async Task<StandardDialogResult> ShowUninstallModsConformationDialog(LoadoutItemGroupId[] ids, IWindowManager windowManager, IConnection connection)
+    {
+        // Comma-separated list of parent collection names
+        var parentCollectionNames = string.Join(",\n",
+            ids
+                .Select(id => LoadoutItem.Load(connection.Db, id))
+                .Where(item => item.IsValid() && item.HasParent())
+                .Select(item => item.Parent.AsLoadoutItem().Name)
+                .Distinct()
+                .OrderBy(name => name, StringComparer.CurrentCultureIgnoreCase)
+        );
+
+        var dialog = DialogFactory.CreateStandardDialog(
+            title: "Uninstall mod(s)",
+            new StandardDialogParameters()
+            {
+                Text = $"""
+                         This will remove the selected mod(s) from:
+                         
+                         {parentCollectionNames}
+                         
+                         ✓ The mod(s) will stay in your Library
+                         ✓ You can reinstall anytime
+                         """,
+            },
+            buttonDefinitions:
+            [
+                DialogStandardButtons.Cancel,
+                new DialogButtonDefinition("Uninstall",
+                    ButtonDefinitionId.Accept,
+                    ButtonAction.Accept,
+                    ButtonStyling.Default
+                )
+            ]
+        );
+
+        var result = await windowManager.ShowDialog(dialog, DialogWindowType.Modal);
+        return result;
+    }
+
+    internal static void HandleOpenModPageFor(LoadoutItemId[] ids, IConnection connection, IOSInterop os, CancellationToken cancellationToken)
+    {
+        if (ids.Length == 0) return;
+        var loadoutItemId = ids.First();
+        
+        LibraryLinkedLoadoutItem.TryGet(connection.Db, loadoutItemId.Value, out var linkedItem);
+        if (linkedItem is null) return;
+        var libraryItem = linkedItem.Value.LibraryItemId;
+        NexusModsLibraryItem.TryGet(connection.Db, libraryItem.Value, out var nexusModsLibraryItem);
+        if (nexusModsLibraryItem is null) return;
+        var modPage = nexusModsLibraryItem.Value.ModPageMetadata;
+
+        var url = NexusModsUrlBuilder.GetModUri(modPage.GameDomain, modPage.Uid.ModId);
+        os.OpenUri(url);
+    }
+
     private Uri GetCollectionChangelogUri(CollectionMetadata.ReadOnly collection)
     {
         var mappingCache = _serviceProvider.GetRequiredService<IGameDomainToGameIdMappingCache>();
@@ -655,7 +709,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
         return uri;
     }
 
-    internal static async Task ToggleItemEnabledState(LoadoutItemId[] ids, IConnection connection)
+    internal static async Task HandleToggleItemEnabledState(LoadoutItemId[] ids, IConnection connection)
     {
         var toggleableItems = ids
             .Select(loadoutItemId => LoadoutItem.Load(connection.Db, loadoutItemId))
@@ -689,7 +743,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
         await tx.Commit();
     }
 
-    internal static void OpenItemCollectionPage(
+    internal static void HandleOpenItemCollectionPage(
         LoadoutItemId[] ids,
         NavigationInformation navInfo,
         LoadoutId loadoutId,
@@ -733,6 +787,61 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
 
         var behavior = workspaceController.GetOpenPageBehavior(pageData, navInfo);
         workspaceController.OpenPage(workspaceController.ActiveWorkspaceId, pageData, behavior);
+    }
+    
+    public static void HandleViewModFiles(LoadoutItemId[] ids, NavigationInformation navInfo, IConnection connection, IWorkspaceController workspaceController)
+    {
+        if (ids.Length == 0) return;
+        var loadoutItemId = ids.First();
+        
+        var group = LoadoutItemGroup.Load(connection.Db, loadoutItemId);
+
+        OpenViewModFilesPage(group, navInfo, workspaceController, connection);
+    }
+
+    private static void OpenViewModFilesPage(LoadoutItemGroup.ReadOnly group, NavigationInformation navInfo, IWorkspaceController workspaceController, IConnection connection)
+    {
+        var isReadonly = group.AsLoadoutItem()
+            .GetThisAndParents()
+            .Any(item => IsRequired(item.LoadoutItemId, connection));
+
+        var pageData = new PageData
+        {
+            FactoryId = LoadoutGroupFilesPageFactory.StaticId,
+            Context = new LoadoutGroupFilesPageContext
+            {
+                GroupIds = [group.Id],
+                IsReadOnly = isReadonly,
+            },
+        };
+       
+        var behavior = workspaceController.GetOpenPageBehavior(pageData, navInfo);
+        workspaceController.OpenPage(workspaceController.ActiveWorkspaceId, pageData, behavior);
+    }
+
+    public static async Task HandleUninstallItem(LoadoutItemId[] ids, IWindowManager windowManager, IConnection connection)
+    {
+        if (ids.Length == 0) return;
+        
+        var removableIds = ids
+            .ToHashSet()
+            .Where(id => !IsRequired(id, connection))
+            .Select(x => (LoadoutItemGroupId)x.Value)
+            .ToArray();
+        
+        if (removableIds.Length == 0) return;
+        
+        var result = await ShowUninstallModsConformationDialog(removableIds, windowManager, connection);
+
+        if (result.ButtonId != ButtonDefinitionId.Accept) return;
+        
+
+        using var tx = connection.BeginTransaction();
+        
+        foreach (var itemId in removableIds)
+            tx.Delete(itemId, recursive: true);
+        
+        await tx.Commit();
     }
 
     private async ValueTask UpdateCollectionInfo(ManagedCollectionLoadoutGroup.ReadOnly managedCollectionLoadoutGroup, CancellationToken cancellationToken)

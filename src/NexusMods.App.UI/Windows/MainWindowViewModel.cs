@@ -8,12 +8,12 @@ using NexusMods.Sdk.EventBus;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.Logging;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
-using NexusMods.Abstractions.Settings;
-using NexusMods.Abstractions.UI;
+using NexusMods.Sdk.Settings;
 using NexusMods.App.UI.Controls.DevelopmentBuildBanner;
 using NexusMods.App.UI.Controls.Spine;
 using NexusMods.App.UI.Controls.TopBar;
@@ -23,12 +23,15 @@ using NexusMods.App.UI.Overlays;
 using NexusMods.App.UI.Overlays.Generic.MessageBox.Ok;
 using NexusMods.App.UI.Overlays.Updater;
 using NexusMods.App.UI.Pages.CollectionDownload;
+using NexusMods.App.UI.Resources;
+using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Settings;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.CLI;
 using NexusMods.CrossPlatform;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Sdk;
+using NexusMods.UI.Sdk;
 using R3;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -42,6 +45,7 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
     private readonly IWindowManager _windowManager;
     private readonly IConnection _connection;
     private readonly IServiceProvider _serviceProvider;
+    private readonly IWindowNotificationService _notificationService;
 
     public ReactiveUI.ReactiveCommand<System.Reactive.Unit, bool> BringWindowToFront { get; }
     public ReactiveUI.ReactiveCommand<IStorageProvider, System.Reactive.Unit> RegisterStorageProvider { get; }
@@ -53,11 +57,13 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
         IOverlayController overlayController,
         ILoginManager loginManager,
         IEventBus eventBus,
-        ISettingsManager settingsManager)
+        ISettingsManager settingsManager,
+        IWindowNotificationService notificationService)
     {
         _serviceProvider = serviceProvider;
         var avaloniaInterop = serviceProvider.GetRequiredService<IAvaloniaInterop>();
         _connection = serviceProvider.GetRequiredService<IConnection>();
+        _notificationService = notificationService;
 
         // NOTE(erri120): can't use DI for VMs that require an active Window because
         // those VMs would be instantiated before this constructor gets called.
@@ -121,12 +127,28 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
                 .BindTo(_windowManager, manager => manager.ActiveWindow)
                 .DisposeWith(d);
             
+            // Enable automatic UserInfo refresh when window gains focus
+            loginManager.RefreshOnObservable(
+                this.WhenAnyValue(vm => vm.IsActive).ToObservable()
+            ).DisposeWith(d);
+            
             overlayController.WhenAnyValue(oc => oc.CurrentOverlay)
                 .BindTo(this, vm => vm.CurrentOverlay)
                 .DisposeWith(d);
-
+            
             eventBus
-                .ObserveMessages<CliMessages.AddedCollection>()
+                .ObserveMessages<CliMessages.CollectionAddStarted>()
+                .ObserveOnUIThreadDispatcher()
+                .Subscribe(this, static (_, self) =>
+                {
+                    using var disposable = self.BringWindowToFront.Execute(System.Reactive.Unit.Default).Subscribe();
+                    
+                    self._notificationService.ShowToast(Language.ToastNotification_Adding_new_Collection_to_Library);
+                })
+                .DisposeWith(d);
+            
+            eventBus
+                .ObserveMessages<CliMessages.CollectionAddSucceeded>()
                 .ObserveOnUIThreadDispatcher()
                 .Subscribe(this, static (message, self) =>
                 {
@@ -150,17 +172,92 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
                     var behavior = workspaceController.GetDefaultOpenPageBehavior(pageData, NavigationInput.Default);
                     workspaceController.OpenPage(workspaceId, pageData, behavior);
 
-                    using var _ = self.BringWindowToFront.Execute(System.Reactive.Unit.Default).Subscribe();
+                    self._notificationService.ShowToast(
+                        string.Format(Language.ToastNotification_Adding_collection____0_, message.Revision.Collection.Name),
+                        ToastNotificationVariant.Success
+                    );
                 })
+                .DisposeWith(d);
+            
+            eventBus
+                .ObserveMessages<CliMessages.CollectionAddFailed>()
+                .ObserveOnUIThreadDispatcher()
+                .Subscribe(this, static (message, self) =>
+                {
+                    switch (message.Reason)
+                    {
+                        case FailureReason.GameNotManaged gameNotManaged:
+                            self._notificationService.ShowToast(
+                                string.Format(Language.ToastNotification_Collection_Add_failed___0__is_not_a_managed_game, gameNotManaged.Game),
+                                ToastNotificationVariant.Failure  
+                            );
+                            return;
+                        case FailureReason.Unknown unknown:
+                            self._notificationService.ShowToast(
+                                Language.ToastNotification_Collection_Add_failed__An_unknown_error_occurred,
+                                ToastNotificationVariant.Failure
+                            );
+                            return;
+                    }
+                })  
                 .DisposeWith(d);
 
             eventBus
-                .ObserveMessages<CliMessages.AddedDownload>()
+                .ObserveMessages<CliMessages.ModDownloadStarted>()
                 .ObserveOnUIThreadDispatcher()
                 .Subscribe(this, static (message, self) =>
                 {
                     using var _ = self.BringWindowToFront.Execute(System.Reactive.Unit.Default).Subscribe();
+                    
+                    self._notificationService.ShowToast(Language.ToastNotification_Mod_Download_started);
                 })
+                .DisposeWith(d);
+            
+            eventBus
+                .ObserveMessages<CliMessages.ModDownloadSucceeded>()
+                .ObserveOnUIThreadDispatcher()
+                .Subscribe(this, static (message, self) =>
+                {
+                    self._notificationService.ShowToast(
+                        string.Format(Language.ToastNotification_Mod_Download_Completed____0_, message.LibraryItem.Name),
+                        ToastNotificationVariant.Success
+                    );
+                })
+                .DisposeWith(d);
+            
+            eventBus
+                .ObserveMessages<CliMessages.ModDownloadFailed>()
+                .ObserveOnUIThreadDispatcher()
+                .Subscribe(this, static (message, self) =>
+                {
+                    switch (message.Reason)
+                    {
+                        case FailureReason.NotLoggedIn:
+                            self._notificationService.ShowToast(
+                                Language.ToastNotification_Download_failed__User_is_not_logged_in,
+                                ToastNotificationVariant.Failure
+                            );
+                            return;
+                        case FailureReason.AlreadyExists alreadyExists:
+                            self._notificationService.ShowToast(
+                                string.Format(Language.ToastNotification_Download_skipped__file_already_exists____0__, alreadyExists.Name),
+                                ToastNotificationVariant.Neutral
+                            );
+                            return;
+                        case FailureReason.GameNotManaged gameNotManaged:
+                            self._notificationService.ShowToast(
+                                string.Format(Language.ToastNotification_Download_failed__game_is_not_managed____0_, gameNotManaged.Game),
+                                ToastNotificationVariant.Failure
+                            );
+                            return;
+                        case FailureReason.Unknown:
+                            self._notificationService.ShowToast(
+                                Language.ToastNotification_Download_failed__An_unknown_error_occurred,
+                                ToastNotificationVariant.Failure
+                            );
+                            return;
+                    }
+                })  
                 .DisposeWith(d);
 
             R3.Disposable.Create(this, vm =>
@@ -208,7 +305,7 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
         if (!gameRegistry.InstalledGames.TryGetFirst(x => x.Game.GameId == gameId, out var gameInstallation)) return Optional<LoadoutId>.None;
 
         if (gameInstallation.Game is not IGame game) return Optional<LoadoutId>.None;
-        return game.Synchronizer.GetCurrentlyActiveLoadout(gameInstallation);
+        return _serviceProvider.GetRequiredService<ILoadoutManager>().GetCurrentlyActiveLoadout(gameInstallation);
     }
     
     private IDisposable ConnectErrors(IServiceProvider provider)

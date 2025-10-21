@@ -1,7 +1,7 @@
 using System.Text;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.Settings;
+using NexusMods.Sdk.Settings;
 using NexusMods.App.GarbageCollection.Nx;
 using NexusMods.DataModel;
 using NexusMods.Hashing.xxHash3;
@@ -76,7 +76,7 @@ public class DataStoreNxArchiveFinderTests(NxFileStore fileStore, IConnection co
 
     private AbsolutePath GetArchivePath(Hash hash)
     {
-        fileStore.TryGetLocation(connection.Db, hash, null, out var archivePath, out _).Should().BeTrue("Archive should exist");
+        fileStore.TryGetLocation(hash, out var archivePath, out _).Should().BeTrue("Archive should exist");
         return archivePath;
     }
     

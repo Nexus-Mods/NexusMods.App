@@ -3,31 +3,35 @@ using System.IO.Compression;
 using System.Text.Json;
 using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.EpicGameStore.Models;
 using NexusMods.Abstractions.EpicGameStore.Values;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.FileHashes;
 using NexusMods.Abstractions.Games.FileHashes.Models;
-using NexusMods.Abstractions.Jobs;
+using NexusMods.Abstractions.GOG.Values;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
-using NexusMods.Abstractions.Settings;
+using NexusMods.Sdk.Settings;
 using NexusMods.Abstractions.Steam.Values;
 using NexusMods.Games.FileHashes.DTOs;
 using NexusMods.Hashing.xxHash3;
-using NexusMods.MnemonicDB;
+using NexusMods.HyperDuck;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Storage;
 using NexusMods.MnemonicDB.Storage.RocksDbBackend;
 using NexusMods.Paths;
 using NexusMods.Sdk;
 using NexusMods.Sdk.IO;
+using NexusMods.Sdk.Jobs;
 using BuildId = NexusMods.Abstractions.GOG.Values.BuildId;
+using Connection = NexusMods.MnemonicDB.Connection;
 
 namespace NexusMods.Games.FileHashes;
 
-internal sealed class FileHashesService : IFileHashesService, IDisposable
+internal sealed class FileHashesService : IFileHashesService, IDisposable, IHostedService
 {
+    private const string DefaultLanguage = "en-US";
+    
     private readonly ScopedAsyncLock _lock = new();
     private readonly FileHashesServiceSettings _settings;
     private readonly IFileSystem _fileSystem;
@@ -43,6 +47,8 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable
     private ConnectedDb? _currentDb;
 
     private readonly ILogger<FileHashesService> _logger;
+    private readonly IQueryEngine _queryEngine;
+    private IQueryMixin _queryMixin;
 
     private record ConnectedDb(IDb Db, DatomStore Store, Backend Backend, DatabaseInfo DatabaseInfo);
 
@@ -55,11 +61,11 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable
         _settings = settingsManager.Get<FileHashesServiceSettings>();
         _databases = new Dictionary<AbsolutePath, ConnectedDb>();
         _provider = provider;
+        _queryEngine = provider.GetRequiredService<IQueryEngine>();
+        _queryMixin = _queryEngine.DuckDb;
 
         _hashDatabaseLocation = _settings.HashDatabaseLocation.ToPath(_fileSystem);
         _hashDatabaseLocation.CreateDirectory();
-
-        Startup();
     }
 
     private ConnectedDb OpenDb(DatabaseInfo databaseInfo)
@@ -77,7 +83,7 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable
             };
 
             var store = new DatomStore(_provider.GetRequiredService<ILogger<DatomStore>>(), settings, backend);
-            var connection = new Connection(_provider.GetRequiredService<ILogger<Connection>>(), store, _provider, [], readOnlyMode: true);
+            var connection = new Connection(_provider.GetRequiredService<ILogger<Connection>>(), store, _provider, [], readOnlyMode: true, prefix: "hashes", queryEngine: _queryEngine);
             var connectedDb = new ConnectedDb(connection.Db, store, backend, databaseInfo);
 
             _databases[databaseInfo.Path] = connectedDb;
@@ -138,23 +144,6 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable
         return diff >= _settings.HashDatabaseUpdateInterval;
     }
 
-    private void Startup()
-    {
-        var existingDatabases = ExistingDBs().ToArray();
-
-        // Cleanup old databases
-        foreach (var databaseInfo in existingDatabases.Skip(1))
-        {
-            databaseInfo.Path.DeleteDirectory(true);
-        }
-
-        if (existingDatabases.TryGetFirst(out var latestDatabase))
-        {
-            _currentDb = OpenDb(latestDatabase);
-        }
-
-        Task.Run(async () => await CheckForUpdateCore(forceUpdate: false, cancellationToken: CancellationToken.None));
-    }
 
     private async Task CheckForUpdateCore(bool forceUpdate, CancellationToken cancellationToken = default)
     {
@@ -195,7 +184,7 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable
             if (embeddedDatabaseInfo.HasValue)
             {
                 existingDatabases = ExistingDBs().ToArray();
-                Debug.Assert(existingDatabases.Length == 1);
+                Debug.Assert(existingDatabases.Length >= 1, $"should have at least one database but found {existingDatabases.Length}");
             }
         }
 
@@ -205,7 +194,7 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable
             return;
         }
 
-        if (latestReleaseManifest is null || existingDatabases[0].CreationTime >= latestReleaseManifest.CreatedAt)
+        if (latestReleaseManifest is null || existingDatabases[0].CreationTime.ToUnixTimeSeconds() >= latestReleaseManifest.CreatedAt.ToUnixTimeSeconds())
         {
             _currentDb = OpenDb(existingDatabases[0]);
             return;
@@ -249,7 +238,7 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable
         {
             var streamFactory = new EmbeddedResourceStreamFactory<FileHashesService>(resourceName: "games_hashes_db.zip");
             await using var archiveStream = await streamFactory.GetStreamAsync();
-            var creationTime = ApplicationConstants.BuildDate;
+            var creationTime = ApplicationConstants.IsDebug ? DateTimeOffset.UnixEpoch : ApplicationConstants.BuildDate;
 
             var path = await AddDatabase(archiveStream, creationTime, cancellationToken);
             return new DatabaseInfo(path, creationTime);
@@ -334,6 +323,11 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable
 
         if (gameStore == GameStore.GOG)
         {
+            HashSet<GogBuild.ReadOnly> gogBuilds = [];
+            HashSet<ProductId> gogProducts = [];
+            Dictionary<EntityId, GogManifest.ReadOnly> gogManifests = [];
+            
+            // So first we find all the valid build Ids, and then assume that everything else is a product Id
             foreach (var id in locatorIds)
             {
                 if (!ulong.TryParse(id.Value, out var parsedId))
@@ -341,10 +335,36 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable
 
                 var gogId = BuildId.From(parsedId);
 
-                if (!GogBuild.FindByBuildId(Current, gogId).TryGetFirst(out var firstBuild))
+                if (GogBuild.FindByBuildId(Current, gogId).TryGetFirst(out var firstBuild))
+                {
+                    gogBuilds.Add(firstBuild);
                     continue;
+                }
+                
+                var productId = ProductId.From(parsedId);
+                gogProducts.Add(productId);
+            }
+            
+            // Now we emit all the files from the build products, and then also from any secondary products
+            foreach (var build in gogBuilds)
+            {
+                foreach (var depot in build.Depots)
+                {
+                    // We only care about the productId of the build, and the productIds of the secondary products
+                    if (!(depot.ProductId == build.ProductId || gogProducts.Contains(depot.ProductId)))
+                        continue;
+                    
+                    // If there is a language setting for the files, they have to be the same as the default language
+                    if (!(depot.Languages.Count == 0 || depot.Languages.Contains(DefaultLanguage)))
+                        continue;
 
-                foreach (var file in firstBuild.Files)
+                    gogManifests[depot.Manifest.Id] = depot.Manifest;
+                }
+            }
+
+            foreach (var (_ , manifest) in gogManifests)
+            {
+                foreach (var file in manifest.Files)
                 {
                     yield return new GameFileRecord
                     {
@@ -355,6 +375,7 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable
                     };
                 }
             }
+            
         }
         else if (gameStore == GameStore.Steam)
         {
@@ -561,7 +582,7 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable
     {
         if (gameStore == GameStore.GOG)
         {
-            return versionDefinition.GogBuilds.Select(build => LocatorId.From(build.BuildId.ToString())).ToArray();
+            return versionDefinition.GogBuilds.Select(build => LocatorId.From(build.BuildId!.Value.ToString())).ToArray();
         }
 
         if (gameStore == GameStore.Steam)
@@ -599,6 +620,42 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable
             .FirstOrOptional(_ => true);
     }
 
+    public LocatorId[] GetLocatorIdsForGame(GameInstallation gameInstallation)
+    {
+        if (gameInstallation.Store == GameStore.Steam)
+        {
+            var ids = _queryMixin.Query<DepotId>("SELECT * FROM file_hashes.resolve_steam_depots({gameInstallation.GameMetadataId});")
+                .Select(id => LocatorId.From(id.Value.ToString()))
+                .ToArray();
+            return ids;
+        }
+        else if (gameInstallation.Store == GameStore.GOG)
+        {
+            if (!_queryMixin.Query<(BuildId, ProductId, List<ProductId>)>("SELECT BuildId, BuildProductId, ProductIds FROM file_hashes.resolve_gog_build({gameInstallation.GameMetadataId})")
+                .TryGetFirst(out var found))
+                return [];
+            
+            var ids = new List<LocatorId>();
+            
+            ids.Add(LocatorId.From(found.Item1.Value.ToString()));
+            
+            // We want to add the Build Id and then all the product Ids that are not the same as the Build's product
+            foreach (var productId in found.Item3)
+            {
+                if (productId == found.Item2)
+                    continue;
+                
+                ids.Add(LocatorId.From(productId.Value.ToString()));
+            }
+            
+            return ids.ToArray();
+        }
+        else
+        {
+            throw new NotSupportedException("No way to get locator IDs for: " + gameInstallation.Store);
+        }
+    }
+
     /// <inheritdoc/>
     public void Dispose()
     {
@@ -607,5 +664,37 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable
             connection.Backend.Dispose();
             connection.Store.Dispose();
         }
+    }
+
+    public async Task StartAsync(CancellationToken cancellationToken)
+    {
+        var existingDatabases = ExistingDBs().ToArray();
+
+        // Cleanup old databases
+        foreach (var databaseInfo in existingDatabases.Skip(1))
+        {
+            databaseInfo.Path.DeleteDirectory(true);
+        }
+
+        var forceUpdate = false;
+        try
+        {
+            if (existingDatabases.TryGetFirst(out var latestDatabase))
+            {
+                _currentDb = OpenDb(latestDatabase);
+            }
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Failed to open latest database, forcing update");
+            forceUpdate = true;
+        }
+
+        await CheckForUpdateCore(forceUpdate: forceUpdate, cancellationToken);
+    }
+
+    public Task StopAsync(CancellationToken cancellationToken)
+    {
+        return Task.CompletedTask;
     }
 }

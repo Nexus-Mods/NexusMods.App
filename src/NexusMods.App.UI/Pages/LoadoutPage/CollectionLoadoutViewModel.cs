@@ -12,13 +12,20 @@ using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 using System.Reactive.Linq;
 using DynamicData;
 using NexusMods.Abstractions.Collections;
-using NexusMods.Abstractions.Jobs;
 using NexusMods.App.UI.Controls.Navigation;
+using NexusMods.App.UI.Dialog;
+using NexusMods.App.UI.Dialog.Enums;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Pages.CollectionDownload;
+using NexusMods.App.UI.Resources;
 using NexusMods.MnemonicDB.Abstractions.Query;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Paths;
+using NexusMods.Sdk;
+using NexusMods.Sdk.Jobs;
+using NexusMods.UI.Sdk;
+using NexusMods.UI.Sdk.Dialog;
+using NexusMods.UI.Sdk.Dialog.Enums;
 using R3;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -40,6 +47,7 @@ public class CollectionLoadoutViewModel : APageViewModel<ICollectionLoadoutViewM
         var tilePipeline = ImagePipelines.GetCollectionTileImagePipeline(serviceProvider);
         var backgroundPipeline = ImagePipelines.GetCollectionBackgroundImagePipeline(serviceProvider);
         var userAvatarPipeline = ImagePipelines.GetUserAvatarPipeline(serviceProvider);
+        var notificationService = serviceProvider.GetRequiredService<IWindowNotificationService>();
         
         var nexusCollectionGroup = NexusCollectionLoadoutGroup.Load(connection.Db, pageContext.GroupId);
         var group = nexusCollectionGroup.AsCollectionGroup();
@@ -125,6 +133,8 @@ public class CollectionLoadoutViewModel : APageViewModel<ICollectionLoadoutViewM
                 tx.Delete(nexusCollectionGroup.Id, recursive: true);
                 
                 await tx.Commit();
+                
+                notificationService.ShowToast(Language.ToastNotification_Collection_removed);
             },
             awaitOperation: AwaitOperation.Drop,
             configureAwait: false
@@ -151,6 +161,51 @@ public class CollectionLoadoutViewModel : APageViewModel<ICollectionLoadoutViewM
                 return System.Reactive.Unit.Default;
             }
         );
+
+        CommandMakeLocalEditableCopy = new ReactiveCommand(
+            executeAsync: async (_, _) =>
+            {
+                var dialog = DialogFactory.CreateStandardDialog(
+                    "Collection Name",
+                    new StandardDialogParameters()
+                    {
+                        Text = "This is the name of the new cloned collection.",
+                        InputLabel = "Collection name",
+                        InputWatermark = "(Local) " + group.AsLoadoutItemGroup().AsLoadoutItem().Name,
+                        InputText = "(Local) " + group.AsLoadoutItemGroup().AsLoadoutItem().Name,
+                    },
+                    [
+                        DialogStandardButtons.Cancel,
+                        new DialogButtonDefinition(
+                            "Create",
+                            ButtonDefinitionId.Accept,
+                            ButtonAction.Accept,
+                            ButtonStyling.Primary
+                        ),
+                    ]
+                );
+                var result = await WindowManager.ShowDialog(dialog, DialogWindowType.Modal);
+                if (result.ButtonId != ButtonDefinitionId.Accept || string.IsNullOrWhiteSpace(result.InputText))
+                    return;
+                
+                var cloneId = await NexusCollectionLoadoutGroup.MakeEditableLocalCollection(group.Db.Connection, group.Id, result.InputText);
+                
+                var pageData = new PageData
+                {
+                    FactoryId = LoadoutPageFactory.StaticId,
+                    Context = new LoadoutPageContext()
+                    {
+                        LoadoutId = group.AsLoadoutItemGroup().AsLoadoutItem().LoadoutId, 
+                        GroupScope = CollectionGroupId.From(cloneId),
+                    },
+                };
+
+                var workspaceController = GetWorkspaceController();
+                var behavior = workspaceController.GetOpenPageBehavior(pageData, NavigationInformation.From(OpenPageBehaviorType.ReplaceTab));
+                workspaceController.OpenPage(WorkspaceId, pageData, behavior);
+            }
+        );
+
 
         this.WhenActivated(disposables =>
         {
@@ -190,28 +245,34 @@ public class CollectionLoadoutViewModel : APageViewModel<ICollectionLoadoutViewM
                     .AddTo(disposables);
             }
 
-            Adapter.MessageSubject.SubscribeAwait(async (message, _) =>
+            Adapter.MessageSubject.SubscribeAwait(async (message, cancellationToken) =>
             {
-                // Toggle item state
-                if (message.IsT0){
-                    await LoadoutViewModel.ToggleItemEnabledState(message.AsT0.Ids, connection);
-                    return;
-                }
-
-                // Open collection
-                if (message.IsT1)
-                {
-                    var data = message.AsT1;
-                    LoadoutViewModel.OpenItemCollectionPage(
-                        data.Ids,
-                        data.NavigationInformation,
-                        pageContext.LoadoutId,
-                        GetWorkspaceController(),
-                        connection
-                    );
-                    return;
-                }
-                
+                await message.Match<Task>(
+                    toggleEnableStateMessage => 
+                        LoadoutViewModel.HandleToggleItemEnabledState(toggleEnableStateMessage.Ids, connection),
+                    openCollectionMessage =>
+                    {
+                        LoadoutViewModel.HandleOpenItemCollectionPage(openCollectionMessage.Ids, 
+                            openCollectionMessage.NavigationInformation, 
+                            pageContext.LoadoutId, GetWorkspaceController(), connection);
+                        return Task.CompletedTask;
+                    },
+                    viewModPageMessage =>
+                    {
+                        LoadoutViewModel.HandleOpenModPageFor(viewModPageMessage.Ids, connection,  
+                            serviceProvider.GetRequiredService<IOSInterop>(),
+                            cancellationToken);
+                        return Task.CompletedTask;
+                    },
+                    viewModFilesMessage =>
+                    {
+                        LoadoutViewModel.HandleViewModFiles(viewModFilesMessage.Ids, 
+                            viewModFilesMessage.NavigationInformation, 
+                            connection, GetWorkspaceController());
+                        return Task.CompletedTask;
+                    },
+                    uninstallItemMessage => LoadoutViewModel.HandleUninstallItem(uninstallItemMessage.Ids, windowManager, connection)
+                );
             }, awaitOperation: AwaitOperation.Parallel, configureAwait: false).AddTo(disposables);
         });
     }
@@ -241,5 +302,7 @@ public class CollectionLoadoutViewModel : APageViewModel<ICollectionLoadoutViewM
     
     public ReactiveCommand<Unit> CommandToggle { get; }
     public ReactiveCommand<Unit> CommandDeleteCollection { get; }
+    
+    public ReactiveCommand<Unit> CommandMakeLocalEditableCopy { get; }
     public ReactiveUI.ReactiveCommand<NavigationInformation, System.Reactive.Unit> CommandViewCollectionDownloadPage { get; }
 }

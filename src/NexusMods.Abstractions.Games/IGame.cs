@@ -38,17 +38,16 @@ public interface IGame : ILocatableGame
     /// by the game.
     /// </summary>
     public IDiagnosticEmitter[] DiagnosticEmitters { get; }
-    
-    /// <summary>
-    /// An array of all instances of <see cref="ISortableItemProviderFactory"/> supported
-    /// by the game.
-    /// </summary>
-    public ISortableItemProviderFactory[] SortableItemProviderFactories { get; }
 
     /// <summary>
     /// The synchronizer for this game.
     /// </summary>
     public ILoadoutSynchronizer Synchronizer { get; }
+    
+    /// <summary>
+    /// The sort order manager for this game.
+    /// </summary>
+    public ISortOrderManager SortOrderManager { get; }
     
     /// <summary>
     /// Constructs a <see cref="GameInstallation"/> from the given <see cref="GameLocatorResult"/>, and a unique DB ID,

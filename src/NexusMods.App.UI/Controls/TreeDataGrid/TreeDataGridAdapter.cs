@@ -2,8 +2,6 @@ using Avalonia.Controls;
 using Avalonia.Controls.Models.TreeDataGrid;
 using Avalonia.Controls.Selection;
 using DynamicData;
-using NexusMods.Abstractions.UI;
-using NexusMods.Abstractions.UI.Extensions;
 using NexusMods.App.UI.Extensions;
 using ObservableCollections;
 using R3;
@@ -11,6 +9,7 @@ using System.Reactive.Linq;
 using Avalonia.Input;
 using System.Diagnostics;
 using NexusMods.App.UI.Controls.Filters;
+using NexusMods.UI.Sdk;
 using static NexusMods.App.UI.Controls.Filters.Filter;
 
 namespace NexusMods.App.UI.Controls;
@@ -95,19 +94,26 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object, ISea
 
                     self.Roots.Clear();
 
-                    // NOTE(erri120): we have to do this manually, the TreeDataGrid doesn't deselect when changing source
-                    self.SelectedModels.Clear();
-
-                    var (source, selection, selectionObservable) = self.CreateSource(self.RootsCollectionChangedView, createHierarchicalSource: viewHierarchical);
+                    var (source, selection, selectionObservable, selectionResetObservable) = self.CreateSource(self.RootsCollectionChangedView, createHierarchicalSource: viewHierarchical);
                     self._selectionModel = selection;
 
-                    self._selectionModelsSerialDisposable.Disposable = selectionObservable.Subscribe(self, static (eventArgs, self) =>
+                    var selectionResetDisposable = selectionResetObservable.Subscribe(self, static (_, self) =>
+                    {
+                        foreach (var item in self.SelectedModels)
+                        {
+                            if (item.IsDisposed) continue;
+                            item.IsSelected.Value = false;
+                        }
+
+                        self.SelectedModels.Clear();
+                    });
+
+                    var selectionDisposable = selectionObservable.Subscribe(self, static (eventArgs, self) =>
                     {
                         self.SelectedModels.RemoveRange(eventArgs.DeselectedItems.NotNull());
                         foreach (var item in eventArgs.DeselectedItems)
                         {
                             if (item is null) continue;
-                            Debug.Assert(!item.IsDisposed);
                             if (item.IsDisposed) continue;
                             
                             item.IsSelected.Value = false;
@@ -123,6 +129,8 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object, ISea
                             item.IsSelected.Value = true;
                         }
                     });
+
+                    self._selectionModelsSerialDisposable.Disposable = Disposable.Combine(selectionResetDisposable, selectionDisposable);
 
                     self.Source.Value = source;
                 })
@@ -278,7 +286,7 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object, ISea
         RowDropSubject.OnNext((sourceModels.ToArray(), targetModel, e));
     }
 
-    private static (TreeDataGridRowSelectionModel<TModel>, Observable<TreeSelectionModelSelectionChangedEventArgs<TModel>>) CreateSelection(ITreeDataGridSource<TModel> source)
+    private static (TreeDataGridRowSelectionModel<TModel> selection, Observable<TreeSelectionModelSelectionChangedEventArgs<TModel>> selectionObservable, Observable<TreeSelectionModelSourceResetEventArgs> resetObservable) CreateSelection(ITreeDataGridSource<TModel> source)
     {
         var selection = new TreeDataGridRowSelectionModel<TModel>(source)
         {
@@ -290,28 +298,33 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object, ISea
             removeHandler: handler => selection.SelectionChanged -= handler
         ).Select(tuple => tuple.e);
 
-        return (selection, selectionObservable);
+        var resetObservable = R3.Observable.FromEventHandler<TreeSelectionModelSourceResetEventArgs>(
+            addHandler: handler => selection.SourceReset += handler,
+            removeHandler: handler => selection.SourceReset -= handler
+        ).Select(tuple => tuple.e);
+
+        return (selection, selectionObservable, resetObservable);
     }
 
-    private (ITreeDataGridSource<TModel> source, TreeDataGridRowSelectionModel<TModel> selection, Observable<TreeSelectionModelSelectionChangedEventArgs<TModel>> selectionObservable) CreateSource(IEnumerable<TModel> models, bool createHierarchicalSource)
+    private (ITreeDataGridSource<TModel> source,TreeDataGridRowSelectionModel<TModel> selection, Observable<TreeSelectionModelSelectionChangedEventArgs<TModel>> selectionObservable, Observable<TreeSelectionModelSourceResetEventArgs> resetObservable) CreateSource(IEnumerable<TModel> models, bool createHierarchicalSource)
     {
         if (createHierarchicalSource)
         {
             var source = new HierarchicalTreeDataGridSource<TModel>(models);
-            var (selection, selectionObservable) = CreateSelection(source);
+            var (selection, selectionObservable, resetObservable) = CreateSelection(source);
             source.Selection = selection;
 
             source.Columns.AddRange(CreateColumns(viewHierarchical: createHierarchicalSource));
-            return (source, selection, selectionObservable);
+            return (source, selection, selectionObservable, resetObservable);
         }
         else
         {
             var source = new FlatTreeDataGridSource<TModel>(models);
-            var (selection, selectionObservable) = CreateSelection(source);
+            var (selection, selectionObservable, resetObservable) = CreateSelection(source);
             source.Selection = selection;
 
             source.Columns.AddRange(CreateColumns(viewHierarchical: createHierarchicalSource));
-            return (source, selection, selectionObservable);
+            return (source, selection, selectionObservable, resetObservable);
         }
     }
 

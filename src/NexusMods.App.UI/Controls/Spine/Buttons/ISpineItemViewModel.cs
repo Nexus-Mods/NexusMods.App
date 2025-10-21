@@ -1,6 +1,6 @@
 ﻿using System.Reactive;
-using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.UI.Sdk;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.Controls.Spine.Buttons;

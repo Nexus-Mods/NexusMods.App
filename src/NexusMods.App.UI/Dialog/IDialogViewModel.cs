@@ -1,7 +1,6 @@
-using System.Reactive;
-using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Dialog.Enums;
-using ReactiveUI;
+using NexusMods.UI.Sdk;
+using NexusMods.UI.Sdk.Dialog;
 
 namespace NexusMods.App.UI.Dialog;
 

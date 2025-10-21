@@ -87,6 +87,7 @@ public partial class SearchControl : UserControl
 
         // Setup search text binding
         this.WhenAnyValue(x => x.SearchTextBox.Text)
+            .Throttle(dueTime: TimeSpan.FromMilliseconds(100))
             .OnUI()
             .Subscribe(ApplySearchFilter);
 

@@ -96,11 +96,9 @@
     <ItemGroup>
         <ProjectReference Include="..\NexusMods.Abstractions.Logging\NexusMods.Abstractions.Logging.csproj" />
         <ProjectReference Include="..\NexusMods.Abstractions.NexusModsLibrary\NexusMods.Abstractions.NexusModsLibrary.csproj" />
-        <ProjectReference Include="..\NexusMods.Abstractions.Settings\NexusMods.Abstractions.Settings.csproj" />
         <ProjectReference Include="..\NexusMods.Abstractions.Games.Diagnostics\NexusMods.Abstractions.Games.Diagnostics.csproj" />
         <ProjectReference Include="..\NexusMods.Abstractions.GuidedInstallers\NexusMods.Abstractions.GuidedInstallers.csproj" />
         <ProjectReference Include="..\NexusMods.Abstractions.Telemetry\NexusMods.Abstractions.Telemetry.csproj" />
-        <ProjectReference Include="..\NexusMods.Abstractions.UI\NexusMods.Abstractions.UI.csproj" />
         <ProjectReference Include="..\NexusMods.Networking.NexusWebApi\NexusMods.Networking.NexusWebApi.csproj" />
         <ProjectReference Include="..\NexusMods.App.Cli\NexusMods.App.Cli.csproj" />
         <ProjectReference Include="..\NexusMods.Collections\NexusMods.Collections.csproj" />
@@ -475,12 +473,6 @@
         <Compile Update="Controls\MarkdownRenderer\MarkdownRendererViewModel.cs">
           <DependentUpon>IMarkdownRendererViewModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="Pages\Settings\SettingsPageDesignViewModel.cs">
-          <DependentUpon>ISettingsPageViewModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="Controls\Settings\SettingEntries\SettingEntryDesignViewModel.cs">
-          <DependentUpon>ISettingEntryViewModel.cs</DependentUpon>
-        </Compile>
         <Compile Update="Pages\Settings\SettingsPageViewModel.cs">
           <DependentUpon>ISettingsPageViewModel.cs</DependentUpon>
         </Compile>
@@ -732,9 +724,6 @@
         <Compile Update="Controls\Settings\SettingEntries\SettingInteractionControls\PathsList\SettingPathsViewModel.cs">
           <DependentUpon>ISettingPathsViewModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="Controls\Settings\SettingEntries\SettingInteractionControls\PathsList\SettingPathsDesignViewModel.cs">
-          <DependentUpon>ISettingPathsViewModel.cs</DependentUpon>
-        </Compile>
         <Compile Update="Dialog\DialogStandardContentView.axaml.cs">
           <DependentUpon>DialogStandardContentView.axaml</DependentUpon>
           <SubType>Code</SubType>
@@ -768,6 +757,30 @@
         </Compile>
         <Compile Update="Controls\MiniGameWidget\ComingSoon\ComingSoonMiniGameWidgetDesignViewModel.cs">
           <DependentUpon>IComingSoonMiniGameWidgetViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\CollectionDownload\Dialogs\CollectionPublished\DialogPremiumCollectionDownloadsView.axaml.cs">
+          <DependentUpon>DialogPremiumCollectionDownloads.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Pages\CollectionDownload\Dialogs\CollectionPublished\DialogCollectionPublishedView.axaml.cs">
+          <DependentUpon>DialogCollectionPublishedView.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Pages\CollectionDownload\Dialogs\PremiumDownloads\DialogPremiumCollectionDownloadsView.axaml.cs">
+           <DependentUpon>DialogCollectionPublishedView.axaml</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\Downloads\DownloadsPageViewModel.cs">
+           <DependentUpon>IDownloadsPageViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\Downloads\DownloadsPageDesignViewModel.cs">
+           <DependentUpon>IDownloadsPageViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\Downloads\DownloadsPageView.axaml.cs">
+           <DependentUpon>DownloadsPageView.axaml</DependentUpon>
+           <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Pages\Sorting\FileConflicts\FileConflictsViewModel.cs">
+          <DependentUpon>IFileConflictsViewModel.cs</DependentUpon>
         </Compile>
     </ItemGroup>
 

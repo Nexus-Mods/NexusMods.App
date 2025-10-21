@@ -1,4 +1,6 @@
 using System.IO.Compression;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 using DynamicData.Kernel;
 using FluentAssertions;
@@ -19,6 +21,7 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Extensions;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
+using NexusMods.Backend;
 using NexusMods.DataModel;
 using NexusMods.Games.FOMOD;
 using NexusMods.Hashing.xxHash3;
@@ -29,6 +32,7 @@ using NexusMods.MnemonicDB.Abstractions.Models;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Paths;
 using NexusMods.Sdk;
+using NexusMods.Sdk.FileExtractor;
 using NexusMods.Sdk.FileStore;
 using NexusMods.Sdk.IO;
 using NexusMods.StandardGameLocators.TestHelpers;
@@ -52,13 +56,14 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
     protected readonly IFileExtractor FileExtractor;
     protected readonly IGameRegistry GameRegistry;
     protected readonly NexusModsLibrary NexusModsLibrary;
-
+    protected readonly ILoadoutManager LoadoutManager;
 
     protected readonly IConnection Connection;
 
     protected readonly NexusApiClient NexusNexusApiClient;
     protected ILoadoutSynchronizer Synchronizer => GameInstallation.GetGame().Synchronizer;
     protected ISynchronizerService SynchronizerService;
+    protected ISortOrderManager InitAndGetSortOrderManager() => GameInstallation.GetGame().SortOrderManager;
     
     private bool _gameFilesWritten = false;
     private readonly IHost _host;
@@ -88,13 +93,12 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
 
         GameRegistry = ServiceProvider.GetRequiredService<IGameRegistry>();
         
-
-
         FileSystem = ServiceProvider.GetRequiredService<IFileSystem>();
         FileStore = ServiceProvider.GetRequiredService<IFileStore>();
         FileExtractor = ServiceProvider.GetRequiredService<IFileExtractor>();
         TemporaryFileManager = ServiceProvider.GetRequiredService<TemporaryFileManager>();
         Connection = ServiceProvider.GetRequiredService<IConnection>();
+        LoadoutManager = ServiceProvider.GetRequiredService<ILoadoutManager>();
 
         DiagnosticManager = ServiceProvider.GetRequiredService<IDiagnosticManager>();
 
@@ -126,7 +130,7 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
         Optional<LoadoutItemGroupId> parent = default, ILibraryItemInstaller? installer = null)
     {
         var libraryFile = await DownloadModFromNexusMods(modId, fileId);
-        var result = await LibraryService.InstallItem(libraryFile.AsLibraryItem(), loadoutId, parent: parent, installer: installer);
+        var result = await LoadoutManager.InstallItem(libraryFile.AsLibraryItem(), loadoutId, parent: parent, installer: installer);
         return result.LoadoutItemGroup!.Value; // You can't attach external transaction in this context, so this is always valid.
     }
 
@@ -153,6 +157,7 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
             .AddFomod()
             .AddLogging(builder => builder.AddXUnit())
             .AddGames()
+            .AddGameServices()
             .AddLoadoutAbstractions()
             .AddSingleton<ITestOutputHelperAccessor>(_ => new Accessor { Output = _helper })
             .Validate();
@@ -169,19 +174,39 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
     /// <summary>
     /// Adds an empty mod to the loadout in the given transaction.
     /// </summary>
-    protected LoadoutItemGroupId AddEmptyGroup(ITransaction tx, LoadoutId loadoutId, string name)
+    protected LoadoutItemGroupId AddEmptyGroup(
+        ITransaction tx, 
+        LoadoutId loadoutId, 
+        string name, 
+        LoadoutItemGroupId? parentGroup = null)
     {
-        var mod = new LoadoutItemGroup.New(tx, out var id)
+        if (parentGroup is not null)
         {
-            IsGroup = true,
-            LoadoutItem = new LoadoutItem.New(tx, id)
+            var mod = new LoadoutItemGroup.New(tx, out var id)
             {
-                LoadoutId = loadoutId,
-                Name = name,
-                
-            },
-        };
-        return mod.Id;
+                IsGroup = true,
+                LoadoutItem = new LoadoutItem.New(tx, id)
+                {
+                    LoadoutId = loadoutId,
+                    Name = name,
+                    ParentId = parentGroup.Value,
+                },
+            };
+            return mod.Id;
+        }
+        {
+            var mod = new LoadoutItemGroup.New(tx, out var id)
+            {
+                IsGroup = true,
+                LoadoutItem = new LoadoutItem.New(tx, id)
+                {
+                    LoadoutId = loadoutId,
+                    Name = name,
+                    
+                },
+            };
+            return mod.Id;
+        }
     }
     
     /// <summary>
@@ -261,11 +286,17 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
     ///     Specifying this parameter will add DB entries to simulate this being the original archive which
     ///     the files have come from.
     /// </param>
-    public async Task<(AbsolutePath archivePath, List<Hash> hashes)> AddModAsync(ITransaction tx, IEnumerable<RelativePath> paths, LoadoutId loadoutId, string modName, LibraryArchive.ReadOnly? libraryArchive = null)
+    public async Task<(AbsolutePath archivePath, List<Hash> hashes)> AddModAsync(
+        ITransaction tx,
+        IEnumerable<RelativePath> paths, 
+        LoadoutId loadoutId,
+        string modName, 
+        LibraryArchive.ReadOnly? libraryArchive = null, 
+        LoadoutItemGroupId? parentGroup = null)
     {
         var records = new List<ArchivedFileEntry>();
         var hashes = new List<Hash>();
-        var modGroup = AddEmptyGroup(tx, loadoutId, modName);
+        var modGroup = AddEmptyGroup(tx, loadoutId, modName, parentGroup);
         foreach (var path in paths)
         {
             var data = Encoding.UTF8.GetBytes(path);
@@ -341,16 +372,14 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
             await GenerateGameFiles();
             _gameFilesWritten = true;
         }
-        return await GameInstallation
-            .GetGame()
-            .Synchronizer
-            .CreateLoadout(GameInstallation, Guid.NewGuid().ToString());
+
+        return await LoadoutManager.CreateLoadout(GameInstallation, Guid.NewGuid().ToString());
     }
 
     /// <summary>
     /// Deletes a loadout with a given ID.
     /// </summary>
-    protected Task DeleteLoadoutAsync(LoadoutId loadoutId, GarbageCollectorRunMode gcRunMode = GarbageCollectorRunMode.DoNotRun) => GameInstallation.GetGame().Synchronizer.DeleteLoadout(loadoutId, gcRunMode);
+    protected ValueTask DeleteLoadoutAsync(LoadoutId loadoutId, GarbageCollectorRunMode gcRunMode = GarbageCollectorRunMode.DoNotRun) => LoadoutManager.DeleteLoadout(loadoutId, gcRunMode);
 
     /// <summary>
     /// Reloads the entity from the database.
@@ -461,7 +490,7 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
         if (FileStore is not NxFileStore store)
             throw new NotSupportedException("GetArchivePath is not currently supported in stubbed file stores.");
 
-        store.TryGetLocation(Connection.Db, hash, null, out var archivePath, out _).Should().BeTrue("Archive should exist");
+        store.TryGetLocation(hash, out var archivePath, out _).Should().BeTrue("Archive should exist");
         return archivePath;
     }
     
@@ -477,10 +506,12 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
         if (!string.IsNullOrEmpty(comments))
             sb.AppendLine(comments);
         
-        Section("### Initial State", metadata.InitialDiskStateTransaction);
+        if (metadata.Contains(GameInstallMetadata.InitialDiskStateTransaction))
+            Section("### Initial State", metadata.InitialDiskStateTransaction);
         if (metadata.Contains(GameInstallMetadata.LastSyncedLoadoutTransaction)) 
             Section("### Last Synced State", metadata.LastSyncedLoadoutTransaction);
-        Section("### Current State", metadata.LastScannedDiskStateTransaction);
+        if (metadata.Contains(GameInstallMetadata.LastScannedDiskStateTransaction))
+            Section("### Current State", metadata.LastScannedDiskStateTransaction);
         if (loadouts is not null)
         {
             foreach (var loadout in loadouts)
@@ -517,17 +548,17 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
         
         void Section(string sectionName, Transaction.ReadOnly asOf)
         {
-            var entries = metadata.DiskStateAsOf(asOf);
+            var entries = Synchronizer.GetDiskStateForGameAsOf(metadata, TxId.From(asOf.Id.Value));;
             sb.AppendLine($"{sectionName} - ({entries.Count})");
             sb.AppendLine("| Path | Hash | Size |");
             sb.AppendLine("| --- | --- | --- |");
-            foreach (var entry in entries.OrderBy(e=> e.Path)) 
-                sb.AppendLine($"| {FmtPath(entry.Path)} | {entry.Hash} | {entry.Size} |");
+            foreach (var pair in entries.OrderBy(e=> e.Path)) 
+                sb.AppendLine($"| {FmtPath(pair.Path)} | {pair.Part.Hash} | {pair.Part.Size} |");
         }
         
-        static string FmtPath((EntityId entityId, LocationId locationId, RelativePath relativePath) targetPath)
+        static string FmtPath(GamePath targetPath)
         {
-            return $"{{{targetPath.locationId}, {targetPath.relativePath}}}";
+            return $"{{{targetPath.LocationId}, {targetPath.Path}}}";
         }
     }
 
@@ -559,4 +590,44 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
 
         return Task.CompletedTask;
     }
+    
+    /// <summary>
+    /// Formats the tuples into a markdown table and runs verify on the resulting data
+    /// </summary>
+    protected SettingsTask VerifyTable<T>(IEnumerable<T> table, string? name = null)
+        where T : ITuple
+    {
+        List<List<string>> rows = new();
+        Dictionary<int, int> cellWidths = new();
+
+        foreach (var row in table)
+        {
+            var rowCells = new List<string>();
+            rows.Add(rowCells);
+            for (var cellIdx = 0; cellIdx < row.Length; cellIdx++)
+            {
+                var cellData = row[cellIdx]?.ToString() ?? string.Empty;
+                ref var existingWidth = ref CollectionsMarshal.GetValueRefOrAddDefault(cellWidths, cellIdx, out var exists);
+                existingWidth = Math.Max(existingWidth, cellData.Length);
+                rowCells.Add(cellData);
+            }
+        }
+
+        var sb = new StringBuilder();
+        foreach (var row in rows)
+        {
+            sb.Append("| ");
+            for (var i = 0; i < row.Count; i++)
+            {
+                sb.Append(row[i].PadRight(cellWidths[i]));
+                sb.Append(" | ");
+            }
+            sb.AppendLine();
+        }
+        var task = Verify(sb.ToString(), extension: "md");
+        if (name is not null)
+            task.UseParameters("NAME", name);
+        return task;
+    }
+
 }

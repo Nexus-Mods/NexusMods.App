@@ -65,7 +65,7 @@ public class TreeFolderGenerator<TTreeItemWithPath, TFolderModelInitializer> : I
         var path = item.GetPath();
         if (!LocationIdToTree.TryGetValue(path.LocationId, out var tree))
         {
-            tree = new TreeFolderGeneratorForLocationId<TTreeItemWithPath, TFolderModelInitializer>(new GamePath(path.LocationId, path.LocationId.ToString()));
+            tree = new TreeFolderGeneratorForLocationId<TTreeItemWithPath, TFolderModelInitializer>(new GamePath(path.LocationId, string.Empty), path.LocationId.ToString());
             LocationIdToTree.Add(path.LocationId, tree);
             RootCache.AddOrUpdate(tree.ModelForRoot());
         }

@@ -3,6 +3,7 @@
     <Import Project="$([MSBuild]::GetPathOfFileAbove('NuGet.Build.props', '$(MSBuildThisFileDirectory)../'))" />
     <ItemGroup>
         <PackageReference Include="BitFaster.Caching" />
+        <PackageReference Include="CliWrap" />
         <PackageReference Include="DynamicData" />
         <PackageReference Include="MemoryPack" />
         <PackageReference Include="Microsoft.Extensions.Options" />
@@ -87,5 +88,33 @@
         <Compile Update="IO\IChunkedStreamSource.cs">
           <DependentUpon>ChunkedStream.cs</DependentUpon>
         </Compile>
+        <Compile Update="Settings\BooleanContainerOptions.cs">
+          <DependentUpon>IContainerOptions.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Settings\SingleValueMultipleChoiceContainerOptions.cs">
+          <DependentUpon>IContainerOptions.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Settings\ConfigurablePathsContainerOption.cs">
+          <DependentUpon>IContainerOptions.cs</DependentUpon>
+        </Compile>
+        <Compile Update="RuntimeDependency\ExecutableRuntimeDependency.cs">
+          <DependentUpon>IRuntimeDependency.cs</DependentUpon>
+        </Compile>
+        <Compile Update="RuntimeDependency\AggregateExecutableRuntimeDependency.cs">
+          <DependentUpon>IRuntimeDependency.cs</DependentUpon>
+        </Compile>
+        <Compile Update="FileExtractor\Signatures.cs">
+          <AutoGen>True</AutoGen>
+          <DesignTime>True</DesignTime>
+          <DependentUpon>Signatures.tt</DependentUpon>
+        </Compile>
     </ItemGroup>
+
+    <ItemGroup>
+      <None Update="FileExtractor\Signatures.tt">
+        <Generator>TextTemplatingFileGenerator</Generator>
+        <LastGenOutput>Signatures.cs</LastGenOutput>
+      </None>
+    </ItemGroup>
+
 </Project>

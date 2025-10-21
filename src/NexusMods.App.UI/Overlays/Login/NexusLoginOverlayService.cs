@@ -2,8 +2,8 @@ using System.Reactive.Disposables;
 using DynamicData;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Hosting;
-using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.NexusWebApi;
+using NexusMods.Sdk.Jobs;
 
 namespace NexusMods.App.UI.Overlays.Login;
 

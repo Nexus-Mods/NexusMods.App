@@ -5,6 +5,7 @@ using NexusMods.App.UI.Pages.CollectionDownload;
 using NexusMods.App.UI.Pages.DebugControls;
 using NexusMods.App.UI.Pages.Diagnostics;
 using NexusMods.App.UI.Pages.Diff.ApplyDiff;
+using NexusMods.App.UI.Pages.Downloads;
 using NexusMods.App.UI.Pages.LibraryPage;
 using NexusMods.App.UI.Pages.LoadoutGroupFilesPage;
 using NexusMods.App.UI.Pages.LoadoutPage;
@@ -39,6 +40,7 @@ internal class TypeFinder : ITypeFinder
         typeof(LoadoutPageContext),
         typeof(CollectionLoadoutPageContext),
         typeof(ProtocolRegistrationTestPageContext),
+        typeof(DownloadsPageContext),
 
         // workspace context
         typeof(EmptyContext),
