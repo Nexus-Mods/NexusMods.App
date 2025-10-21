@@ -2,7 +2,7 @@ using NexusMods.Abstractions.NexusWebApi.DTOs;
 using NexusMods.Abstractions.NexusWebApi.DTOs.OAuth;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using FileId = NexusMods.Abstractions.NexusWebApi.Types.V2.FileId;
-using ModId = NexusMods.Abstractions.NexusWebApi.Types.V2.ModId;
+using ModId = NexusMods.Sdk.NexusModsApi.ModId;
 
 namespace NexusMods.Abstractions.NexusWebApi;
 

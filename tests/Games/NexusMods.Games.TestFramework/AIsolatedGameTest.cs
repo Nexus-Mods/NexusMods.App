@@ -35,6 +35,7 @@ using NexusMods.Sdk;
 using NexusMods.Sdk.FileExtractor;
 using NexusMods.Sdk.FileStore;
 using NexusMods.Sdk.IO;
+using NexusMods.Sdk.NexusModsApi;
 using NexusMods.StandardGameLocators.TestHelpers;
 using Xunit.Abstractions;
 using Xunit.DependencyInjection;

@@ -14,6 +14,7 @@ using NexusMods.Games.Larian.BaldursGate3.Utils.LsxXmlParsing;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.Games.Larian.BaldursGate3.Utils.PakParsing;
 using NexusMods.Paths;
+using NexusMods.Sdk.NexusModsApi;
 using Polly;
 using NexusMods.Sdk.Resources;
 

@@ -4,6 +4,7 @@ using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Paths;
+using NexusMods.Sdk.NexusModsApi;
 
 namespace NexusMods.Games.RedEngine.Cyberpunk2077.Emitters;
 

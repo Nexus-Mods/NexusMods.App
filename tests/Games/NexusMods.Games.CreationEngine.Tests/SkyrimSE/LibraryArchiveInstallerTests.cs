@@ -11,6 +11,7 @@ using NexusMods.Games.TestFramework;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.HyperDuck;
 using NexusMods.Paths;
+using NexusMods.Sdk.NexusModsApi;
 using NexusMods.StandardGameLocators.TestHelpers;
 using Xunit.Abstractions;
 

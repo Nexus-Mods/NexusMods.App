@@ -14,7 +14,7 @@ using NexusMods.Paths;
 using NexusMods.Sdk.ProxyConsole;
 using NexusMods.StandardGameLocators;
 using StrawberryShake;
-using ModId = NexusMods.Abstractions.NexusWebApi.Types.V2.ModId;
+using ModId = NexusMods.Sdk.NexusModsApi.ModId;
 
 namespace NexusMods.Games.TestHarness.Verbs;
 

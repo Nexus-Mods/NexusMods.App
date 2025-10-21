@@ -9,7 +9,7 @@ using NexusMods.Networking.NexusWebApi;
 using Xunit;
 using Xunit.Abstractions;
 using FileId = NexusMods.Abstractions.NexusWebApi.Types.V2.FileId;
-using ModId = NexusMods.Abstractions.NexusWebApi.Types.V2.ModId;
+using ModId = NexusMods.Sdk.NexusModsApi.ModId;
 
 namespace NexusMods.Networking.ModUpdates.Tests;
 

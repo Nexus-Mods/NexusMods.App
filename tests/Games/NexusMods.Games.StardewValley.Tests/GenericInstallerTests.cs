@@ -10,6 +10,7 @@ using NexusMods.Games.StardewValley.Installers;
 using NexusMods.Games.StardewValley.Models;
 using NexusMods.Games.TestFramework;
 using NexusMods.Sdk;
+using NexusMods.Sdk.NexusModsApi;
 using NexusMods.StandardGameLocators.TestHelpers;
 using Xunit;
 using Xunit.Abstractions;

@@ -3,6 +3,7 @@ using FluentAssertions;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Abstractions.Telemetry;
+using NexusMods.Sdk.NexusModsApi;
 using Xunit;
 
 namespace NexusMods.Telemetry.Tests;

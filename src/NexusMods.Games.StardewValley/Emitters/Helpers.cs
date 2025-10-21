@@ -11,6 +11,7 @@ using NexusMods.Abstractions.Telemetry;
 using NexusMods.Games.StardewValley.Models;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Sdk;
+using NexusMods.Sdk.NexusModsApi;
 using StardewModdingAPI;
 using StardewModdingAPI.Toolkit;
 using StardewModdingAPI.Toolkit.Serialization.Models;

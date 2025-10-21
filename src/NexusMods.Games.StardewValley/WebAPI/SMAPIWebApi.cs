@@ -5,6 +5,7 @@ using NexusMods.Abstractions.Diagnostics.Values;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Abstractions.Telemetry;
 using NexusMods.Paths;
+using NexusMods.Sdk.NexusModsApi;
 using StardewModdingAPI;
 using StardewModdingAPI.Toolkit.Framework.Clients.WebApi;
 using StardewModdingAPI.Toolkit.Utilities;
