@@ -1,0 +1,1144 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral,
+            PublicKeyToken=b77a5c561934e089
+        </value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral,
+            PublicKeyToken=b77a5c561934e089
+        </value>
+    </resheader>
+    <data name="Newsfeed" xml:space="preserve">
+        <value>新聞動態</value>
+    </data>
+    <data name="MyGames" xml:space="preserve">
+        <value>我的遊戲</value>
+    </data>
+    <data name="BrowseGames" xml:space="preserve">
+        <value>瀏覽遊戲</value>
+    </data>
+
+    <data name="MetricsOptIn_OverlayTitle" xml:space="preserve">
+        <value>診斷與使用資料</value>
+    </data>
+    <data name="MetricsOptIn_MainMessage" xml:space="preserve">
+        <value>我們希望收集診斷和使用資料，以提升效能並改善你的使用體驗。這些資料能幫助我們識別問題、優化功能，並確保 Nexus Mods app對所有人更友好。&#x0a;&#x0a;你的資料將依照我們的隱私政策進行處理。你可以隨時在設定中更改此偏好。&#x0a;&#x0a;你願意啟用資料收集功能嗎？</value>
+    </data>
+    <data name="MetricsOptIn_ALLOW" xml:space="preserve">
+        <value>允許</value>
+    </data>
+    <data name="MetricsOptIn_DENY" xml:space="preserve">
+        <value>拒絕</value>
+    </data>
+
+    <data name="Updater_UPDATE" xml:space="preserve">
+        <value>查看更新</value>
+    </data>
+    <data name="Updater_UpdateAvailable" xml:space="preserve">
+        <value>有可用更新 {0}</value>
+    </data>
+
+    <data name="Updater_GenericMessage" xml:space="preserve">
+        <value>你的當前版本 {0} 可以被更新至最新版本 {1}。 更新前請務必完全關閉此程式。</value>
+    </data>
+
+    <data name="Updater_UsePackageManager" xml:space="preserve">
+        <value>你可以使用當初安裝應用程式所使用的套件管理器來進行更新。</value>
+    </data>
+    <data name="Updater_UseInnoSetup" xml:space="preserve">
+        <value>你可以下載安裝程式，並在關閉應用程式後執行它來進行更新。</value>
+    </data>
+    <data name="Updater_UseFlatpak" xml:space="preserve">
+        <value>你可以使用 Flatpak 來更新應用程式。</value>
+    </data>
+
+
+    <data name="LoadoutGridView_AddMod_FilePicker_Title" xml:space="preserve">
+        <value>請選擇一個模組檔案來安裝。</value>
+    </data>
+    <data name="LoadoutGridView_AddMod_FileType_Archive" xml:space="preserve">
+        <value>檔案</value>
+    </data>
+    <data name="DownloadTaskViewModel_Version_Unknown" xml:space="preserve">
+        <value>未知</value>
+    </data>
+    <data name="DownloadTaskViewModel_Field_Unknown" xml:space="preserve">
+        <value>未知</value>
+    </data>
+    <data name="MessageBox_Button_Yes" xml:space="preserve">
+        <value>是</value>
+    </data>
+    <data name="MessageBox_Button_No" xml:space="preserve">
+        <value>否</value>
+    </data>
+    <data name="MessageBox_Button_Ok" xml:space="preserve">
+        <value>OK</value>
+    </data>
+    <data name="CancelDownloadOverlayView_Description_download_will_be_cancelled" xml:space="preserve">
+        <value>{0} 將被取消，檔案將被刪除。</value>
+    </data>
+    <data name="CancelDownloadOverlayView_Title" xml:space="preserve">
+        <value>取消並刪除下載？</value>
+    </data>
+    <data name="Helpers_GenerateHeader_NAME" xml:space="preserve">
+        <value>名稱</value>
+    </data>
+    <data name="Helpers_GenerateHeader_VERSION" xml:space="preserve">
+        <value>版本</value>
+    </data>
+    <data name="Helpers_GenerateHeader_CATEGORY" xml:space="preserve">
+        <value>類別</value>
+    </data>
+    <data name="Helpers_GenerateHeader_INSTALLED" xml:space="preserve">
+        <value>已安裝</value>
+    </data>
+    <data name="Helpers_GenerateHeader_MOD_NAME" xml:space="preserve">
+        <value>模組名稱</value>
+    </data>
+    <data name="Helpers_GenerateHeader_GAME" xml:space="preserve">
+        <value>遊戲</value>
+    </data>
+    <data name="Helpers_GenerateHeader_SIZE" xml:space="preserve">
+        <value>大小</value>
+    </data>
+    <data name="Helpers_GenerateHeader_STATUS" xml:space="preserve">
+        <value>狀態</value>
+    </data>
+    <data name="LaunchButtonViewModel_LaunchGame_RUNNING" xml:space="preserve">
+        <value>遊戲執行中...</value>
+    </data>
+    <data name="LaunchButtonViewModel_LaunchGame_LAUNCH" xml:space="preserve">
+        <value>遊玩</value>
+    </data>
+    <data name="LaunchButtonViewModel_LaunchGame_ToolTip" xml:space="preserve">
+        <value>點擊啟動遊戲</value>
+    </data>
+    <data name="StringFormatters__SecondsRemaining_secs" xml:space="preserve">
+        <value>{0} 秒</value>
+    </data>
+    <data name="StringFormatters__MinutesRemaining_mins" xml:space="preserve">
+        <value>{0} 分</value>
+    </data>
+    <data name="StringFormatters__HoursRemaining__hours" xml:space="preserve">
+        <value>{0} 小時</value>
+    </data>
+    <data name="StringFormatters__In_progress__numDownloads" xml:space="preserve">
+        <value> ({0})</value>
+    </data>
+    <data name="DownloadStatus_Idle" xml:space="preserve">
+        <value>閒置</value>
+    </data>
+    <data name="DownloadStatus_Progress" xml:space="preserve">
+        <value>進度</value>
+    </data>
+    <data name="Nexus_Premium_Status__Premium" xml:space="preserve">
+        <value>PREMIUM</value>
+    </data>
+    <data name="Nexus_Premium_Status__Free" xml:space="preserve">
+        <value>FREE</value>
+    </data>
+    <data name="Nexus_Premium_Status__Supporter" xml:space="preserve">
+        <value>SUPPORTER</value>
+    </data>
+    <data name="SearchBox__Search" xml:space="preserve">
+        <value>搜尋</value>
+    </data>
+    <data name="SearchBox__Search_Watermark" xml:space="preserve">
+        <value>搜尋...</value>
+    </data>
+    <data name="TopBarActions__LOG_IN" xml:space="preserve">
+        <value>登入</value>
+    </data>
+    <data name="GameWidget__Add_game" xml:space="preserve">
+        <value>新增遊戲</value>
+    </data>
+    <data name="DownloadsView__DOWNLOADS" xml:space="preserve">
+        <value>下載</value>
+    </data>
+    <data name="DownloadsView__In_Progress" xml:space="preserve">
+        <value>進行中</value>
+    </data>
+    <data name="DownloadsView__Completed" xml:space="preserve">
+        <value>完成</value>
+    </data>
+    <data name="DownloadsView__Download_history" xml:space="preserve">
+        <value>下載歷史</value>
+    </data>
+    <data name="DownloadsView_UnderDevelopment" xml:space="preserve">
+        <value>下載頁面目前正在重新設計，並在未來的更新中替換。不便之處，請諒解。</value>
+    </data>
+    <data name="NexusLoginOverlayView__Please_Click_Authorize" xml:space="preserve">
+        <value>請在網站上點擊 "Authorise"</value>
+    </data>
+    <data name="NexusLoginOverlayView__BROWSER_DIDNT_OPEN" xml:space="preserve">
+        <value>瀏覽器沒有自動開啟嗎？</value>
+    </data>
+    <data name="NexusLoginOverlayView_Please_copy_url" xml:space="preserve">
+        <value>請複製下列網址到你的瀏覽器。我們支援 Chrome, Safari, Firefox 和 Edge。</value>
+    </data>
+    <data name="DownloadCompleted_COMPLETED" xml:space="preserve">
+        <value>完成</value>
+    </data>
+    <data name="DownloadCompleted_Clear_All" xml:space="preserve">
+        <value>清除全部</value>
+    </data>
+    <data name="DownloadHistoryView__HISTORY" xml:space="preserve">
+        <value>歷史</value>
+    </data>
+    <data name="DownloadInProgressView__IN_PROGRESS" xml:space="preserve">
+        <value>進行中</value>
+    </data>
+    <data name="DownloadInProgressView__Cancel" xml:space="preserve">
+        <value>取消</value>
+    </data>
+    <data name="DownloadInProgressView__Pause" xml:space="preserve">
+        <value>暫停</value>
+    </data>
+    <data name="DownloadInProgressView__Pause_All" xml:space="preserve">
+        <value>暫停全部</value>
+    </data>
+    <data name="InProgressTitleTextBlock" xml:space="preserve">
+        <value>下載</value>
+    </data>
+    <data name="BoldMinutesRemainingTextBlock" xml:space="preserve">
+        <value>0 分</value>
+    </data>
+    <data name="MinutesRemainingTextBlock" xml:space="preserve">
+        <value>剩餘時間</value>
+    </data>
+    <data name="InProgressView_InProgressView_Remaining" xml:space="preserve">
+        <value>剩餘時間</value>
+    </data>
+    <data name="HomeView__We_found_games" xml:space="preserve">
+        <value>我們找到可供模組使用的遊戲！</value>
+    </data>
+    <data name="HomeView__CANT_SEE_YOUR_GAME" xml:space="preserve">
+        <value>看不到你的遊戲嗎</value>
+    </data>
+    <data name="HomeView__BROWSE_ALL_GAMES" xml:space="preserve">
+        <value>瀏覽所有遊戲</value>
+    </data>
+    <data name="FileOriginPage_DeleteMod" xml:space="preserve">
+        <value>刪除</value>
+    </data>
+    <data name="FileOriginPage_AddMod" xml:space="preserve">
+        <value>安裝</value>
+    </data>
+    <data name="FileOriginPage_AddModAdvanced" xml:space="preserve">
+        <value>進階安裝</value>
+    </data>
+    <data name="MyGamesView__Ready_to_mod" xml:space="preserve">
+        <value>已新增遊戲</value>
+    </data>
+    <data name="MyGamesView__Detected_games" xml:space="preserve">
+        <value>支援的遊戲</value>
+    </data>
+    <data name="MyGamesView__Page_Description" xml:space="preserve">
+        <value>新增遊戲以開始使用</value>
+    </data>
+    <data name="Button_Manage" xml:space="preserve">
+        <value>管理</value>
+    </data>
+    <data name="ProgressBar_ProgressTextFormat__Total_1_0" xml:space="preserve">
+        <value>總計 {1:0}%</value>
+    </data>
+    <data name="DownloadStatusDesignViewModel_FormatStatus_Queued" xml:space="preserve">
+        <value>排隊中</value>
+    </data>
+    <data name="DownloadStatusDesignViewModel_FormatStatus_Paused" xml:space="preserve">
+        <value>已暫停</value>
+    </data>
+    <data name="DownloadStatusDesignViewModel_FormatStatus_Downloading" xml:space="preserve">
+        <value>下載中</value>
+    </data>
+    <data name="DownloadStatusDesignViewModel_FormatStatus_Installing" xml:space="preserve">
+        <value>安裝中</value>
+    </data>
+    <data name="DownloadStatusDesignViewModel_FormatStatus_Complete" xml:space="preserve">
+        <value>完成</value>
+    </data>
+    <data name="DownloadStatusDesignViewModel_FormatStatus_Analyzing" xml:space="preserve">
+        <value>分析中</value>
+    </data>
+    <data name="DownloadStatusDesignViewModel_Text_Queued_0_" xml:space="preserve">
+        <value>進度 0%</value>
+    </data>
+    <data name="PanelTabHeaderViewModel_Title_New_Tab" xml:space="preserve">
+        <value>新分頁</value>
+    </data>
+    <data name="DownloadInProgressView__Resume" xml:space="preserve">
+        <value>繼續</value>
+    </data>
+    <data name="DownloadInProgressView__Resume_All" xml:space="preserve">
+        <value>全部繼續</value>
+    </data>
+    <data name="CancelDownloadOverlayView_Description__Download" xml:space="preserve">
+        <value>下載</value>
+    </data>
+    <data name="CancelDownloadOverlayView_Description_downloads" xml:space="preserve">
+        <value>下載</value>
+    </data>
+    <data name="InProgress_NoDownloadsTextBlock" xml:space="preserve">
+        <value>無下載任務</value>
+    </data>
+    <data name="SpineDownloadButton_ToolTip" xml:space="preserve">
+        <value>下載</value>
+    </data>
+    <data name="SpineHomeButton_ToolTip_Home" xml:space="preserve">
+        <value>首頁</value>
+    </data>
+    <data name="LoadoutViewPageTitle" xml:space="preserve">
+        <value>全部</value>
+    </data>
+    <data name="Downloads_WorkspaceTitle" xml:space="preserve">
+        <value>下載</value>
+    </data>
+    <data name="HomeWorkspace_Title" xml:space="preserve">
+        <value>首頁</value>
+    </data>
+    <data name="InProgressDownloadsPage_Title" xml:space="preserve">
+        <value>下載</value>
+    </data>
+    <data name="LoadoutGridView__View_Files" xml:space="preserve">
+        <value>查看模組檔案</value>
+    </data>
+    <data name="FileTreeNodeView__View" xml:space="preserve">
+        <value>查看</value>
+    </data>
+    <data name="ViewModInfoPage_Title" xml:space="preserve">
+        <value>模組資訊</value>
+    </data>
+    <data name="ViewModFilesView_Location" xml:space="preserve">
+        <value>位置：</value>
+    </data>
+    <data name="ViewModFilesView_Locations" xml:space="preserve">
+        <value>位置：</value>
+    </data>
+    <data name="ApplyControlViewModel__ACTIVATE_LOADOUT" xml:space="preserve">
+        <value>啟用配置檔</value>
+    </data>
+    <data name="ApplyControlViewModel__ACTIVATE_AND_APPLY" xml:space="preserve">
+        <value>啟用並套用</value>
+    </data>
+    <data name="ApplyControlViewModel__APPLY" xml:space="preserve">
+        <value>套用</value>
+    </data>
+    <data name="ApplyingControlView__ApplyingText" xml:space="preserve">
+        <value>正在套用中...</value>
+    </data>
+    <data name="Helpers_ERROR" xml:space="preserve">
+        <value>錯誤</value>
+    </data>
+    <data name="ErrorView_Title" xml:space="preserve">
+        <value>發生錯誤</value>
+    </data>
+    <data name="ErrorView_MissingMod_Description" xml:space="preserve">
+        <value>你嘗試存取的模組已被刪除或遺失。</value>
+    </data>
+    <data name="ViewModInfoPage_NotFound_Title" xml:space="preserve">
+        <value>找不到模組</value>
+    </data>
+    <data name="ErrorView_MissingMod_Subheader" xml:space="preserve">
+        <value>模組不存在</value>
+    </data>
+    <data name="DiagnosticDetailsView_SeverityTitle_SUGGESTION" xml:space="preserve">
+        <value>建議</value>
+    </data>
+    <data name="DiagnosticDetailsView_SeverityTitle_WARNING" xml:space="preserve">
+        <value>警告</value>
+    </data>
+    <data name="DiagnosticDetailsView_SeverityTitle_CRITICAL_ERROR" xml:space="preserve">
+        <value>嚴重錯誤</value>
+    </data>
+    <data name="DiagnosticDetailsView_SeverityTitle_HIDDEN" xml:space="preserve">
+        <value>隱藏</value>
+    </data>
+    <data name="LoadoutLeftMenuViewModel_LoadoutLeftMenuViewModel_Diagnostics" xml:space="preserve">
+        <value>健康檢查</value>
+    </data>
+    <data name="LoadoutLeftMenuViewModel_Diagnostics_ToolTip" xml:space="preserve">
+        <value>檢查你的配置檔是否有問題，並在需要時學習如何解決</value>
+    </data>
+    <data name="DiagnosticListView_DiagnosticListView_All" xml:space="preserve">
+        <value>全部 ({0})</value>
+        <comment>0 is placeholder for a number</comment>
+    </data>
+    <data name="DiagnosticListView_DiagnosticListView_Critical" xml:space="preserve">
+        <value>嚴重 ({0})</value>
+        <comment>0 是數字的佔位符</comment>
+    </data>
+    <data name="DiagnosticListView_DiagnosticListView_Warnings" xml:space="preserve">
+        <value>警告 ({0})</value>
+        <comment>0 是數字的佔位符</comment>
+    </data>
+    <data name="DiagnosticListView_DiagnosticListView_Suggestions" xml:space="preserve">
+        <value>建議 ({0})</value>
+        <comment>0 是數字的佔位符</comment>
+    </data>
+    <data name="DiagnosticListView_DiagnosticListView_There_are_no_diagnostics" xml:space="preserve">
+        <value>目前沒有診斷問題</value>
+    </data>
+    <data name="IngestButtonTextBlock_Text" xml:space="preserve">
+        <value>匯入</value>
+    </data>
+    <data name="ModFileTreeViewModel_StatusBar_Files__0__1" xml:space="preserve">
+        <value>檔案數量： {0} ({1})</value>
+        <comment>{0} 代表數量， {1} 代表格式化的大小 (例如 12GB)</comment>
+    </data>
+    <data name="Helpers_GenerateHeader_File_Count" xml:space="preserve">
+        <value>檔案數量</value>
+    </data>
+    <data name="MyGamesView__NoGamesDetectedText" xml:space="preserve">
+        <value>所有支援的遊戲均已新增，未偵測到新遊戲。</value>
+    </data>
+    <data name="MyGamesView__NoGamesManagedText" xml:space="preserve">
+        <value>新增遊戲以開始使用模組功能</value>
+    </data>
+    <data name="GameWidget__Adding_game" xml:space="preserve">
+        <value>正在新增...</value>
+    </data>
+    <data name="GameWidget__View" xml:space="preserve">
+        <value>檢視</value>
+    </data>
+    <data name="GameWidget__RemoveGame_ToolTip" xml:space="preserve">
+        <value>移除遊戲以及應用程式所安裝的所有模組</value>
+    </data>
+    <data name="GameWidget__Removing_game" xml:space="preserve">
+        <value>正在移除...</value>
+    </data>
+    <data name="ApplyDiff_Refresh" xml:space="preserve">
+        <value>重新整理</value>
+    </data>
+    <data name="Helpers_GenerateHeader_State" xml:space="preserve">
+        <value>狀態</value>
+    </data>
+    <data name="IFileTreeNodeViewModel_ToFormattedChangeState_Added" xml:space="preserve">
+        <value>已新增</value>
+    </data>
+    <data name="IFileTreeNodeViewModel_ToFormattedChangeState_Modified" xml:space="preserve">
+        <value>已修改</value>
+    </data>
+    <data name="IFileTreeNodeViewModel_ToFormattedChangeState_Contents_modified" xml:space="preserve">
+        <value>內容已修改</value>
+    </data>
+    <data name="IFileTreeNodeViewModel_ToFormattedChangeState_Removed" xml:space="preserve">
+        <value>已移除</value>
+    </data>
+    <data name="DiffTreeViewModel_StatusBar__File_Loadout_Disk" xml:space="preserve">
+        <value>檔案數量：配置檔 {0} ({1})  磁碟 {2} ({3})</value>
+        <comment>{0} 和 {2} 是檔案數量，{1} 和 {3} 是格式化的檔案大小</comment>
+    </data>
+    <data name="DiffTreeViewModel_StatusBar__Apply_changes" xml:space="preserve">
+        <value>套用變更：新增 {0} 個、修改 {1} 個、移除 {2} 個</value>
+        <comment>{0}、 {1} 和 {2} 是代表檔案數量的整數</comment>
+    </data>
+    <data name="DiffTreeViewModel_StatusBar__Data_to_process___0_" xml:space="preserve">
+        <value>待處理資料大小： {0}</value>
+        <comment>{0} 是格式化的檔案大小，代表待處理的資料量 </comment>
+    </data>
+    <data name="ApplyControlView_ViewApplyChanges" xml:space="preserve">
+        <value>預覽變更</value>
+    </data>
+    <data name="ApplyDiffViewModel_PageTitle" xml:space="preserve">
+        <value>預覽變更</value>
+    </data>
+    <data name="SettingsView_Title" xml:space="preserve">
+        <value>設定</value>
+    </data>
+    <data name="DialogButton_CANCEL" xml:space="preserve">
+        <value>取消</value>
+    </data>
+    <data name="DialogButton_SAVE" xml:space="preserve">
+        <value>儲存</value>
+    </data>
+    <data name="DialogButton_DELETE_MODS" xml:space="preserve">
+        <value>刪除模組</value>
+    </data>
+    <data name="SettingEntryView_NeedRestartMessage" xml:space="preserve">
+        <value>應用程式需要重新啟動才能套用此設定</value>
+    </data>
+    <data name="FileOriginsPage_AddButtonText" xml:space="preserve">
+        <value>新增</value>
+    </data>
+    <data name="DialogButton_Discard" xml:space="preserve">
+        <value>放棄</value>
+    </data>
+    <data name="ChangelogPageViewModel_ChangelogPageViewModel_Changelog" xml:space="preserve">
+        <value>更新紀錄</value>
+    </data>
+    <data name="DiagnosticListViewModel_DiagnosticListViewModel_Diagnostics" xml:space="preserve">
+        <value>健康檢查</value>
+    </data>
+    <data name="LibraryPageTitle" xml:space="preserve">
+        <value>模組庫</value>
+    </data>
+    <data name="LibraryPageTitleToolTip" xml:space="preserve">
+        <value>管理你已下載的模組與收藏集</value>
+    </data>
+    <data name="LibraryPageDescription" xml:space="preserve">
+        <value>管理你已下載的模組與收藏集。安裝、更新或新增更多內容。</value>
+    </data>
+    <data name="FileOriginsPageView_NameHeader" xml:space="preserve">
+        <value>模組名稱</value>
+    </data>
+    <data name="FileOriginsPageView_VersionHeader" xml:space="preserve">
+        <value>版本</value>
+    </data>
+    <data name="FileOriginsPageView_SizeHeader" xml:space="preserve">
+        <value>大小</value>
+    </data>
+    <data name="FileOriginsPageView_DownloadedHeader" xml:space="preserve">
+        <value>已下載</value>
+    </data>
+    <data name="FileOriginsPageView_InstalledHeader" xml:space="preserve">
+        <value>已安裝</value>
+    </data>
+    <data name="FileOriginsPageView_ActionHeader" xml:space="preserve">
+        <value>操作</value>
+    </data>
+    <data name="DownloadStatusDesignViewModel_FormatStatus_Cancelled" xml:space="preserve">
+        <value>已取消</value>
+    </data>
+    <data name="DownloadInProgressView__Clear" xml:space="preserve">
+        <value>清除</value>
+    </data>
+    <data name="DownloadInProgressView__Clear_completed" xml:space="preserve">
+        <value>清除已完成項目</value>
+    </data>
+    <data name="DownloadInProgressView__View_in_library" xml:space="preserve">
+        <value>在模組庫中查看</value>
+    </data>
+    <data name="LoadoutGridView__Remove" xml:space="preserve">
+        <value>解除安裝</value>
+    </data>
+    <data name="LoginMessageView_BodyTextBlock" xml:space="preserve">
+        <value>要輕鬆從 Nexus Mods 下載模組，你需要使用 Nexus Mods 帳戶登入。  若要手動從你的磁碟新增模組，則不需要登入。</value>
+    </data>
+    <data name="LoginMessageView_Title" xml:space="preserve">
+        <value>登入以開始使用</value>
+    </data>
+    <data name="FileOriginsPage_GetMods" xml:space="preserve">
+        <value>取得模組：</value>
+    </data>
+    <data name="FileOriginsPage_FromDrive" xml:space="preserve">
+        <value>瀏覽磁碟</value>
+    </data>
+    <data name="FileOriginsPage_FromNexusMods" xml:space="preserve">
+        <value>瀏覽 Nexus Mods</value>
+    </data>
+    <data name="FileOriginsPage_BrowseCollectionsNexusMods" xml:space="preserve">
+        <value>瀏覽收藏集</value>
+    </data>
+    <data name="FileOriginsPage_ViewButtonText" xml:space="preserve">
+        <value>檢視</value>
+    </data>
+    <data name="AddPanelToolTip" xml:space="preserve">
+        <value>新增分割畫面檢視面板</value>
+    </data>
+    <data name="MaxPanelsAddedToolTip" xml:space="preserve">
+        <value>已達面板數量上限</value>
+    </data>
+    <data name="Panel_Add_tab_ToolTip" xml:space="preserve">
+        <value>新增分頁</value>
+    </data>
+    <data name="TopBar_MyProfile" xml:space="preserve">
+        <value>我的個人檔案</value>
+    </data>
+    <data name="TopBar_SignOut" xml:space="preserve">
+        <value>登出</value>
+    </data>
+    <data name="TopBar_AccountSettings" xml:space="preserve">
+        <value>帳戶設定</value>
+    </data>
+    <data name="TopBar_GetPremiumMenuItem" xml:space="preserve">
+        <value>升級至 Premium</value>
+    </data>
+    <data name="ViewChangelogMenuItem.Header" xml:space="preserve">
+        <value>查看更新紀錄</value>
+    </data>
+    <data name="ViewAppLogsMenuItem.Header" xml:space="preserve">
+        <value>查看應用程式日誌</value>
+    </data>
+    <data name="ShowWelcomeMessageMenuItem.Header" xml:space="preserve">
+        <value>關於</value>
+    </data>
+
+    <data name="OpenDiscordMenuItem.Header" xml:space="preserve">
+        <value>Discord</value>
+    </data>
+    <data name="OpenGitHubMenuItem.Header" xml:space="preserve">
+        <value>GitHub</value>
+    </data>
+    <data name="OpenForumsMenuItem.Header" xml:space="preserve">
+        <value>Nexus Mods forums</value>
+    </data>
+    <data name="OpenStatusPageMenuItem.Header" xml:space="preserve">
+        <value>狀態頁面</value>
+    </data>
+    <data name="NavigationControl_NavigationControl_Open_in_new_tab" xml:space="preserve">
+        <value>在新分頁中開啟</value>
+    </data>
+    <data name="NavigationControl_NavigationControl_Open_in_new_panel" xml:space="preserve">
+        <value>在新面板中開啟</value>
+    </data>
+    <data name="TopBar_Help_ToolTip" xml:space="preserve">
+        <value>幫助與意見回饋</value>
+    </data>
+    <data name="Library_DeselectItemsButton_Text" xml:space="preserve">
+        <value>已選取 {0} 項</value>
+    </data>
+    <data name="Library_DeselectItemsButton_ToolTip" xml:space="preserve">
+        <value>清除選取。Ctrl+點擊 可選取／取消選取項目。Shift+點擊 可選取一個範圍。</value>
+    </data>
+    <data name="Library_ViewChangelog_Text" xml:space="preserve">
+        <value>查看更新紀錄</value>
+    </data>
+    <data name="Library_ViewModPage_Text" xml:space="preserve">
+        <value>查看模組頁面</value>
+    </data>
+    <data name="FileOriginPage_AddMod_ToolTip" xml:space="preserve">
+        <value>將所選模組安裝到此配置檔</value>
+    </data>
+    <data name="FileOriginPage_DeleteMod_ToolTip" xml:space="preserve">
+        <value>永久刪除此模組</value>
+    </data>
+    <data name="FileOriginPage_AddModAdvanced_ToolTip" xml:space="preserve">
+        <value>從模組中選擇特定檔案加入你的配置檔</value>
+    </data>
+    <data name="ApplyControlView_ViewApplyChanges_ToolTip" xml:space="preserve">
+        <value>查看將套用到遊戲資料夾的變更內容</value>
+    </data>
+    <data name="ApplyControlView_Apply_ToolTip" xml:space="preserve">
+        <value>將你的變更套用到遊戲資料夾</value>
+    </data>
+    <data name="IFileTreeNodeViewModel_FormattedChangeStateToolTip_Added" xml:space="preserve">
+        <value>檔案將被新增</value>
+    </data>
+    <data name="IFileTreeNodeViewModel_FormattedChangeStateToolTip_ModifiedFile" xml:space="preserve">
+        <value>檔案將被修改</value>
+    </data>
+    <data name="IFileTreeNodeViewModel_FormattedChangeStateToolTip_Removed" xml:space="preserve">
+        <value>檔案將被移除</value>
+    </data>
+    <data name="IFileTreeNodeViewModel_FormattedChangeStateToolTip_ModifiedFolder" xml:space="preserve">
+        <value>資料夾包含已修改的檔案</value>
+    </data>
+    <data name="InfoBanner_PrefixProperty_Did_you_know_" xml:space="preserve">
+        <value>你知道嗎？</value>
+    </data>
+    <data name="NewTabPageInfoBannerText1" xml:space="preserve">
+        <value>你可以透過選擇「分割畫面檢視」來新增面板。</value>
+    </data>
+    <data name="NewTabPageInfoBannerText2" xml:space="preserve">
+        <value>工具列中的按鈕</value>
+    </data>
+    <data name="LoadoutGrid_EmptyModlistSubtitle_Add_from_library" xml:space="preserve">
+        <value>從模組庫中安裝你的模組</value>
+    </data>
+    <data name="LoadoutGridViewModel_EmptyModlistTitleString" xml:space="preserve">
+        <value>尚未為 {0} 新增任何模組</value>
+        <comment>{0} 是目前正在管理的遊戲名稱</comment>
+    </data>
+    <data name="EmptyLibraryTitleText" xml:space="preserve">
+        <value>你的模組庫中沒有任何模組</value>
+    </data>
+    <data name="FileOriginsPageViewModel_EmptyLibrarySubtitleText" xml:space="preserve">
+        <value>從 Nexus Mods 下載 {0} 的模組</value>
+        <comment>{0} 是目前正在管理的遊戲名稱</comment>
+    </data>
+    <data name="DiagnosticListView.Page_Title" xml:space="preserve">
+        <value>健康檢查</value>
+    </data>
+    <data name="DiagnosticListView.Page_Description" xml:space="preserve">
+        <value>檢查你的配置檔是否有任何問題，並在需要時瞭解如何解決</value>
+    </data>
+    <data name="DiagnosticListView.EmptyState.Header" xml:space="preserve">
+        <value>你的配置檔已通過健康檢查，未發現任何問題</value>
+    </data>
+    <data name="DiagnosticListView.EmptyState.Subtitle" xml:space="preserve">
+        <value>準備好遊玩了</value>
+    </data>
+    <data name="LoadoutCardViewModel_CreationTimeConverter_Created__0_" xml:space="preserve">
+        <value>建立於 {0}</value>
+        <comment>其中 {0} 是以人性化時間顯示的文字 (例如：「建立於 2 小時前」)</comment>
+    </data>
+    <data name="LoadoutCardViewModel_FormatLastAppliedTime_Last_applied__0_" xml:space="preserve">
+        <value>上次套用時間： {0}</value>
+        <comment>其中 {0} 是以人性化時間顯示的文字 (例如：「上次套用於 2 小時前」)</comment>
+    </data>
+    <data name="LoadoutCardViewModel_FormatNumMods_Mods__0_" xml:space="preserve">
+        <value>模組 {0}</value>
+        <comment>其中 {0} 是配置檔中模組的數量。</comment>
+    </data>
+    <data name="MyLoadoutsPageTitle" xml:space="preserve">
+        <value>我的配置檔</value>
+    </data>
+    <data name="MyLoadoutsPageDescriptionText" xml:space="preserve">
+        <value>建立遊戲配置檔，每個配置檔包含獨立的模組偏好與設定。你可以在不同配置檔間切換，並套用想玩的設定。</value>
+    </data>
+    <data name="SettingsView_Description" xml:space="preserve">
+        <value>管理你的偏好設定。</value>
+    </data>
+
+    <data name="MyLoadoutsGameSectionHeading" xml:space="preserve">
+        <value>{0} 配置檔</value>
+        <comment>其中 {0} 是遊戲名稱</comment>
+    </data>
+    <data name="CreateNewLoadoutCarViewTexBlock" xml:space="preserve">
+        <value>新建</value>
+    </data>
+    <data name="LoadoutCardViewCurrentlyAppliedTextBlock" xml:space="preserve">
+        <value>目前套用中</value>
+    </data>
+    <data name="LoadoutCardViewCreateCopyButton" xml:space="preserve">
+        <value>建立複本</value>
+    </data>
+    <data name="LoadoutCardViewDeletingText" xml:space="preserve">
+        <value>正在刪除...</value>
+    </data>
+    <data name="LoadoutCardViewCreatingText" xml:space="preserve">
+        <value>正在建立...</value>
+    </data>
+    <data name="MyLoadoutsEmptyState_Subtitle" xml:space="preserve">
+        <value>配置檔讓你能夠透過不同的模組與設定，自訂多種遊戲風格並方便切換。</value>
+    </data>
+    <data name="MyLoadoutsEmptyState_Header" xml:space="preserve">
+        <value>你需要先新增遊戲才能使用配置檔</value>
+    </data>
+
+    <!-- Library Item Delete Confirmation Dialog -->
+    <data name="LibraryItemDeleteConfirmation_Title" xml:space="preserve">
+        <value>永久刪除模組</value>
+    </data>
+
+    <data name="LibraryItemDeleteConfirmation_HeaderQuestion" xml:space="preserve">
+        <value>刪除這些模組將會從應用程式中永久移除它們：</value>
+    </data>
+
+    <data name="LibraryItemDeleteConfirmation_UsedBy" xml:space="preserve">
+        <value>由 {0} 使用：</value>
+    </data>
+
+    <data name="LibraryItemDeleteConfirmation_UsedByWithLoadout" xml:space="preserve">
+        <value>由 {0} 使用 - {1}：</value>
+    </data>
+
+    <data name="LibraryItemDeleteConfirmation_DeleteModsButton" xml:space="preserve">
+        <value>刪除模組</value>
+    </data>
+
+    <data name="Updated_ViewUninstallDocs" xml:space="preserve">
+        <value>如何卸載 Nexus Mods app</value>
+    </data>
+    <data name="HumanizedDateTime_Never" xml:space="preserve">
+        <value>永不</value>
+    </data>
+    <data name="ApplyControlView__ApplyingToolTip" xml:space="preserve">
+        <value>正在將變更套用到遊戲</value>
+    </data>
+    <data name="LoadoutCard_DeleteLoadoutToolTip" xml:space="preserve">
+        <value>刪除配置檔</value>
+    </data>
+    <data name="LoadoutView_Title_Installed_Mods" xml:space="preserve">
+        <value>全部 ({0})</value>
+    </data>
+    <data name="LoadoutView_Title_Installed_Mods_ToolTip" xml:space="preserve">
+        <value>檢視並管理所有已安裝的模組</value>
+    </data>
+    <data name="ErrorGameAlreadyRunning_Title" xml:space="preserve">
+        <value>遊戲目前正在執行中</value>
+    </data>
+    <data name="ErrorGameAlreadyRunning_Description" xml:space="preserve">
+        <value>看起來 {0} 已經在執行中。
+要套用變更或重新啟動遊戲，請先關閉遊戲。</value>
+    </data>
+    <data name="FileOriginPage_SwitchView" xml:space="preserve">
+        <value>切換檢視模式</value>
+    </data>
+    <data name="FileOriginPage_SwitchView_ToolTip" xml:space="preserve">
+        <value>顯示或隱藏模組頁面群組</value>
+    </data>
+    <data name="FileOriginsPage_FromDrive_ToolTip" xml:space="preserve">
+        <value>從你的電腦匯入模組</value>
+    </data>
+    <data name="FileOriginsPage_FromNexus_ToolTip" xml:space="preserve">
+        <value>開啟 Nexus Mods</value>
+    </data>
+    <data name="FileOriginsPage_CheckForUpdates_ToolTip" xml:space="preserve">
+        <value>檢查 Nexus Mods 是否有可用的模組檔案更新。</value>
+    </data>
+    <data name="TopBar_Forward_ToolTip" xml:space="preserve">
+        <value>前進</value>
+    </data>
+    <data name="TopBar_Back_ToolTip" xml:space="preserve">
+        <value>返回</value>
+    </data>
+    <data name="TopBar_GiveFeedback_ToolTip" xml:space="preserve">
+        <value>點擊提供意見回饋，幫助我們改進。</value>
+    </data>
+    <data name="TopBarActions__LOG_IN_ToolTip" xml:space="preserve">
+        <value>連結你的 Nexus Mods 帳戶</value>
+    </data>
+    <data name="LoadoutGridView__Remove_ToolTip" xml:space="preserve">
+        <value>從此配置中解除安裝所選模組</value>
+    </data>
+    <data name="LoadoutGridView__View_Files_ToolTip" xml:space="preserve">
+        <value>查看此模組包含的檔案</value>
+    </data>
+    <data name="CollectionDownloadViewModel_Ready_to_install" xml:space="preserve">
+        <value>所有必要模組已下載完成，準備安裝。</value>
+    </data>
+    <data name="CollectionDownloadViewModel_Num_required_mods_downloaded" xml:space="preserve">
+        <value>已下載 {0} / {1} 個必要模組。請完成下載以進行安裝。</value>
+    </data>
+    <data name="FileOriginPage_UpdateAll" xml:space="preserve">
+        <value>更新全部</value>
+    </data>
+    <data name="LeftMenu_Label_Installed_Mods" xml:space="preserve">
+        <value>已安裝</value>
+    </data>
+    <data name="LeftMenu_Label_Utilities" xml:space="preserve">
+        <value>工具程式</value>
+    </data>
+    <data name="CollectionDownloadViewModel_CollectionDownloadViewModel_Ready_to_play___All_required_mods_installed"
+          xml:space="preserve">
+        <value>準備就緒 - 所有必要模組皆已安裝</value>
+    </data>
+    <data name="LibraryItemButtonUpdate_Single" xml:space="preserve">
+        <value>下載更新</value>
+    </data>
+    <data name="LibraryItemButtonUpdate_CounterInBracket" xml:space="preserve">
+        <value>下載更新 ({0})</value>
+    </data>
+    <data name="LibraryItemButtonUpdate_All" xml:space="preserve">
+        <value>下載全部</value>
+    </data>
+    <data name="LoadoutView_Title_Installed_Mods_Default" xml:space="preserve">
+        <value>全部</value>
+    </data>
+    <data name="LoadoutLeftMenuViewModel_External_Changes" xml:space="preserve">
+        <value>外部變更</value>
+    </data>
+    <data name="LoadoutLeftMenuViewModel_External_Changes_ToolTip" xml:space="preserve">
+        <value>檢視、移除或還原在應用程式外所做的變更。</value>
+    </data>
+
+    <data name="CollectionDownloadViewModel_DownloadRequired" xml:space="preserve">
+        <value>自動下載全部</value>
+    </data>
+    <data name="CollectionDownloadViewModel_InstallCollection" xml:space="preserve">
+        <value>安裝收藏集</value>
+    </data>
+    <data name="CollectionDownloadViewModel_ViewCollection" xml:space="preserve">
+        <value>查看已安裝的收藏集</value>
+    </data>
+    <data name="CollectionDownloadViewModel_UpdateCollection" xml:space="preserve">
+        <value>更新至修訂版本 {0}</value>
+    </data>
+    <data name="CollectionDownloadViewModel_DownloadOptional" xml:space="preserve">
+        <value>自動下載所有可選項目</value>
+    </data>
+    <data name="CollectionDownloadViewModel_InstallOptional" xml:space="preserve">
+        <value>安裝所有可選項目/value>
+    </data>
+
+
+    <data name="RemoveGameOverlayView_Title" xml:space="preserve">
+        <value>正在移除 {0}</value>
+    </data>
+    <data name="RemoveGameOverlayView_Description" xml:space="preserve">
+        <value>移除將會解除安裝 {0}  的所有模組與收藏集，但你已下載的模組會保留。如果你重新新增該遊戲，這些模組仍可在你的模組庫中使用。</value>
+    </data>
+    <data name="RemoveGameOverlayView_ToggleDescription" xml:space="preserve">
+        <value>同時刪除 {0} 個已下載的模組及 {1} 個針對 {2} 的收藏集。</value>
+    </data>
+    <data name="RemoveGameOverlayView_CancelButton" xml:space="preserve">
+        <value>取消</value>
+    </data>
+    <data name="RemoveGameOverlayView_RemoveButton" xml:space="preserve">
+        <value>移除遊戲和模組</value>
+    </data>
+    <data name="RemoveGameOverlayView_RemoveButton_AlsoDelete" xml:space="preserve">
+        <value>移除遊戲並刪除模組</value>
+    </data>
+
+    <data name="ManualDownloadRequiredOverlayView_InfoTitle" xml:space="preserve">
+        <value>需要手動下載</value>
+    </data>
+    <data name="ManualDownloadRequiredOverlayView_InfoDescription" xml:space="preserve">
+        <value>此收藏集需要從第三方網站下載特定模組檔案才能完整。請依照以下步驟進行手動下載：</value>
+    </data>
+    <data name="ManualDownloadRequiredOverlayView_InfoStep1" xml:space="preserve">
+        <value>請點擊下方的 「開啟瀏覽器」 按鈕，前往所需網站。</value>
+    </data>
+    <data name="ManualDownloadRequiredOverlayView_InfoStep2" xml:space="preserve">
+        <value>請尋找並下載模組檔案 '{0}' (檔案大小： {1})</value>
+    </data>
+    <data name="ManualDownloadRequiredOverlayView_InfoStep3" xml:space="preserve">
+        <value>返回此視窗，並使用 「新增檔案」 按鈕加入已下載的檔案。</value>
+    </data>
+    <data name="ManualDownloadRequiredOverlayView_InfoInstructionsDescription" xml:space="preserve">
+        <value>收藏集作者提供了以下附加說明：</value>
+    </data>
+
+
+    <data name="ManualDownloadRequiredOverlayView_CheckingTitle" xml:space="preserve">
+        <value>正在檢查新增的檔案</value>
+    </data>
+    <data name="ManualDownloadRequiredOverlayView_CheckingText" xml:space="preserve">
+        <value>我們正在驗證新增的檔案，請等待。</value>
+    </data>
+
+
+    <data name="ManualDownloadRequiredOverlayView_ErrorTitle" xml:space="preserve">
+        <value>新增了錯誤的模組檔案</value>
+    </data>
+    <data name="ManualDownloadRequiredOverlayView_ErrorStep1" xml:space="preserve">
+        <value>請檢查你是否新增了正確的檔案和版本。</value>
+    </data>
+    <data name="ManualDownloadRequiredOverlayView_ErrorStep2" xml:space="preserve">
+        <value>如需指引，請查看 「附加說明」 標籤，其中可能包含所需檔案及版本的詳細資訊。</value>
+    </data>
+    <data name="ManualDownloadRequiredOverlayView_ErrorStep3" xml:space="preserve">
+        <value>如果找不到正確的檔案，建議向收藏集作者回報此潛在錯誤。</value>
+    </data>
+    <data name="ManualDownloadRequiredOverlayView_ErrorReportBugText" xml:space="preserve">
+        <value>回報錯誤</value>
+    </data>
+
+    <data name="CollectionComponents_ExternalDownloadAction_ToolTip" xml:space="preserve">
+        <value>嘗試自動下載第三方模組。如果無法自動下載，將提供手動下載選項。</value>
+    </data>
+    <data name="CollectionComponents_ManualDownloadAction_ToolTip" xml:space="preserve">
+        <value>無法自動下載。請點擊開啟第三方網站，手動下載並新增模組。</value>
+    </data>
+
+
+    <data name="CollectionDownloadViewModel_Toggle_ToolTip" xml:space="preserve">
+        <value>開啟切換表示將此收藏集加入遊戲並載入。關閉切換則不加入遊戲。</value>
+    </data>
+
+
+    <data name="CollectionDownloadViewModel_StatsMods_ToolTip" xml:space="preserve">
+        <value>模組</value>
+    </data>
+    <data name="CollectionDownloadViewModel_StatsEndorsements_ToolTip" xml:space="preserve">
+        <value>推薦數</value>
+    </data>
+    <data name="CollectionDownloadViewModel_StatsDownloads_ToolTip" xml:space="preserve">
+        <value>下載數</value>
+    </data>
+    <data name="CollectionDownloadViewModel_StatsSize_ToolTip" xml:space="preserve">
+        <value>大小</value>
+    </data>
+    <data name="CollectionDownloadViewModel_StatsRating_ToolTip" xml:space="preserve">
+        <value>成功評分</value>
+    </data>
+    <data name="ManageGameWarning_Title" xml:space="preserve">
+        <value>管理此遊戲將影響現有模組</value>
+    </data>
+    <data name="ManageGameWarning_Desc1" xml:space="preserve">
+        <value>如果你已有現有的模組，系統會自動偵測，並可在 「外部變更」 頁面與應用程式一起使用。  不過，如果你之後停止管理此遊戲或卸載應用程式，這些模組將會從你的遊戲資料夾中永久移除。</value>
+    </data>
+    <data name="ManageGameWarning_Desc2" xml:space="preserve">
+        <value>為了保留你想要保存的任何模組，請在繼續之前備份它們。</value>
+    </data>
+    <data name="ManageGameWarning_Cancel" xml:space="preserve">
+        <value>取消</value>
+    </data>
+    <data name="ManageGameWarning_Continue" xml:space="preserve">
+        <value>繼續</value>
+    </data>
+
+
+    <data name="UpgradeToPremiumView_Title" xml:space="preserve">
+        <value>成為 Premium 即可一鍵下載收藏集</value>
+    </data>
+    <data name="UpgradeToPremiumView_Desc1" xml:space="preserve">
+        <value>只需一鍵，即可在應用程式內以全速下載整個模組收藏集。Free 用戶則可從清單中逐個安裝模組。</value>
+    </data>
+
+    <data name="UpgradeToPremiumView_Desc2" xml:space="preserve">
+        <value>Premium 用戶還可享受：</value>
+    </data>
+
+    <data name="UpgradeToPremiumView_Bullet1" xml:space="preserve">
+        <value>下載速度不受限制</value>
+    </data>
+    <data name="UpgradeToPremiumView_Bullet2" xml:space="preserve">
+        <value>終身無廣告，即使你取消訂閱！</value>
+    </data>
+    <data name="UpgradeToPremiumView_Bullet3" xml:space="preserve">
+        <value>支持創作者 -  Premium 有助於獎勵模組作者</value>
+    </data>
+
+    <data name="UpgradeToPremiumView_CancelButton" xml:space="preserve">
+        <value>取消</value>
+    </data>
+    <data name="UpgradeToPremiumView_LearnMoreButton" xml:space="preserve">
+        <value>了解更多</value>
+    </data>
+    <data name="UpgradeToPremiumView_UpgradeButton" xml:space="preserve">
+        <value>升級至 Premium</value>
+    </data>
+    <data name="LibraryComponents_InstallAction_ButtonText_Installed" xml:space="preserve">
+        <value>已安裝</value>
+    </data>
+    <data name="LibraryComponents_InstallAction_ButtonText_Install" xml:space="preserve">
+        <value>安裝</value>
+    </data>
+    <data name="CollectionComponents_DownloadAction_ButtonText_Downloaded" xml:space="preserve">
+        <value>已下載</value>
+    </data>
+    <data name="CollectionComponents_DownloadAction_ButtonText_Downloading" xml:space="preserve">
+        <value>下載中</value>
+    </data>
+    <data name="CollectionComponents_DownloadAction_ButtonText_Download" xml:space="preserve">
+        <value>下載</value>
+    </data>
+    <data name="CollectionComponents_ExternalDownloadAction_ButtonText_ThirdPartyDownload" xml:space="preserve">
+        <value>第三方下載</value>
+    </data>
+    <data name="CollectionComponents_ManualDownloadAction_ButtonText_ManualDownload" xml:space="preserve">
+        <value>手動下載</value>
+    </data>
+    <data name="Library_HideUpdates" xml:space="preserve">
+        <value>隱藏更新 ({0})</value>
+    </data>
+    <data name="Library_ShowUpdates" xml:space="preserve">
+        <value>顯示更新 ({0})</value>
+    </data>
+    <data name="Library_Update" xml:space="preserve">
+        <value>更新 ({0})</value>
+    </data>
+    <data name="Library_UpdateAndKeepOldMod" xml:space="preserve">
+        <value>更新並保留舊模組 ({0})</value>
+    </data>
+    <data name="Dialog_ReplaceNotSupported_Title" xml:space="preserve">
+        <value>需要手動更新</value>
+    </data>
+    <data name="Dialog_ReplaceNotSupported_Text" xml:space="preserve">
+        <value>此版本的應用程式尚不支援 free 用戶使用更新和取代功能。
+
+點擊 **OK** 即可造訪 mod 頁面進行手動更新。</value>
+    </data>
+    <data name="Library_Update_SomeInstallsFailed_Title" xml:space="preserve">
+        <value>某些模組更新安裝失敗</value>
+    </data>
+    <data name="Library_Update_SomeInstallsFailed_Description" xml:space="preserve">
+        <value>無法安裝以下模組更新：
+
+{0}
+
+是否保留已下載的檔案在你的模組庫中，以便你日後想重新嘗試安裝？</value>
+    </data>
+    <data name="Library_Update_SomeInstallsFailed_DeleteFiles" xml:space="preserve">
+        <value>刪除失敗的更新</value>
+    </data>
+    <data name="Library_Update_SomeInstallsFailed_KeepFiles" xml:space="preserve">
+        <value>保留失敗的更新</value>
+    </data>
+    <data name="Library_Update_InstalledInMultipleCollections_Title" xml:space="preserve">
+        <value>更新安裝在多個收藏集中的模組</value>
+    </data>
+    <data name="Library_Update_InstalledInMultipleCollections_Cancel" xml:space="preserve">
+        <value>取消</value>
+    </data>
+    <data name="Library_Update_InstalledInMultipleCollections_Ok" xml:space="preserve">
+        <value>在 {0} 個收藏集中更新</value>
+    </data>
+    <data name="Library_Update_InstalledInMultipleCollections_Description1" xml:space="preserve">
+        <value>更新將套用到所有已安裝該模組的本地收藏集：</value>
+    </data>
+    <data name="Library_Update_InstalledInMultipleCollections_Description2" xml:space="preserve">
+        <value>你訂閱的 Nexus Mods 收藏集將不會受到影響。</value>
+    </data>
+    <data name="Library_UpdateMod_ToolTip" xml:space="preserve">
+        <value>更新模組</value>
+    </data>
+    <data name="Library_MoreOptions_ToolTip" xml:space="preserve">
+        <value>更多選項</value>
+    </data>
+    <data name="Library_UpdateModAndReplace_ToolTip" xml:space="preserve">
+        <value>更新模組並替換舊版本</value>
+    </data>
+    <data name="PremiumDialog_UpdateTitle" xml:space="preserve">
+        <value>成為 Premium 即可一鍵更新模組</value>
+    </data>
+    <data name="PremiumDialog_UpdateDescription" xml:space="preserve">
+        <value>無須瀏覽器，無須手動下載。 Premium 用戶還可享受：
+
+• 一鍵下載整個收藏
+• 下載速度不受限制
+• 終身無廣告，即使你在一個月後取消訂閱！</value>
+    </data>
+    <data name="PremiumDialog_UpdateHeading" xml:space="preserve">
+        <value>只需單擊即可更新所有模組或單一模組。</value>
+    </data>
+    <data name="PremiumDialog_UpdateManuallyButton" xml:space="preserve">
+        <value>手動更新模組</value>
+    </data>
+    <data name="PremiumDialog_GoPremiumButton" xml:space="preserve">
+        <value>成為 Premium</value>
+    </data>
+    <data name="Library_Update_SomeDownloadsFailed_Title" xml:space="preserve">
+        <value>部分模組更新下載失敗</value>
+    </data>
+    <data name="Library_Update_SomeDownloadsFailed_Description" xml:space="preserve">
+        <value>以下模組更新無法下載：
+
+{0}</value>
+    </data>
+    <data name="Library_Update_SomeDownloadsFailed_Option_Cancel" xml:space="preserve">
+        <value>取消</value>
+    </data>
+    <data name="Library_Update_SomeDownloadsFailed_Option_Retry" xml:space="preserve">
+        <value>重試下載失敗的項目</value>
+    </data>
+        <data name="Loadout_Dialog_CollectionPublished_FirstPublish_Listed" xml:space="preserve">
+        <value>"{0}" 已發佈為公開內容。它將出現在搜尋結果中，並可能被推薦。</value>
+    </data>
+    <data name="Loadout_Dialog_CollectionPublished_FirstPublish_Unlisted" xml:space="preserve">
+        <value>"{0}" 已發佈為非公開內容。只有知道連結的人才能查看。</value>
+    </data>
+    <data name="Loadout_Dialog_CollectionPublished_FirstPublish_Help" xml:space="preserve">
+        <value>你可以隨時在收藏集設定中變更你的收藏集可見度。</value> 
+    </data>
+    <data name="Loadout_Dialog_CollectionPublished_Revision" xml:space="preserve">
+        <value>"{0}" 已發布。</value> 
+    </data>
+    <data name="Loadout_Dialog_CollectionPublished_Revision_Help" xml:space="preserve">
+        <value>我們建議你更新此修訂版的變更日誌，以便使用者可以了解新內容。</value> 
+    </data>
+    
+    <data name="Loadout_Dialog_ShareCollection_UnlistedTitle" xml:space="preserve">
+        <value>未公開 - 建議與朋友分享</value>
+    </data>
+    <data name="Loadout_Dialog_ShareCollection_UnlistedExplanation" xml:space="preserve">
+        <value>只有知道連結的人才能查看。不會顯示在搜尋或推薦中。</value>
+    </data>
+    <data name="Loadout_Dialog_ShareCollection_ListedTitle" xml:space="preserve">
+        <value>公開 - 在 Nexus Mods 上公開可見</value>
+    </data>
+    <data name="Loadout_Dialog_ShareCollection_ListedExplanation" xml:space="preserve">
+        <value>任何人都可以透過搜尋找到它，或在 Nexus Mods 上看到它被推薦。</value>
+    </data>
+    <data name="Loadout_Dialog_ShareCollection_ChangeVisibilityMessage" xml:space="preserve">
+        <value>你可以隨時在收藏集設定中更改可見度。</value>
+    </data>
+</root>
