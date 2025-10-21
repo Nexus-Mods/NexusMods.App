@@ -9,6 +9,7 @@ using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using NexusMods.Sdk;
+using NexusMods.Sdk.NexusModsApi;
 
 namespace NexusMods.Games.CreationEngine.Installers;
 

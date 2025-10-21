@@ -1,5 +1,7 @@
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Abstractions.NexusWebApi.Types.V2.Uid;
+using NexusMods.Sdk.NexusModsApi;
+
 namespace NexusMods.Networking.ModUpdates.Tests.Helpers;
 
 // Helper class to simulate updateable items
@@ -16,7 +18,7 @@ public class TestModFeedItem : IModFeedItem
     {
         return new TestModFeedItem
         {
-            Uid = new UidForMod { GameId = GameId.From(gameId), ModId = ModId.From(modId) },
+            Uid = new UidForMod(ModId.From(modId), GameId.From(gameId)),
             LastUpdated = lastUpdated,
         };
     }

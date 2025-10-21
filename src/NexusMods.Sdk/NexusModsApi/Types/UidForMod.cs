@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.ValueSerializers;
+using NexusMods.Sdk.NexusModsApi;
 
 namespace NexusMods.Abstractions.NexusWebApi.Types.V2.Uid;
 
@@ -32,6 +33,15 @@ public readonly struct UidForMod : IEquatable<UidForMod>
     /// Unique identifier for the game.
     /// </summary>
     public readonly GameId GameId;
+
+    /// <summary>
+    /// Constructor.
+    /// </summary>
+    public UidForMod(ModId modId, GameId gameId)
+    {
+        ModId = modId;
+        GameId = gameId;
+    }
 
     /// <summary>
     /// Decodes a Nexus Mods API result which contains an 'uid' field into a <see cref="UidForFile"/>.

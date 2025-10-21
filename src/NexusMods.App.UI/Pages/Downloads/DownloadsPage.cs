@@ -5,6 +5,7 @@ using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Abstractions.Serialization.Attributes;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.Sdk.NexusModsApi;
 
 namespace NexusMods.App.UI.Pages.Downloads;
 

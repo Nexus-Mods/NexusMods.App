@@ -14,6 +14,7 @@ using NexusMods.MnemonicDB.Storage;
 using NexusMods.Paths;
 using NexusMods.Sdk.FileStore;
 using NexusMods.Sdk.IO;
+using NexusMods.Sdk.NexusModsApi;
 
 namespace NexusMods.StandardGameLocators.TestHelpers;
 

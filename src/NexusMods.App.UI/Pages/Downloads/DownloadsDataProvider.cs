@@ -12,6 +12,7 @@ using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Resources;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.Sdk.NexusModsApi;
 using NexusMods.Sdk.Resources;
 using R3;
 using ReactiveUI;

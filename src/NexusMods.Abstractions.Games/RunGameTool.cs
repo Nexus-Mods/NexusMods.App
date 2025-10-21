@@ -11,6 +11,7 @@ using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Paths;
 using NexusMods.Sdk;
 using NexusMods.Sdk.Jobs;
+using NexusMods.Sdk.NexusModsApi;
 using R3;
 
 namespace NexusMods.Abstractions.Games;

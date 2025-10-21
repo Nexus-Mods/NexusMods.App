@@ -3,7 +3,7 @@ using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.ValueSerializers;
 using TransparentValueObjects;
 
-namespace NexusMods.Abstractions.NexusWebApi.Types.V2;
+namespace NexusMods.Sdk.NexusModsApi;
 
 /// <summary>
 /// Identifier for a game on Nexus Mods.

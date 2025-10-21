@@ -10,6 +10,7 @@ using NexusMods.Hashing.xxHash3;
 using NexusMods.UI.Sdk.Resources;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.NexusWebApi;
+using NexusMods.Sdk.NexusModsApi;
 using SkiaSharp;
 
 namespace NexusMods.UI.Tests;

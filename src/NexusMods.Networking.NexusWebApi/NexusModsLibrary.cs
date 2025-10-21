@@ -18,6 +18,7 @@ using NexusMods.Paths;
 using NexusMods.Sdk;
 using NexusMods.Sdk.FileStore;
 using NexusMods.Sdk.Jobs;
+using NexusMods.Sdk.NexusModsApi;
 
 namespace NexusMods.Networking.NexusWebApi;
 
@@ -60,11 +61,7 @@ public partial class NexusModsLibrary
         GameId gameId,
         CancellationToken cancellationToken = default)
     {
-        var uid = new UidForMod
-        {
-            GameId = gameId,
-            ModId = modId,
-        };
+        var uid = new UidForMod(modId, gameId);
         var modPageEntities = NexusModsModPageMetadata.FindByUid(_connection.Db, uid);
         if (modPageEntities.TryGetFirst(x => x.Uid.GameId == gameId, out var modPage)) return modPage;
 

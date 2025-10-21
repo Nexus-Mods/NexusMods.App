@@ -31,6 +31,7 @@ using NexusMods.CLI;
 using NexusMods.CrossPlatform;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Sdk;
+using NexusMods.Sdk.NexusModsApi;
 using NexusMods.UI.Sdk;
 using R3;
 using ReactiveUI;

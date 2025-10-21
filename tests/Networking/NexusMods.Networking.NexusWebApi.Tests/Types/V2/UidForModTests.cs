@@ -1,6 +1,8 @@
 using FluentAssertions;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Abstractions.NexusWebApi.Types.V2.Uid;
+using NexusMods.Sdk.NexusModsApi;
+
 namespace NexusMods.Networking.NexusWebApi.Tests.Types.V2;
 
 public class UidForModTests
@@ -100,7 +102,7 @@ public class UidForModTests
     public void AsUlong_ReturnsCorrectValue(uint gameId, uint modId, ulong expectedUlong)
     {
         // Arrange
-        var uidForMod = new UidForMod { GameId = (GameId)gameId, ModId = (ModId)modId };
+        var uidForMod = new UidForMod(ModId.From(modId), GameId.From(gameId));
 
         // Act
         var result = uidForMod.AsUlong;
@@ -136,7 +138,7 @@ public class UidForModTests
     public void RoundTrip_UlongConversion_PreservesValues(uint gameId, uint modId)
     {
         // Arrange
-        var original = new UidForMod { GameId = (GameId)gameId, ModId = (ModId)modId };
+        var original = new UidForMod(ModId.From(modId), GameId.From(gameId));
 
         // Act
         var asUlong = original.AsUlong;

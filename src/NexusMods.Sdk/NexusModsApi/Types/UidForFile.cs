@@ -3,6 +3,7 @@ using System.Runtime.InteropServices;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.ValueSerializers;
+using NexusMods.Sdk.NexusModsApi;
 
 namespace NexusMods.Abstractions.NexusWebApi.Types.V2.Uid;
 
@@ -29,7 +30,9 @@ public readonly struct UidForFile : IEquatable<UidForFile>
     /// </summary>
     public readonly GameId GameId;
 
-    /// <summary/>
+    /// <summary>
+    /// Constructor.
+    /// </summary>
     public UidForFile(FileId fileId, GameId gameId)
     {
         FileId = fileId;
@@ -49,7 +52,7 @@ public readonly struct UidForFile : IEquatable<UidForFile>
     /// Converts the UID to a string accepted by the V2 API.
     /// </summary>
     public string ToV2Api() => AsUlong.ToString();
-    
+
     /// <summary>
     /// Reinterprets the current <see cref="UidForFile"/> as a single <see cref="ulong"/>.
     /// </summary>

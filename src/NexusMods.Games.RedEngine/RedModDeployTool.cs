@@ -10,6 +10,7 @@ using NexusMods.Games.Generic;
 using NexusMods.Games.RedEngine.Cyberpunk2077.SortOrder;
 using NexusMods.Paths;
 using NexusMods.Sdk.Jobs;
+using NexusMods.Sdk.NexusModsApi;
 using R3;
 using static NexusMods.Games.RedEngine.Constants;
 

@@ -19,6 +19,7 @@ using NexusMods.Paths;
 using NexusMods.Sdk;
 using NexusMods.Sdk.Hashes;
 using NexusMods.Sdk.IO;
+using NexusMods.Sdk.NexusModsApi;
 
 namespace NexusMods.Networking.NexusWebApi;
 
@@ -589,11 +590,7 @@ public partial class NexusModsLibrary
         GameIdCache gameIds,
         ResolvedEntitiesLookup resolvedEntitiesLookup)
     {
-        var modId = new UidForMod
-        {
-            GameId = gameIds[collectionMod.DomainName],
-            ModId = collectionMod.Source.ModId,
-        };
+        var modId = new UidForMod(collectionMod.Source.ModId, gameIds[collectionMod.DomainName]);
 
         var fileId = new UidForFile(fileId: collectionMod.Source.FileId, gameId: gameIds[collectionMod.DomainName]);
 

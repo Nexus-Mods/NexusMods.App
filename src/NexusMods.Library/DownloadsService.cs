@@ -11,6 +11,7 @@ using NexusMods.Networking.HttpDownloader;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.App.UI.Resources;
 using NexusMods.Sdk.Jobs;
+using NexusMods.Sdk.NexusModsApi;
 using R3;
 using ReactiveUI;
 

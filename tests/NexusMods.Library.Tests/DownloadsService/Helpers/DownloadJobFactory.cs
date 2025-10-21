@@ -7,6 +7,7 @@ using NexusMods.Abstractions.NexusWebApi.Types.V2.Uid;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using NexusMods.Sdk.Jobs;
+using NexusMods.Sdk.NexusModsApi;
 
 namespace NexusMods.Library.Tests.DownloadsService.Helpers;
 

@@ -3,6 +3,7 @@ using JetBrains.Annotations;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Sdk.Settings;
 using NexusMods.Sdk;
+using NexusMods.Sdk.NexusModsApi;
 
 namespace NexusMods.App.UI.Settings;
 

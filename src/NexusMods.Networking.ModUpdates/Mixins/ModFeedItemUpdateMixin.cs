@@ -1,6 +1,8 @@
 using NexusMods.Abstractions.NexusWebApi.DTOs;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Abstractions.NexusWebApi.Types.V2.Uid;
+using NexusMods.Sdk.NexusModsApi;
+
 namespace NexusMods.Networking.ModUpdates.Mixins;
 
 /// <summary>
@@ -32,9 +34,5 @@ public readonly struct ModFeedItemUpdateMixin : IModFeedItem
     public DateTimeOffset GetLastUpdatedDate() => _lastUpdatedDate;
 
     /// <inheritdoc />
-    public UidForMod GetModPageId() => new()
-    {
-        GameId = _gameId,
-        ModId = _modId, 
-    };
+    public UidForMod GetModPageId() => new(_modId, _gameId);
 }

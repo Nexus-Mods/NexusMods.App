@@ -16,6 +16,7 @@ using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Paths;
 using NexusMods.Sdk.FileExtractor;
 using NexusMods.Sdk.IO;
+using NexusMods.Sdk.NexusModsApi;
 
 // ReSharper disable InconsistentNaming
 
@@ -26,7 +27,7 @@ public class StubbedGame : AGame, IEADesktopGame, IEpicGame, IOriginGame, ISteam
     private readonly ILogger<StubbedGame> _logger;
     private readonly IEnumerable<IGameLocator> _locators;
     public override string Name => "Stubbed Game";
-    public override GameId GameId => GameId.From(uint.MaxValue);
+    public override GameId GameId => Sdk.NexusModsApi.GameId.From(uint.MaxValue);
 
     public override SupportType SupportType => SupportType.Unsupported;
 

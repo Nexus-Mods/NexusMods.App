@@ -23,6 +23,7 @@ using NexusMods.Paths;
 using NexusMods.Sdk;
 using NexusMods.Sdk.IO;
 using NexusMods.Sdk.Jobs;
+using NexusMods.Sdk.NexusModsApi;
 using BuildId = NexusMods.Abstractions.GOG.Values.BuildId;
 using Connection = NexusMods.MnemonicDB.Connection;
 

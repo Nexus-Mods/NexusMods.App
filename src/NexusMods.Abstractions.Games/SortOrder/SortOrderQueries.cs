@@ -1,6 +1,7 @@
 using DynamicData;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.Sdk.NexusModsApi;
 
 namespace NexusMods.Abstractions.Games;
 

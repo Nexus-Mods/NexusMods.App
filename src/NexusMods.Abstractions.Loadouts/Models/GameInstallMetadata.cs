@@ -3,6 +3,7 @@ using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.BuiltInEntities;
 using NexusMods.MnemonicDB.Abstractions.Models;
+using NexusMods.Sdk.NexusModsApi;
 
 namespace NexusMods.Abstractions.Loadouts;
 

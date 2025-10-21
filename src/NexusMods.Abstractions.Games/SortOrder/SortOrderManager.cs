@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.Sdk.NexusModsApi;
 using R3;
 using OneOf;
 

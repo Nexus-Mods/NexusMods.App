@@ -12,6 +12,7 @@ using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Abstractions.NexusWebApi.Types.V2.Uid;
 using NexusMods.Games.TestFramework;
 using NexusMods.Networking.NexusWebApi.UpdateFilters;
+using NexusMods.Sdk.NexusModsApi;
 using Xunit;
 using Xunit.Abstractions;
 

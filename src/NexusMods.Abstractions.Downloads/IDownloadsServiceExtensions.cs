@@ -3,6 +3,7 @@ using DynamicData;
 using JetBrains.Annotations;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Sdk.Jobs;
+using NexusMods.Sdk.NexusModsApi;
 using R3;
 using Observable = System.Reactive.Linq.Observable;
 

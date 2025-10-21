@@ -9,6 +9,7 @@ using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Paths;
+using NexusMods.Sdk.NexusModsApi;
 using NexusMods.UI.Sdk.Icons;
 using R3;
 using ReactiveUI;

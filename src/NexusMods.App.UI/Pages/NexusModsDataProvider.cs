@@ -20,6 +20,7 @@ using NexusMods.Networking.NexusWebApi;
 using NexusMods.Networking.NexusWebApi.UpdateFilters;
 using NuGet.Versioning;
 using NexusMods.Paths;
+using NexusMods.Sdk.NexusModsApi;
 using R3;
 using Observable = System.Reactive.Linq.Observable;
 
