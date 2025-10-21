@@ -5,6 +5,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.Models.TreeDataGrid;
 using Avalonia.Media.Imaging;
 using DynamicData;
+using DynamicData.Binding;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
@@ -31,6 +32,8 @@ public class FileConflictsViewModel : AViewModel<IFileConflictsViewModel>, IFile
     public FileConflictsTreeDataGridAdapter TreeDataGridAdapter { get; }
 
     public IReadOnlyBindableReactiveProperty<ListSortDirection> SortDirectionCurrent => _sortDirectionCurrent;
+    
+    public R3.ReactiveCommand SwitchSortDirectionCommand { get; }
 
     public FileConflictsViewModel(IServiceProvider serviceProvider, IWindowManager windowManager, LoadoutId loadoutId)
     {
@@ -43,7 +46,15 @@ public class FileConflictsViewModel : AViewModel<IFileConflictsViewModel>, IFile
 
         _sortDirectionCurrent = new BindableReactiveProperty<ListSortDirection>(ListSortDirection.Ascending);
         
-        TreeDataGridAdapter = new FileConflictsTreeDataGridAdapter(serviceProvider, connection, synchronizer, loadoutId);
+        SwitchSortDirectionCommand = new R3.ReactiveCommand(_ =>
+        {
+            var newDirection = SortDirectionCurrent.Value == ListSortDirection.Ascending
+                ? ListSortDirection.Descending
+                : ListSortDirection.Ascending;
+            _sortDirectionCurrent.Value = newDirection;
+        });
+        
+        TreeDataGridAdapter = new FileConflictsTreeDataGridAdapter(serviceProvider, connection, synchronizer, SortDirectionCurrent.AsObservable(), loadoutId);
 
         this.WhenActivated(disposables =>
         {
@@ -121,13 +132,16 @@ public class FileConflictsViewModel : AViewModel<IFileConflictsViewModel>, IFile
         });
     }
     
-    
-    private static async Task HandleViewConflictsMessage(FileConflictsTreeDataGridAdapter.ViewConflictsMessage msg, IWindowManager windowManager, IServiceProvider serviceProvider)
+    private static async Task HandleViewConflictsMessage(
+        FileConflictsTreeDataGridAdapter.ViewConflictsMessage msg, 
+        IWindowManager windowManager, 
+        IServiceProvider serviceProvider)
     {
         var markdownRendererViewModel = serviceProvider.GetRequiredService<IMarkdownRendererViewModel>();
         markdownRendererViewModel.Contents = msg.Markdown;
 
-        _ = await windowManager.ShowDialog(DialogFactory.CreateStandardDialog(title: $"Conflicts for {msg.Group.AsLoadoutItem().Name}", new StandardDialogParameters
+        _ = await windowManager.ShowDialog(
+            DialogFactory.CreateStandardDialog(title: $"Conflicts for {msg.Group.AsLoadoutItem().Name}", new StandardDialogParameters
         {
             Markdown = markdownRendererViewModel,
         }, buttonDefinitions: [DialogStandardButtons.Close]), DialogWindowType.Modeless);
@@ -157,16 +171,40 @@ public class FileConflictsTreeDataGridAdapter : TreeDataGridAdapter<CompositeIte
     private readonly ILoadoutSynchronizer _synchronizer;
     private readonly IResourceLoader<EntityId, Bitmap> _modPageThumbnailPipeline;
     private readonly LoadoutId _loadoutId;
+    private readonly CompositeDisposable _disposables = new();
 
     public Subject<OneOf.OneOf<ViewConflictsMessage, MoveUpCommandPayload, MoveDownCommandPayload>> MessageSubject { get; } = new();
 
-    public FileConflictsTreeDataGridAdapter(IServiceProvider serviceProvider, IConnection connection, ILoadoutSynchronizer synchronizer, LoadoutId loadoutId)
+    public FileConflictsTreeDataGridAdapter(
+        IServiceProvider serviceProvider, 
+        IConnection connection, 
+        ILoadoutSynchronizer synchronizer, 
+        Observable<ListSortDirection> sortDirectionObservable,
+        LoadoutId loadoutId)
     {
         _connection = connection;
         _synchronizer = synchronizer;
         _loadoutId = loadoutId;
-
         _modPageThumbnailPipeline = ImagePipelines.GetModPageThumbnailPipeline(serviceProvider);
+        
+        var ascendingComparer = SortExpressionComparer<CompositeItemModel<EntityId>>.Ascending(
+            item => item.Get<SharedComponents.IndexComponent>(FileConflictsColumns.IndexColumn.IndexComponentKey).SortIndex.Value
+        );
+        var descendingComparer = SortExpressionComparer<CompositeItemModel<EntityId>>.Descending(
+            item => item.Get<SharedComponents.IndexComponent>(FileConflictsColumns.IndexColumn.IndexComponentKey).SortIndex.Value
+        );
+        
+        var comparerObservable = sortDirectionObservable
+            .Select(direction => direction == ListSortDirection.Ascending ? ascendingComparer : descendingComparer)
+            .DistinctUntilChanged();
+        
+        this.WhenActivated( (self, disposables)  =>
+            {
+                comparerObservable
+                    .Subscribe(comparer => CustomSortComparer.Value = comparer)
+                    .AddTo(disposables);
+            }
+        );
     }
 
     protected override void BeforeModelActivationHook(CompositeItemModel<EntityId> model)
@@ -177,7 +215,8 @@ public class FileConflictsTreeDataGridAdapter : TreeDataGridAdapter<CompositeIte
         model.SubscribeToComponentAndTrack<FileConflictsComponents.ViewAction, FileConflictsTreeDataGridAdapter>(
             key: FileConflictsColumns.Actions.ViewComponentKey,
             state: this,
-            factory: static (self, itemModel, component) => component.CommandViewConflicts.Subscribe((self, itemModel, component), static (_, state) =>
+            factory: static (self, itemModel, component) => component.CommandViewConflicts.Subscribe((self, itemModel, component), 
+                    static (_, state) =>
             {
                 var (self, _, component) = state;
                 var markdown = component.CreateMarkdown();
@@ -185,7 +224,6 @@ public class FileConflictsTreeDataGridAdapter : TreeDataGridAdapter<CompositeIte
                 self.MessageSubject.OnNext(new ViewConflictsMessage(component.Group, markdown));
             })
         );
-        
         
         // Move up command
         model.SubscribeToComponentAndTrack<SharedComponents.IndexComponent, FileConflictsTreeDataGridAdapter>(
@@ -230,7 +268,9 @@ public class FileConflictsTreeDataGridAdapter : TreeDataGridAdapter<CompositeIte
         return sourceCache.Connect();
     }
 
-    private CompositeItemModel<EntityId> ToItemModel(KeyValuePair<LoadoutItemGroup.ReadOnly, LoadoutFile.ReadOnly[]> kv, FrozenDictionary<GamePath, FileConflictGroup> conflictsByPath)
+    private CompositeItemModel<EntityId> ToItemModel(
+        KeyValuePair<LoadoutItemGroup.ReadOnly, LoadoutFile.ReadOnly[]> kv, 
+        FrozenDictionary<GamePath, FileConflictGroup> conflictsByPath)
     {
         var (loadoutGroup, loadoutFiles) = kv;
         var itemModel = new CompositeItemModel<EntityId>(loadoutGroup.Id);
@@ -242,14 +282,18 @@ public class FileConflictsTreeDataGridAdapter : TreeDataGridAdapter<CompositeIte
         {
             if (libraryLinkedLoadoutItem.LibraryItem.TryGetAsNexusModsLibraryItem(out var nexusLibraryItem))
             {
-                imageComponent = ImageComponent.FromPipeline(_modPageThumbnailPipeline, nexusLibraryItem.ModPageMetadataId, ImagePipelines.ModPageThumbnailFallback);
+                imageComponent = ImageComponent.FromPipeline(
+                    _modPageThumbnailPipeline, 
+                    nexusLibraryItem.ModPageMetadataId, 
+                    ImagePipelines.ModPageThumbnailFallback);
             }
         }
 
         imageComponent ??= new ImageComponent(value: ImagePipelines.ModPageThumbnailFallback);
         itemModel.Add(SharedColumns.Name.ImageComponentKey, imageComponent);
 
-        itemModel.Add(FileConflictsColumns.Actions.ViewComponentKey, new FileConflictsComponents.ViewAction(loadoutGroup, loadoutFiles, conflictsByPath));
+        itemModel.Add(FileConflictsColumns.Actions.ViewComponentKey, 
+            new FileConflictsComponents.ViewAction(loadoutGroup, loadoutFiles, conflictsByPath));
         
         // TODO: populate with real data
         itemModel.Add(FileConflictsColumns.IndexColumn.IndexComponentKey, new SharedComponents.IndexComponent(

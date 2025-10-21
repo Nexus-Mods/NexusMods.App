@@ -143,7 +143,8 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
                             if (eventArgs.Position != TreeDataGridRowDropPosition.Inside) return;
                             
                             // Update the drop position for the inside case to be before or after
-                            eventArgs.Position = PointerIsInVerticalTopHalf(eventArgs) ? TreeDataGridRowDropPosition.Before : TreeDataGridRowDropPosition.After;
+                            eventArgs.Position = PointerIsInVerticalTopHalf(eventArgs) ? 
+                                TreeDataGridRowDropPosition.Before : TreeDataGridRowDropPosition.After;
                         }
                     )
                     .DisposeWith(d);

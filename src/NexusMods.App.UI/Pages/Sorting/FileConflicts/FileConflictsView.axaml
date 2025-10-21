@@ -30,7 +30,7 @@
                 <TreeDataGrid.Resources>
                     <ResourceDictionary>
 
-                        <DataTemplate x:Key="{x:Static local:LoadOrderColumns+IndexColumn.ColumnTemplateResourceKey}">
+                        <DataTemplate x:Key="{x:Static local:FileConflictsColumns+IndexColumn.ColumnTemplateResourceKey}">
                             <DataTemplate.DataType>
                                 <x:Type TypeName="controls:CompositeItemModel" x:TypeArguments="abstractions:EntityId" />
                             </DataTemplate.DataType>
