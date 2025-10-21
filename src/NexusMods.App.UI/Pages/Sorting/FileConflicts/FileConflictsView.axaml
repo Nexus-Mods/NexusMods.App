@@ -124,7 +124,8 @@
                                          ToolTip.Tip="Click to show help" />
 
                 <!-- SurfaceTransparent Background so the tooltip hit box covers the whole stack -->
-                <DockPanel Grid.Row="1" x:Name="TrophyBarDockPanel">
+                <DockPanel Grid.Row="1" x:Name="TrophyBarDockPanel" ToolTip.Tip="Greater priority values win conflicts">
+                
                     <icons:UnifiedIcon x:Name="TrophyIcon"
                                        DockPanel.Dock="Top"
                                        Value="{x:Static icons:IconValues.TrophyOutline}" />

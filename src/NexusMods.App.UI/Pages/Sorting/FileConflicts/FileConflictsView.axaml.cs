@@ -1,4 +1,7 @@
+using System.ComponentModel;
+using Avalonia.Controls;
 using NexusMods.App.UI.Controls;
+using NexusMods.App.UI.Extensions;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.UI.Sdk;
 using R3;
@@ -20,9 +23,33 @@ public partial class FileConflictsView : R3UserControl<IFileConflictsViewModel>
 
         this.WhenActivated(disposables =>
         {
+            // TreeDataGrid Source
             this.OneWayR3Bind(view => view.BindableViewModel, vm => vm.TreeDataGridAdapter.Source, 
-                    (view, source) => view.TreeDataGrid.Source = source)
+                    static (view, source) => view.TreeDataGrid.Source = source)
                 .AddTo(disposables);
+            
+            // Empty state
+            this.OneWayR3Bind(view => view.BindableViewModel, vm => vm.TreeDataGridAdapter.IsSourceEmpty, 
+                    static (view, isSourceEmpty) => view.EmptyState.IsActive = isSourceEmpty)
+                .AddTo(disposables);
+            
+            // Trophy bar
+            this.OneWayR3Bind(view => view.BindableViewModel, vm => vm.SortDirectionCurrent,
+                    static (view, sortDirection) =>
+                    {
+                        var isAscending = sortDirection == ListSortDirection.Ascending;
+                        
+                        DockPanel.SetDock(view.TrophyIcon, isAscending ? Dock.Bottom : Dock.Top);
+                        
+                        // not used anymore for styling but leaving these in just in case
+                        view.TrophyBarDockPanel.Classes.ToggleIf("IsWinnerTop", !isAscending);
+                        view.TrophyBarDockPanel.Classes.ToggleIf("IsWinnerBottom", isAscending);
+                        
+                        view.ArrowUpIcon.IsVisible = !isAscending;
+                        view.ArrowDownIcon.IsVisible = isAscending;
+                    })
+                .AddTo(disposables);
+            
             
             
         });
