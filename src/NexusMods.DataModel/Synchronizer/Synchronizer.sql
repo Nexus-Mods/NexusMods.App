@@ -91,14 +91,14 @@ WITH all_files AS
   UNION
   -- Intrinsic files on Layer 3
   SELECT
-    Loadout,
+    intrinsic_file.Loadout Loadout,
     Null Id,
-    Path,
+    {Location: intrinsic_file.Path.Item1, Path: intrinsic_file.Path.Item2} Path,
     Null Hash,
     Null Size,
     'Intrinsic'::synchronizer.ItemType ItemType,
     3 Layer
-  FROM intrinsic_files(Db=>db)
+  FROM intrinsic_files(Db=>db) intrinsic_file
 )
 -- Group by loadout, path and take the winning file
 SELECT
