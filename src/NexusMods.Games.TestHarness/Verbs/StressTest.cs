@@ -68,7 +68,7 @@ public class StressTest
                 var hash = Hash.Zero;
                 foreach (var file in files.Data!.ModFiles.Where(f => Size.FromLong(long.Parse(f.SizeInBytes ?? "0")) < MaxFileSize))
                 {
-                    var uid = UidForFile.FromV2Api(file.Uid);
+                    var uid = FileUid.FromV2Api(file.Uid);
                     try
                     {
                         var size = Size.FromLong(long.Parse(file.SizeInBytes ?? "0"));

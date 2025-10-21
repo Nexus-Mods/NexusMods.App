@@ -19,7 +19,7 @@ public class IgnoreModUpdateFilter<TShouldIgnoreFile> where TShouldIgnoreFile : 
     private bool ShouldIgnoreFile(NexusModsFileMetadata.ReadOnly file) => ShouldIgnoreFile(file.Uid);
 
     /// <summary>Returns true if a file should be excluded from update results.</summary>
-    private bool ShouldIgnoreFile(UidForFile file) => _fileFilter.ShouldIgnoreFile(file);
+    private bool ShouldIgnoreFile(FileUid file) => _fileFilter.ShouldIgnoreFile(file);
 
     /// <summary>
     /// Plugs into <see cref="ModUpdateService.GetNewestFileVersionObservable"/>
@@ -92,7 +92,7 @@ public class IgnoreModUpdateFilter : IgnoreModUpdateFilter<DefaultFileUpdateFilt
 public interface IShouldIgnoreFile
 {
     /// <summary>Returns true if a file should be excluded from update results.</summary>
-    bool ShouldIgnoreFile(UidForFile file);
+    bool ShouldIgnoreFile(FileUid file);
 }
 
 /// <summary>
@@ -108,5 +108,5 @@ public class DefaultFileUpdateFilter : IShouldIgnoreFile
     public DefaultFileUpdateFilter(IConnection connection) => _connection = connection;
 
     /// <inheritdoc />
-    public bool ShouldIgnoreFile(UidForFile file) => IgnoreFileUpdate.FindByUid(_connection.Db, file).Count > 0;
+    public bool ShouldIgnoreFile(FileUid file) => IgnoreFileUpdate.FindByUid(_connection.Db, file).Count > 0;
 }

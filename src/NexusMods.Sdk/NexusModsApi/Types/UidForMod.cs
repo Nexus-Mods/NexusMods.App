@@ -44,7 +44,7 @@ public readonly struct UidForMod : IEquatable<UidForMod>
     }
 
     /// <summary>
-    /// Decodes a Nexus Mods API result which contains an 'uid' field into a <see cref="UidForFile"/>.
+    /// Decodes a Nexus Mods API result which contains an 'uid' field into a <see cref="FileUid"/>.
     /// </summary>
     /// <param name="uid">The 'uid' field of a GraphQL API query. This should be an 8 byte number represented as a string.</param>
     /// <remarks>

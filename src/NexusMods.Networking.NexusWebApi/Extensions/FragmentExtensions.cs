@@ -45,7 +45,7 @@ public static class FragmentExtensions
     /// <param name="modPageEid">ID of the mod page entity.</param>
     public static EntityId Resolve(this IModFile modFileFragment, IDb db, ITransaction tx, EntityId modPageEid)
     {
-        var nexusFileResolver = GraphQLResolver.Create(db, tx, NexusModsFileMetadata.Uid, UidForFile.FromV2Api(modFileFragment.Uid));
+        var nexusFileResolver = GraphQLResolver.Create(db, tx, NexusModsFileMetadata.Uid, FileUid.FromV2Api(modFileFragment.Uid));
         nexusFileResolver.Add(NexusModsFileMetadata.ModPageId, modPageEid);
         nexusFileResolver.Add(NexusModsFileMetadata.Name, modFileFragment.Name);
         nexusFileResolver.Add(NexusModsFileMetadata.Version, modFileFragment.Version);

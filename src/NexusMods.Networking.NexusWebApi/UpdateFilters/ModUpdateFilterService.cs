@@ -36,7 +36,7 @@ public class ModUpdateFilterService : IModUpdateFilterService
     }
 
     /// <inheritdoc />
-    public async Task HideFileAsync(UidForFile fileUid)
+    public async Task HideFileAsync(FileUid fileUid)
     {
         using var tx = _connection.BeginTransaction();
         _ = new IgnoreFileUpdate.New(tx) { Uid = fileUid };
@@ -44,7 +44,7 @@ public class ModUpdateFilterService : IModUpdateFilterService
     }
 
     /// <inheritdoc />
-    public async Task HideFilesAsync(IEnumerable<UidForFile> fileUids)
+    public async Task HideFilesAsync(IEnumerable<FileUid> fileUids)
     {
         using var tx = _connection.BeginTransaction();
         foreach (var fileUid in fileUids)
@@ -55,7 +55,7 @@ public class ModUpdateFilterService : IModUpdateFilterService
     }
 
     /// <inheritdoc />
-    public async Task ShowFileAsync(UidForFile fileUid)
+    public async Task ShowFileAsync(FileUid fileUid)
     {
         using var tx = _connection.BeginTransaction();
         var ignoreEntries = IgnoreFileUpdate.FindByUid(_connection.Db, fileUid);
@@ -67,7 +67,7 @@ public class ModUpdateFilterService : IModUpdateFilterService
     }
 
     /// <inheritdoc />
-    public async Task ShowFilesAsync(IEnumerable<UidForFile> fileUids)
+    public async Task ShowFilesAsync(IEnumerable<FileUid> fileUids)
     {
         using var tx = _connection.BeginTransaction();
         foreach (var fileUid in fileUids)
@@ -95,7 +95,7 @@ public class ModUpdateFilterService : IModUpdateFilterService
     }
 
     /// <inheritdoc />
-    public IObservable<bool> ObserveFileHiddenState(UidForFile fileUid)
+    public IObservable<bool> ObserveFileHiddenState(FileUid fileUid)
     {
         // Create an observable that emits the current hidden state and updates when filters change
         return Observable.Create<bool>(observer =>
@@ -118,7 +118,7 @@ public class ModUpdateFilterService : IModUpdateFilterService
     }
 
     /// <inheritdoc />
-    public bool IsFileHidden(UidForFile fileUid)
+    public bool IsFileHidden(FileUid fileUid)
     {
         return IgnoreFileUpdate.FindByUid(_connection.Db, fileUid).Any();
     }

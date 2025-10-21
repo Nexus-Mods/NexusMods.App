@@ -160,9 +160,9 @@ public static class RunUpdateCheck
     /// <remarks>
     ///     The returned items are returned in descending order, from newest to oldest.
     /// </remarks>
-    public static IEnumerable<NexusModsFileMetadata.ReadOnly> GetNewerFilesForExistingFile(IDb db, UidForFile uid)
+    public static IEnumerable<NexusModsFileMetadata.ReadOnly> GetNewerFilesForExistingFile(IDb db, FileUid fileUid)
     {
-        var metadata = NexusModsFileMetadata.FindByUid(db, uid).First();
+        var metadata = NexusModsFileMetadata.FindByUid(db, fileUid).First();
         return GetNewerFilesForExistingFile(metadata);
     } 
     
@@ -233,9 +233,9 @@ public static class RunUpdateCheck
     /// <summary>
     /// Returns all file versions for a file identified by UID; including itself.
     /// </summary>
-    public static IEnumerable<NexusModsFileMetadata.ReadOnly> GetAllVersionsForExistingFile(IDb db, UidForFile uid)
+    public static IEnumerable<NexusModsFileMetadata.ReadOnly> GetAllVersionsForExistingFile(IDb db, FileUid fileUid)
     {
-        var metadata = NexusModsFileMetadata.FindByUid(db, uid).First();
+        var metadata = NexusModsFileMetadata.FindByUid(db, fileUid).First();
         return GetAllVersionsForExistingFile(metadata);
     }
 }

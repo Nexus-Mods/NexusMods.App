@@ -102,7 +102,7 @@ public partial class NexusModsLibrary
         NexusModsModPageMetadata.ReadOnly modPage,
         CancellationToken cancellationToken = default)
     {
-        var uid = new UidForFile(fileId, modPage.Uid.GameId);
+        var uid = new FileUid(fileId, modPage.Uid.GameId);
         var fileEntities = NexusModsFileMetadata.FindByUid(_connection.Db, uid);
         if (fileEntities.TryGetFirst(x => x.ModPageId == modPage, out var file))
             return file;

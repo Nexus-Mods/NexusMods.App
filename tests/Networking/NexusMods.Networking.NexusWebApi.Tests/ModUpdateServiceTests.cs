@@ -484,7 +484,7 @@ public class ModUpdateServiceTests : ACyberpunkIsolatedGameTest<ModUpdateService
         
         // Hide the newest update file using the filter service
         var newestFile = spaceCoreData.Updates[^1]; // Get the latest update
-        var newestFileUid = new UidForFile(
+        var newestFileUid = new FileUid(
             (FileId)newestFile.FileId,
             (GameId)newestFile.GameId
         );
@@ -541,7 +541,7 @@ public class ModUpdateServiceTests : ACyberpunkIsolatedGameTest<ModUpdateService
         var initialUpdateCount = updateOnPage!.Value.NewerFiles.Length;
         
         // Hide multiple update files using the filter service
-        var filesToHide = spaceCoreData.Updates.TakeLast(2).Select(update => new UidForFile(
+        var filesToHide = spaceCoreData.Updates.TakeLast(2).Select(update => new FileUid(
             (FileId)update.FileId,
             (GameId)update.GameId
         )).ToArray();

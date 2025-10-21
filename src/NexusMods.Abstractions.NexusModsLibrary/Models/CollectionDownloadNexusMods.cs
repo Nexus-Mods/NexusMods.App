@@ -18,9 +18,9 @@ public partial class CollectionDownloadNexusMods : IModelDefinition
     private const string Namespace = "NexusMods.NexusModsLibrary.CollectionDownloadNexusMods";
 
     /// <summary>
-    /// <see cref="UidForFile"/>.
+    /// <see cref="NexusWebApi.Types.V2.Uid.FileUid"/>.
     /// </summary>
-    public static readonly UidForFileAttribute FileUid = new(Namespace, nameof(FileUid)) { IsIndexed = true };
+    public static readonly FileUidAttribute FileUid = new(Namespace, nameof(FileUid)) { IsIndexed = true };
 
     /// <summary>
     /// <see cref="UidForMod"/>.

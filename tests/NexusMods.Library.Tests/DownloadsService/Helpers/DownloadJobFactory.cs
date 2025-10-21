@@ -101,7 +101,7 @@ public class DownloadJobFactory(IJobMonitor jobMonitor, IServiceProvider service
             Version = "1.0.0-test",
             Size = Size.FromLong(1024 * 1024), // 1MB test file
             UploadedAt = DateTimeOffset.UtcNow.AddDays(-1), // Uploaded yesterday
-            Uid = new UidForFile(FileId.From(0), gameId),
+            Uid = new FileUid(FileId.From(0), gameId),
             ModPageId = NexusModsModPageMetadataId.From(uniqueId + 1000) // Related mod page ID
         };
         

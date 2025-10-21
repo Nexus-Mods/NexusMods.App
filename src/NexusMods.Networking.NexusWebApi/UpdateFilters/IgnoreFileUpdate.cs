@@ -16,7 +16,7 @@ public partial class IgnoreFileUpdate : IModelDefinition
     /// <summary>
     /// Unique identifier for the file on Nexus Mods to be ignored.
     /// </summary>
-    public static readonly UidForFileAttribute Uid = new(Namespace, nameof(Uid)) { IsIndexed = true };
+    public static readonly FileUidAttribute Uid = new(Namespace, nameof(Uid)) { IsIndexed = true };
     
     // MaybeTODO: Add the 'previous file' should user feedback say I want to ignore updates from specific version pairs.
 }
