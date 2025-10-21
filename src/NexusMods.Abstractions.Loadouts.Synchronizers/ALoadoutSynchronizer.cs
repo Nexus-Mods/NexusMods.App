@@ -546,11 +546,8 @@ public partial class ALoadoutSynchronizer : ILoadoutSynchronizer
         var intrinsicFiles = IntrinsicFiles(loadout);
         foreach (var (path, node) in syncTree)
         {
-            if (!node.Actions.HasFlag(Actions.WriteIntrinsic))
-                continue;
-            
-            if (node.SourceItemType != LoadoutSourceItemType.Intrinsic)
-                throw new Exception("WriteIntrinsic should only be called on intrinsic files");
+            if (!node.Actions.HasFlag(Actions.WriteIntrinsic)) continue;
+            if (node.SourceItemType != LoadoutSourceItemType.Intrinsic) throw new Exception("WriteIntrinsic should only be called on intrinsic files");
 
             var instance = intrinsicFiles[path];
             var resolvedPath = register.GetResolvedPath(path);
@@ -566,18 +563,14 @@ public partial class ALoadoutSynchronizer : ILoadoutSynchronizer
         var intrinsicFiles = IntrinsicFiles(loadout);
         foreach (var (path, node) in syncTree)
         {
-            if (!node.Actions.HasFlag(Actions.AdaptLoadout))
-                continue;
-            
-            if (node.SourceItemType != LoadoutSourceItemType.Intrinsic)
-                throw new Exception("AdaptLoadout should only be called on intrinsic files");
+            if (!node.Actions.HasFlag(Actions.AdaptLoadout)) continue;
+            if (node.SourceItemType != LoadoutSourceItemType.Intrinsic) throw new Exception("AdaptLoadout should only be called on intrinsic files");
 
             var instance = intrinsicFiles[path];
             var resolvedPath = register.GetResolvedPath(path);
             await using var stream = resolvedPath.Read();
             await instance.Ingest(stream, loadout, syncTree, tx);
         }
-
     }
 
     /// <summary>
