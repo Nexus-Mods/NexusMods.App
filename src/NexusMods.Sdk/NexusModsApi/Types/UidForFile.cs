@@ -2,7 +2,6 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
-using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 using NexusMods.MnemonicDB.Abstractions.ValueSerializers;
 
 namespace NexusMods.Abstractions.NexusWebApi.Types.V2.Uid;
@@ -18,7 +17,7 @@ namespace NexusMods.Abstractions.NexusWebApi.Types.V2.Uid;
 /// expected to change.
 /// </summary>
 [StructLayout(LayoutKind.Sequential, Pack = 1)]
-public struct UidForFile : IEquatable<UidForFile>
+public readonly struct UidForFile : IEquatable<UidForFile>
 {
     /// <summary>
     /// Unique identifier for the file, within the specific <see cref="GameId"/>.
@@ -54,8 +53,8 @@ public struct UidForFile : IEquatable<UidForFile>
     /// <summary>
     /// Reinterprets the current <see cref="UidForFile"/> as a single <see cref="ulong"/>.
     /// </summary>
-    public ulong AsUlong => Unsafe.As<UidForFile, ulong>(ref this);
-    
+    public ulong AsUlong => Unsafe.As<UidForFile, ulong>(ref Unsafe.AsRef(in this));
+
     /// <summary>
     /// Reinterprets a given <see cref="ulong"/> into a <see cref="UidForFile"/>.
     /// </summary>
@@ -100,11 +99,9 @@ public struct UidForFile : IEquatable<UidForFile>
 }
 
 /// <summary>
-/// Attribute that uniquely identifies a file on Nexus Mods.
-/// See <see cref="UidForFile"/> for more details.
+/// Attribute for <see cref="UidForFile"/>.
 /// </summary>
-public class UidForFileAttribute(string ns, string name) 
-    : ScalarAttribute<UidForFile, ulong, UInt64Serializer>(ns, name)
+public class UidForFileAttribute(string ns, string name) : ScalarAttribute<UidForFile, ulong, UInt64Serializer>(ns, name)
 {
     /// <inheritdoc />
     protected override ulong ToLowLevel(UidForFile value) => value.AsUlong;

@@ -21,17 +21,17 @@ namespace NexusMods.Abstractions.NexusWebApi.Types.V2.Uid;
 /// expected to change.
 /// </summary>
 [StructLayout(LayoutKind.Sequential, Pack = 1)]
-public struct UidForMod : IEquatable<UidForMod>
+public readonly struct UidForMod : IEquatable<UidForMod>
 {
     /// <summary>
     /// Unique identifier for the mod, within the specific <see cref="GameId"/>.
     /// </summary>
-    public ModId ModId;
+    public readonly ModId ModId;
 
     /// <summary>
     /// Unique identifier for the game.
     /// </summary>
-    public GameId GameId;
+    public readonly GameId GameId;
 
     /// <summary>
     /// Decodes a Nexus Mods API result which contains an 'uid' field into a <see cref="UidForFile"/>.
@@ -50,8 +50,8 @@ public struct UidForMod : IEquatable<UidForMod>
     /// <summary>
     /// Reinterprets the current <see cref="UidForMod"/> as a single <see cref="ulong"/>.
     /// </summary>
-    public ulong AsUlong => Unsafe.As<UidForMod, ulong>(ref this);
-    
+    public ulong AsUlong => Unsafe.As<UidForMod, ulong>(ref Unsafe.AsRef(in this));
+
     /// <summary>
     /// Reinterprets a given <see cref="ulong"/> into a <see cref="UidForMod"/>.
     /// </summary>
@@ -77,14 +77,28 @@ public struct UidForMod : IEquatable<UidForMod>
             return (ModId.GetHashCode() * 397) ^ GameId.GetHashCode();
         }
     }
+
+    /// <summary>
+    /// Equality.
+    /// </summary>
+    public static bool operator ==(UidForMod left, UidForMod right)
+    {
+        return left.Equals(right);
+    }
+
+    /// <summary>
+    /// Inequality.
+    /// </summary>
+    public static bool operator !=(UidForMod left, UidForMod right)
+    {
+        return !(left == right);
+    }
 }
 
 /// <summary>
-/// Attribute that uniquely identifies a mod on Nexus Mods.
-/// See <see cref="UidForMod"/> for more details.
+/// Attribute for <see cref="UidForMod"/>.
 /// </summary>
-public class UidForModAttribute(string ns, string name) 
-    : ScalarAttribute<UidForMod, ulong, UInt64Serializer>(ns, name)
+public class UidForModAttribute(string ns, string name) : ScalarAttribute<UidForMod, ulong, UInt64Serializer>(ns, name)
 {
     /// <inheritdoc />
     protected override ulong ToLowLevel(UidForMod value) => value.AsUlong;

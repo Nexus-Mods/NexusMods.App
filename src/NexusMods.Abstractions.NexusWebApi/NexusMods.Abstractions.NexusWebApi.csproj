@@ -15,6 +15,7 @@
 
     <ItemGroup>
       <Folder Include="Types\V2\" />
+      <Folder Include="Types\V2\Uid\" />
     </ItemGroup>
 
     <ItemGroup>
