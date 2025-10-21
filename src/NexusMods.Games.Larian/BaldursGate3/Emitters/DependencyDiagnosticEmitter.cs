@@ -8,7 +8,6 @@ using NexusMods.Abstractions.Diagnostics.Values;
 using NexusMods.Abstractions.GameLocators.Stores.Steam;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Extensions;
-using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Abstractions.Telemetry;
 using NexusMods.Games.Larian.BaldursGate3.Utils.LsxXmlParsing;
 using NexusMods.Hashing.xxHash3;

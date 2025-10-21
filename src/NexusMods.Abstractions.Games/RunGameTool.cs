@@ -7,7 +7,6 @@ using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.GameLocators.Stores.GOG;
 using NexusMods.Abstractions.GameLocators.Stores.Steam;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Paths;
 using NexusMods.Sdk;
 using NexusMods.Sdk.Jobs;

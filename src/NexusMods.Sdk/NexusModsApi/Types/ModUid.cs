@@ -4,9 +4,8 @@ using System.Runtime.InteropServices;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.ValueSerializers;
-using NexusMods.Sdk.NexusModsApi;
 
-namespace NexusMods.Abstractions.NexusWebApi.Types.V2.Uid;
+namespace NexusMods.Sdk.NexusModsApi;
 
 /// <summary>
 /// This represents a unique ID of an individual mod page as stored on Nexus Mods.

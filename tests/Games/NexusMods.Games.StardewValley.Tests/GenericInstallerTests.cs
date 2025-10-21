@@ -1,18 +1,12 @@
-using System.Runtime.CompilerServices;
-using System.Text;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Games.StardewValley.Installers;
 using NexusMods.Games.StardewValley.Models;
 using NexusMods.Games.TestFramework;
-using NexusMods.Sdk;
 using NexusMods.Sdk.NexusModsApi;
 using NexusMods.StandardGameLocators.TestHelpers;
-using Xunit;
 using Xunit.Abstractions;
 
 namespace NexusMods.Games.StardewValley.Tests;

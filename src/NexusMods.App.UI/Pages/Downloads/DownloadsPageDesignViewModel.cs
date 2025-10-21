@@ -2,8 +2,6 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using DynamicData;
 using NexusMods.Abstractions.Downloads;
-using NexusMods.Abstractions.Games;
-using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;

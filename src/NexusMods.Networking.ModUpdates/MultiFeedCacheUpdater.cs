@@ -1,5 +1,4 @@
-﻿using NexusMods.Abstractions.NexusWebApi.Types.V2;
-using NexusMods.Sdk.NexusModsApi;
+﻿using NexusMods.Sdk.NexusModsApi;
 
 namespace NexusMods.Networking.ModUpdates;
 

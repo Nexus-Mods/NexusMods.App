@@ -3,7 +3,6 @@ using DynamicData;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Downloads;
-using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Library.Tests.DownloadsService.Helpers;
 using NexusMods.Sdk.Jobs;
 using NexusMods.Sdk.NexusModsApi;

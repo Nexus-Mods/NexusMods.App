@@ -1,7 +1,6 @@
 using DynamicData.Kernel;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Abstractions.Serialization.Attributes;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;

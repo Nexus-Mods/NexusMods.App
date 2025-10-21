@@ -1,11 +1,9 @@
 using System.Collections.Frozen;
-using System.Reactive.Linq;
 using DynamicData;
 using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Sdk.NexusModsApi;
 using R3;

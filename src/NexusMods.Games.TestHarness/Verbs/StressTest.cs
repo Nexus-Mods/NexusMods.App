@@ -6,7 +6,6 @@ using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.Types;
-using NexusMods.Abstractions.NexusWebApi.Types.V2.Uid;
 using NexusMods.Games.AdvancedInstaller.UI;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.Networking.NexusWebApi;

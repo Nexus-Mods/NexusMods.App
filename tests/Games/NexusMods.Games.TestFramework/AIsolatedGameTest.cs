@@ -20,7 +20,6 @@ using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Extensions;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
-using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Backend;
 using NexusMods.DataModel;
 using NexusMods.Games.FOMOD;

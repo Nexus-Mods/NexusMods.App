@@ -2,7 +2,6 @@ using NexusMods.Abstractions.NexusModsLibrary;
 using Size = NexusMods.Paths.Size;
 using FluentAssertions;
 using NSubstitute;
-using NexusMods.Abstractions.NexusWebApi.Types.V2.Uid;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.NexusWebApi.UpdateFilters;
 using System.Reactive.Linq;

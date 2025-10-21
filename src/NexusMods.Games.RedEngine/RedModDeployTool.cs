@@ -5,7 +5,6 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.GameLocators.Stores.Steam;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Games.Generic;
 using NexusMods.Games.RedEngine.Cyberpunk2077.SortOrder;
 using NexusMods.Paths;

@@ -1,11 +1,9 @@
-using System.Runtime.CompilerServices;
 using DynamicData.Kernel;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Diagnostics.Values;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Extensions;
-using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Sdk.Resources;
 using NexusMods.Abstractions.Telemetry;
 using NexusMods.Games.StardewValley.Models;

@@ -10,7 +10,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.App.UI.Controls.LoadoutBadge;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.Controls.Spine.Buttons;

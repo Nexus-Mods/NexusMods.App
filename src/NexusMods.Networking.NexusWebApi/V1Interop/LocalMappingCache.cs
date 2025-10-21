@@ -5,7 +5,6 @@ using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.Types;
-using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Sdk.NexusModsApi;
 
 namespace NexusMods.Networking.NexusWebApi.V1Interop;

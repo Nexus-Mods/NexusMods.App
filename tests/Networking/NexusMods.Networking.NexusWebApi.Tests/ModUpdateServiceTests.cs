@@ -8,12 +8,9 @@ using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.ModUpdates;
 using NexusMods.Paths;
 using NexusMods.Abstractions.GC;
-using NexusMods.Abstractions.NexusWebApi.Types.V2;
-using NexusMods.Abstractions.NexusWebApi.Types.V2.Uid;
 using NexusMods.Games.TestFramework;
 using NexusMods.Networking.NexusWebApi.UpdateFilters;
 using NexusMods.Sdk.NexusModsApi;
-using Xunit;
 using Xunit.Abstractions;
 
 namespace NexusMods.Networking.NexusWebApi.Tests;

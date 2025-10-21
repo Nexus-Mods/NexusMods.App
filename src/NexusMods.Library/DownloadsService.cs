@@ -3,7 +3,6 @@ using System.Reactive.Disposables;
 using DynamicData;
 using DynamicData.Kernel;
 using NexusMods.Abstractions.Downloads;
-using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;

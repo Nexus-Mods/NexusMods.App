@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Networking.ModUpdates.Private;
 using NexusMods.Sdk.NexusModsApi;
 

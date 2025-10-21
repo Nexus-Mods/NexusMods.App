@@ -1,7 +1,5 @@
 using FluentAssertions;
-using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.NexusWebApi.Types;
-using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Networking.NexusWebApi.V1Interop;
 using NexusMods.Sdk.NexusModsApi;
 

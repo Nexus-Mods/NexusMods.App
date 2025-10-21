@@ -6,7 +6,6 @@ using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.FileHashes;
 using NexusMods.Abstractions.Games.FileHashes.Models;
 using NexusMods.Sdk.Hashes;
-using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.MnemonicDB;
 using NexusMods.MnemonicDB.Abstractions;

@@ -2,7 +2,6 @@ using System.Collections.Immutable;
 using DynamicData.Kernel;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Diagnostics.Values;
-using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Abstractions.Telemetry;
 using NexusMods.Paths;
 using NexusMods.Sdk.NexusModsApi;

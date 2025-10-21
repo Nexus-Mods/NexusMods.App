@@ -1,6 +1,4 @@
 using NexusMods.Abstractions.NexusWebApi.DTOs;
-using NexusMods.Abstractions.NexusWebApi.Types.V2;
-using NexusMods.Abstractions.NexusWebApi.Types.V2.Uid;
 using NexusMods.Sdk.NexusModsApi;
 
 namespace NexusMods.Networking.ModUpdates.Mixins;

@@ -4,7 +4,6 @@ using BitFaster.Caching.Lru;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.NexusModsLibrary;
-using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Sdk.Resources;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.UI.Sdk.Resources;

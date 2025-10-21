@@ -1,8 +1,6 @@
 using System.Text.RegularExpressions;
 using DynamicData.Kernel;
 using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.NexusWebApi.Types;
-using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Paths;
 using NexusMods.Sdk.NexusModsApi;
 

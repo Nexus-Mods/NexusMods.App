@@ -1,5 +1,4 @@
 using JetBrains.Annotations;
-using NexusMods.Abstractions.NexusWebApi.Types.V2.Uid;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Models;
 using NexusMods.Sdk.NexusModsApi;
@@ -24,7 +23,7 @@ public partial class CollectionDownloadNexusMods : IModelDefinition
     public static readonly FileUidAttribute FileUid = new(Namespace, nameof(FileUid)) { IsIndexed = true };
 
     /// <summary>
-    /// <see cref="NexusWebApi.Types.V2.Uid.ModUid"/>.
+    /// <see cref="ModUid"/>.
     /// </summary>
     public static readonly ModUidAttribute ModUid = new(Namespace, nameof(ModUid)) { IsIndexed = true };
 

@@ -2,7 +2,6 @@ using DynamicData.Kernel;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.WebUtilities;
 using NexusMods.Abstractions.NexusWebApi.Types;
-using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Sdk.NexusModsApi;
 
 namespace NexusMods.Abstractions.Telemetry;
