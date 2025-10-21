@@ -1,5 +1,8 @@
 using System.Collections.Frozen;
+using System.ComponentModel;
 using System.Diagnostics;
+using System.Reactive.Disposables;
+using Avalonia.Controls;
 using Avalonia.Controls.Models.TreeDataGrid;
 using Avalonia.Media.Imaging;
 using DynamicData;
@@ -19,12 +22,15 @@ using NexusMods.Sdk.Resources;
 using NexusMods.UI.Sdk;
 using R3;
 using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.Pages.Sorting;
 
 public class FileConflictsViewModel : AViewModel<IFileConflictsViewModel>, IFileConflictsViewModel
 {
     public FileConflictsTreeDataGridAdapter TreeDataGridAdapter { get; }
+    
+    [Reactive] public ListSortDirection SortDirectionCurrent { get; set; }
 
     public FileConflictsViewModel(IServiceProvider serviceProvider, IWindowManager windowManager, LoadoutId loadoutId)
     {
@@ -48,8 +54,70 @@ public class FileConflictsViewModel : AViewModel<IFileConflictsViewModel>, IFile
                     moveDown => Task.CompletedTask // TODO: implement move down
                 );
             }).AddTo(disposables);
+            
+            // Update drop position indicator
+            TreeDataGridAdapter.RowDragOverSubject
+                .Subscribe(dragDropPayload =>
+                    {
+                        var (sourceModels, targetModel, eventArgs) = dragDropPayload;
+
+                        if (eventArgs.Position != TreeDataGridRowDropPosition.Inside) return;
+                            
+                        // Update the drop position for the inside case to be before or after
+                        eventArgs.Position = PointerIsInVerticalTopHalf(eventArgs) ? 
+                            TreeDataGridRowDropPosition.Before : TreeDataGridRowDropPosition.After;
+                        
+                        // TODO: set eventArgs.Position = TreeDataGridRowDropPosition.None to disallow drop in invalid cases
+                    }
+                )
+                .AddTo(disposables);
+            
+            // Handle row drops
+            TreeDataGridAdapter.RowDropSubject
+                    .SubscribeAwait(async (dragDropPayload, cancellationToken) =>
+                        {
+                            var (sourceModels, targetModel, eventArgs) = dragDropPayload;
+                            
+                            // Determine source items
+                            var keysToMove = sourceModels.Select(item => item.Key).ToArray();
+                            if (keysToMove.Length == 0) return;
+
+                            // Determine target item
+                            var dropTargetKey = targetModel.Key;
+                            
+                            // Determine relative position
+                            TargetRelativePosition relativePosition;
+                            switch (eventArgs.Position)
+                            {
+                                case TreeDataGridRowDropPosition.Before when SortDirectionCurrent == ListSortDirection.Ascending:
+                                case TreeDataGridRowDropPosition.After when SortDirectionCurrent == ListSortDirection.Descending:
+                                    relativePosition = TargetRelativePosition.BeforeTarget;
+                                    break;
+                                case TreeDataGridRowDropPosition.After when SortDirectionCurrent == ListSortDirection.Ascending:
+                                case TreeDataGridRowDropPosition.Before when SortDirectionCurrent == ListSortDirection.Descending:
+                                    relativePosition = TargetRelativePosition.AfterTarget;
+                                    break;
+                                case TreeDataGridRowDropPosition.Inside when SortDirectionCurrent == ListSortDirection.Ascending:
+                                    relativePosition = PointerIsInVerticalTopHalf(eventArgs) ? TargetRelativePosition.BeforeTarget : TargetRelativePosition.AfterTarget;
+                                    break;
+                                case TreeDataGridRowDropPosition.Inside when SortDirectionCurrent == ListSortDirection.Descending:
+                                    relativePosition = PointerIsInVerticalTopHalf(eventArgs) ? TargetRelativePosition.AfterTarget : TargetRelativePosition.BeforeTarget;
+                                    break;
+                                case TreeDataGridRowDropPosition.None:
+                                    // Invalid target, no move
+                                    return;
+                                default:
+                                    return;
+                            }
+                            
+                            // TODO: perform the move operation
+                        },
+                        awaitOperation: AwaitOperation.Drop)
+                    .AddTo(disposables);
+            
         });
     }
+    
     
     private static async Task HandleViewConflictsMessage(FileConflictsTreeDataGridAdapter.ViewConflictsMessage msg, IWindowManager windowManager, IServiceProvider serviceProvider)
     {
@@ -60,6 +128,12 @@ public class FileConflictsViewModel : AViewModel<IFileConflictsViewModel>, IFile
         {
             Markdown = markdownRendererViewModel,
         }, buttonDefinitions: [DialogStandardButtons.Close]), DialogWindowType.Modeless);
+    }
+    
+    private static bool PointerIsInVerticalTopHalf(TreeDataGridRowDragEventArgs eventArgs)
+    {
+        var positionY = eventArgs.Inner.GetPosition(eventArgs.TargetRow).Y / eventArgs.TargetRow.Bounds.Height;
+        return positionY < 0.5;
     }
 }
 
@@ -96,6 +170,7 @@ public class FileConflictsTreeDataGridAdapter : TreeDataGridAdapter<CompositeIte
     {
         base.BeforeModelActivationHook(model);
 
+        // View conflicts command
         model.SubscribeToComponentAndTrack<FileConflictsComponents.ViewAction, FileConflictsTreeDataGridAdapter>(
             key: FileConflictsColumns.Actions.ViewComponentKey,
             state: this,
