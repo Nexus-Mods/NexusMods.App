@@ -11,6 +11,10 @@ public enum SignatureShorthand : ushort
     /// </summary>
     xxA_xxx_iL = 0x0004,
     /// <summary>
+    /// IsIntrinsicFile
+    /// </summary>
+    xxx_xxx_iI = 0x800,
+    /// <summary>
     /// LoadoutExists, IsIntrinsicFile
     /// </summary>
     xxA_xxx_iI = 0x0804,

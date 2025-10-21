@@ -268,63 +268,34 @@ public partial class ALoadoutSynchronizer : ILoadoutSynchronizer
                 continue;
             }
 
-            syncTreeEntry = itemType switch
+            var loadoutPart = itemType switch
             {
-                LoadoutSourceItemType.Game => new SyncNode
+                LoadoutSourceItemType.Game => new SyncNodePart
                 {
-                    SourceItemType = itemType,
-                    Loadout = new SyncNodePart
-                    {
-                        Hash = tuple.Hash,
-                        Size = tuple.Size,
-                        LastModifiedTicks = 0,
-                    },
+                    Hash = tuple.Hash,
+                    Size = tuple.Size,
+                    LastModifiedTicks = 0,
                 },
-                LoadoutSourceItemType.Loadout => new SyncNode
+                LoadoutSourceItemType.Loadout => new SyncNodePart
                 {
-                    SourceItemType = itemType,
-                    Loadout = new SyncNodePart
-                    {
-                        EntityId = tuple.Id,
-                        Hash = tuple.Hash,
-                        Size = tuple.Size,
-                        LastModifiedTicks = 0,
-                    },
+                    EntityId = tuple.Id,
+                    Hash = tuple.Hash,
+                    Size = tuple.Size,
+                    LastModifiedTicks = 0,
                 },
-                LoadoutSourceItemType.Intrinsic => CreateIntrinsic(gamePath),
-                LoadoutSourceItemType.Deleted => throw new UnreachableException(),
+                LoadoutSourceItemType.Intrinsic => default(SyncNodePart),
+                LoadoutSourceItemType.Deleted => throw new UnreachableException("Deleted files should've been filtered out"),
+            };
+
+            syncTreeEntry = new SyncNode
+            {
+                SourceItemType = itemType,
+                Loadout = loadoutPart,
             };
         }
 
         MergeStates(latestDiskState, previousDiskState, syncTree);
         return syncTree;
-
-        SyncNode CreateIntrinsic(GamePath gamePath)
-        {
-            if (!IntrinsicFiles(loadout).TryGetValue(gamePath, out var intrinsicFile))
-                throw new ArgumentException($"Unknown intrinsic file: `{gamePath}`", nameof(gamePath));
-
-            // TODO: this is whack and needs change
-            using var stream = new MemoryStream();
-            // NOTE(erri120): expected to be called last
-            // TODO: async call inside a sync method...
-            intrinsicFile.Write(stream, loadout, syncTree).Wait();
-
-            stream.Position = 0;
-            var span = stream.GetBuffer().AsSpan(0, (int)stream.Length);
-            var hash = span.xxHash3();
-
-            return new SyncNode
-            {
-                SourceItemType = LoadoutSourceItemType.Intrinsic,
-                Loadout = new SyncNodePart
-                {
-                    Hash = hash,
-                    Size = Size.FromLong(stream.Length),
-                    LastModifiedTicks = 0,
-                },
-            };
-        }
     }
 
     /// <inheritdoc />

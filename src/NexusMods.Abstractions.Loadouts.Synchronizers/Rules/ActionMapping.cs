@@ -34,6 +34,7 @@ public class ActionMapping
         return shorthand switch
         {
             xxA_xxx_iL => WarnOfUnableToExtract,
+            xxx_xxx_iI => WriteIntrinsic,
             xxA_xxx_iI => WriteIntrinsic,
             xxA_xxx_iG => WarnOfUnableToExtract,
             xxA_xxX_iL => ExtractToDisk,
