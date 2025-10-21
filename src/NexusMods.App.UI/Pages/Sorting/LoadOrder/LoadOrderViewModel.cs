@@ -145,7 +145,8 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
                             // Update the drop position for the inside case to be before or after
                             eventArgs.Position = PointerIsInVerticalTopHalf(eventArgs) ? TreeDataGridRowDropPosition.Before : TreeDataGridRowDropPosition.After;
                         }
-                    );
+                    )
+                    .DisposeWith(d);
                 
                 adapter.RowDropSubject
                     .SubscribeAwait(async (dragDropPayload, cancellationToken) =>
