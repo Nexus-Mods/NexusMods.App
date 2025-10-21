@@ -21,7 +21,7 @@
                     <controls:ComponentTemplate.DataTemplate>
                         <DataTemplate x:DataType="controls:SharedComponents+IndexComponent">
 
-                            <StackPanel x:Name="LoadOrderItemIndexColumnStack">
+                            <StackPanel x:Name="SortIndexColumnStack">
 
                                 <!-- Drag indicator -->
                                 <Border x:Name="ItemModDragBorder">

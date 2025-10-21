@@ -22,7 +22,7 @@
         <Grid x:Name="MainGrid" ColumnDefinitions="*, Auto">
 
             <TreeDataGrid Grid.Column="0"
-                          x:Name="TreeDataGrid"
+                          x:Name="FileConflictsTreeDataGrid"
                           CanUserResizeColumns="False"
                           CanUserSortColumns="False"
                           ShowColumnHeaders="True">
@@ -44,7 +44,7 @@
                                         <controls:ComponentTemplate.DataTemplate>
                                             <DataTemplate x:DataType="controls:SharedComponents+IndexComponent">
 
-                                                <StackPanel x:Name="LoadOrderItemIndexColumnStack">
+                                                <StackPanel x:Name="SortIndexColumnStack">
 
                                                     <!-- Drag indicator -->
                                                     <Border x:Name="ItemModDragBorder">

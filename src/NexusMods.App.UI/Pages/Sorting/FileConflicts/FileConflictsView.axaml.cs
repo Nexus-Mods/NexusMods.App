@@ -17,7 +17,7 @@ public partial class FileConflictsView : R3UserControl<IFileConflictsViewModel>
 
         TreeDataGridViewHelper.SetupTreeDataGridAdapter<FileConflictsView, IFileConflictsViewModel, CompositeItemModel<EntityId>, EntityId>(
             this, 
-            TreeDataGrid, 
+            FileConflictsTreeDataGrid, 
             vm => vm.TreeDataGridAdapter,
             enableDragAndDrop: true);
 
@@ -25,7 +25,7 @@ public partial class FileConflictsView : R3UserControl<IFileConflictsViewModel>
         {
             // TreeDataGrid Source
             this.OneWayR3Bind(view => view.BindableViewModel, vm => vm.TreeDataGridAdapter.Source, 
-                    static (view, source) => view.TreeDataGrid.Source = source)
+                    static (view, source) => view.FileConflictsTreeDataGrid.Source = source)
                 .AddTo(disposables);
             
             // Empty state

@@ -28,11 +28,13 @@ namespace NexusMods.App.UI.Pages.Sorting;
 public class FileConflictsViewModel : AViewModel<IFileConflictsViewModel>, IFileConflictsViewModel
 {
     private BindableReactiveProperty<ListSortDirection> _sortDirectionCurrent { get; set; }
+    private BindableReactiveProperty<bool> _isAscending { get; set; } 
 
     public FileConflictsTreeDataGridAdapter TreeDataGridAdapter { get; }
 
     public IReadOnlyBindableReactiveProperty<ListSortDirection> SortDirectionCurrent => _sortDirectionCurrent;
-    
+    public IReadOnlyBindableReactiveProperty<bool> IsAscending => _isAscending;
+
     public R3.ReactiveCommand SwitchSortDirectionCommand { get; }
 
     public FileConflictsViewModel(IServiceProvider serviceProvider, IWindowManager windowManager, LoadoutId loadoutId)
@@ -45,6 +47,8 @@ public class FileConflictsViewModel : AViewModel<IFileConflictsViewModel>, IFile
         var synchronizer = loadout.InstallationInstance.GetGame().Synchronizer;
 
         _sortDirectionCurrent = new BindableReactiveProperty<ListSortDirection>(ListSortDirection.Ascending);
+        _isAscending = _sortDirectionCurrent.Select(direction => direction == ListSortDirection.Ascending)
+            .ToBindableReactiveProperty();
         
         SwitchSortDirectionCommand = new R3.ReactiveCommand(_ =>
         {
