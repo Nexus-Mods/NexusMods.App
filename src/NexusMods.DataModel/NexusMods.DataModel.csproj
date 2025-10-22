@@ -10,6 +10,7 @@
         <ProjectReference Include="..\NexusMods.Abstractions.Games\NexusMods.Abstractions.Games.csproj" />
         <ProjectReference Include="..\NexusMods.App.GarbageCollection.DataModel\NexusMods.App.GarbageCollection.DataModel.csproj" />
         <ProjectReference Include="..\NexusMods.DataModel.SchemaVersions\NexusMods.DataModel.SchemaVersions.csproj" />
+        <ProjectReference Include="..\NexusMods.Games.AdvancedInstaller\NexusMods.Games.AdvancedInstaller.csproj" />
     </ItemGroup>
 
     <PropertyGroup>
@@ -42,5 +43,17 @@
     <ItemGroup>
         <AdditionalFiles Include="**\*.sql" />
         <UpToDateCheckInput Include="**\*.sql"/>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="InstallLoadoutItemJob.cs">
+        <DependentUpon>LoadoutManager.cs</DependentUpon>
+      </Compile>
+      <Compile Update="LoadoutManager.Queries.cs">
+        <DependentUpon>LoadoutManager.cs</DependentUpon>
+      </Compile>
+      <Compile Update="LoadoutManager.TxFuncs.cs">
+        <DependentUpon>LoadoutManager.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
 </Project>

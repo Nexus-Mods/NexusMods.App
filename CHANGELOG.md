@@ -1,3 +1,29 @@
+# v0.19.4 2025-10-20
+This update focuses on quality-of-life improvements, including the addition of right-click context menus, and several critical bug fixes for a smoother experience.
+
+---
+### Context Menus Are Here:
+We've added the ability to open a **context menu** by right-clicking on items in the **Loadout** and **Library** pages. This streamlines your workflow by providing quick access to common actions like "Remove" or "View Mod Page."
+
+### Stardew Valley FOMOD Installer Support:
+We've added support for running interactive **FOMOD installers** when managing Stardew Valley. This allows you to install more complex mods with configuration options directly within the app.
+
+---
+## Bug Fixes and Performance:
+
+* Fixed an issue causing Stardew Valley **SMAPI to be installed incorrectly**, which resulted in SMAPI crashing on start. *If you were experiencing this problem, please uninstall SMAPI from the app and install it again to fix the corrupted file.*
+* Fixed an issue with **Stardew Valley.exe** not being backed up and restored correctly after uninstalling SMAPI.
+* Fixed a file-time comparison bug that caused **performance slowdowns** when applying a loadout.
+* Fixed errors that occurred when trying to **unmanage a game** while a loadout was actively applying.
+* Improved game updates and DLC changes detection without requiring a restart of the app. 
+
+---
+## Under The Hood:
+
+* Our privacy policy and telemetry changed with this release. You can click the question mark in the top bar and go to the about page to read more about our privacy policy and to accept the changes.
+* **Load Order Rework:** We reworked the Load Order backend used for Cyberpunk **REDmods**, in preparation for adding **Bethesda Load Order** support (required for games like Skyrim and Fallout).
+* **Settings Clean-up:** Removed some development and experimental settings from the main Settings page to focus the user experience on stable features.
+
 # v0.18.2 2025-10-08
 This update introduces some powerful new features and important fixes to make managing your mods smoother than ever. You’ll now find a dedicated Downloads page with full control over your active downloads, the ability to create editable copies of read-only Nexus Mods Collections, and a new view that helps you spot file conflicts between mods. Alongside these upgrades, we’ve resolved several issues to improve stability, prevent unnecessary backups, and ensure a more seamless experience throughout the app.
 

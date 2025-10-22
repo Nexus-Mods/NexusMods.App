@@ -12,6 +12,7 @@ using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using NexusMods.Sdk;
 using NexusMods.Sdk.FileStore;
+using NexusMods.Sdk.IO;
 
 namespace NexusMods.Games.StardewValley.Installers;
 
@@ -25,18 +26,21 @@ public class SMAPIInstaller : ALibraryArchiveInstaller
     private readonly TemporaryFileManager _temporaryFileManager;
     private readonly IFileStore _fileStore;
     private readonly IFileHashesService _fileHashesService;
+    private readonly IStreamSourceDispatcher _streamSource;
 
     public SMAPIInstaller(
         IServiceProvider serviceProvider,
         ILogger<SMAPIInstaller> logger,
         TemporaryFileManager temporaryFileManager,
         IFileHashesService fileHashesService,
-        IFileStore fileStore)
+        IFileStore fileStore,
+        IStreamSourceDispatcher streamSourceDispatcher)
         : base(serviceProvider, logger)
     {
         _temporaryFileManager = temporaryFileManager;
         _fileStore = fileStore;
         _fileHashesService = fileHashesService;
+        _streamSource = streamSourceDispatcher;
     }
 
     public override async ValueTask<InstallerResult> ExecuteAsync(
@@ -72,7 +76,7 @@ public class SMAPIInstaller : ALibraryArchiveInstaller
         var isUnix = targetOS.IsUnix();
 
         // NOTE(erri120): paths can be verified using Steam depots: https://steamdb.info/app/413150/depots/
-        RelativePath unixLauncherDirectory = targetOS.IsOSX
+        RelativePath unixLauncherFile = targetOS.IsOSX
             ? "Contents/MacOS/StardewValley"
             : "StardewValley";
 
@@ -118,7 +122,7 @@ public class SMAPIInstaller : ALibraryArchiveInstaller
             // https://github.com/Pathoschild/SMAPI/blob/5919337236650c6a0d7755863d35b2923a94775c/src/SMAPI.Installer/InteractiveInstaller.cs#L395-L425
             if (isUnix && fileName.Equals("unix-launcher.sh"))
             {
-                to = new GamePath(LocationId.Game, unixLauncherDirectory / fileName);
+                to = new GamePath(LocationId.Game, unixLauncherFile);
             }
 
             // NOTE(erri120): The official installer doesn't replace "Stardew Valley.exe" with
@@ -182,6 +186,12 @@ public class SMAPIInstaller : ALibraryArchiveInstaller
                     },
                 },
             };
+
+            if (!await _fileStore.HaveFile(fileHash))
+            {
+                var streamFactory = new SourceDispatcherStreamFactory(to.FileName, fileHash, _streamSource);
+                await _fileStore.BackupFiles([new ArchivedFileEntry(streamFactory, fileHash, fileSize)], deduplicate: false, token: cancellationToken);
+            }
         }
 
         _ = new SMAPILoadoutItem.New(transaction, loadoutGroup.Id)

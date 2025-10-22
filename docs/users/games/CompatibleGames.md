@@ -19,8 +19,7 @@ This page includes a summary of the information available on the individual game
 | <img src="../../images/GOG.com_logo_white.svg" alt="GOG" width="14"/> [GOG](https://www.gog.com/en/game/stardew_valley) | :material-check-circle: | :material-check-circle:[^2][^1] | :material-close-thick: |
 | :fontawesome-brands-xbox: [Xbox Game Pass (PC)](https://www.xbox.com/en-GB/games/store/stardew-valley/c3d891z6tnqm) | :material-close-thick:[^4] | :material-close-thick: | :material-close-thick: |
 | <img src="../../images/wegame.svg" alt="WeGame" width="14"/> [WeGame (China only)](https://www.wegame.com.cn/store/2000064/Stardew_Valley) | :material-close-thick: | :material-close-thick: | :material-close-thick: |
-<sub>[Game not detected? Report an issue here.](https://github.com/Nexus-Mods/NexusMods.App/issues/new?template=GameNotFound.yaml&title=Game%20Not%20Found%20Stardew%20Valley)</sub>
-
+<sub>[Game not detected? Report an issue here.](https://github.com/Nexus-Mods/NexusMods.App/issues/new?template=01-game-not-found.yaml)</sub>
 
 ## Cyberpunk 2077
 [Learn more about this game.](./Cyberpunk2077.md)
@@ -30,7 +29,7 @@ This page includes a summary of the information available on the individual game
 | :fontawesome-brands-steam: [Steam](https://store.steampowered.com/app/1091500/Cyberpunk_2077/) | :material-check-circle: | :material-check-circle: | :material-close-thick: |
 | <img src="../../images/GOG.com_logo_white.svg" alt="GOG" width="14"/> [GOG](https://store.steampowered.com/app/1091500/Cyberpunk_2077/) | :material-check-circle:[^1] | :material-check-circle:[^1][^2] | :material-close-thick: |
 | <img src="../../images/epic-games.svg" alt="Epic Games Store" width="14"/> [Epic Games Store](https://store.epicgames.com/en-US/p/cyberpunk-2077) | :material-close-thick:[^3] | :material-close-thick: | :material-close-thick: |
-<sub>[Game not detected? Report an issue here.](https://github.com/Nexus-Mods/NexusMods.App/issues/new?template=GameNotFound.yaml&title=Game%20Not%20Found%20Cyberpunk2077)</sub>
+<sub>[Game not detected? Report an issue here.](https://github.com/Nexus-Mods/NexusMods.App/issues/new?template=01-game-not-found.yaml)</sub>
 
 ## Baldur's Gate 3
 [Learn more about this game.](./BaldursGate3.md)
@@ -39,7 +38,7 @@ This page includes a summary of the information available on the individual game
 |---|---|---|---|
 | :fontawesome-brands-steam: [Steam](https://store.steampowered.com/app/1086940/Baldurs_Gate_3/) | :material-check-circle: | :material-check-circle: | :material-close-thick: |
 | <img src="../../images/GOG.com_logo_white.svg" alt="GOG" width="14"/> [GOG](https://www.gog.com/en/game/baldurs_gate_iii) | :material-check-circle:[^1] | :material-check-circle:[^1][^2] | :material-close-thick: |
-<sub>[Game not detected? Report an issue here.](https://github.com/Nexus-Mods/NexusMods.App/issues/new?template=GameNotFound.yaml&title=Game%20Not%20Found%Baldurs%20Gate%203)</sub>
+<sub>[Game not detected? Report an issue here.](https://github.com/Nexus-Mods/NexusMods.App/issues/new?template=01-game-not-found.yaml)</sub>
 
 ## Mount & Blade 2: Bannerlord
 [Learn more about this game.](./Bannerlord.md)
@@ -50,7 +49,7 @@ This page includes a summary of the information available on the individual game
 | <img src="../../images/GOG.com_logo_white.svg" alt="GOG" width="14"/> [GOG](https://www.gog.com/en/game/mount_blade_ii_bannerlord) | :material-check-circle:[^1] | :material-close-thick: | :material-close-thick: |
 | <img src="../../images/epic-games.svg" alt="Epic Games Store" width="14"/> [Epic Games Store](https://store.epicgames.com/en-US/p/mount-and-blade-2) | :material-close-thick:[^3] | :material-close-thick: | :material-close-thick: |
 | :fontawesome-brands-xbox: [Xbox Game Pass (PC)](https://www.xbox.com/en-GB/games/store/mount-blade-ii-bannerlord/9pdhwz7x3p03) | :material-close-thick:[^4] | :material-close-thick: | :material-close-thick: |
-<sub>[Game not detected? Report an issue here.](https://github.com/Nexus-Mods/NexusMods.App/issues/new?template=GameNotFound.yaml&title=Game%20Not%20Found%20Bannerlord)</sub>
+<sub>[Game not detected? Report an issue here.](https://github.com/Nexus-Mods/NexusMods.App/issues/new?template=01-game-not-found.yaml)</sub>
 
 
 <!-- Combined -->

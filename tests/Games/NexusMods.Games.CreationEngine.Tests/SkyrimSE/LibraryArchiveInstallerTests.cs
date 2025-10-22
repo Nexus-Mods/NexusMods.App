@@ -46,7 +46,7 @@ public class LibraryArchiveInstallerTests(Type gameType, GameLocatorResult locat
         var download = await NexusModsLibrary.CreateDownloadJob(tempFile.Path, Game.GameId, ModId.From(modId), FileId.From(fileId));
         var libraryArchive = await LibraryService.AddDownload(download);
 
-        var installed = await LibraryService.InstallItem(libraryArchive.AsLibraryItem(), loadout);
+        var installed = await LoadoutManager.InstallItem(libraryArchive.AsLibraryItem(), loadout);
 
         var contents = installed.LoadoutItemGroup.Value.Children
             .OfTypeLoadoutItemWithTargetPath()
@@ -71,7 +71,7 @@ public class LibraryArchiveInstallerTests(Type gameType, GameLocatorResult locat
         var download = await NexusModsLibrary.CreateDownloadJob(tempFile.Path, Game.GameId, ModId.From(modId), FileId.From(fileId));
         var libraryArchive = await LibraryService.AddDownload(download);
 
-        var installed = await LibraryService.InstallItem(libraryArchive.AsLibraryItem(), loadout);
+        var installed = await LoadoutManager.InstallItem(libraryArchive.AsLibraryItem(), loadout);
         
         var plugins = installed.LoadoutItemGroup!.Value.Children
             .OfTypeLoadoutItemWithTargetPath()

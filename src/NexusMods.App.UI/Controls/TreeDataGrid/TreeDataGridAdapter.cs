@@ -101,7 +101,6 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object, ISea
                     {
                         foreach (var item in self.SelectedModels)
                         {
-                            Debug.Assert(!item.IsDisposed);
                             if (item.IsDisposed) continue;
                             item.IsSelected.Value = false;
                         }
@@ -115,7 +114,6 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object, ISea
                         foreach (var item in eventArgs.DeselectedItems)
                         {
                             if (item is null) continue;
-                            Debug.Assert(!item.IsDisposed);
                             if (item.IsDisposed) continue;
                             
                             item.IsSelected.Value = false;
