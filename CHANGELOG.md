@@ -1,5 +1,6 @@
 # v0.19.4 2025-10-20
 This update focuses on quality-of-life improvements, including the addition of right-click context menus, and several critical bug fixes for a smoother experience.
+
 ---
 ### Context Menus Are Here:
 We've added the ability to open a **context menu** by right-clicking on items in the **Loadout** and **Library** pages. This streamlines your workflow by providing quick access to common actions like "Remove" or "View Mod Page."
@@ -19,6 +20,7 @@ We've added support for running interactive **FOMOD installers** when managing S
 ---
 ## Under The Hood:
 
+* Our privacy policy and telemetry changed with this release. You can click the question mark in the top bar and go to the about page to read more about our privacy policy and to accept the changes.
 * **Load Order Rework:** We reworked the Load Order backend used for Cyberpunk **REDmods**, in preparation for adding **Bethesda Load Order** support (required for games like Skyrim and Fallout).
 * **Settings Clean-up:** Removed some development and experimental settings from the main Settings page to focus the user experience on stable features.
 
