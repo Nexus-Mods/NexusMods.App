@@ -227,11 +227,11 @@ public class PluginLoadOrderVariety : ASortOrderVariety<
             .Where(item => !processedKeys.Contains(item.Key))
             .Order(Comparer<SortItemLoadoutData<SortItemKey<ModKey>>>.Create((a, b) =>
             {
-                // Sort by ModGroupId descending (newer items in first position), then by Key ascending
+                // Sort by ModGroupId ascending (newer items in last position), then by Key ascending
                 return (a, b) switch
                 {
-                    (a: { ModGroupId: { HasValue: true } }, b: { ModGroupId: { HasValue: true } }) => b.ModGroupId.Value.Value.CompareTo(a.ModGroupId.Value.Value) != 0
-                        ? b.ModGroupId.Value.Value.CompareTo(a.ModGroupId.Value.Value)
+                    (a: { ModGroupId: { HasValue: true } }, b: { ModGroupId: { HasValue: true } }) => a.ModGroupId.Value.Value.CompareTo(b.ModGroupId.Value.Value) != 0
+                        ? a.ModGroupId.Value.Value.CompareTo(b.ModGroupId.Value.Value)
                         : string.Compare(a.Key.Key.ToString(), b.Key.Key.ToString(), StringComparison.OrdinalIgnoreCase),
                     (a: { ModGroupId: { HasValue: true } }, b: { ModGroupId: { HasValue: false } }) => 1,
                     (a: { ModGroupId: { HasValue: false } }, b: { ModGroupId: { HasValue: true } }) => -1,
