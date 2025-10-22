@@ -44,12 +44,6 @@ jobs:
     
     steps:
       - uses: actions/checkout@v4
-        
-      # Example: .NET (change to your stack/tooling)
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: 9.0.x
 
       - name: Restore
         run: dotnet restore
