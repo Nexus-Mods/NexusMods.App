@@ -1,7 +1,7 @@
 using JetBrains.Annotations;
-using NexusMods.Abstractions.NexusWebApi.Types.V2.Uid;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Models;
+using NexusMods.Sdk.NexusModsApi;
 
 namespace NexusMods.Abstractions.NexusModsLibrary.Models;
 
@@ -18,14 +18,14 @@ public partial class CollectionDownloadNexusMods : IModelDefinition
     private const string Namespace = "NexusMods.NexusModsLibrary.CollectionDownloadNexusMods";
 
     /// <summary>
-    /// <see cref="UidForFile"/>.
+    /// <see cref="FileUid"/>.
     /// </summary>
-    public static readonly UidForFileAttribute FileUid = new(Namespace, nameof(FileUid)) { IsIndexed = true };
+    public static readonly FileUidAttribute FileUid = new(Namespace, nameof(FileUid)) { IsIndexed = true };
 
     /// <summary>
-    /// <see cref="UidForMod"/>.
+    /// <see cref="ModUid"/>.
     /// </summary>
-    public static readonly UidForModAttribute ModUid = new(Namespace, nameof(ModUid)) { IsIndexed = true };
+    public static readonly ModUidAttribute ModUid = new(Namespace, nameof(ModUid)) { IsIndexed = true };
 
     /// <summary>
     /// Reference to the file metadata.

@@ -1,7 +1,7 @@
 using JetBrains.Annotations;
-using NexusMods.Abstractions.NexusWebApi.Types.V2.Uid;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Models;
+using NexusMods.Sdk.NexusModsApi;
 
 namespace NexusMods.Abstractions.NexusModsLibrary;
 
@@ -16,7 +16,7 @@ public partial class NexusModsFileMetadata : IModelDefinition
     /// <summary>
     /// Unique identifier for the file on Nexus Mods.
     /// </summary>
-    public static readonly UidForFileAttribute Uid = new(Namespace, nameof(Uid)) { IsIndexed = true };
+    public static readonly FileUidAttribute Uid = new(Namespace, nameof(Uid)) { IsIndexed = true };
 
     /// <summary>
     /// The name of the file.

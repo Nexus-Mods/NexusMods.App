@@ -1,9 +1,8 @@
 using JetBrains.Annotations;
 using NexusMods.Abstractions.NexusWebApi.Types;
-using NexusMods.Abstractions.NexusWebApi.Types.V2;
-using NexusMods.Abstractions.NexusWebApi.Types.V2.Uid;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Models;
+using NexusMods.Sdk.NexusModsApi;
 using NexusMods.Sdk.Resources;
 
 namespace NexusMods.Abstractions.NexusModsLibrary;
@@ -19,7 +18,7 @@ public partial class NexusModsModPageMetadata : IModelDefinition
     /// <summary>
     /// The ID of the mod page.
     /// </summary>
-    public static readonly UidForModAttribute Uid = new(Namespace, nameof(Uid)) { IsIndexed = true };
+    public static readonly ModUidAttribute Uid = new(Namespace, nameof(Uid)) { IsIndexed = true };
 
     /// <summary>
     /// The name of the mod page.

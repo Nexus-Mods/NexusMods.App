@@ -1,4 +1,4 @@
-using NexusMods.Abstractions.NexusWebApi.Types.V2;
+using NexusMods.Sdk.NexusModsApi;
 using GameDomain = NexusMods.Abstractions.NexusWebApi.Types.GameDomain;
 
 namespace NexusMods.Abstractions.NexusWebApi;

@@ -48,7 +48,7 @@ public class SynchronizerUnitTests(ITestOutputHelper testOutputHelper) : ACyberp
     public async Task EmptyChildFoldersDontDeleteNonEmptyParents()
     {
         var loadout = await CreateLoadout();
-        
+
         var parentFile = new GamePath(LocationId.Game, "a/parent.txt");
         var grandChildFile = new GamePath(LocationId.Game, "a/b/c/grandchild.txt");
         

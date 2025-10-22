@@ -21,6 +21,7 @@ public class LeftMenuItemViewModel : AViewModel<ILeftMenuItemViewModel>, ILeftMe
     [Reactive] public bool IsActive { get; private set; }
     [Reactive] public bool IsSelected { get; private set; }
     public ReactiveCommand<NavigationInformation, Unit> NavigateCommand { get; protected init; }
+    public IReadOnlyList<IContextMenuItem> AdditionalContextMenuItems { get; protected init; } = Array.Empty<IContextMenuItem>();
 
     public StringComponent? ToolTip { get; init; }
 
@@ -118,12 +119,4 @@ public class LeftMenuItemViewModel : AViewModel<ILeftMenuItemViewModel>, ILeftMe
     }
 }
 
-public class LeftMenuItemWithRightIconViewModel : LeftMenuItemViewModel
-{
-    public required IconValue RightIcon { get; init; }
 
-    public LeftMenuItemWithRightIconViewModel(
-        IWorkspaceController workspaceController,
-        WorkspaceId workspaceId,
-        PageData pageData) : base(workspaceController, workspaceId, pageData) { }
-}

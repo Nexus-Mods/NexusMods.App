@@ -2,7 +2,6 @@ using NexusMods.Abstractions.NexusModsLibrary;
 using Size = NexusMods.Paths.Size;
 using FluentAssertions;
 using NSubstitute;
-using NexusMods.Abstractions.NexusWebApi.Types.V2.Uid;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.NexusWebApi.UpdateFilters;
 using System.Reactive.Linq;
@@ -10,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Time.Testing;
 using NexusMods.Abstractions.NexusWebApi;
 using DynamicData.Kernel;
+using NexusMods.Sdk.NexusModsApi;
 
 namespace NexusMods.Networking.NexusWebApi.Tests.Filters;
 
@@ -20,7 +20,7 @@ public class IgnoreModUpdateFilterTests(IConnection connection)
     {
         // Arrange
         var fileFilter = Substitute.For<IShouldIgnoreFile>();
-        fileFilter.ShouldIgnoreFile(Arg.Any<UidForFile>()).Returns(false);
+        fileFilter.ShouldIgnoreFile(Arg.Any<FileUid>()).Returns(false);
 
         var filter = new IgnoreModUpdateFilter<IShouldIgnoreFile>(fileFilter);
 
@@ -53,7 +53,7 @@ public class IgnoreModUpdateFilterTests(IConnection connection)
 
         // Setup file2 to be ignored
         fileFilter.ShouldIgnoreFile(file2.Uid).Returns(true);
-        fileFilter.ShouldIgnoreFile(Arg.Is<UidForFile>(uid => !uid.Equals(file2.Uid))).Returns(false);
+        fileFilter.ShouldIgnoreFile(Arg.Is<FileUid>(uid => !uid.Equals(file2.Uid))).Returns(false);
 
         var modPage = new ModUpdateOnPage(
             File: file1,
@@ -75,7 +75,7 @@ public class IgnoreModUpdateFilterTests(IConnection connection)
     {
         // Arrange
         var fileFilter = Substitute.For<IShouldIgnoreFile>();
-        fileFilter.ShouldIgnoreFile(Arg.Any<UidForFile>()).Returns(true);
+        fileFilter.ShouldIgnoreFile(Arg.Any<FileUid>()).Returns(true);
 
         var filter = new IgnoreModUpdateFilter<IShouldIgnoreFile>(fileFilter);
 
@@ -98,7 +98,7 @@ public class IgnoreModUpdateFilterTests(IConnection connection)
     {
         // Arrange
         var fileFilter = Substitute.For<IShouldIgnoreFile>();
-        fileFilter.ShouldIgnoreFile(Arg.Any<UidForFile>()).Returns(false);
+        fileFilter.ShouldIgnoreFile(Arg.Any<FileUid>()).Returns(false);
 
         var filter = new IgnoreModUpdateFilter<IShouldIgnoreFile>(fileFilter);
 
@@ -142,7 +142,7 @@ public class IgnoreModUpdateFilterTests(IConnection connection)
 
         // Setup file2 to be ignored
         fileFilter.ShouldIgnoreFile(file2.Uid).Returns(true);
-        fileFilter.ShouldIgnoreFile(Arg.Is<UidForFile>(uid => !uid.Equals(file2.Uid))).Returns(false);
+        fileFilter.ShouldIgnoreFile(Arg.Is<FileUid>(uid => !uid.Equals(file2.Uid))).Returns(false);
         
         var modPageUpdate1 = new ModUpdateOnPage(
             File: file1,
@@ -183,7 +183,7 @@ public class IgnoreModUpdateFilterTests(IConnection connection)
         // Setup file2 and file3 to be ignored (all files in first mapping)
         fileFilter.ShouldIgnoreFile(file2.Uid).Returns(true);
         fileFilter.ShouldIgnoreFile(file3.Uid).Returns(true);
-        fileFilter.ShouldIgnoreFile(Arg.Is<UidForFile>(uid => !uid.Equals(file2.Uid) && !uid.Equals(file3.Uid))).Returns(false);
+        fileFilter.ShouldIgnoreFile(Arg.Is<FileUid>(uid => !uid.Equals(file2.Uid) && !uid.Equals(file3.Uid))).Returns(false);
         
         var modPageUpdate1 = new ModUpdateOnPage(
             File: file1,
@@ -211,7 +211,7 @@ public class IgnoreModUpdateFilterTests(IConnection connection)
     {
         // Arrange
         var fileFilter = Substitute.For<IShouldIgnoreFile>();
-        fileFilter.ShouldIgnoreFile(Arg.Any<UidForFile>()).Returns(true);
+        fileFilter.ShouldIgnoreFile(Arg.Any<FileUid>()).Returns(true);
 
         var filter = new IgnoreModUpdateFilter<IShouldIgnoreFile>(fileFilter);
 
@@ -266,7 +266,7 @@ public class IgnoreModUpdateFilterTests(IConnection connection)
             UploadedAt = DateTimeOffset.UtcNow,
             Size = Size.From(fileId),
             Version = fileId.ToString(),
-            Uid = UidForFile.FromUlong(fileId),
+            Uid = FileUid.FromUlong(fileId),
             ModPageId = NexusModsModPageMetadataId.From(fileId),
         };
 

@@ -1,6 +1,8 @@
 -- namespace: NexusMods.Games.FileHashes
+CREATE SCHEMA IF NOT EXISTS file_hashes;
 
-CREATE SCHEMA IF NOT EXISTS file_hashes; 
+-- ENUM of all the store names
+CREATE TYPE file_hashes.Stores AS ENUM ('Unknown', 'GOG', 'Steam', 'EA Desktop', 'Epic Games Store', 'Origin', 'Xbox Game Pass', 'Manually Added');
 
 -- Find all the gog builds that match the given game's files, and rank them by the number of files that match
 CREATE MACRO file_hashes.resolve_gog_build(GameMetadataId, DefaultLanguage := 'en-US') AS TABLE
@@ -33,9 +35,6 @@ SELECT arg_max(ManifestId, matching_count) DepotId
 FROM file_hashes.resolve_steam_manifests(GameMetadataId) manifests
 GROUP BY manifests.AppId
 Having DepotId is not null;
-
--- ENUM of all the store names
-CREATE TYPE file_hashes.Stores AS ENUM ('GOG', 'Steam');
 
 -- gets all the loadouts, locatorids, and stores
 CREATE MACRO file_hashes.loadout_locatorids(db) AS TABLE

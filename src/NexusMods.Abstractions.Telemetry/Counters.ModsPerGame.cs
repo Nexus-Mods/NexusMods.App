@@ -1,5 +1,4 @@
 using System.Diagnostics.Metrics;
-using NexusMods.Abstractions.NexusWebApi.Types.V2;
 
 namespace NexusMods.Abstractions.Telemetry;
 

@@ -1,8 +1,8 @@
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Games.CreationEngine.Tests.TestAttributes;
 using NexusMods.Games.IntegrationTestFramework;
+using NexusMods.Sdk.NexusModsApi;
 
 namespace NexusMods.Games.CreationEngine.Tests.Fallout4;
 

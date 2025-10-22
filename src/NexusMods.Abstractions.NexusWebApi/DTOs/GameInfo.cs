@@ -1,7 +1,7 @@
 using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
 using NexusMods.Abstractions.NexusWebApi.DTOs.Interfaces;
-using GameId = NexusMods.Abstractions.NexusWebApi.Types.V2.GameId;
+using NexusMods.Sdk.NexusModsApi;
 
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable InconsistentNaming

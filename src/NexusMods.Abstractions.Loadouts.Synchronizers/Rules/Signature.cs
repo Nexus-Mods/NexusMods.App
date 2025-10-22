@@ -115,11 +115,10 @@ public static class SignatureBuilder
 
         if (pathIsIgnored)
             sig |= Signature.PathIsIgnored;
-        
-        if (sourceItemType.HasValue && sourceItemType.Value == LoadoutSourceItemType.Game)
+
+        if (sourceItemType is LoadoutSourceItemType.Game)
             sig |= Signature.IsGameFile;
-        
-        if (sourceItemType.HasValue && sourceItemType.Value == LoadoutSourceItemType.Intrinsic)
+        else if (sourceItemType is LoadoutSourceItemType.Intrinsic)
             sig |= Signature.IsIntrinsicFile;
 
         return sig;

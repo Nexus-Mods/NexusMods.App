@@ -1,25 +1,24 @@
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
-using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 using NexusMods.MnemonicDB.Abstractions.ValueSerializers;
 using TransparentValueObjects;
-namespace NexusMods.Abstractions.NexusWebApi.Types.V2;
+
+namespace NexusMods.Sdk.NexusModsApi;
 
 /// <summary>
-/// Unique identifier for an individual game hosted on Nexus.
+/// Identifier for a game on Nexus Mods.
 /// </summary>
-[ValueObject<uint>] // Matches backend. Do not change.
+[ValueObject<uint>]
 public readonly partial struct GameId : IAugmentWith<DefaultValueAugment>, IAugmentWith<JsonAugment>
 {
     /// <inheritdoc/>
-    public static GameId DefaultValue => From(default(uint));
+    public static GameId DefaultValue => From(0);
 }
 
 /// <summary>
-/// Game ID attribute, for game identifiers from the GraphQL (V2) API.
+/// Attribute for <see cref="GameId"/>.
 /// </summary>
-public class GameIdAttribute(string ns, string name) 
-    : ScalarAttribute<GameId, uint, UInt32Serializer>(ns, name)
+public class GameIdAttribute(string ns, string name) : ScalarAttribute<GameId, uint, UInt32Serializer>(ns, name)
 {
     /// <inheritdoc />
     protected override uint ToLowLevel(GameId value) => value.Value;

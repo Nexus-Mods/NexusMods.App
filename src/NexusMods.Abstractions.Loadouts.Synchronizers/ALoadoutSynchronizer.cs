@@ -8,23 +8,16 @@ using DynamicData.Kernel;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.Collections;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.FileHashes;
-using NexusMods.Abstractions.Games.FileHashes.Models;
 using NexusMods.Abstractions.GC;
-using NexusMods.Sdk.Hashes;
-using NexusMods.Abstractions.Loadouts.Extensions;
 using NexusMods.Abstractions.Loadouts.Files.Diff;
 using NexusMods.Abstractions.Loadouts.Sorting;
 using NexusMods.Abstractions.Loadouts.Synchronizers.Rules;
-using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Hashing.xxHash3;
-using NexusMods.Hashing.xxHash3.Paths;
+using NexusMods.HyperDuck;
 using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.MnemonicDB.Abstractions.DatomIterators;
 using NexusMods.MnemonicDB.Abstractions.IndexSegments;
-using NexusMods.MnemonicDB.Abstractions.Internals;
 using NexusMods.MnemonicDB.Abstractions.Query;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Paths;
@@ -43,8 +36,7 @@ using DiskState = Entities<DiskStateEntry.ReadOnly>;
 /// Base class for loadout synchronizers, provides some common functionality. Does not have to be user,
 /// but reduces a lot of boilerplate, and is highly recommended.
 /// </summary>
-[PublicAPI]
-public class ALoadoutSynchronizer : ILoadoutSynchronizer
+public partial class ALoadoutSynchronizer : ILoadoutSynchronizer
 {
     /// <summary>
     /// We'll limit backups to 2GB, for now we should never see much more than this
@@ -207,7 +199,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     public Dictionary<GamePath, FileConflictGroup> GetFileConflicts(Loadout.ReadOnly loadout, bool removeDuplicates = true)
     {
         var db = loadout.Db;
-        var query = Loadout.FileConflictsQuery(db, loadout, removeDuplicates: removeDuplicates);
+        var query = FileConflictsQuery(db, loadout, removeDuplicates: removeDuplicates);
         var result = query.ToDictionary(row => new GamePath(row.Location, row.Path), row =>
         {
             var items = row.Item3.Select(tuple =>
@@ -226,7 +218,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     public Dictionary<LoadoutItemGroup.ReadOnly, LoadoutFile.ReadOnly[]> GetFileConflictsByParentGroup(Loadout.ReadOnly loadout, bool removeDuplicates = true)
     {
         var db = loadout.Db;
-        var query = Loadout.FileConflictsByParentGroupQuery(db, loadout, removeDuplicates: removeDuplicates);
+        var query = FileConflictsByParentGroupQuery(db, loadout, removeDuplicates: removeDuplicates);
         var result = query.ToDictionary(row => LoadoutItemGroup.Load(db,row.GroupId), row =>
         {
             var items = row.Item2.Select(tuple =>
@@ -252,147 +244,58 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         public int GetHashCode(EntityId alternate) => alternate.GetHashCode();
         public LoadoutItemGroup.ReadOnly Create(EntityId alternate) => throw new NotSupportedException();
     }
-    
+
     public Dictionary<GamePath, SyncNode> BuildSyncTree<T>(T latestDiskState, T previousDiskState, Loadout.ReadOnly loadout) where T : IEnumerable<PathPartPair>
     {
-        var referenceDb = _fileHashService.Current;
         Dictionary<GamePath, SyncNode> syncTree = new();
 
-        // Add in the game state
-        foreach (var gameFile in GetNormalGameState(referenceDb, loadout))
+        foreach (var tuple in WinningFilesQuery(Connection.Db, loadout))
         {
-            ref var syncTreeEntry = ref CollectionsMarshal.GetValueRefOrAddDefault(syncTree, gameFile.Path, out var exists);
-            
-            // NOTE(Al12rs): DLCs could have replacements for base game files, but we don't currently store the LocatorId order data so for now we just log cases to be aware of them.
-            // See https://partner.steamgames.com/doc/store/application/depots#depot_mounting_rules for steam example
+            var itemType = ToItemType(tuple.ItemType);
+
+            // NOTE(erri120): deleted files are not added to the sync tree
+            if (itemType == LoadoutSourceItemType.Deleted) continue;
+
+            var gamePath = new GamePath(tuple.Location, tuple.Path);
+            if (gamePath == default(GamePath)) throw new Exception($"Item of type `{itemType}` with ID `{tuple.Id}` has no valid game path!");
+
+            ref var syncTreeEntry = ref CollectionsMarshal.GetValueRefOrAddDefault(syncTree, gamePath, out var exists);
+            Debug.Assert(!exists, "query should not return duplicate items");
+
             if (exists)
             {
-                Logger.LogWarning("Found duplicate game file `{Path}` in Loadout {LoadoutName} for game {Game}", gameFile.Path, loadout.Name, loadout.InstallationInstance.Game.Name);
+                Logger.LogWarning("Duplicate file for `{Path}`: {Item}", gamePath, tuple);
+                continue;
             }
-            
-            // If the entry already exists, we replace it
-            syncTreeEntry = new SyncNode
+
+            var loadoutPart = itemType switch
             {
-                Loadout = new SyncNodePart
+                LoadoutSourceItemType.Game => new SyncNodePart
                 {
-                    Hash = gameFile.Hash,
-                    Size = gameFile.Size,
+                    Hash = tuple.Hash,
+                    Size = tuple.Size,
                     LastModifiedTicks = 0,
                 },
-                SourceItemType = LoadoutSourceItemType.Game,
+                LoadoutSourceItemType.Loadout => new SyncNodePart
+                {
+                    EntityId = tuple.Id,
+                    Hash = tuple.Hash,
+                    Size = tuple.Size,
+                    LastModifiedTicks = 0,
+                },
+                LoadoutSourceItemType.Intrinsic => default(SyncNodePart),
+                LoadoutSourceItemType.Deleted => throw new UnreachableException("Deleted files should've been filtered out"),
+            };
+
+            syncTreeEntry = new SyncNode
+            {
+                SourceItemType = itemType,
+                Loadout = loadoutPart,
             };
         }
 
-        foreach (var loadoutItem in Loadout.LoadoutFileMetadataQuery(loadout.Db, loadout.Id, onlyEnabled: true))
-        {
-            if (loadoutItem.Path.Path == null)
-                throw new InvalidOperationException("Path is null");
-            var targetPath = new GamePath(loadoutItem.Location, loadoutItem.Path);
-
-            SyncNodePart sourceItem;
-            LoadoutSourceItemType sourceItemType;
-            if (!loadoutItem.IsDeleted)
-            {
-                sourceItem = new SyncNodePart
-                {
-                    Size = loadoutItem.Size,
-                    Hash = loadoutItem.Hash,
-                    EntityId = loadoutItem.Id,
-                    LastModifiedTicks = 0,
-                };
-                sourceItemType = LoadoutSourceItemType.Loadout;
-            }
-            else if (loadoutItem.IsDeleted)
-            {
-                sourceItem = new SyncNodePart
-                {
-                    Size = Size.Zero,
-                    Hash = Hash.Zero,
-                    EntityId = loadoutItem.Id,
-                    LastModifiedTicks = 0,
-                };
-                sourceItemType = LoadoutSourceItemType.Deleted;
-            }
-            else
-            {
-                throw new NotSupportedException("Only files and deleted files are supported");
-            }
-            
-            ref var existing = ref CollectionsMarshal.GetValueRefOrAddDefault(syncTree, targetPath, out var exists);
-            if (!exists)
-            {
-                existing = new SyncNode
-                {
-                    Loadout = sourceItem,
-                    SourceItemType = sourceItemType,
-                };
-            }
-            else
-            {
-                if (ShouldWinWrapper(loadout.Db, targetPath, existing.Loadout, existing.SourceItemType, sourceItem, sourceItemType))
-                {
-                    existing.Loadout = sourceItem;
-                    existing.SourceItemType = sourceItemType;
-                }
-            }
-        }
-
-        // Add in the intrinsic files
-        foreach (var file in IntrinsicFiles(loadout).Values)
-        {
-            ref var found = ref CollectionsMarshal.GetValueRefOrAddDefault(syncTree, file.Path, out var exists);
-            if (exists)
-            {
-                Logger.LogWarning("Found duplicate intrinsic file `{Path}` in Loadout {LoadoutName} for game {Game}", file.Path, loadout.Name, loadout.InstallationInstance.Game.Name);
-            }
-            found.SourceItemType = LoadoutSourceItemType.Intrinsic;
-            var stream = new MemoryStream();
-            file.Write(stream, loadout, syncTree);
-            stream.Position = 0;
-            var span = stream.GetBuffer().AsSpan(0, (int)stream.Length);
-            found.Loadout = new SyncNodePart()
-            {
-                Hash = span.xxHash3(),
-                Size = Size.From((ulong)span.Length),
-                LastModifiedTicks = 0,
-            };
-            found.SourceItemType = LoadoutSourceItemType.Intrinsic;
-        }
-        
-        // Remove deleted files. I'm not super happy with this requiring a full scan of
-        // the loadout, but we have to somehow mark the deleted files and then delete them. 
-        // And we can't modify the dictionary while iterating over it.
-        List<GamePath> deletedFiles = [];
-        foreach (var (key, value) in syncTree)
-        {
-            if (value.SourceItemType == LoadoutSourceItemType.Deleted) 
-                deletedFiles.Add(key);
-        }
-        foreach (var file in deletedFiles)
-        {
-            syncTree.Remove(file);
-        }
-        
         MergeStates(latestDiskState, previousDiskState, syncTree);
         return syncTree;
-    }
-
-    public IEnumerable<LoadoutSourceItem> GetNormalGameState(IDb referenceDb, Loadout.ReadOnly loadout)
-    {
-        var locatorIds = loadout.LocatorIds.Distinct().ToArray();
-        if (locatorIds.Length != loadout.LocatorIds.Count)
-            Logger.LogWarning("Found duplicate locator IDs `{LocatorIds}` on Loadout {Name} for game `{Game}` when getting game state", loadout.LocatorIds, loadout.Name, loadout.InstallationInstance.Game.Name);
-        
-        foreach (var item in _fileHashService.GetGameFiles((loadout.InstallationInstance.Store, locatorIds)))
-        {
-            yield return new LoadoutSourceItem
-            {
-                Path = item.Path,
-                Size = item.Size,
-                Hash = item.Hash,
-                Type = LoadoutSourceItemType.Game,
-            };
-        }
     }
 
     /// <inheritdoc />
@@ -431,14 +334,6 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         }
     }
 
-    /// <summary>
-    /// Returns true if the file and all its parents are not disabled.
-    /// </summary>
-    private static bool FileIsEnabled(LoadoutItem.ReadOnly arg)
-    {
-        return !arg.GetThisAndParents().Any(f => f.Contains(LoadoutItem.Disabled));
-    }
-
     /// <inheritdoc />
     public async Task<Dictionary<GamePath, SyncNode>> BuildSyncTree(Loadout.ReadOnly loadout)
     {
@@ -450,8 +345,6 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         return BuildSyncTree(currentItems, prevItems, loadout);
     }
 
-
-    
     /// <summary>
     /// This is a highly optimized way to load all the disk state for a game. It's a sorted merge
     /// join over all the required attributes for the results
@@ -554,7 +447,6 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 pathIsIgnored: IsIgnoredBackupPath(path),
                 item.SourceItemType);
 
-
             item.Signature = signature;
             item.Actions = ActionMapping.MapActions(signature);
         }
@@ -654,11 +546,8 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         var intrinsicFiles = IntrinsicFiles(loadout);
         foreach (var (path, node) in syncTree)
         {
-            if (!node.Actions.HasFlag(Actions.WriteIntrinsic))
-                continue;
-            
-            if (node.SourceItemType != LoadoutSourceItemType.Intrinsic)
-                throw new Exception("WriteIntrinsic should only be called on intrinsic files");
+            if (!node.Actions.HasFlag(Actions.WriteIntrinsic)) continue;
+            if (node.SourceItemType != LoadoutSourceItemType.Intrinsic) throw new Exception("WriteIntrinsic should only be called on intrinsic files");
 
             var instance = intrinsicFiles[path];
             var resolvedPath = register.GetResolvedPath(path);
@@ -674,18 +563,14 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         var intrinsicFiles = IntrinsicFiles(loadout);
         foreach (var (path, node) in syncTree)
         {
-            if (!node.Actions.HasFlag(Actions.AdaptLoadout))
-                continue;
-            
-            if (node.SourceItemType != LoadoutSourceItemType.Intrinsic)
-                throw new Exception("AdaptLoadout should only be called on intrinsic files");
+            if (!node.Actions.HasFlag(Actions.AdaptLoadout)) continue;
+            if (node.SourceItemType != LoadoutSourceItemType.Intrinsic) throw new Exception("AdaptLoadout should only be called on intrinsic files");
 
             var instance = intrinsicFiles[path];
             var resolvedPath = register.GetResolvedPath(path);
             await using var stream = resolvedPath.Read();
             await instance.Ingest(stream, loadout, syncTree, tx);
         }
-
     }
 
     /// <summary>
@@ -1182,120 +1067,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     {
         return _fileStore.HaveFile(hash).Result;
     }
-    
-    /// <summary>
-    /// Return true if the replacement should win over the existing item.
-    /// </summary>
-    private bool ShouldWinWrapper(IDb db, in GamePath path, in SyncNodePart existing, LoadoutSourceItemType existingItemType, in SyncNodePart replacement, LoadoutSourceItemType replacementItemType)
-    {
-        // Game files always lose
-        if (existingItemType == LoadoutSourceItemType.Game)
-            return true;
-        
-        // TODO: we don't often have many files that conflict by name, but we should speed this code up at some point
-        var existingLoadoutItem = LoadoutItem.Load(db, existing.EntityId);
-        var existingInOverrides = existingLoadoutItem
-            .GetThisAndParents()
-            .OfTypeLoadoutItemGroup()
-            .OfTypeLoadoutOverridesGroup()
-            .Any();
-        
-        var replacementLoadoutItem = LoadoutItem.Load(db, replacement.EntityId);
-        var replacementInOverrides = replacementLoadoutItem
-            .GetThisAndParents()
-            .OfTypeLoadoutItemGroup()
-            .OfTypeLoadoutOverridesGroup()
-            .Any();
-        
-        // Overrides always win
-        if (existingInOverrides && !replacementInOverrides)
-            return false;
-        else if (!existingInOverrides && replacementInOverrides)
-            return true;
-        else if (existingInOverrides && replacementInOverrides)
-            return false;
-        
-        // Return the newer one
-        return ShouldWin(path, existingLoadoutItem, replacementLoadoutItem);
-    }
 
-    /// <summary>
-    /// Returns true if <paramref name="b"/> should win over <paramref name="a"/> based
-    /// on rules defined in a collection.
-    /// </summary>
-    protected Optional<bool> ShouldOtherWinWithCollectionRules(LoadoutItem.ReadOnly a, LoadoutItem.ReadOnly b)
-    {
-        var hasDownloadA = a
-            .GetThisAndParents()
-            .OfTypeLoadoutItemGroup()
-            .OfTypeNexusCollectionItemLoadoutGroup()
-            .Select(static item => item.Download)
-            .TryGetFirst(out var downloadA);
-
-        if (!hasDownloadA) return Optional<bool>.None;
-        var hasDownloadB = b
-            .GetThisAndParents()
-            .OfTypeLoadoutItemGroup()
-            .OfTypeNexusCollectionItemLoadoutGroup()
-            .Select(static item => item.Download)
-            .TryGetFirst(out var downloadB);
-
-        if (!hasDownloadB) return Optional<bool>.None;
-        if (downloadA.CollectionRevisionId != downloadB.CollectionRevisionId) return Optional<bool>.None;
-
-        var db = downloadA.Db;
-
-        // use `downloadA` as `source` and `downloadB` as `other`
-        var ids = db.Datoms(
-            (CollectionDownloadRules.Source, downloadA),
-            (CollectionDownloadRules.Other, downloadB)
-        );
-
-        foreach (var id in ids)
-        {
-            var rule = CollectionDownloadRules.Load(db, id);
-            if (!rule.IsValid()) continue;
-
-            // `source` goes before `other`, meaning `a` doesn't win over `b`
-            if (rule.RuleType == CollectionDownloadRuleType.Before) return true;
-
-            // `source` goes after `other`, meaning `a` wins over `b`
-            if (rule.RuleType == CollectionDownloadRuleType.After) return false;
-        }
-
-        // use `downloadB` as `source` and `downloadA` as `other`
-        ids = db.Datoms(
-            (CollectionDownloadRules.Source, downloadB),
-            (CollectionDownloadRules.Other, downloadA)
-        );
-
-        foreach (var id in ids)
-        {
-            var rule = CollectionDownloadRules.Load(db, id);
-            if (!rule.IsValid()) continue;
-
-            // `source` goes after `other`, meaning `b` wins over `a`
-            if (rule.RuleType == CollectionDownloadRuleType.After) return true;
-
-            // `source` goes before `other`, meaning `b` doesn't win over `a`
-            if (rule.RuleType == CollectionDownloadRuleType.Before) return false;
-        }
-
-        return Optional<bool>.None;
-    }
-
-    /// <summary>
-    /// Override this method to provide custom logic for determining which file should win in a conflict. Return true if the
-    /// replacement should win over the existing item.
-    /// </summary>
-    protected virtual bool ShouldWin(in GamePath path, LoadoutItem.ReadOnly existing, LoadoutItem.ReadOnly replacement)
-    {
-        var optional = ShouldOtherWinWithCollectionRules(existing, replacement);
-        if (optional.HasValue) return optional.Value;
-
-        return replacement.Id > existing.Id;
-    }
-    
     /// <summary>
     /// Returns true if the loadout state doesn't match the last scanned disk state.
     /// </summary>

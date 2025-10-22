@@ -1,12 +1,10 @@
 using System.Diagnostics;
-using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi.Types;
-using NexusMods.Abstractions.NexusWebApi.Types.V2;
-using NexusMods.Abstractions.NexusWebApi.Types.V2.Uid;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
+using NexusMods.Sdk.NexusModsApi;
 
 namespace NexusMods.Networking.NexusWebApi.Extensions;
 
@@ -45,7 +43,7 @@ public static class FragmentExtensions
     /// <param name="modPageEid">ID of the mod page entity.</param>
     public static EntityId Resolve(this IModFile modFileFragment, IDb db, ITransaction tx, EntityId modPageEid)
     {
-        var nexusFileResolver = GraphQLResolver.Create(db, tx, NexusModsFileMetadata.Uid, UidForFile.FromV2Api(modFileFragment.Uid));
+        var nexusFileResolver = GraphQLResolver.Create(db, tx, NexusModsFileMetadata.Uid, FileUid.FromV2Api(modFileFragment.Uid));
         nexusFileResolver.Add(NexusModsFileMetadata.ModPageId, modPageEid);
         nexusFileResolver.Add(NexusModsFileMetadata.Name, modFileFragment.Name);
         nexusFileResolver.Add(NexusModsFileMetadata.Version, modFileFragment.Version);
@@ -69,7 +67,7 @@ public static class FragmentExtensions
     /// </summary>
     public static EntityId Resolve(this IMod modFragment, IDb db, ITransaction tx, bool setFilesTimestamp = false)
     {
-        var nexusModResolver = GraphQLResolver.Create(db, tx, NexusModsModPageMetadata.Uid, UidForMod.FromV2Api(modFragment.Uid));
+        var nexusModResolver = GraphQLResolver.Create(db, tx, NexusModsModPageMetadata.Uid, ModUid.FromV2Api(modFragment.Uid));
         nexusModResolver.Add(NexusModsModPageMetadata.Name, modFragment.Name);
         nexusModResolver.Add(NexusModsModPageMetadata.GameDomain, GameDomain.From(modFragment.Game.DomainName));
         nexusModResolver.Add(NexusModsModPageMetadata.UpdatedAt, modFragment.UpdatedAt.UtcDateTime);

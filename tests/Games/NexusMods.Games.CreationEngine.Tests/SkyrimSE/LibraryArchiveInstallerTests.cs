@@ -1,13 +1,10 @@
-using Microsoft.Extensions.DependencyInjection;
 using Mutagen.Bethesda.Plugins;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Games.CreationEngine.Abstractions;
 using NexusMods.Games.CreationEngine.Tests.TestAttributes;
 using NexusMods.Games.IntegrationTestFramework;
-using NexusMods.Paths;
-using NexusMods.Telemetry;
+using NexusMods.Sdk.NexusModsApi;
 using Xunit;
 
 namespace NexusMods.Games.CreationEngine.Tests.SkyrimSE;

@@ -81,7 +81,7 @@
                         <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
                             <!-- <Setter Property="Background" Value="DarkBlue" /> -->
 
-                            <Style Selector="^ StackPanel#LoadOrderItemIndexColumnStack">
+                            <Style Selector="^ StackPanel#SortIndexColumnStack">
                                 <Setter Property="Orientation" Value="Horizontal" />
                                 <Setter Property="Spacing" Value="0" />
                             </Style>

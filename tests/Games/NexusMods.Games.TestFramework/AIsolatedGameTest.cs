@@ -12,6 +12,7 @@ using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.FileExtractor;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.Games.FileHashes;
 using NexusMods.Abstractions.GC;
 using NexusMods.Abstractions.GuidedInstallers;
 using NexusMods.Abstractions.Library;
@@ -20,7 +21,6 @@ using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Extensions;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
-using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Backend;
 using NexusMods.DataModel;
 using NexusMods.Games.FileHashes;
@@ -36,6 +36,7 @@ using NexusMods.Sdk;
 using NexusMods.Sdk.FileExtractor;
 using NexusMods.Sdk.FileStore;
 using NexusMods.Sdk.IO;
+using NexusMods.Sdk.NexusModsApi;
 using NexusMods.StandardGameLocators.TestHelpers;
 using Xunit.Abstractions;
 using Xunit.DependencyInjection;
@@ -565,6 +566,8 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
 
     public async Task InitializeAsync()
     {
+        await _host.Services.GetRequiredService<IFileHashesService>().GetFileHashesDb();
+
         await _host.StartAsync();
         GameInstallation = GameRegistry.Installations.Values.First(g => g.Game is TGame);
         Game = (TGame)GameInstallation.Game;
