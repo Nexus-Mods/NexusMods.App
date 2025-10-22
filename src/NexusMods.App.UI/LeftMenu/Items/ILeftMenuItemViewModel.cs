@@ -21,5 +21,5 @@ public interface ILeftMenuItemViewModel : IViewModelInterface
     
     public bool IsSelected { get; }
     
-    public IReadOnlyList<IContextMenuItem>? AdditionalContextMenuItems { get; }
+    public IReadOnlyList<IContextMenuItem> AdditionalContextMenuItems { get; }
 }

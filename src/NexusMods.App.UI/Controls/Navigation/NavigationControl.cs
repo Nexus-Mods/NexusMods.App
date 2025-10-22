@@ -17,8 +17,8 @@ public class NavigationControl : StandardButton
     public static readonly StyledProperty<ReactiveCommand<NavigationInput, Unit>?> NavigateCommandProperty =
         AvaloniaProperty.Register<NavigationControl, ReactiveCommand<NavigationInput, Unit>?>(nameof(NavigationCommand));
 
-    public static readonly StyledProperty<IReadOnlyList<IContextMenuItem>?> AdditionalContextMenuItemsProperty =
-        AvaloniaProperty.Register<NavigationControl, IReadOnlyList<IContextMenuItem>?>(
+    public static readonly StyledProperty<IReadOnlyList<IContextMenuItem>> AdditionalContextMenuItemsProperty =
+        AvaloniaProperty.Register<NavigationControl, IReadOnlyList<IContextMenuItem>>(
             nameof(AdditionalContextMenuItems));
 
     public ReactiveCommand<NavigationInformation, Unit>? NavigationCommand
@@ -31,9 +31,9 @@ public class NavigationControl : StandardButton
         set => SetValue(CommandProperty, value);
     }
 
-    public IReadOnlyList<IContextMenuItem>? AdditionalContextMenuItems
+    public IReadOnlyList<IContextMenuItem> AdditionalContextMenuItems
     {
-        get => GetValue(AdditionalContextMenuItemsProperty);
+        get => GetValue(AdditionalContextMenuItemsProperty) ?? Array.Empty<IContextMenuItem>();
         set => SetValue(AdditionalContextMenuItemsProperty, value);
     }
 
@@ -79,11 +79,11 @@ public class NavigationControl : StandardButton
         });
 
         // Add additional items if any exist
-        var additionalItems = AdditionalContextMenuItems?
+        var additionalItems = AdditionalContextMenuItems
             .Where(item => item.IsVisible)
             .ToList();
 
-        if (additionalItems?.Count > 0)
+        if (additionalItems.Count > 0)
         {
             contextMenu.Items.Add(new Separator());
 
