@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.Resources;
 using NexusMods.UI.Sdk;
@@ -148,12 +149,8 @@ public static class SharedComponents
             MoveDown = canExecuteMoveDown.ObserveOnUIThreadDispatcher().ToReactiveCommand();
         }
 
-        public int CompareTo(IndexComponent? other)
-        {
-            // Data is sorted by the Adapter, not the treeDataGrid, this should not be called
-            throw new NotSupportedException();
-        }
-        
+        public int CompareTo(IndexComponent? other) => throw new UnreachableException("Data is sorted by the Adapter, not by the TreeDataGrid");
+
         private bool _isDisposed;
         protected override void Dispose(bool disposing)
         {
@@ -163,6 +160,7 @@ public static class SharedComponents
                 {
                     Disposable.Dispose(MoveUp, MoveDown);
                 }
+
                 _isDisposed = true;
             }
 

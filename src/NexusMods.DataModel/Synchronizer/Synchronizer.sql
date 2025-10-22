@@ -149,3 +149,13 @@ FROM
   JOIN MDB_LOADOUTITEM (Db => db) loadout_item ON loadout_item.Id = "unnest".Id
 GROUP BY
   loadout_item.Parent;
+
+-- Returns all priority groups with additional per-loadout data
+CREATE OR REPLACE MACRO synchronizer.PriorityGroups (db) AS TABLE
+SELECT
+    *,
+    row_number() OVER (PARTITION BY Loadout ORDER BY Priority) AS Index,
+    lead(Id, -1, 0) OVER (PARTITION BY Loadout ORDER BY Priority) As Prev,
+    lead(Id, 1, 0) OVER (PARTITION BY Loadout ORDER BY Priority) As Next
+FROM
+    MDB_LOADOUTITEMGROUPPRIORITY (Db => db);

@@ -145,11 +145,11 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object, ISea
                             // so they get values before the TreeDataGrid even sees them.
                             foreach (var change in changeSet)
                             {
-                                if (change.Reason is ChangeReason.Add)
+                                if (change.Reason is ChangeReason.Add or ChangeReason.Update)
                                 {
                                     Debug.Assert(!change.Current.IsDisposed);
                                     if (change.Current.IsDisposed) continue;
-                                    
+
                                     self.BeforeModelActivationHook(change.Current);
                                     change.Current.Activate();
                                 }

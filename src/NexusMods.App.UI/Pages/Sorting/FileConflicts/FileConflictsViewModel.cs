@@ -1,4 +1,3 @@
-using System.Collections.Frozen;
 using System.ComponentModel;
 using System.Diagnostics;
 using Avalonia.Controls;
@@ -7,10 +6,10 @@ using Avalonia.Media.Imaging;
 using DynamicData;
 using DynamicData.Binding;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
+using NexusMods.Abstractions.Loadouts.Synchronizers.Conflicts;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Controls.MarkdownRenderer;
@@ -30,6 +29,7 @@ public class FileConflictsViewModel : AViewModel<IFileConflictsViewModel>, IFile
     public FileConflictsTreeDataGridAdapter TreeDataGridAdapter { get; }
 
     private readonly BindableReactiveProperty<ListSortDirection> _sortDirectionCurrent;
+    private readonly ILoadoutManager _loadoutManager;
     public IReadOnlyBindableReactiveProperty<ListSortDirection> SortDirectionCurrent => _sortDirectionCurrent;
     public IReadOnlyBindableReactiveProperty<bool> IsAscending { get; }
 
@@ -43,6 +43,7 @@ public class FileConflictsViewModel : AViewModel<IFileConflictsViewModel>, IFile
         Debug.Assert(loadout.IsValid());
 
         var synchronizer = loadout.InstallationInstance.GetGame().Synchronizer;
+        _loadoutManager = serviceProvider.GetRequiredService<ILoadoutManager>();
 
         _sortDirectionCurrent = new BindableReactiveProperty<ListSortDirection>(ListSortDirection.Ascending);
         IsAscending = _sortDirectionCurrent.Select(direction => direction == ListSortDirection.Ascending).ToBindableReactiveProperty();
@@ -65,11 +66,11 @@ public class FileConflictsViewModel : AViewModel<IFileConflictsViewModel>, IFile
             {
                 await msg.Match<Task>(
                     viewConflictsMessage => HandleViewConflictsMessage(viewConflictsMessage, windowManager, serviceProvider),
-                    moveUp => Task.CompletedTask, // TODO: implement move up
-                    moveDown => Task.CompletedTask // TODO: implement move down
+                    moveUp => Move(moveUp.Item.Key, moveUp.Item.Get<FileConflictsComponents.NeighbourIds>(FileConflictsColumns.IndexColumn.NeighbourIdsComponentKey), _sortDirectionCurrent.Value, moveUp: true), 
+                    moveDown => Move(moveDown.Item.Key, moveDown.Item.Get<FileConflictsComponents.NeighbourIds>(FileConflictsColumns.IndexColumn.NeighbourIdsComponentKey), _sortDirectionCurrent.Value, moveUp: false)
                 );
             }).AddTo(disposables);
-            
+
             // Update drop position indicator
             TreeDataGridAdapter.RowDragOverSubject.Subscribe(dragDropPayload =>
             {
@@ -79,8 +80,6 @@ public class FileConflictsViewModel : AViewModel<IFileConflictsViewModel>, IFile
                     
                 // Update the drop position for the inside case to be before or after
                 eventArgs.Position = PointerIsInVerticalTopHalf(eventArgs) ? TreeDataGridRowDropPosition.Before : TreeDataGridRowDropPosition.After;
-
-                // TODO: set eventArgs.Position = TreeDataGridRowDropPosition.None to disallow drop in invalid cases
             }).AddTo(disposables);
 
             // Handle row drops
@@ -89,11 +88,11 @@ public class FileConflictsViewModel : AViewModel<IFileConflictsViewModel>, IFile
                 var (sourceModels, targetModel, eventArgs) = dragDropPayload;
                 
                 // Determine source items
-                var keysToMove = sourceModels.Select(item => item.Key).ToArray();
+                var keysToMove = sourceModels.Select(LoadoutItemGroupPriorityId (item) => item.Key).ToArray();
                 if (keysToMove.Length == 0) return;
 
                 // Determine target item
-                var dropTargetKey = targetModel.Key;
+                var dropTargetKey = (LoadoutItemGroupPriorityId) targetModel.Key;
 
                 // Determine relative position
                 TargetRelativePosition relativePosition;
@@ -120,12 +119,41 @@ public class FileConflictsViewModel : AViewModel<IFileConflictsViewModel>, IFile
                         return;
                 }
 
-                // TODO: perform the move operation
+                var task = relativePosition switch
+                {
+                    TargetRelativePosition.BeforeTarget => _loadoutManager.LoseFileConflict(keysToMove, dropTargetKey),
+                    TargetRelativePosition.AfterTarget => _loadoutManager.WinFileConflict(keysToMove, dropTargetKey),
+                };
+
+                await task;
             },
             awaitOperation: AwaitOperation.Drop).AddTo(disposables);
         });
     }
-    
+
+    private async Task Move(EntityId anchorId, FileConflictsComponents.NeighbourIds neighbourIds, ListSortDirection sortDirection, bool moveUp)
+    {
+        var makeAnchorWinner = (sortDirection, moveUp) switch
+        {
+            (ListSortDirection.Ascending, moveUp: false) => true,
+            (ListSortDirection.Descending, moveUp: true) => true,
+            _ => false,
+        };
+
+        var target = (sortDirection, moveUp) switch
+        {
+            (ListSortDirection.Ascending, moveUp: false) => neighbourIds.Next,
+            (ListSortDirection.Ascending, moveUp: true) => neighbourIds.Prev,
+            (ListSortDirection.Descending, moveUp: false) => neighbourIds.Prev,
+            (ListSortDirection.Descending, moveUp: true) => neighbourIds.Next,
+        };
+
+        Debug.Assert(target.Value != 0, "should select correct non-null target");
+
+        if (makeAnchorWinner) await _loadoutManager.WinFileConflict(winnerIds: [anchorId], loserId: target);
+        else await _loadoutManager.LoseFileConflict(loserIds: [anchorId], winnerId: target);
+    }
+
     private static async Task HandleViewConflictsMessage(
         FileConflictsTreeDataGridAdapter.ViewConflictsMessage msg, 
         IWindowManager windowManager, 
@@ -164,6 +192,7 @@ public class FileConflictsTreeDataGridAdapter : TreeDataGridAdapter<CompositeIte
     private readonly LoadoutId _loadoutId;
     private readonly IDisposable _activationDisposable;
 
+    private readonly Observable<ListSortDirection> _sortDirectionObservable;
     public Subject<OneOf.OneOf<ViewConflictsMessage, MoveUpCommandPayload, MoveDownCommandPayload>> MessageSubject { get; } = new();
 
     public FileConflictsTreeDataGridAdapter(
@@ -181,10 +210,12 @@ public class FileConflictsTreeDataGridAdapter : TreeDataGridAdapter<CompositeIte
         var ascendingComparer = SortExpressionComparer<CompositeItemModel<EntityId>>.Ascending(
             item => item.Get<SharedComponents.IndexComponent>(FileConflictsColumns.IndexColumn.IndexComponentKey).SortIndex.Value
         );
+
         var descendingComparer = SortExpressionComparer<CompositeItemModel<EntityId>>.Descending(
             item => item.Get<SharedComponents.IndexComponent>(FileConflictsColumns.IndexColumn.IndexComponentKey).SortIndex.Value
         );
-        
+
+        _sortDirectionObservable = sortDirectionObservable;
         var comparerObservable = sortDirectionObservable
             .Select(direction => direction == ListSortDirection.Ascending ? ascendingComparer : descendingComparer)
             .DistinctUntilChanged();
@@ -216,7 +247,7 @@ public class FileConflictsTreeDataGridAdapter : TreeDataGridAdapter<CompositeIte
         
         // Move up command
         model.SubscribeToComponentAndTrack<SharedComponents.IndexComponent, FileConflictsTreeDataGridAdapter>(
-            key: LoadOrderColumns.IndexColumn.IndexComponentKey,
+            key: FileConflictsColumns.IndexColumn.IndexComponentKey,
             state: this,
             factory: static (adapter, itemModel, component) => component.MoveUp.Subscribe((adapter, itemModel, component), static (_, tuple) =>
             {
@@ -227,7 +258,7 @@ public class FileConflictsTreeDataGridAdapter : TreeDataGridAdapter<CompositeIte
 
         // Move down command
         model.SubscribeToComponentAndTrack<SharedComponents.IndexComponent, FileConflictsTreeDataGridAdapter>(
-            key: LoadOrderColumns.IndexColumn.IndexComponentKey,
+            key: FileConflictsColumns.IndexColumn.IndexComponentKey,
             state: this,
             factory: static (adapter, itemModel, component) => component.MoveDown.Subscribe((adapter, itemModel, component), static (_, tuple) =>
             {
@@ -239,24 +270,18 @@ public class FileConflictsTreeDataGridAdapter : TreeDataGridAdapter<CompositeIte
 
     protected override IObservable<IChangeSet<CompositeItemModel<EntityId>, EntityId>> GetRootsObservable(bool viewHierarchical)
     {
-        var sourceCache = new SourceCache<CompositeItemModel<EntityId>, EntityId>(x => x.Key);
-
-        var loadout = Loadout.Load(_connection.Db, _loadoutId);
-        var conflictsByGroup = _synchronizer.GetFileConflictsByParentGroup(loadout);
-        var conflictsByPath = _synchronizer.GetFileConflicts(loadout).ToFrozenDictionary();
-
-        var enumerable = conflictsByGroup.Select(kv => ToItemModel(kv, conflictsByPath));
-        sourceCache.AddOrUpdate(enumerable);
-
-        return sourceCache.Connect();
+        return ObservePriorityGroups(_connection, _loadoutId).Transform(ToItemModel);
     }
 
-    private CompositeItemModel<EntityId> ToItemModel(
-        KeyValuePair<LoadoutItemGroup.ReadOnly, LoadoutFile.ReadOnly[]> kv, 
-        FrozenDictionary<GamePath, FileConflictGroup> conflictsByPath)
+    private CompositeItemModel<EntityId> ToItemModel((EntityId, EntityId, ConflictPriority, long, EntityId, EntityId) tuple)
     {
-        var (loadoutGroup, loadoutFiles) = kv;
-        var itemModel = new CompositeItemModel<EntityId>(loadoutGroup.Id);
+        var db = _connection.Db;
+        var (groupPriorityId, targetId, priority, index, previousId, nextId) = tuple;
+
+        var groupPriority = LoadoutItemGroupPriority.Load(db, groupPriorityId);
+        var loadoutGroup = groupPriority.Target;
+
+        var itemModel = new CompositeItemModel<EntityId>(groupPriorityId);
 
         itemModel.Add(SharedColumns.Name.NameComponentKey, new NameComponent(value: loadoutGroup.AsLoadoutItem().Name));
         ImageComponent? imageComponent = null;
@@ -275,15 +300,41 @@ public class FileConflictsTreeDataGridAdapter : TreeDataGridAdapter<CompositeIte
         imageComponent ??= new ImageComponent(value: ImagePipelines.ModPageThumbnailFallback);
         itemModel.Add(SharedColumns.Name.ImageComponentKey, imageComponent);
 
-        itemModel.Add(FileConflictsColumns.Actions.ViewComponentKey, new FileConflictsComponents.ViewAction(loadoutGroup, loadoutFiles, conflictsByPath));
+        // TODO: conflict counts
+        // TODO: collections column
+        // TODO: "View Conflicts" action
+        // itemModel.Add(FileConflictsColumns.Actions.ViewComponentKey, new FileConflictsComponents.ViewAction(loadoutGroup, loadoutFiles, conflictsByPath));
 
-        // TODO: populate with real data
+        itemModel.Add(FileConflictsColumns.IndexColumn.NeighbourIdsComponentKey, new FileConflictsComponents.NeighbourIds(previousId, nextId));
+
         itemModel.Add(FileConflictsColumns.IndexColumn.IndexComponentKey, new SharedComponents.IndexComponent(
-            new ValueComponent<int>(0), new ValueComponent<string>("0"),
-            Observable.Return(false), Observable.Return(false))
-        );
+            new ValueComponent<int>((int)index),
+            new ValueComponent<string>(index.ToString()),
+            canExecuteMoveUp: _sortDirectionObservable.Select(direction => direction switch
+            {
+                ListSortDirection.Ascending => previousId.Value != 0,
+                ListSortDirection.Descending => nextId.Value != 0,
+            }),
+            canExecuteMoveDown: _sortDirectionObservable.Select(direction => direction switch
+            {
+                ListSortDirection.Ascending => nextId.Value != 0,
+                ListSortDirection.Descending => previousId.Value != 0,
+            })
+        ));
 
         return itemModel;
+    }
+
+    private static IObservable<IChangeSet<(EntityId Id, EntityId Target, ConflictPriority Priority, long Index, EntityId Prev, EntityId Next), EntityId>> ObservePriorityGroups(IConnection connection, LoadoutId loadoutId)
+    {
+        return connection.Query<(EntityId Id, EntityId, ConflictPriority, long, EntityId, EntityId)>(
+            $"""
+             SELECT Id, Target, Priority, Index, Prev, Next
+             FROM
+               synchronizer.PriorityGroups({connection})
+             WHERE Loadout = {loadoutId};
+             """
+        ).Observe(tuple => tuple.Id);
     }
 
     protected override IColumn<CompositeItemModel<EntityId>>[] CreateColumns(bool viewHierarchical)

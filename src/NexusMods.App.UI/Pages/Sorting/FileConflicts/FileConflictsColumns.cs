@@ -4,12 +4,27 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Extensions;
+using NexusMods.MnemonicDB.Abstractions;
 using R3;
 
 namespace NexusMods.App.UI.Pages.Sorting;
 
 public static class FileConflictsComponents
 {
+    public class NeighbourIds : IItemModelComponent<NeighbourIds>, IComparable<NeighbourIds>
+    {
+        public readonly EntityId Prev;
+        public readonly EntityId Next;
+
+        public NeighbourIds(EntityId prev, EntityId next)
+        {
+            Prev = prev;
+            Next = next;
+        }
+
+        public int CompareTo(NeighbourIds? other) => 0;
+    }
+
     public class ViewAction : IItemModelComponent<ViewAction>, IComparable<ViewAction>
     {
         public LoadoutItemGroup.ReadOnly Group { get; }
@@ -59,6 +74,7 @@ public static class FileConflictsColumns
     {
         public const string ColumnTemplateResourceKey = Prefix + nameof(IndexColumn);
         public static readonly ComponentKey IndexComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(SharedComponents.IndexComponent));
+        public static readonly ComponentKey NeighbourIdsComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(FileConflictsComponents.NeighbourIds));
 
         public static int Compare<TKey>(CompositeItemModel<TKey> a, CompositeItemModel<TKey> b) where TKey : notnull
         {
@@ -69,7 +85,7 @@ public static class FileConflictsColumns
         public static string GetColumnHeader() => "Conflict Priority";
         public static string GetColumnTemplateResourceKey() => ColumnTemplateResourceKey;
     }
-    
+
     public class Actions : ICompositeColumnDefinition<Actions>
     {
         public static int Compare<TKey>(CompositeItemModel<TKey> a, CompositeItemModel<TKey> b) where TKey : notnull
