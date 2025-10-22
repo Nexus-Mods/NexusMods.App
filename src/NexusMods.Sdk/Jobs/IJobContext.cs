@@ -92,10 +92,6 @@ public interface IJobContext : IAsyncDisposable, IDisposable
     /// </summary>
     void Resume();
     
-    /// <summary>
-    /// Checks whether a job context can atomically transition states.
-    /// </summary>
-    public bool TryTransitionStatus(JobStatus expected, JobStatus next);
 }
 
 /// <summary>

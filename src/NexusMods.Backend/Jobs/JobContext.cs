@@ -15,13 +15,11 @@ public sealed class JobContext<TJobDefinition, TJobResult> : IJobWithResult<TJob
     private readonly Func<IJobContext<TJobDefinition>, ValueTask<TJobResult>> _action;
     private readonly TaskCompletionSource<TJobResult> _tcs;
     private readonly JobCancellationToken _jobCancellationToken;
-    private int _statusAtomic;
 
     internal JobContext(TJobDefinition definition, IJobMonitor monitor, IJobGroup jobGroup, JobCancellationToken jobCancellationToken, Func<IJobContext<TJobDefinition>, ValueTask<TJobResult>> action)
     {
         Id = JobId.NewId();
         Status = JobStatus.None;
-        _statusAtomic = (int)JobStatus.None;
 
         _tcs = new TaskCompletionSource<TJobResult>();
         _action = action;
@@ -90,7 +88,6 @@ public sealed class JobContext<TJobDefinition, TJobResult> : IJobWithResult<TJob
     
     private void SetStatus(JobStatus status)
     {
-        Interlocked.Exchange(ref _statusAtomic, (int)status);
         Status = status;
         _status.OnNext(status);
     }
@@ -217,9 +214,4 @@ public sealed class JobContext<TJobDefinition, TJobResult> : IJobWithResult<TJob
         }
     }
 
-    public bool TryTransitionStatus(JobStatus expected, JobStatus next)
-    {
-        var prev = Interlocked.CompareExchange(ref _statusAtomic, (int)next, (int)expected);
-        return prev == (int)expected;
-    }
 }
