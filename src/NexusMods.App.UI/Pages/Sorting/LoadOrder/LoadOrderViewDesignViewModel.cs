@@ -97,7 +97,7 @@ public class LoadOrderTreeDataGridDesignAdapter : TreeDataGridAdapter<CompositeI
         model.Add(LoadOrderColumns.IsActiveComponentKey, new ValueComponent<bool>(isActive));
 
         model.Add(LoadOrderColumns.IndexColumn.IndexComponentKey,
-            new LoadOrderComponents.IndexComponent(
+            new SharedComponents.IndexComponent(
                 new ValueComponent<int>(sortIndex),
                 new ValueComponent<string>(sortIndex.Ordinalize()),
                 R3.Observable.Return(true),

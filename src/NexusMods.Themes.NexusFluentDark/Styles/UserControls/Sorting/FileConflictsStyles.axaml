@@ -1,35 +1,11 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:icons="clr-namespace:NexusMods.UI.Sdk.Icons;assembly=NexusMods.UI.Sdk"
         xmlns:sorting="clr-namespace:NexusMods.App.UI.Pages.Sorting;assembly=NexusMods.App.UI"
-        xmlns:controls="clr-namespace:NexusMods.App.UI.Controls;assembly=NexusMods.App.UI">
+        xmlns:icons="clr-namespace:NexusMods.UI.Sdk.Icons;assembly=NexusMods.UI.Sdk">
+    
 
-    <Design.PreviewWith>
-        <Border Width="800" Height="600">
-            <sorting:LoadOrderView>
-                <sorting:LoadOrderView.DataContext>
-                    <sorting:LoadOrderDesignViewModel />
-                </sorting:LoadOrderView.DataContext>
-            </sorting:LoadOrderView>
-        </Border>
-    </Design.PreviewWith>
-
-    <Style Selector="sorting|LoadOrderView">
-
-        <Style Selector="^ StackPanel#LoadOrderAlertStackPanel">
-            <Setter Property="Spacing" Value="{StaticResource Spacing-3}" />
-
-            <Style Selector="^ StackPanel#TitleStackPanel">
-                <Setter Property="Spacing" Value="{StaticResource Spacing-1}" />
-                <Setter Property="Orientation" Value="Horizontal" />
-
-                <Style Selector="^ TextBlock#TitleTextBlock">
-                    <Setter Property="Theme" Value="{StaticResource BodyLGNormalTheme}" />
-                    <Setter Property="Foreground" Value="{StaticResource NeutralTranslucentModerateBrush}" />
-                </Style>
-            </Style>
-        </Style>
-
+    <Style Selector="sorting|FileConflictsView">
+        
         <Style Selector="^ Grid#MainGrid">
             <Setter Property="Margin" Value="0,12, 0,0" />
 
@@ -71,13 +47,13 @@
                 </Style>
             </Style>
 
-            <!-- left column (load order tree data grid) -->
-            <Style Selector="^ TreeDataGrid#SortOrderTreeDataGrid">
+            <!-- left column (sorting tree data grid) -->
+            <Style Selector="^ TreeDataGrid#FileConflictsTreeDataGrid">
 
                 <Style Selector="^ TreeDataGridTemplateCell">
 
                     <!-- first column (index) -->
-                    <Style Selector="^.LoadOrderColumns_IndexColumn">
+                    <Style Selector="^.FileConflictsColumns_IndexColumn">
                         <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
                             <!-- <Setter Property="Background" Value="DarkBlue" /> -->
 
@@ -120,6 +96,7 @@
                     </Style>
 
                     <!-- second column (thumbnail and display name) -->
+                    <!-- TODO: update this for the FileConflicts name + icon columns -->
                     <Style Selector="^.LoadOrderColumns_DisplayNameColumn">
                         <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
                             
@@ -167,23 +144,14 @@
                             </Style>
                         </Style>
                     </Style>
-
-                    <!-- third column (mod name) -->
-                    <Style Selector="^.LoadOrderColumns_ModNameColumn">
-                        <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
-                            <Style Selector="^ TextBlock#ModName">
-                                <Setter Property="Theme" Value="{StaticResource BodySMNormalTheme}" />
-                                <Setter Property="Foreground" Value="{StaticResource NeutralTranslucentSubduedBrush}" />
-                            </Style>
-                        </Style>
-                    </Style>
+                    
                 </Style>
 
                 <!-- selected -->
                 <Style Selector="^ TreeDataGridRow:selected">
 
                     <!-- first column (index) -->
-                    <Style Selector="^ TreeDataGridTemplateCell.LoadOrderColumns_IndexColumn">
+                    <Style Selector="^ TreeDataGridTemplateCell.FileConflictsColumns_IndexColumn">
 
                         <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
 
@@ -201,7 +169,7 @@
                 <Style Selector="^ TreeDataGridRow:pointerover">
 
                     <!-- first column (index) -->
-                    <Style Selector="^ TreeDataGridTemplateCell.LoadOrderColumns_IndexColumn">
+                    <Style Selector="^ TreeDataGridTemplateCell.FileConflictsColumns_IndexColumn">
 
                         <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
                             <!-- <Setter Property="Background" Value="DarkBlue" /> -->
@@ -218,5 +186,7 @@
                 </Style>
             </Style>
         </Style>
+        
     </Style>
 </Styles>
+

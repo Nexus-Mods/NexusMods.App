@@ -30,6 +30,7 @@
     <StyleInclude Source="/Styles/Controls/TreeDataGrid/SharedStyles.axaml" />
     <StyleInclude Source="/Styles/Controls/TreeDataGrid/TreeDataGridLibraryStyles.axaml" />
     <StyleInclude Source="/Styles/Controls/TreeDataGrid/TreeDataGridSortOrderStyles.axaml" />
+    <StyleInclude Source="/Styles/Controls/TreeDataGrid/TreeDataGridFileConflictsStyles.axaml" />
     <StyleInclude Source="/Styles/Controls/TreeDataGrid/TreeDataGridCollectionDownloadStyles.axaml" />
     <StyleInclude Source="/Styles/Controls/TreeDataGrid/TreeDataGridOtherStyles.axaml" />
     <StyleInclude Source="/Styles/Controls/TreeDataGrid/TreeDataGridActionsColumnStyles.axaml" />
@@ -70,6 +71,7 @@
     <StyleInclude Source="/Styles/UserControls/WorkspaceSystem/PanelTabHeaderStyles.axaml" />
     <StyleInclude Source="/Styles/UserControls/WorkspaceSystem/PanelViewStyles.axaml" />
     <StyleInclude Source="/Styles/UserControls/Sorting/LoadOrderStyles.axaml" />
+    <StyleInclude Source="/Styles/UserControls/Sorting/FileConflictsStyles.axaml" />
     <StyleInclude Source="/Styles/UserControls/LeftMenu/LeftMenuStyles.axaml" />
     <StyleInclude Source="/Styles/UserControls/LaunchButton/LaunchButtonStyles.axaml" />
     <StyleInclude Source="/Styles/UserControls/ApplyControl/ApplyControlStyles.axaml" />

@@ -124,4 +124,50 @@ public static class SharedComponents
             base.Dispose(disposing);
         }
     }
+
+    public sealed class IndexComponent : ReactiveR3Object, IItemModelComponent<IndexComponent>, IComparable<IndexComponent>
+    {
+        private readonly ValueComponent<int> _index;
+        private readonly ValueComponent<string> _displaySortIndex;
+
+        public ReactiveCommand<Unit> MoveUp { get; }
+        public ReactiveCommand<Unit> MoveDown { get; }
+
+        public IReadOnlyBindableReactiveProperty<int> SortIndex => _index.Value;
+        public IReadOnlyBindableReactiveProperty<string> DisplaySortIndex => _displaySortIndex.Value;
+
+        public IndexComponent(ValueComponent<int> index, 
+            ValueComponent<string> displaySortIndex,
+            Observable<bool> canExecuteMoveUp,
+            Observable<bool> canExecuteMoveDown)
+        {
+            _index = index;
+            _displaySortIndex = displaySortIndex;
+            
+            MoveUp = canExecuteMoveUp.ObserveOnUIThreadDispatcher().ToReactiveCommand();
+            MoveDown = canExecuteMoveDown.ObserveOnUIThreadDispatcher().ToReactiveCommand();
+        }
+
+        public int CompareTo(IndexComponent? other)
+        {
+            // Data is sorted by the Adapter, not the treeDataGrid, this should not be called
+            throw new NotSupportedException();
+        }
+        
+        private bool _isDisposed;
+        protected override void Dispose(bool disposing)
+        {
+            if (!_isDisposed)
+            {
+                if (disposing)
+                {
+                    Disposable.Dispose(MoveUp, MoveDown);
+                }
+                _isDisposed = true;
+            }
+
+            base.Dispose(disposing);
+        }
+        
+    }
 }
