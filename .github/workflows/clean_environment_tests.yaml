@@ -34,10 +34,10 @@ jobs:
       matrix:
         include:
           - os_name: linux
-            runs_on: [ self-hosted, linux, x64 ]
+            runs_on: [ self-hosted, Linux, x64 ]
             shell: bash
           - os_name: windows
-            runs_on: [ self-hosted, windows, x64 ]
+            runs_on: [ self-hosted, Windows, x64 ]
             shell: powershell
     runs-on: ${{ matrix.runs_on }}
     if: github.event_name == 'push' || github.event.pull_request.draft == false
