@@ -1,7 +1,7 @@
 using Avalonia.Threading;
 using DynamicData;
-using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Collections;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.App.UI.Dialog;
 using NexusMods.App.UI.Dialog.Enums;
 using NexusMods.App.UI.Pages.CollectionDownload;
@@ -16,7 +16,7 @@ using NexusMods.UI.Sdk.Dialog;
 using NexusMods.UI.Sdk.Dialog.Enums;
 using R3;
 
-namespace NexusMods.App.UI.CollectionDeleteService;
+namespace NexusMods.App.UI.Helpers;
 
 public static class CollectionDeleteHelpers
 {
