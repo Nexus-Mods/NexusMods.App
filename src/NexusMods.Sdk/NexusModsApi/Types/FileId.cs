@@ -1,26 +1,24 @@
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
-using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 using NexusMods.MnemonicDB.Abstractions.ValueSerializers;
 using TransparentValueObjects;
-namespace NexusMods.Abstractions.NexusWebApi.Types.V2;
+
+namespace NexusMods.Sdk.NexusModsApi;
 
 /// <summary>
-/// Unique ID for a mod file associated with a game (<see cref="GameId"/>).
-/// Querying mod pages returns items of this type.
+/// Identifier for a file on Nexus Mods.
 /// </summary>
-[ValueObject<uint>] // Matches backend. Do not change.
+[ValueObject<uint>]
 public readonly partial struct FileId : IAugmentWith<DefaultValueAugment>, IAugmentWith<JsonAugment>
 {
     /// <inheritdoc/>
-    public static FileId DefaultValue => From(default(uint));
+    public static FileId DefaultValue => From(0);
 }
 
 /// <summary>
-/// File ID attribute, for NexusMods API file IDs.
+/// Attribute for <see cref="FileId"/>.
 /// </summary>
-public class FileIdAttribute(string ns, string name) : 
-    ScalarAttribute<FileId, uint, UInt32Serializer>(ns, name)
+public class FileIdAttribute(string ns, string name) : ScalarAttribute<FileId, uint, UInt32Serializer>(ns, name)
 {
     /// <inheritdoc />
     protected override uint ToLowLevel(FileId value) => value.Value;

@@ -2,11 +2,10 @@ using System.Reactive.Subjects;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.NexusModsLibrary;
-using NexusMods.Abstractions.NexusWebApi.Types.V2;
-using NexusMods.Abstractions.NexusWebApi.Types.V2.Uid;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using NexusMods.Sdk.Jobs;
+using NexusMods.Sdk.NexusModsApi;
 
 namespace NexusMods.Library.Tests.DownloadsService.Helpers;
 
@@ -100,7 +99,7 @@ public class DownloadJobFactory(IJobMonitor jobMonitor, IServiceProvider service
             Version = "1.0.0-test",
             Size = Size.FromLong(1024 * 1024), // 1MB test file
             UploadedAt = DateTimeOffset.UtcNow.AddDays(-1), // Uploaded yesterday
-            Uid = new UidForFile(FileId.From(0), gameId),
+            Uid = new FileUid(FileId.From(0), gameId),
             ModPageId = NexusModsModPageMetadataId.From(uniqueId + 1000) // Related mod page ID
         };
         

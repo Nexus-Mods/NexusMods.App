@@ -11,13 +11,13 @@ using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.NexusWebApi.Types;
-using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Games.FileHashes.Emitters;
 using NexusMods.Games.FOMOD;
 using NexusMods.Games.StardewValley.Emitters;
 using NexusMods.Games.StardewValley.Installers;
 using NexusMods.Paths;
 using NexusMods.Sdk.IO;
+using NexusMods.Sdk.NexusModsApi;
 
 namespace NexusMods.Games.StardewValley;
 

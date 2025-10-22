@@ -13,7 +13,6 @@ using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.Types;
-using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Sdk.Settings;
 using NexusMods.Abstractions.Telemetry;
 using NexusMods.MnemonicDB.Abstractions;
@@ -26,6 +25,7 @@ using NexusMods.Networking.NexusWebApi;
 using NexusMods.Paths;
 using NexusMods.Sdk;
 using NexusMods.Sdk.Jobs;
+using NexusMods.Sdk.NexusModsApi;
 using OneOf;
 using Reloaded.Memory.Extensions;
 

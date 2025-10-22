@@ -1,5 +1,5 @@
 using DynamicData.Kernel;
-using NexusMods.Abstractions.NexusWebApi.Types.V2;
+using NexusMods.Sdk.NexusModsApi;
 
 namespace NexusMods.App.UI.Pages.Downloads;
 

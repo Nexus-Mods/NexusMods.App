@@ -3,9 +3,8 @@ using DynamicData.Kernel;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi.Types;
-using NexusMods.Abstractions.NexusWebApi.Types.V2;
-using NexusMods.Abstractions.NexusWebApi.Types.V2.Uid;
 using NexusMods.Networking.NexusWebApi.Errors;
+using NexusMods.Sdk.NexusModsApi;
 
 namespace NexusMods.Networking.NexusWebApi;
 
@@ -98,7 +97,7 @@ internal partial class GraphQlClient : IGraphQlClient
 
     public async ValueTask<GraphQlResult<IModFile, NotFound>> QueryModFile(FileId fileId, GameId gameId, CancellationToken cancellationToken)
     {
-        var uid = new UidForFile(fileId, gameId);
+        var uid = new FileUid(fileId, gameId);
 
         var operationResult = await _client.QueryModFile.ExecuteAsync(
             uid: uid.ToV2Api(),

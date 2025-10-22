@@ -1,8 +1,8 @@
 using System.Text.Json.Serialization;
 using JetBrains.Annotations;
-using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Paths;
 using NexusMods.Sdk.Hashes;
+using NexusMods.Sdk.NexusModsApi;
 
 namespace NexusMods.Abstractions.Collections.Json;
 

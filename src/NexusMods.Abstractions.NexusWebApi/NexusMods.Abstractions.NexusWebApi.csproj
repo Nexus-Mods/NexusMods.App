@@ -14,10 +14,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Types\V2\" />
-    </ItemGroup>
-
-    <ItemGroup>
       <ProjectReference Include="..\NexusMods.Sdk\NexusMods.Sdk.csproj" />
     </ItemGroup>
 </Project>

@@ -1,8 +1,7 @@
 using DynamicData;
 using NexusMods.Abstractions.Downloads;
-using NexusMods.Abstractions.Games;
-using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.App.UI.Controls;
+using NexusMods.Sdk.NexusModsApi;
 
 namespace NexusMods.App.UI.Pages.Downloads;
 

@@ -1,7 +1,7 @@
 using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
 using NexusMods.Abstractions.NexusWebApi.DTOs.Interfaces;
-using ModId = NexusMods.Abstractions.NexusWebApi.Types.V2.ModId;
+using ModId = NexusMods.Sdk.NexusModsApi.ModId;
 
 // 👇 Suppress uninitialised variables. Currently Nexus has mostly read-only API and we expect server to return the data.
 #pragma warning disable CS8618

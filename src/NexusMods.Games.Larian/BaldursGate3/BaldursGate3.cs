@@ -7,16 +7,15 @@ using NexusMods.Abstractions.GameLocators.Stores.GOG;
 using NexusMods.Abstractions.GameLocators.Stores.Steam;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Library.Installers;
-using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.NexusWebApi.Types;
-using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Games.Generic.Installers;
 using NexusMods.Games.Larian.BaldursGate3.Emitters;
 using NexusMods.Games.Larian.BaldursGate3.Installers;
 using NexusMods.Paths;
 using NexusMods.Paths.Utilities;
 using NexusMods.Sdk.IO;
+using NexusMods.Sdk.NexusModsApi;
 
 namespace NexusMods.Games.Larian.BaldursGate3;
 

@@ -8,11 +8,9 @@ using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.ModUpdates;
 using NexusMods.Paths;
 using NexusMods.Abstractions.GC;
-using NexusMods.Abstractions.NexusWebApi.Types.V2;
-using NexusMods.Abstractions.NexusWebApi.Types.V2.Uid;
 using NexusMods.Games.TestFramework;
 using NexusMods.Networking.NexusWebApi.UpdateFilters;
-using Xunit;
+using NexusMods.Sdk.NexusModsApi;
 using Xunit.Abstractions;
 
 namespace NexusMods.Networking.NexusWebApi.Tests;
@@ -483,7 +481,7 @@ public class ModUpdateServiceTests : ACyberpunkIsolatedGameTest<ModUpdateService
         
         // Hide the newest update file using the filter service
         var newestFile = spaceCoreData.Updates[^1]; // Get the latest update
-        var newestFileUid = new UidForFile(
+        var newestFileUid = new FileUid(
             (FileId)newestFile.FileId,
             (GameId)newestFile.GameId
         );
@@ -540,7 +538,7 @@ public class ModUpdateServiceTests : ACyberpunkIsolatedGameTest<ModUpdateService
         var initialUpdateCount = updateOnPage!.Value.NewerFiles.Length;
         
         // Hide multiple update files using the filter service
-        var filesToHide = spaceCoreData.Updates.TakeLast(2).Select(update => new UidForFile(
+        var filesToHide = spaceCoreData.Updates.TakeLast(2).Select(update => new FileUid(
             (FileId)update.FileId,
             (GameId)update.GameId
         )).ToArray();

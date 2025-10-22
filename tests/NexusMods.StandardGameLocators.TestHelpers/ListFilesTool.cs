@@ -1,7 +1,7 @@
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Sdk.Jobs;
+using NexusMods.Sdk.NexusModsApi;
 using R3;
 
 namespace NexusMods.StandardGameLocators.TestHelpers;

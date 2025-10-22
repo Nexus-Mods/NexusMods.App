@@ -1,3 +1,5 @@
+using NexusMods.Sdk.NexusModsApi;
+
 namespace NexusMods.Abstractions.NexusWebApi.Types;
 
 /// <summary>
@@ -9,12 +11,12 @@ public class NXMModUrl : NXMUrl
     /// <summary>
     /// id of the mod page
     /// </summary>
-    public V2.ModId ModId { get; set; }
+    public ModId ModId { get; set; }
 
     /// <summary>
     /// id of the file (within that game domain)
     /// </summary>
-    public V2.FileId FileId { get; set; }
+    public FileId FileId { get; set; }
 
     /// <summary>
     /// game domain (name of the game within the Nexus Mods page)
@@ -36,8 +38,8 @@ public class NXMModUrl : NXMUrl
         Game = uri.Host;
         try
         {
-            ModId = V2.ModId.From(uint.Parse(uri.Segments[2].TrimEnd('/')));
-            FileId = V2.FileId.From(uint.Parse(uri.Segments[4].TrimEnd('/')));
+            ModId = ModId.From(uint.Parse(uri.Segments[2].TrimEnd('/')));
+            FileId = FileId.From(uint.Parse(uri.Segments[4].TrimEnd('/')));
         }
         catch (FormatException)
         {
