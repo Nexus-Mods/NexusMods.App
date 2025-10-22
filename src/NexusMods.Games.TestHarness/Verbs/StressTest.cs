@@ -90,8 +90,8 @@ public class StressTest
                             size);
 
                         var list = await loadoutManager.CreateLoadout(install);
-                        await libraryService.InstallItem(libraryFile.AsLibraryItem(), list.LoadoutId);
-                        
+                        await loadoutManager.InstallItem(libraryFile.AsLibraryItem(), list.LoadoutId);
+
                         results.Add((file.Name, mod.ModId, uid.FileId, hash, true, null));
                         await renderer.Text("Installed {0} {1} {2} - {3}", mod.ModId, uid.FileId,
                             file.Name, size);

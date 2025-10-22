@@ -3,9 +3,9 @@ This schema is written to a markdown file for both documentation and validation 
 models in the app, then validate the tests to update this file. 
 
 ## Statistics
-   - Fingerprint: 0xD4A19F8503ADAEF4
+   - Fingerprint: 0x03E30ECD79A64605
    - Total attributes: 232
-   - Total namespaces: 76
+   - Total namespaces: 75
    
 ## Attributes
 | AttributeId                                                                        | Type                    | Indexed | Many  | NoHistory | 
@@ -67,7 +67,6 @@ models in the app, then validate the tests to update this file.
 | NexusMods.DataModel.Settings/Value                                                 | Utf8                    | False   | False | False     | 
 | NexusMods.GC.BackedUpFile/GameInstall                                              | Reference               | False   | False | False     | 
 | NexusMods.GC.BackedUpFile/Hash                                                     | UInt64                  | False   | False | False     | 
-| NexusMods.Games.CreationEngine.PluginSortEntry/ModKey                              | Utf8Insensitive         | False   | False | False     | 
 | NexusMods.Games.FOMOD.EmptyDirectory/EmptyDirectory                                | UInt8                   | False   | False | False     | 
 | NexusMods.Games.RedEngine.Cyberpunk2077.RedModInfoFile/Name                        | Utf8                    | False   | False | False     | 
 | NexusMods.Games.RedEngine.Cyberpunk2077.RedModInfoFile/Version                     | Utf8                    | False   | False | False     | 
@@ -116,6 +115,7 @@ models in the app, then validate the tests to update this file.
 | NexusMods.Loadouts.LoadoutItem/Name                                                | Utf8                    | False   | False | False     | 
 | NexusMods.Loadouts.LoadoutItem/Parent                                              | Reference               | True    | False | False     | 
 | NexusMods.Loadouts.LoadoutItemGroup/Group                                          | Null                    | True    | False | False     | 
+| NexusMods.Loadouts.LoadoutItemGroupPriority/Loadout                                | Reference               | False   | False | False     | 
 | NexusMods.Loadouts.LoadoutItemGroupPriority/Priority                               | UInt64                  | False   | False | False     | 
 | NexusMods.Loadouts.LoadoutItemGroupPriority/Target                                 | Reference               | False   | False | False     | 
 | NexusMods.Loadouts.LoadoutItemWithTargetPath/TargetPath                            | Tuple3_Ref_UShort_Utf8I | True    | False | False     | 

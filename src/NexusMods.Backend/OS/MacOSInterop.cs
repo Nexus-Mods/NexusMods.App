@@ -37,7 +37,7 @@ internal class MacOSInterop : IOSInterop
 
     public void OpenUri(Uri uri)
     {
-        Debug.Assert(uri.IsFile, $"use {nameof(OpenFile)} for opening file `{uri}`");
+        Debug.Assert(!uri.IsFile, $"use {nameof(OpenFile)} for opening file `{uri}`");
         var command = CreateOpenCommand(uri.ToString());
         _processRunner.Run(command, logOutput: false);
     }

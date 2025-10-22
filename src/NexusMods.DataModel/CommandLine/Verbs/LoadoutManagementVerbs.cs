@@ -129,12 +129,13 @@ public static class LoadoutManagementVerbs
         [Option("f", "file", "Mod file to install")] AbsolutePath file,
         [Option("n", "name", "Name of the mod after installing")] string name,
         [Injected] ILibraryService libraryService,
+        [Injected] ILoadoutManager loadoutManager,
         [Injected] CancellationToken token)
     {
         return await renderer.WithProgress(token, async () =>
         {
             var localFile = await libraryService.AddLocalFile(file); 
-            await libraryService.InstallItem(localFile.AsLibraryFile().AsLibraryItem(), loadout);
+            await loadoutManager.InstallItem(localFile.AsLibraryFile().AsLibraryItem(), loadout);
             return 0;
         });
     }
@@ -146,10 +147,9 @@ public static class LoadoutManagementVerbs
     {
         await renderer.Text("Reindexing {0}", loadout.Name);
         var synchronizer = loadout.InstallationInstance.GetGame().Synchronizer;
-        await synchronizer.RescanFiles(loadout.InstallationInstance, true);
+        await synchronizer.RescanFiles(loadout.InstallationInstance);
         return 0;
     }
-
 
     [Verb("loadouts list", "Lists all the loadouts")]
     private static async Task<int> ListLoadouts([Injected] IRenderer renderer,

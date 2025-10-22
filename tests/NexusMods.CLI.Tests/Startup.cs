@@ -55,6 +55,7 @@ public class Startup
                 .AddLoadoutAbstractions()
                 .AddSerializationAbstractions()
                 .AddGames()
+                .AddGameServices()
                 .AddOSInterop()
                 .AddRuntimeDependencies()
                 .AddSettings<LoggingSettings>()

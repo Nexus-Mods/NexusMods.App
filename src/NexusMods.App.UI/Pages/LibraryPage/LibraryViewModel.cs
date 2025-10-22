@@ -13,6 +13,7 @@ using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi;
@@ -93,6 +94,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
     private readonly NexusModsLibrary _nexusModsLibrary;
     private readonly TemporaryFileManager _temporaryFileManager;
     private readonly IWindowNotificationService _notificationService;
+    private readonly ILoadoutManager _loadoutManager;
 
     public LibraryTreeDataGridAdapter Adapter { get; }
     private ReadOnlyObservableCollection<ICollectionCardViewModel> _collections = new([]);
@@ -118,6 +120,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         _loginManager = serviceProvider.GetRequiredService<ILoginManager>();
         _temporaryFileManager = serviceProvider.GetRequiredService<TemporaryFileManager>();
         _notificationService = serviceProvider.GetRequiredService<IWindowNotificationService>();
+        _loadoutManager = serviceProvider.GetRequiredService<ILoadoutManager>();
 
         var collectionDownloader = new CollectionDownloader(serviceProvider);
         var tileImagePipeline = ImagePipelines.GetCollectionTileImagePipeline(serviceProvider);
@@ -880,8 +883,7 @@ After asking design, we're choosing to simply open the mod page for now.
     {
         try
         {
-            await _libraryService.InstallItem(libraryItem, loadout, parent: targetLoadoutGroup, installer: useAdvancedInstaller ? _advancedInstaller : null);
-            
+            await _loadoutManager.InstallItem(libraryItem, loadout, parent: targetLoadoutGroup, installer: useAdvancedInstaller ? _advancedInstaller : null);
             var targetCollection  = LoadoutItem.Load(_connection.Db, targetLoadoutGroup);
         }
         catch (OperationCanceledException)

@@ -12,6 +12,7 @@ using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Extensions;
+using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi;
@@ -104,6 +105,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
     private readonly IConnection _connection;
     private readonly IAvaloniaInterop _avaloniaInterop;
     private readonly IWindowNotificationService _notificationService;
+    private readonly ILoadoutManager _loadoutManager;
 
     public LoadoutViewModel(
         IWindowManager windowManager,
@@ -118,6 +120,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
         _nexusModsLibrary = serviceProvider.GetRequiredService<NexusModsLibrary>();
         _avaloniaInterop = serviceProvider.GetRequiredService<IAvaloniaInterop>();
         _notificationService = serviceProvider.GetRequiredService<IWindowNotificationService>();
+        _loadoutManager = serviceProvider.GetRequiredService<ILoadoutManager>();
 
         var settingsManager = serviceProvider.GetRequiredService<ISettingsManager>();
         EnableCollectionSharing = settingsManager.Get<ExperimentalSettings>().EnableCollectionSharing;
@@ -521,16 +524,9 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                     if (ids.Length == 0) return;
                     
                     var result = await ShowUninstallModsConformationDialog(ids, windowManager, _connection);
-
                     if (result.ButtonId != ButtonDefinitionId.Accept) return;
-                    
-                    using var tx = _connection.BeginTransaction();
-                    
-                    foreach (var itemId in ids)
-                        tx.Delete(itemId, recursive: true);
-                    
-                    await tx.Commit();
-                    
+
+                    await _loadoutManager.RemoveItems(ids);
                     _notificationService.ShowToast(Language.ToastNotification_Mods_removed);
                 },
                 awaitOperation: AwaitOperation.Sequential,
