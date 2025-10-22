@@ -70,7 +70,7 @@ public class CollectionRevisionLeftMenuItemViewModel : LeftMenuItemWithRightIcon
             var revision = CollectionRevisionMetadata.Load(_connection.Db, _collectionRevisionMetadataId);
             
             var confirmed = await CollectionDeleteHelpers.ShowDeleteConfirmationDialogAsync(
-                revision.Collection.Name, _windowManager, _connection);
+                revision.Collection.Name, _windowManager);
             
             if (!confirmed)
                 return;

@@ -20,26 +20,6 @@ namespace NexusMods.App.UI.Helpers;
 
 public static class CollectionDeleteHelpers
 {
-    
-    /// <summary>
-    /// Determines whether the collection group can be deleted.
-    /// </summary>
-    /// <param name="collectionId">The collection group identifier.</param>
-    /// <returns>True if the collection can be deleted; otherwise, false.</returns>
-    public static bool CanDelete(CollectionGroupId collectionId, IConnection connection)
-    {
-        var group = CollectionGroup.Load(connection.Db, collectionId);
-        if (group.IsReadOnly)
-            return true;
-
-        var loadoutId = group.AsLoadoutItemGroup().AsLoadoutItem().LoadoutId;
-        var collectionCount = CollectionGroup
-            .All(connection.Db)
-            .Count(g => g.AsLoadoutItemGroup().AsLoadoutItem().LoadoutId == loadoutId && !g.IsReadOnly);
-
-        return collectionCount > 1;
-    }
-
     /// <summary>
     /// Observes whether the collection group can be deleted.
     /// </summary>
@@ -126,8 +106,7 @@ public static class CollectionDeleteHelpers
     /// <returns>True if the user confirms deletion; otherwise, false.</returns>
     public static async Task<bool> ShowDeleteConfirmationDialogAsync(
         string collectionName, 
-        IWindowManager windowManager,
-        IConnection connection)
+        IWindowManager windowManager)
     {
         var dialog = DialogFactory.CreateStandardDialog(
             title: Language.Loadout_DeleteCollection_Confirmation_Title,

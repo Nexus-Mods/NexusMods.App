@@ -412,7 +412,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
 
             CommandDeleteGroup = canDelete.ToReactiveCommand<Unit>(async (_, _) =>
             {
-                var confirmed = await CollectionDeleteHelpers.ShowDeleteConfirmationDialogAsync(collectionGroup.Name, WindowManager, _connection);
+                var confirmed = await CollectionDeleteHelpers.ShowDeleteConfirmationDialogAsync(collectionGroup.Name, WindowManager);
                 if (confirmed)
                 {
                     await CollectionDeleteHelpers.DeleteCollectionAsync(collectionGroupId.Value, GetWorkspaceController(), _connection, _notificationService);
