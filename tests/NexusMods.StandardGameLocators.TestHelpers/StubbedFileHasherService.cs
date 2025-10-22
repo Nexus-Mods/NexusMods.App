@@ -40,8 +40,7 @@ public class StubbedFileHasherService : IFileHashesService
         var backend = new MnemonicDB.Storage.RocksDbBackend.Backend();
         var settings = DatomStoreSettings.InMemory;
         _datomStore = new DatomStore(_provider.GetRequiredService<ILogger<DatomStore>>(), settings, backend);
-        _connection = new Connection(_provider.GetRequiredService<ILogger<Connection>>(), _datomStore, _provider, []);
-
+        _connection = new Connection(_provider.GetRequiredService<ILogger<Connection>>(), _datomStore, _provider, [], prefix: "hashes", queryEngine: _provider.GetRequiredService<IQueryEngine>());
 
         foreach (var file in new[] {"StubbedGameState.zip", "StubbedGameState_game_v2.zip"})
         {
