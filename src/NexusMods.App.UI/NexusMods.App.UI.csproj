@@ -782,6 +782,12 @@
         <Compile Update="Pages\Sorting\FileConflicts\FileConflictsViewModel.cs">
           <DependentUpon>IFileConflictsViewModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="LeftMenu\Items\CollectionRevisionLeftMenuItemViewModel.cs">
+          <DependentUpon>LeftMenuItemWithRightIconViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="LeftMenu\Items\LeftMenuItemWithRightIconViewModel.cs">
+          <DependentUpon>ILeftMenuItemViewModel.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>

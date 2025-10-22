@@ -147,4 +147,14 @@ public interface IWorkspaceController
     /// Gets the page data for the default page.
     /// </summary>
     PageData GetDefaultPageData(WorkspaceId workspaceId);
+    
+    /// <summary>
+    /// Replaces all tabs across all workspaces whose page context matches the specified context type and predicate with a new page.
+    /// </summary>
+    /// <typeparam name="TContext">The type of page context to match.</typeparam>
+    /// <param name="matchPredicate">A function that determines whether a tab's page context should be replaced.</param>
+    /// <param name="targetPageData">Optional page data for the replacement page. If not provided, uses each workspace's default page.</param>
+    void ReplacePages<TContext>(Func<TContext, bool> matchPredicate, Optional<PageData> targetPageData = default) 
+        where TContext : IPageFactoryContext;
+    
 }

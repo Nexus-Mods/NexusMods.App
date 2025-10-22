@@ -19,6 +19,7 @@ public class LeftMenuItemDesignViewModel : AViewModel<ILeftMenuItemViewModel>, I
         ReactiveCommand.Create<NavigationInformation>((info) => { });
     public bool IsActive { get; } = false;
     public bool IsSelected { get; } = false;
+    public IReadOnlyList<IContextMenuItem> AdditionalContextMenuItems { get; } = Array.Empty<IContextMenuItem>();
     public bool IsToggleVisible { get; set; } = false;
     
     public bool IsEnabled { get; set; } = true;

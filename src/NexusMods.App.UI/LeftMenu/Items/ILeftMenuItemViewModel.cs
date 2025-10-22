@@ -7,7 +7,7 @@ using ReactiveUI;
 
 namespace NexusMods.App.UI.LeftMenu.Items;
 
-public interface ILeftMenuItemViewModel : IViewModelInterface 
+public interface ILeftMenuItemViewModel : IViewModelInterface
 {
     public StringComponent Text { get; }
     
@@ -20,4 +20,6 @@ public interface ILeftMenuItemViewModel : IViewModelInterface
     public bool IsActive { get; }
     
     public bool IsSelected { get; }
+    
+    public IReadOnlyList<IContextMenuItem> AdditionalContextMenuItems { get; }
 }
