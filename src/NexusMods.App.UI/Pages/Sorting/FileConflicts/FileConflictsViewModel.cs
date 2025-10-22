@@ -27,13 +27,11 @@ namespace NexusMods.App.UI.Pages.Sorting;
 
 public class FileConflictsViewModel : AViewModel<IFileConflictsViewModel>, IFileConflictsViewModel
 {
-    private BindableReactiveProperty<ListSortDirection> _sortDirectionCurrent { get; set; }
-    private BindableReactiveProperty<bool> _isAscending { get; set; } 
-
     public FileConflictsTreeDataGridAdapter TreeDataGridAdapter { get; }
 
+    private readonly BindableReactiveProperty<ListSortDirection> _sortDirectionCurrent;
     public IReadOnlyBindableReactiveProperty<ListSortDirection> SortDirectionCurrent => _sortDirectionCurrent;
-    public IReadOnlyBindableReactiveProperty<bool> IsAscending => _isAscending;
+    public IReadOnlyBindableReactiveProperty<bool> IsAscending { get; }
 
     public R3.ReactiveCommand SwitchSortDirectionCommand { get; }
 
@@ -47,9 +45,8 @@ public class FileConflictsViewModel : AViewModel<IFileConflictsViewModel>, IFile
         var synchronizer = loadout.InstallationInstance.GetGame().Synchronizer;
 
         _sortDirectionCurrent = new BindableReactiveProperty<ListSortDirection>(ListSortDirection.Ascending);
-        _isAscending = _sortDirectionCurrent.Select(direction => direction == ListSortDirection.Ascending)
-            .ToBindableReactiveProperty();
-        
+        IsAscending = _sortDirectionCurrent.Select(direction => direction == ListSortDirection.Ascending).ToBindableReactiveProperty();
+
         SwitchSortDirectionCommand = new R3.ReactiveCommand(_ =>
         {
             var newDirection = SortDirectionCurrent.Value == ListSortDirection.Ascending
@@ -74,65 +71,58 @@ public class FileConflictsViewModel : AViewModel<IFileConflictsViewModel>, IFile
             }).AddTo(disposables);
             
             // Update drop position indicator
-            TreeDataGridAdapter.RowDragOverSubject
-                .Subscribe(dragDropPayload =>
-                    {
-                        var (sourceModels, targetModel, eventArgs) = dragDropPayload;
+            TreeDataGridAdapter.RowDragOverSubject.Subscribe(dragDropPayload =>
+            {
+                var (sourceModels, targetModel, eventArgs) = dragDropPayload;
 
-                        if (eventArgs.Position != TreeDataGridRowDropPosition.Inside) return;
-                            
-                        // Update the drop position for the inside case to be before or after
-                        eventArgs.Position = PointerIsInVerticalTopHalf(eventArgs) ? 
-                            TreeDataGridRowDropPosition.Before : TreeDataGridRowDropPosition.After;
-                        
-                        // TODO: set eventArgs.Position = TreeDataGridRowDropPosition.None to disallow drop in invalid cases
-                    }
-                )
-                .AddTo(disposables);
-            
+                if (eventArgs.Position != TreeDataGridRowDropPosition.Inside) return;
+                    
+                // Update the drop position for the inside case to be before or after
+                eventArgs.Position = PointerIsInVerticalTopHalf(eventArgs) ? TreeDataGridRowDropPosition.Before : TreeDataGridRowDropPosition.After;
+
+                // TODO: set eventArgs.Position = TreeDataGridRowDropPosition.None to disallow drop in invalid cases
+            }).AddTo(disposables);
+
             // Handle row drops
-            TreeDataGridAdapter.RowDropSubject
-                    .SubscribeAwait(async (dragDropPayload, cancellationToken) =>
-                        {
-                            var (sourceModels, targetModel, eventArgs) = dragDropPayload;
-                            
-                            // Determine source items
-                            var keysToMove = sourceModels.Select(item => item.Key).ToArray();
-                            if (keysToMove.Length == 0) return;
+            TreeDataGridAdapter.RowDropSubject.SubscribeAwait(async (dragDropPayload, cancellationToken) =>
+            {
+                var (sourceModels, targetModel, eventArgs) = dragDropPayload;
+                
+                // Determine source items
+                var keysToMove = sourceModels.Select(item => item.Key).ToArray();
+                if (keysToMove.Length == 0) return;
 
-                            // Determine target item
-                            var dropTargetKey = targetModel.Key;
-                            
-                            // Determine relative position
-                            TargetRelativePosition relativePosition;
-                            switch (eventArgs.Position)
-                            {
-                                case TreeDataGridRowDropPosition.Before when SortDirectionCurrent.Value == ListSortDirection.Ascending:
-                                case TreeDataGridRowDropPosition.After when SortDirectionCurrent.Value == ListSortDirection.Descending:
-                                    relativePosition = TargetRelativePosition.BeforeTarget;
-                                    break;
-                                case TreeDataGridRowDropPosition.After when SortDirectionCurrent.Value == ListSortDirection.Ascending:
-                                case TreeDataGridRowDropPosition.Before when SortDirectionCurrent.Value == ListSortDirection.Descending:
-                                    relativePosition = TargetRelativePosition.AfterTarget;
-                                    break;
-                                case TreeDataGridRowDropPosition.Inside when SortDirectionCurrent.Value == ListSortDirection.Ascending:
-                                    relativePosition = PointerIsInVerticalTopHalf(eventArgs) ? TargetRelativePosition.BeforeTarget : TargetRelativePosition.AfterTarget;
-                                    break;
-                                case TreeDataGridRowDropPosition.Inside when SortDirectionCurrent.Value == ListSortDirection.Descending:
-                                    relativePosition = PointerIsInVerticalTopHalf(eventArgs) ? TargetRelativePosition.AfterTarget : TargetRelativePosition.BeforeTarget;
-                                    break;
-                                case TreeDataGridRowDropPosition.None:
-                                    // Invalid target, no move
-                                    return;
-                                default:
-                                    return;
-                            }
-                            
-                            // TODO: perform the move operation
-                        },
-                        awaitOperation: AwaitOperation.Drop)
-                    .AddTo(disposables);
-            
+                // Determine target item
+                var dropTargetKey = targetModel.Key;
+
+                // Determine relative position
+                TargetRelativePosition relativePosition;
+                switch (eventArgs.Position)
+                {
+                    case TreeDataGridRowDropPosition.Before when SortDirectionCurrent.Value == ListSortDirection.Ascending:
+                    case TreeDataGridRowDropPosition.After when SortDirectionCurrent.Value == ListSortDirection.Descending:
+                        relativePosition = TargetRelativePosition.BeforeTarget;
+                        break;
+                    case TreeDataGridRowDropPosition.After when SortDirectionCurrent.Value == ListSortDirection.Ascending:
+                    case TreeDataGridRowDropPosition.Before when SortDirectionCurrent.Value == ListSortDirection.Descending:
+                        relativePosition = TargetRelativePosition.AfterTarget;
+                        break;
+                    case TreeDataGridRowDropPosition.Inside when SortDirectionCurrent.Value == ListSortDirection.Ascending:
+                        relativePosition = PointerIsInVerticalTopHalf(eventArgs) ? TargetRelativePosition.BeforeTarget : TargetRelativePosition.AfterTarget;
+                        break;
+                    case TreeDataGridRowDropPosition.Inside when SortDirectionCurrent.Value == ListSortDirection.Descending:
+                        relativePosition = PointerIsInVerticalTopHalf(eventArgs) ? TargetRelativePosition.AfterTarget : TargetRelativePosition.BeforeTarget;
+                        break;
+                    case TreeDataGridRowDropPosition.None:
+                        // Invalid target, no move
+                        return;
+                    default:
+                        return;
+                }
+
+                // TODO: perform the move operation
+            },
+            awaitOperation: AwaitOperation.Drop).AddTo(disposables);
         });
     }
     
@@ -144,21 +134,18 @@ public class FileConflictsViewModel : AViewModel<IFileConflictsViewModel>, IFile
         var markdownRendererViewModel = serviceProvider.GetRequiredService<IMarkdownRendererViewModel>();
         markdownRendererViewModel.Contents = msg.Markdown;
 
-        _ = await windowManager.ShowDialog(
-            DialogFactory.CreateStandardDialog(title: $"Conflicts for {msg.Group.AsLoadoutItem().Name}", new StandardDialogParameters
+        _ = await windowManager.ShowDialog(DialogFactory.CreateStandardDialog(title: $"Conflicts for {msg.Group.AsLoadoutItem().Name}", new StandardDialogParameters
         {
             Markdown = markdownRendererViewModel,
         }, buttonDefinitions: [DialogStandardButtons.Close]), DialogWindowType.Modeless);
     }
-    
+
     private static bool PointerIsInVerticalTopHalf(TreeDataGridRowDragEventArgs eventArgs)
     {
         var positionY = eventArgs.Inner.GetPosition(eventArgs.TargetRow).Y / eventArgs.TargetRow.Bounds.Height;
         return positionY < 0.5;
     }
 }
-
-
 
 public class FileConflictsTreeDataGridAdapter : TreeDataGridAdapter<CompositeItemModel<EntityId>, EntityId>,
     ITreeDataGirdMessageAdapter<OneOf.OneOf<
@@ -201,14 +188,13 @@ public class FileConflictsTreeDataGridAdapter : TreeDataGridAdapter<CompositeIte
         var comparerObservable = sortDirectionObservable
             .Select(direction => direction == ListSortDirection.Ascending ? ascendingComparer : descendingComparer)
             .DistinctUntilChanged();
-        
+
         _activationDisposable = this.WhenActivated( (self, disposables)  =>
-            {
-                comparerObservable
-                    .Subscribe(comparer => CustomSortComparer.Value = comparer)
-                    .AddTo(disposables);
-            }
-        );
+        {
+            comparerObservable
+                .Subscribe(comparer => CustomSortComparer.Value = comparer)
+                .AddTo(disposables);
+        });
     }
 
     protected override void BeforeModelActivationHook(CompositeItemModel<EntityId> model)
@@ -219,8 +205,7 @@ public class FileConflictsTreeDataGridAdapter : TreeDataGridAdapter<CompositeIte
         model.SubscribeToComponentAndTrack<FileConflictsComponents.ViewAction, FileConflictsTreeDataGridAdapter>(
             key: FileConflictsColumns.Actions.ViewComponentKey,
             state: this,
-            factory: static (self, itemModel, component) => component.CommandViewConflicts.Subscribe((self, itemModel, component), 
-                    static (_, state) =>
+            factory: static (self, itemModel, component) => component.CommandViewConflicts.Subscribe((self, itemModel, component), static (_, state) =>
             {
                 var (self, _, component) = state;
                 var markdown = component.CreateMarkdown();
@@ -233,28 +218,22 @@ public class FileConflictsTreeDataGridAdapter : TreeDataGridAdapter<CompositeIte
         model.SubscribeToComponentAndTrack<SharedComponents.IndexComponent, FileConflictsTreeDataGridAdapter>(
             key: LoadOrderColumns.IndexColumn.IndexComponentKey,
             state: this,
-            factory: static (adapter, itemModel, component) => component.MoveUp
-                .Subscribe((adapter, itemModel, component),
-                    static (_, tuple) =>
-                    {
-                        var (adapter, itemModel, _) = tuple;
-                        adapter.MessageSubject.OnNext(new MoveUpCommandPayload(itemModel));
-                    }
-                )
+            factory: static (adapter, itemModel, component) => component.MoveUp.Subscribe((adapter, itemModel, component), static (_, tuple) =>
+            {
+                var (adapter, itemModel, _) = tuple;
+                adapter.MessageSubject.OnNext(new MoveUpCommandPayload(itemModel));
+            })
         );
-        
+
         // Move down command
         model.SubscribeToComponentAndTrack<SharedComponents.IndexComponent, FileConflictsTreeDataGridAdapter>(
             key: LoadOrderColumns.IndexColumn.IndexComponentKey,
             state: this,
-            factory: static (adapter, itemModel, component) => component.MoveDown
-                .Subscribe((adapter, itemModel, component),
-                    static (_, tuple) =>
-                    {
-                        var (adapter, itemModel, _) = tuple;
-                        adapter.MessageSubject.OnNext(new MoveDownCommandPayload(itemModel));
-                    }
-                )
+            factory: static (adapter, itemModel, component) => component.MoveDown.Subscribe((adapter, itemModel, component), static (_, tuple) =>
+            {
+                var (adapter, itemModel, _) = tuple;
+                adapter.MessageSubject.OnNext(new MoveDownCommandPayload(itemModel));
+            })
         );
     }
 
@@ -296,9 +275,8 @@ public class FileConflictsTreeDataGridAdapter : TreeDataGridAdapter<CompositeIte
         imageComponent ??= new ImageComponent(value: ImagePipelines.ModPageThumbnailFallback);
         itemModel.Add(SharedColumns.Name.ImageComponentKey, imageComponent);
 
-        itemModel.Add(FileConflictsColumns.Actions.ViewComponentKey, 
-            new FileConflictsComponents.ViewAction(loadoutGroup, loadoutFiles, conflictsByPath));
-        
+        itemModel.Add(FileConflictsColumns.Actions.ViewComponentKey, new FileConflictsComponents.ViewAction(loadoutGroup, loadoutFiles, conflictsByPath));
+
         // TODO: populate with real data
         itemModel.Add(FileConflictsColumns.IndexColumn.IndexComponentKey, new SharedComponents.IndexComponent(
             new ValueComponent<int>(0), new ValueComponent<string>("0"),
@@ -310,9 +288,8 @@ public class FileConflictsTreeDataGridAdapter : TreeDataGridAdapter<CompositeIte
 
     protected override IColumn<CompositeItemModel<EntityId>>[] CreateColumns(bool viewHierarchical)
     {
-        var indexColumn = ColumnCreator.Create<EntityId, FileConflictsColumns.IndexColumn>(
-            canUserSortColumn: false, canUserResizeColumn: false);
-        
+        var indexColumn = ColumnCreator.Create<EntityId, FileConflictsColumns.IndexColumn>(canUserSortColumn: false, canUserResizeColumn: false);
+
         return
         [
             ITreeDataGridItemModel<CompositeItemModel<EntityId>, EntityId>.CreateExpanderColumn(indexColumn),
