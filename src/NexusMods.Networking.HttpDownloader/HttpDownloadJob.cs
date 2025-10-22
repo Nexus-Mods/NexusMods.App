@@ -117,6 +117,8 @@ public record HttpDownloadJob : IJobDefinitionWithStart<HttpDownloadJob, Absolut
         await context.YieldAsync();
         await using var fileStream = Destination.Open(FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read);
 
+        fileStream.Position = (long)_state.TotalBytesDownloaded.Value;
+        
         await using var outputStream = new StreamProgressWrapper<IJobContext<HttpDownloadJob>>(
             fileStream,
             context,
@@ -124,8 +126,7 @@ public record HttpDownloadJob : IJobDefinitionWithStart<HttpDownloadJob, Absolut
             {
                 var (bytesWritten, speed) = tuple;
 
-                if (bytesWritten > 0)
-                    _state.TotalBytesDownloaded = bytesWritten;
+                _state.TotalBytesDownloaded = bytesWritten;
 
                 state.SetPercent(bytesWritten, _state.ContentLength.ValueOr(static () => Size.One));
                 state.SetRateOfProgress(speed);
@@ -207,8 +208,7 @@ public record HttpDownloadJob : IJobDefinitionWithStart<HttpDownloadJob, Absolut
         }
         finally
         {
-            if (Size.FromLong(outputStream.Position) > _state.TotalBytesDownloaded.Value)
-                _state.TotalBytesDownloaded = Size.FromLong(outputStream.Position);
+            _state.TotalBytesDownloaded = Size.FromLong(outputStream.Position);
         }
 
         // Ensure progress is set to 100% when download completes

@@ -31,6 +31,10 @@ public sealed class StreamProgressWrapper<TState> : Stream
         timeProvider ??= TimeProvider.System;
 
         _timer = timeProvider.CreateTimer(NotifyLoop, state: this, dueTime: TimeSpan.Zero, period: _period);
+        
+        var pos = Size.FromLong(_innerStream.Position);
+        _currentBytesWritten = pos;
+        _lastBytesWritten = pos;
     }
 
     private readonly TimeSpan _period;
