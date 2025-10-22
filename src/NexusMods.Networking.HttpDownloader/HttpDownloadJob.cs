@@ -139,8 +139,6 @@ public record HttpDownloadJob : IJobDefinitionWithStart<HttpDownloadJob, Absolut
             if (outputStream.Length != contentLength) outputStream.SetLength(contentLength);
         }
 
-        outputStream.Position = (long)_state.TotalBytesDownloaded.Value;
-
         await context.YieldAsync();
         using var request = PrepareRequest(out var isRangeRequest);
         using var response = await Client.SendAsync(
