@@ -13,13 +13,13 @@ public static class FileConflictsComponents
 {
     public class NeighbourIds : IItemModelComponent<NeighbourIds>, IComparable<NeighbourIds>
     {
-        public EntityId Prev { get; set; }
-        public EntityId Next { get; set; }
+        public ReactiveProperty<EntityId> Prev { get; set; }
+        public ReactiveProperty<EntityId> Next { get; set; }
 
         public NeighbourIds(EntityId prev, EntityId next)
         {
-            Prev = prev;
-            Next = next;
+            Prev = new ReactiveProperty<EntityId>(prev);
+            Next = new ReactiveProperty<EntityId>(next);
         }
 
         public int CompareTo(NeighbourIds? other) => 0;

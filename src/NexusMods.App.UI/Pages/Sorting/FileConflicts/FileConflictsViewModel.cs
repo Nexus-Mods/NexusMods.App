@@ -1,11 +1,13 @@
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Text;
 using Avalonia.Controls;
 using Avalonia.Controls.Models.TreeDataGrid;
 using Avalonia.Media.Imaging;
 using DynamicData;
 using DynamicData.Binding;
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
@@ -16,7 +18,9 @@ using NexusMods.App.UI.Controls.MarkdownRenderer;
 using NexusMods.App.UI.Dialog;
 using NexusMods.App.UI.Dialog.Enums;
 using NexusMods.App.UI.Windows;
+using NexusMods.HyperDuck;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.Paths;
 using NexusMods.Sdk.Resources;
 using NexusMods.UI.Sdk;
 using R3;
@@ -84,50 +88,50 @@ public class FileConflictsViewModel : AViewModel<IFileConflictsViewModel>, IFile
 
             // Handle row drops
             TreeDataGridAdapter.RowDropSubject.SubscribeAwait(async (dragDropPayload, cancellationToken) =>
-            {
-                var (sourceModels, targetModel, eventArgs) = dragDropPayload;
+                {
+                    var (sourceModels, targetModel, eventArgs) = dragDropPayload;
                 
-                // Determine source items
-                var keysToMove = sourceModels.Select(LoadoutItemGroupPriorityId (item) => item.Key).ToArray();
-                if (keysToMove.Length == 0) return;
+                    // Determine source items
+                    var keysToMove = sourceModels.Select(LoadoutItemGroupPriorityId (item) => item.Key).ToArray();
+                    if (keysToMove.Length == 0) return;
 
-                // Determine target item
-                var dropTargetKey = (LoadoutItemGroupPriorityId) targetModel.Key;
+                    // Determine target item
+                    var dropTargetKey = (LoadoutItemGroupPriorityId) targetModel.Key;
 
-                // Determine relative position
-                TargetRelativePosition relativePosition;
-                switch (eventArgs.Position)
-                {
-                    case TreeDataGridRowDropPosition.Before when SortDirectionCurrent.Value == ListSortDirection.Ascending:
-                    case TreeDataGridRowDropPosition.After when SortDirectionCurrent.Value == ListSortDirection.Descending:
-                        relativePosition = TargetRelativePosition.BeforeTarget;
-                        break;
-                    case TreeDataGridRowDropPosition.After when SortDirectionCurrent.Value == ListSortDirection.Ascending:
-                    case TreeDataGridRowDropPosition.Before when SortDirectionCurrent.Value == ListSortDirection.Descending:
-                        relativePosition = TargetRelativePosition.AfterTarget;
-                        break;
-                    case TreeDataGridRowDropPosition.Inside when SortDirectionCurrent.Value == ListSortDirection.Ascending:
-                        relativePosition = PointerIsInVerticalTopHalf(eventArgs) ? TargetRelativePosition.BeforeTarget : TargetRelativePosition.AfterTarget;
-                        break;
-                    case TreeDataGridRowDropPosition.Inside when SortDirectionCurrent.Value == ListSortDirection.Descending:
-                        relativePosition = PointerIsInVerticalTopHalf(eventArgs) ? TargetRelativePosition.AfterTarget : TargetRelativePosition.BeforeTarget;
-                        break;
-                    case TreeDataGridRowDropPosition.None:
-                        // Invalid target, no move
-                        return;
-                    default:
-                        return;
-                }
+                    // Determine relative position
+                    TargetRelativePosition relativePosition;
+                    switch (eventArgs.Position)
+                    {
+                        case TreeDataGridRowDropPosition.Before when SortDirectionCurrent.Value == ListSortDirection.Ascending:
+                        case TreeDataGridRowDropPosition.After when SortDirectionCurrent.Value == ListSortDirection.Descending:
+                            relativePosition = TargetRelativePosition.BeforeTarget;
+                            break;
+                        case TreeDataGridRowDropPosition.After when SortDirectionCurrent.Value == ListSortDirection.Ascending:
+                        case TreeDataGridRowDropPosition.Before when SortDirectionCurrent.Value == ListSortDirection.Descending:
+                            relativePosition = TargetRelativePosition.AfterTarget;
+                            break;
+                        case TreeDataGridRowDropPosition.Inside when SortDirectionCurrent.Value == ListSortDirection.Ascending:
+                            relativePosition = PointerIsInVerticalTopHalf(eventArgs) ? TargetRelativePosition.BeforeTarget : TargetRelativePosition.AfterTarget;
+                            break;
+                        case TreeDataGridRowDropPosition.Inside when SortDirectionCurrent.Value == ListSortDirection.Descending:
+                            relativePosition = PointerIsInVerticalTopHalf(eventArgs) ? TargetRelativePosition.AfterTarget : TargetRelativePosition.BeforeTarget;
+                            break;
+                        case TreeDataGridRowDropPosition.None:
+                            // Invalid target, no move
+                            return;
+                        default:
+                            return;
+                    }
 
-                var task = relativePosition switch
-                {
-                    TargetRelativePosition.BeforeTarget => _loadoutManager.LoseFileConflict(keysToMove, dropTargetKey),
-                    TargetRelativePosition.AfterTarget => _loadoutManager.WinFileConflict(keysToMove, dropTargetKey),
-                };
+                    var task = relativePosition switch
+                    {
+                        TargetRelativePosition.BeforeTarget => _loadoutManager.LoseFileConflict(keysToMove, dropTargetKey),
+                        TargetRelativePosition.AfterTarget => _loadoutManager.WinFileConflict(keysToMove, dropTargetKey),
+                    };
 
-                await task;
-            },
-            awaitOperation: AwaitOperation.Drop).AddTo(disposables);
+                    await task;
+                },
+                awaitOperation: AwaitOperation.Drop).AddTo(disposables);
         });
     }
 
@@ -142,10 +146,10 @@ public class FileConflictsViewModel : AViewModel<IFileConflictsViewModel>, IFile
 
         var target = (sortDirection, moveUp) switch
         {
-            (ListSortDirection.Ascending, moveUp: false) => neighbourIds.Next,
-            (ListSortDirection.Ascending, moveUp: true) => neighbourIds.Prev,
-            (ListSortDirection.Descending, moveUp: false) => neighbourIds.Prev,
-            (ListSortDirection.Descending, moveUp: true) => neighbourIds.Next,
+            (ListSortDirection.Ascending, moveUp: false) => neighbourIds.Next.Value,
+            (ListSortDirection.Ascending, moveUp: true) => neighbourIds.Prev.Value,
+            (ListSortDirection.Descending, moveUp: false) => neighbourIds.Prev.Value,
+            (ListSortDirection.Descending, moveUp: true) => neighbourIds.Next.Value,
         };
 
         Debug.Assert(target.Value != 0, "should select correct non-null target");
@@ -159,10 +163,55 @@ public class FileConflictsViewModel : AViewModel<IFileConflictsViewModel>, IFile
         IWindowManager windowManager, 
         IServiceProvider serviceProvider)
     {
-        var markdownRendererViewModel = serviceProvider.GetRequiredService<IMarkdownRendererViewModel>();
-        markdownRendererViewModel.Contents = msg.Markdown;
+        var db = serviceProvider.GetRequiredService<IConnection>().Db;
+        var priority = LoadoutItemGroupPriority.Load(db, msg.PriorityId);
 
-        _ = await windowManager.ShowDialog(DialogFactory.CreateStandardDialog(title: $"Conflicts for {msg.Group.AsLoadoutItem().Name}", new StandardDialogParameters
+        var groups = msg.Conflicts
+            .Select(tuple =>
+            {
+                var winnerPriority = LoadoutItemGroupPriority.Load(db, tuple.WinnerPriorityId);
+                var winnerLoadoutItem = LoadoutItemWithTargetPath.Load(db, tuple.WinnerLoadoutItemId);
+
+                var loserPriority = LoadoutItemGroupPriority.Load(db, tuple.LoserPriorityId);
+                var loserLoadoutItem = LoadoutItemWithTargetPath.Load(db, tuple.LoserLoadoutItemId);
+
+                var conflictPriority = LoadoutItemGroupPriority.Load(db, tuple.ConflictPriorityId);
+                var conflictLoadoutItem = LoadoutItemWithTargetPath.Load(db, tuple.ConflictLoadoutItemId);
+
+                return ((winnerPriority, winnerLoadoutItem), (loserPriority, loserLoadoutItem), (conflictPriority, conflictLoadoutItem));
+            })
+            .GroupBy(GamePath (tuple) => tuple.Item1.winnerLoadoutItem.TargetPath)
+            .ToArray();
+
+        var sb = new StringBuilder();
+
+        foreach (var group in groups)
+        {
+            sb.AppendLine($"## {group.Key}");
+
+            var tuples = group.ToArray();
+
+            var winner = tuples[0].Item1.winnerPriority.Target;
+            var losers = tuples.Select(x => x.Item2.loserPriority.Target).DistinctBy(x => x.Id).ToArray();
+
+            if (priority.TargetId == winner.LoadoutItemGroupId) sb.AppendLine($"Winner: {winner.AsLoadoutItem().Name} (this)");
+            else sb.AppendLine($"Winner: {winner.AsLoadoutItem().Name}");
+
+            sb.AppendLine();
+            sb.AppendLine("Losers:");
+            sb.AppendLine();
+
+            foreach (var loser in losers)
+            {
+                if (priority.TargetId == loser.LoadoutItemGroupId) sb.AppendLine($"* {loser.AsLoadoutItem().Name} (this)");
+                else sb.AppendLine($"* {loser.AsLoadoutItem().Name}");
+            }
+        }
+
+        var markdownRendererViewModel = serviceProvider.GetRequiredService<IMarkdownRendererViewModel>();
+        markdownRendererViewModel.Contents = sb.ToString();
+
+        _ = await windowManager.ShowDialog(DialogFactory.CreateStandardDialog(title: $"Conflicts for {priority.Target.AsLoadoutItem().Name}", new StandardDialogParameters
         {
             Markdown = markdownRendererViewModel,
         }, buttonDefinitions: [DialogStandardButtons.Close]), DialogWindowType.Modeless);
@@ -182,10 +231,10 @@ public class FileConflictsTreeDataGridAdapter : TreeDataGridAdapter<CompositeIte
         FileConflictsTreeDataGridAdapter.MoveDownCommandPayload
     >>
 {
-    public record ViewConflictsMessage(LoadoutItemGroup.ReadOnly Group, string Markdown);
+    public record ViewConflictsMessage(LoadoutItemGroupPriorityId PriorityId, (EntityId WinnerPriorityId, EntityId WinnerLoadoutItemId, EntityId ConflictPriorityId, EntityId ConflictLoadoutItemId, EntityId LoserPriorityId, EntityId LoserLoadoutItemId)[] Conflicts);
     public readonly record struct MoveUpCommandPayload(CompositeItemModel<EntityId> Item);
     public readonly record struct MoveDownCommandPayload(CompositeItemModel<EntityId> Item);
-    
+
     private readonly IConnection _connection;
     private readonly ILoadoutSynchronizer _synchronizer;
     private readonly IResourceLoader<EntityId, Bitmap> _modPageThumbnailPipeline;
@@ -239,7 +288,8 @@ public class FileConflictsTreeDataGridAdapter : TreeDataGridAdapter<CompositeIte
             factory: static (self, itemModel, component) => component.CommandViewConflicts.Subscribe((self, itemModel, component), static (_, state) =>
             {
                 var (self, itemModel, component) = state;
-                self.MessageSubject.OnNext(new ViewConflictsMessage(default, default!));
+                var conflicts = GetPriorityConflicts(self._connection, itemModel.Key).ToArray();
+                self.MessageSubject.OnNext(new ViewConflictsMessage(itemModel.Key, conflicts));
             })
         );
 
@@ -305,21 +355,28 @@ public class FileConflictsTreeDataGridAdapter : TreeDataGridAdapter<CompositeIte
 
         itemModel.Add(FileConflictsColumns.Actions.ViewComponentKey, new FileConflictsComponents.ViewAction(hasConflicts: numWinningFiles > 0 || numLosingFiles > 0));
 
-        itemModel.Add(FileConflictsColumns.IndexColumn.NeighbourIdsComponentKey, new FileConflictsComponents.NeighbourIds(previousId, nextId));
+        var neighbourIds = new FileConflictsComponents.NeighbourIds(previousId, nextId);
+        itemModel.Add(FileConflictsColumns.IndexColumn.NeighbourIdsComponentKey, neighbourIds);
+
+        var canExecuteMoveUp = _sortDirectionObservable.CombineLatest(neighbourIds.Prev, neighbourIds.Next, static (direction, previousId, nextId) => (direction, previousId, nextId) switch
+        {
+            (ListSortDirection.Ascending, previousId: { Value: > 0 }, _) => true,
+            (ListSortDirection.Descending, _, nextId: { Value: > 0}) => true,
+            _ => false,
+        });
+
+        var canExecuteMoveDown = _sortDirectionObservable.CombineLatest(neighbourIds.Prev, neighbourIds.Next, static (direction, previousId, nextId) => (direction, previousId, nextId) switch
+        {
+            (ListSortDirection.Ascending, _, nextId: { Value: > 0}) => true,
+            (ListSortDirection.Descending, previousId: { Value: > 0 }, _) => true,
+            _ => false,
+        });
 
         itemModel.Add(FileConflictsColumns.IndexColumn.IndexComponentKey, new SharedComponents.IndexComponent(
             new ValueComponent<int>((int)index),
             new ValueComponent<string>(index.ToString()),
-            canExecuteMoveUp: _sortDirectionObservable.Select(direction => direction switch
-            {
-                ListSortDirection.Ascending => previousId.Value != 0,
-                ListSortDirection.Descending => nextId.Value != 0,
-            }),
-            canExecuteMoveDown: _sortDirectionObservable.Select(direction => direction switch
-            {
-                ListSortDirection.Ascending => nextId.Value != 0,
-                ListSortDirection.Descending => previousId.Value != 0,
-            })
+            canExecuteMoveUp: canExecuteMoveUp,
+            canExecuteMoveDown: canExecuteMoveDown
         ));
 
         return itemModel;
@@ -336,12 +393,36 @@ public class FileConflictsTreeDataGridAdapter : TreeDataGridAdapter<CompositeIte
         numConflicts.NumLosers.Value.Value = numLosingFiles;
 
         var neighbourIds = itemModel.Get<FileConflictsComponents.NeighbourIds>(FileConflictsColumns.IndexColumn.NeighbourIdsComponentKey);
-        neighbourIds.Prev = previousId;
-        neighbourIds.Next = nextId;
+        neighbourIds.Prev.Value = previousId;
+        neighbourIds.Next.Value = nextId;
 
         var indexComponent = itemModel.Get<SharedComponents.IndexComponent>(FileConflictsColumns.IndexColumn.IndexComponentKey);
         indexComponent.Index.Value.Value = (int)index;
         indexComponent.DisplaySortIndexComponent.Value.Value = index.ToString();
+    }
+
+    private static Query<(EntityId WinnerPriorityId, EntityId WinnerLoadoutItemId, EntityId ConflictPriorityId, EntityId ConflictLoadoutItemId, EntityId LoserPriorityId, EntityId LoserLoadoutItemId)> GetPriorityConflicts(
+        IConnection connection,
+        EntityId priorityId)
+    {
+        // NOTE(erri120): limited by our current query engine to not supported nested lists and tuples so we have to unnest
+        return connection.Query<(EntityId, EntityId, EntityId, EntityId, EntityId, EntityId)>(
+            $"""
+             SELECT
+               Winner.PriorityId,
+               Winner.LoadoutItemId,
+               conflicts."unnest".PriorityId,
+               conflicts."unnest".LoadoutItemId,
+               losers."unnest".PriorityId,
+               losers."unnest".LoadoutItemId
+             FROM
+               synchronizer.ConflictingPaths ({connection}) conflicting_path
+               CROSS JOIN unnest(conflicting_path.Conflicts) conflicts
+               CROSS JOIN unnest(conflicting_path.Losers) losers
+             WHERE
+               len(list_filter(conflicting_path.Conflicts, x -> x.PriorityId = {priorityId})) > 0;
+             """
+        );
     }
 
     private static IObservable<IChangeSet<(EntityId Id, long Index, EntityId Prev, EntityId Next, long NumWinningFiles, long NumLosingFiles), EntityId>> ObservePriorityGroups(IConnection connection, LoadoutId loadoutId)
