@@ -27,13 +27,13 @@ public static class FileConflictsComponents
 
     public class NumConflicts : IItemModelComponent<NumConflicts>, IComparable<NumConflicts>
     {
-        public ValueComponent<int> NumWinners { get; }
-        public ValueComponent<int> NumLosers { get; }
+        public ValueComponent<long> NumWinners { get; }
+        public ValueComponent<long> NumLosers { get; }
 
         public IReadOnlyBindableReactiveProperty<bool> HasWinners { get; }
         public IReadOnlyBindableReactiveProperty<bool> HasLosers { get; }
 
-        public NumConflicts(ValueComponent<int> numWinners, ValueComponent<int> numLosers)
+        public NumConflicts(ValueComponent<long> numWinners, ValueComponent<long> numLosers)
         {
             NumWinners = numWinners;
             NumLosers = numLosers;
@@ -55,41 +55,39 @@ public static class FileConflictsComponents
     
     public class ViewAction : IItemModelComponent<ViewAction>, IComparable<ViewAction>
     {
-        public LoadoutItemGroup.ReadOnly Group { get; }
-        private readonly LoadoutFile.ReadOnly[] _loadoutFiles;
-        private readonly FrozenDictionary<GamePath, FileConflictGroup> _conflictsByPath;
-        public ReactiveCommand<Unit> CommandViewConflicts { get; } = new ReactiveCommand();
+        public BindableReactiveProperty<bool> HasConflicts { get; }
+        public ReactiveCommand<Unit> CommandViewConflicts { get; }
 
-        public ViewAction(LoadoutItemGroup.ReadOnly group, LoadoutFile.ReadOnly[] loadoutFiles, FrozenDictionary<GamePath, FileConflictGroup> conflictsByPath)
+        public ViewAction(bool hasConflicts)
         {
-            Group = group;
-            _loadoutFiles = loadoutFiles;
-            _conflictsByPath = conflictsByPath;
+            HasConflicts = new BindableReactiveProperty<bool>(value: hasConflicts);
+            CommandViewConflicts = HasConflicts.ToReactiveCommand();
         }
 
         public int CompareTo(ViewAction? other) => 0;
 
         public string CreateMarkdown()
         {
-            var markdown = _loadoutFiles
-                .Select(GamePath (x) => x.AsLoadoutItemWithTargetPath().TargetPath)
-                .Select(gamePath =>
-                {
-                    var conflicts = _conflictsByPath[gamePath].Items;
-                    var conflictingGroups = conflicts.Where(x => x.File.IsT0).Select(x => x.File.AsT0.AsLoadoutItemWithTargetPath().AsLoadoutItem().Parent).ToArray();
-                    return (gamePath, conflictingGroups);
-                })
-                .Select(tuple =>
-                {
-                    var (gamePath, conflictingGroups) = tuple;
-                    var heading = $"## {gamePath}\n";
-                    var body = conflictingGroups.Select(x => $"- {x.AsLoadoutItem().Name}").Aggregate((a, b) => $"{a}\n{b}");
+            return "";
+            // var markdown = _loadoutFiles
+            //     .Select(GamePath (x) => x.AsLoadoutItemWithTargetPath().TargetPath)
+            //     .Select(gamePath =>
+            //     {
+            //         var conflicts = _conflictsByPath[gamePath].Items;
+            //         var conflictingGroups = conflicts.Where(x => x.File.IsT0).Select(x => x.File.AsT0.AsLoadoutItemWithTargetPath().AsLoadoutItem().Parent).ToArray();
+            //         return (gamePath, conflictingGroups);
+            //     })
+            //     .Select(tuple =>
+            //     {
+            //         var (gamePath, conflictingGroups) = tuple;
+            //         var heading = $"## {gamePath}\n";
+            //         var body = conflictingGroups.Select(x => $"- {x.AsLoadoutItem().Name}").Aggregate((a, b) => $"{a}\n{b}");
+            //
+            //         return $"{heading}\n{body}";
+            //     })
+            //     .Aggregate((a,b) => $"{a}\n{b}");
 
-                    return $"{heading}\n{body}";
-                })
-                .Aggregate((a,b) => $"{a}\n{b}");
-
-            return markdown;
+            // return markdown;
         }
     }
 }

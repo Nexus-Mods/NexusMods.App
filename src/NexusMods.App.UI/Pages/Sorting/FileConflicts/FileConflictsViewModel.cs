@@ -238,13 +238,11 @@ public class FileConflictsTreeDataGridAdapter : TreeDataGridAdapter<CompositeIte
             state: this,
             factory: static (self, itemModel, component) => component.CommandViewConflicts.Subscribe((self, itemModel, component), static (_, state) =>
             {
-                var (self, _, component) = state;
-                var markdown = component.CreateMarkdown();
-
-                self.MessageSubject.OnNext(new ViewConflictsMessage(component.Group, markdown));
+                var (self, itemModel, component) = state;
+                self.MessageSubject.OnNext(new ViewConflictsMessage(default, default!));
             })
         );
-        
+
         // Move up command
         model.SubscribeToComponentAndTrack<SharedComponents.IndexComponent, FileConflictsTreeDataGridAdapter>(
             key: FileConflictsColumns.IndexColumn.IndexComponentKey,
@@ -273,10 +271,10 @@ public class FileConflictsTreeDataGridAdapter : TreeDataGridAdapter<CompositeIte
         return ObservePriorityGroups(_connection, _loadoutId).TransformWithInlineUpdate(CreateItemModel, UpdateItemModel);
     }
 
-    private CompositeItemModel<EntityId> CreateItemModel((EntityId, long, EntityId, EntityId, List<EntityId>, List<EntityId>) tuple)
+    private CompositeItemModel<EntityId> CreateItemModel((EntityId, long, EntityId, EntityId, long, long) tuple)
     {
         var db = _connection.Db;
-        var (groupPriorityId, index, previousId, nextId, winners, losers) = tuple;
+        var (groupPriorityId, index, previousId, nextId, numWinningFiles, numLosingFiles) = tuple;
 
         var groupPriority = LoadoutItemGroupPriority.Load(db, groupPriorityId);
         var loadoutGroup = groupPriority.Target;
@@ -301,12 +299,11 @@ public class FileConflictsTreeDataGridAdapter : TreeDataGridAdapter<CompositeIte
         itemModel.Add(SharedColumns.Name.ImageComponentKey, imageComponent);
 
         itemModel.Add(FileConflictsColumns.ConflictsColumn.NumConflictsComponentKey, new FileConflictsComponents.NumConflicts(
-            numWinners: new ValueComponent<int>(value: winners.Count),
-            numLosers: new ValueComponent<int>(value: losers.Count)
+            numWinners: new ValueComponent<long>(value: numWinningFiles),
+            numLosers: new ValueComponent<long>(value: numLosingFiles)
         ));
 
-        // TODO: "View Conflicts" action
-        // itemModel.Add(FileConflictsColumns.Actions.ViewComponentKey, new FileConflictsComponents.ViewAction(loadoutGroup, loadoutFiles, conflictsByPath));
+        itemModel.Add(FileConflictsColumns.Actions.ViewComponentKey, new FileConflictsComponents.ViewAction(hasConflicts: numWinningFiles > 0 || numLosingFiles > 0));
 
         itemModel.Add(FileConflictsColumns.IndexColumn.NeighbourIdsComponentKey, new FileConflictsComponents.NeighbourIds(previousId, nextId));
 
@@ -328,28 +325,30 @@ public class FileConflictsTreeDataGridAdapter : TreeDataGridAdapter<CompositeIte
         return itemModel;
     }
 
-    private void UpdateItemModel(CompositeItemModel<EntityId> itemModel, (EntityId Id, long Index, EntityId Prev, EntityId Next, List<EntityId> Winners, List<EntityId> Losers) tuple)
+    private void UpdateItemModel(CompositeItemModel<EntityId> itemModel, (EntityId Id, long Index, EntityId Prev, EntityId Next, long NumWinningFiles, long NumLosingFiles) tuple)
     {
-        var (_, index, previousId, nextId, winners, losers) = tuple;
+        var (_, index, previousId, nextId, numWinningFiles, numLosingFiles) = tuple;
 
-        var indexComponent = itemModel.Get<SharedComponents.IndexComponent>(FileConflictsColumns.IndexColumn.IndexComponentKey);
-        indexComponent.Index.Value.Value = (int)index;
-        indexComponent.DisplaySortIndexComponent.Value.Value = index.ToString();
+        itemModel.Get<FileConflictsComponents.ViewAction>(FileConflictsColumns.Actions.ViewComponentKey).HasConflicts.Value = numWinningFiles > 0 || numLosingFiles > 0;
+
+        var numConflicts = itemModel.Get<FileConflictsComponents.NumConflicts>(FileConflictsColumns.ConflictsColumn.NumConflictsComponentKey);
+        numConflicts.NumWinners.Value.Value = numWinningFiles;
+        numConflicts.NumLosers.Value.Value = numLosingFiles;
 
         var neighbourIds = itemModel.Get<FileConflictsComponents.NeighbourIds>(FileConflictsColumns.IndexColumn.NeighbourIdsComponentKey);
         neighbourIds.Prev = previousId;
         neighbourIds.Next = nextId;
 
-        var numConflicts = itemModel.Get<FileConflictsComponents.NumConflicts>(FileConflictsColumns.ConflictsColumn.NumConflictsComponentKey);
-        numConflicts.NumWinners.Value.Value = winners.Count;
-        numConflicts.NumLosers.Value.Value = losers.Count;
+        var indexComponent = itemModel.Get<SharedComponents.IndexComponent>(FileConflictsColumns.IndexColumn.IndexComponentKey);
+        indexComponent.Index.Value.Value = (int)index;
+        indexComponent.DisplaySortIndexComponent.Value.Value = index.ToString();
     }
 
-    private static IObservable<IChangeSet<(EntityId Id, long Index, EntityId Prev, EntityId Next, List<EntityId> Winners, List<EntityId> Losers), EntityId>> ObservePriorityGroups(IConnection connection, LoadoutId loadoutId)
+    private static IObservable<IChangeSet<(EntityId Id, long Index, EntityId Prev, EntityId Next, long NumWinningFiles, long NumLosingFiles), EntityId>> ObservePriorityGroups(IConnection connection, LoadoutId loadoutId)
     {
-        return connection.Query<(EntityId Id, long, EntityId, EntityId, List<EntityId>, List<EntityId>)>(
+        return connection.Query<(EntityId Id, long, EntityId, EntityId, long, long)>(
             $"""
-             SELECT Id, Index, Prev, Next, WinningFiles, LosingFiles
+             SELECT Id, Index, Prev, Next, len(WinningFiles), len(LosingFiles)
              FROM
                synchronizer.PriorityGroups({connection})
              WHERE Loadout = {loadoutId};
