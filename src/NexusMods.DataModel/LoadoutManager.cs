@@ -433,4 +433,34 @@ internal partial class LoadoutManager : ILoadoutManager
         await InstallItem(libraryItemToInstall, loadoutId, inputTx: tx);
         await tx.Commit();
     }
+
+    public async ValueTask WinFileConflict(LoadoutItemGroupPriorityId[] winnerIds, LoadoutItemGroupPriorityId loserId)
+    {
+        var db = _connection.Db;
+        using var tx = _connection.BeginTransaction();
+
+        tx.Add(new MoveFileConflicts(
+            loadoutId: LoadoutItemGroupPriority.Load(db, loserId).LoadoutId,
+            anchorId: loserId,
+            targetIds: winnerIds,
+            moveTargetsBeforeAnchor: false
+        ));
+
+        await tx.Commit();
+    }
+
+    public async ValueTask LoseFileConflict(LoadoutItemGroupPriorityId[] loserIds, LoadoutItemGroupPriorityId winnerId)
+    {
+        var db = _connection.Db;
+        using var tx = _connection.BeginTransaction();
+
+        tx.Add(new MoveFileConflicts(
+            loadoutId: LoadoutItemGroupPriority.Load(db, winnerId).LoadoutId,
+            anchorId: winnerId,
+            targetIds: loserIds,
+            moveTargetsBeforeAnchor: true
+        ));
+
+        await tx.Commit();
+    }
 }

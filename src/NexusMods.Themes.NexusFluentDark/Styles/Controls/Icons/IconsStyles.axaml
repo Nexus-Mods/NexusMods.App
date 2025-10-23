@@ -106,6 +106,7 @@
                     <icons:UnifiedIcon Classes="Size" />
                     <icons:UnifiedIcon Classes="Info" />
                     <icons:UnifiedIcon Classes="Trophy" />
+                    <icons:UnifiedIcon Classes="Block" />
                     <icons:UnifiedIcon Classes="ArrowUpThick" />
                     <icons:UnifiedIcon Classes="ArrowDownThick" />
                     <icons:UnifiedIcon Classes="Sort" />
@@ -290,6 +291,10 @@
 
     <Style Selector="icons|UnifiedIcon.PlusCircleOutline">
         <Setter Property="Value" Value="{x:Static icons:IconValues.AddCircleOutline}" />
+    </Style>
+
+    <Style Selector="icons|UnifiedIcon.Block">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.Block}" />
     </Style>
 
     <Style Selector="icons|UnifiedIcon.ProgressDownload">

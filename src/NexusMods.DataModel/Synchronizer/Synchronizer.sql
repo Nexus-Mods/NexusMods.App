@@ -120,32 +120,43 @@ FROM
   MDB_LOADOUTITEMGROUPPRIORITY (Db => db) item_group
 GROUP BY item_group.Loadout;
 
--- Returns all file conflict groups
-CREATE OR REPLACE MACRO synchronizer.FileConflicts (db, loadoutId, removeDuplicates) AS TABLE
+-- Gets all conflicting paths
+CREATE OR REPLACE MACRO synchronizer.ConflictingPaths(db) AS TABLE
 SELECT
-  {Location: TargetPath.Item2, Path: TargetPath.Item3} Path,
-  LIST(STRUCT_PACK(Id := Id, IsEnabled := IsEnabled, IsDeleted := IsDeleted)) AS Conflicts
+  loadout_item.Loadout AS Loadout,
+  {LocationId: loadout_item.TargetPath.Item2, Path: loadout_item.TargetPath.Item3} AS Path,
+  list(struct_pack(PriorityId := priority.Id, LoadoutItemId := loadout_item.Id) ORDER BY priority.Priority) AS Conflicts,
+  first(struct_pack(PriorityId := priority.Id, LoadoutItemId := loadout_item.Id) ORDER BY priority.Priority DESC) AS Winner,
+  list_slice(list(struct_pack(PriorityId := priority.Id, LoadoutItemId := loadout_item.Id) ORDER BY priority.Priority), 1, -2) AS Losers,
 FROM
-  synchronizer.LeafLoadoutItems (db)
-WHERE Loadout = loadoutId
-GROUP BY
-  TargetPath.Item2,
-  TargetPath.Item3
-HAVING
-  len(LIST(Id)) >= 2
-  AND (
-    NOT removeDuplicates
-    OR COUNT(DISTINCT Hash) > 1
-  );
+  synchronizer.LeafLoadoutItems (db) loadout_item
+  LEFT JOIN MDB_LOADOUTITEMGROUPPRIORITY (Db => db) priority ON priority.Target = loadout_item.Parent
+WHERE
+  priority.Id IS NOT NULL
+GROUP BY loadout_item.Loadout, loadout_item.TargetPath.Item2, loadout_item.TargetPath.Item3
+HAVING count(DISTINCT loadout_item.Hash) > 1;
 
--- Returns all file conflicts grouped by their parent
-CREATE OR REPLACE MACRO synchronizer.FileConflictsByParentGroup (db, loadoutId, removeDuplicates) AS TABLE
+-- Returns all priority groups with additional per-loadout data
+CREATE OR REPLACE MACRO synchronizer.PriorityGroups (db) AS TABLE
+WITH
+  winnersAndLosers AS (
+    SELECT
+      priority.Id,
+      coalesce(list(conflicting_path.Winner.LoadoutItemId) FILTER (WHERE conflicting_path.Winner.PriorityId = priority.Id), []) AS WinningFiles,
+      coalesce(flatten(list(list_transform(list_filter(conflicting_path.Losers, x -> x.PriorityId = priority.Id), x -> x.LoadoutItemId))), []) AS LosingFiles
+    FROM
+      synchronizer.ConflictingPaths(NULL) conflicting_path
+      CROSS JOIN unnest(conflicting_path.Conflicts) conflict
+      JOIN MDB_LOADOUTITEMGROUPPRIORITY (Db => NULL) priority ON conflict."unnest".PriorityId = priority.Id
+    GROUP BY priority.Id
+  )
 SELECT
-  loadout_item.Parent AS GroupId,
-  LIST(STRUCT_PACK(Id := "unnest".Id, Location := conflicts.Path.Location, Path := conflicts.Path.Path)) as Items
+  priority.*,
+  row_number() OVER (PARTITION BY Loadout ORDER BY Priority) AS Index,
+  lead(priority.Id, -1, 0) OVER (PARTITION BY Loadout ORDER BY Priority) As Prev,
+  lead(priority.Id, 1, 0) OVER (PARTITION BY Loadout ORDER BY Priority) As Next,
+  coalesce(winnersAndLoser.WinningFiles, []) AS WinningFiles,
+  coalesce(winnersAndLoser.LosingFiles, []) AS LosingFiles
 FROM
-  synchronizer.FileConflicts (db, loadoutId, removeDuplicates) as conflicts
-  CROSS JOIN UNNEST(conflicts)
-  JOIN MDB_LOADOUTITEM (Db => db) loadout_item ON loadout_item.Id = "unnest".Id
-GROUP BY
-  loadout_item.Parent;
+  MDB_LOADOUTITEMGROUPPRIORITY (Db => db) priority
+  LEFT JOIN winnersAndLosers winnersAndLoser ON winnersAndLoser.Id = priority.Id;

@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.Resources;
 using NexusMods.UI.Sdk;
@@ -127,33 +128,29 @@ public static class SharedComponents
 
     public sealed class IndexComponent : ReactiveR3Object, IItemModelComponent<IndexComponent>, IComparable<IndexComponent>
     {
-        private readonly ValueComponent<int> _index;
-        private readonly ValueComponent<string> _displaySortIndex;
+        public ValueComponent<int> Index { get; }
+        public ValueComponent<string> DisplaySortIndexComponent { get; }
 
         public ReactiveCommand<Unit> MoveUp { get; }
         public ReactiveCommand<Unit> MoveDown { get; }
 
-        public IReadOnlyBindableReactiveProperty<int> SortIndex => _index.Value;
-        public IReadOnlyBindableReactiveProperty<string> DisplaySortIndex => _displaySortIndex.Value;
+        public IReadOnlyBindableReactiveProperty<int> SortIndex => Index.Value;
+        public IReadOnlyBindableReactiveProperty<string> DisplaySortIndex => DisplaySortIndexComponent.Value;
 
         public IndexComponent(ValueComponent<int> index, 
             ValueComponent<string> displaySortIndex,
             Observable<bool> canExecuteMoveUp,
             Observable<bool> canExecuteMoveDown)
         {
-            _index = index;
-            _displaySortIndex = displaySortIndex;
-            
+            Index = index;
+            DisplaySortIndexComponent = displaySortIndex;
+
             MoveUp = canExecuteMoveUp.ObserveOnUIThreadDispatcher().ToReactiveCommand();
             MoveDown = canExecuteMoveDown.ObserveOnUIThreadDispatcher().ToReactiveCommand();
         }
 
-        public int CompareTo(IndexComponent? other)
-        {
-            // Data is sorted by the Adapter, not the treeDataGrid, this should not be called
-            throw new NotSupportedException();
-        }
-        
+        public int CompareTo(IndexComponent? other) => throw new UnreachableException("Data is sorted by the Adapter, not by the TreeDataGrid");
+
         private bool _isDisposed;
         protected override void Dispose(bool disposing)
         {
@@ -163,6 +160,7 @@ public static class SharedComponents
                 {
                     Disposable.Dispose(MoveUp, MoveDown);
                 }
+
                 _isDisposed = true;
             }
 
