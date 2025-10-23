@@ -152,10 +152,36 @@ GROUP BY
 
 -- Returns all priority groups with additional per-loadout data
 CREATE OR REPLACE MACRO synchronizer.PriorityGroups (db) AS TABLE
+WITH
+  winners AS (
+    SELECT
+      priority.Id AS Id,
+      coalesce(list(winning_item.Id), []) AS Winners
+    FROM
+      MDB_LOADOUTITEMGROUPPRIORITY (Db => db) priority
+      LEFT JOIN synchronizer.WinningLeafLoadoutItem (db) winning_item ON winning_item.Parent = priority.Target
+    GROUP BY
+      priority.Id
+  ),
+  losers AS (
+    SELECT
+      priority.Id AS Id,
+      coalesce(list(loadout_item.Id) FILTER(WHERE winning_item.Id IS NULL), []) AS Losers
+    FROM
+      MDB_LOADOUTITEMGROUPPRIORITY (Db => db) priority
+      LEFT JOIN synchronizer.LeafLoadoutItems (db) loadout_item ON loadout_item.Parent = priority.Target
+      LEFT JOIN synchronizer.WinningLeafLoadoutItem (db) winning_item ON winning_item.Id = loadout_item.Id
+    GROUP BY
+      priority.Id
+  )
 SELECT
-    *,
-    row_number() OVER (PARTITION BY Loadout ORDER BY Priority) AS Index,
-    lead(Id, -1, 0) OVER (PARTITION BY Loadout ORDER BY Priority) As Prev,
-    lead(Id, 1, 0) OVER (PARTITION BY Loadout ORDER BY Priority) As Next
+  priority.*,
+  row_number() OVER (PARTITION BY Loadout ORDER BY Priority) AS Index,
+  lead(priority.Id, -1, 0) OVER (PARTITION BY Loadout ORDER BY Priority) As Prev,
+  lead(priority.Id, 1, 0) OVER (PARTITION BY Loadout ORDER BY Priority) As Next,
+  winner.Winners,
+  loser.Losers
 FROM
-    MDB_LOADOUTITEMGROUPPRIORITY (Db => db);
+  MDB_LOADOUTITEMGROUPPRIORITY (Db => db) priority
+  LEFT JOIN winners winner ON winner.Id = priority.Id
+  LEFT JOIN losers loser ON loser.Id = priority.Id;

@@ -78,9 +78,53 @@
                                     </controls:ComponentTemplate>
                                 </controls:ComponentControl.ComponentTemplate>
                             </controls:ComponentControl>
-
                         </DataTemplate>
 
+                        <!-- Conflicts -->
+                        <DataTemplate x:Key="{x:Static local:FileConflictsColumns+ConflictsColumn.ColumnTemplateResourceKey}">
+                            <DataTemplate.DataType>
+                                <x:Type TypeName="controls:CompositeItemModel" x:TypeArguments="abstractions:EntityId"/>
+                            </DataTemplate.DataType>
+
+                            <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
+                                <controls:ComponentControl.ComponentTemplate>
+                                    <controls:ComponentTemplate x:TypeArguments="local:FileConflictsComponents+NumConflicts"
+                                                                    ComponentKey="{x:Static local:FileConflictsColumns+ConflictsColumn.NumConflictsComponentKey}">
+                                        <controls:ComponentTemplate.DataTemplate>
+                                            <DataTemplate DataType="{x:Type local:FileConflictsComponents+NumConflicts}">
+                                                <StackPanel Orientation="Horizontal" Spacing="{StaticResource Spacing-3}">
+                                                    <icons:UnifiedIcon Size="16"
+                                                                       Value="{x:Static icons:IconValues.Remove}" IsVisible="{CompiledBinding !HasLosers.Value}"
+                                                                       Foreground="{StaticResource SurfaceTranslucentLow}"/>
+                                                    <StackPanel Orientation="Horizontal"
+                                                                Spacing="{StaticResource Spacing-1}"
+                                                                VerticalAlignment="Center"
+                                                                IsVisible="{CompiledBinding HasLosers.Value}">
+                                                        <icons:UnifiedIcon Size="16" Value="{x:Static icons:IconValues.Block}"/>
+                                                        <TextBlock Theme="{StaticResource BodySMNormalTheme}"
+                                                                   Text="{CompiledBinding NumLosers.Value.Value}"/>
+                                                    </StackPanel>
+
+                                                    <icons:UnifiedIcon Size="16"
+                                                                       Value="{x:Static icons:IconValues.Remove}" IsVisible="{CompiledBinding !HasWinners.Value}"
+                                                                       Foreground="{StaticResource SurfaceTranslucentLow}"/>
+                                                    <StackPanel Orientation="Horizontal"
+                                                                Spacing="{StaticResource Spacing-1}"
+                                                                VerticalAlignment="Center"
+                                                                IsVisible="{CompiledBinding HasWinners.Value}">
+                                                        <icons:UnifiedIcon Size="16"
+                                                                           Value="{x:Static icons:IconValues.TrophyOutline}"
+                                                                           Foreground="{StaticResource SuccessStrong}"/>
+                                                        <TextBlock Theme="{StaticResource BodySMNormalTheme}"
+                                                                   Text="{CompiledBinding NumWinners.Value.Value}" Foreground="{StaticResource SuccessStrong}"/>
+                                                    </StackPanel>
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </controls:ComponentTemplate.DataTemplate>
+                                    </controls:ComponentTemplate>
+                                </controls:ComponentControl.ComponentTemplate>
+                            </controls:ComponentControl>
+                        </DataTemplate>
 
                         <!-- Actions -->
                         <DataTemplate x:Key="{x:Static local:FileConflictsColumns+Actions.ColumnTemplateResourceKey}">

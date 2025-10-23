@@ -270,13 +270,13 @@ public class FileConflictsTreeDataGridAdapter : TreeDataGridAdapter<CompositeIte
 
     protected override IObservable<IChangeSet<CompositeItemModel<EntityId>, EntityId>> GetRootsObservable(bool viewHierarchical)
     {
-        return ObservePriorityGroups(_connection, _loadoutId).Transform(ToItemModel);
+        return ObservePriorityGroups(_connection, _loadoutId).TransformWithInlineUpdate(CreateItemModel, UpdateItemModel);
     }
 
-    private CompositeItemModel<EntityId> ToItemModel((EntityId, EntityId, ConflictPriority, long, EntityId, EntityId) tuple)
+    private CompositeItemModel<EntityId> CreateItemModel((EntityId, long, EntityId, EntityId, List<EntityId>, List<EntityId>) tuple)
     {
         var db = _connection.Db;
-        var (groupPriorityId, targetId, priority, index, previousId, nextId) = tuple;
+        var (groupPriorityId, index, previousId, nextId, winners, losers) = tuple;
 
         var groupPriority = LoadoutItemGroupPriority.Load(db, groupPriorityId);
         var loadoutGroup = groupPriority.Target;
@@ -300,8 +300,11 @@ public class FileConflictsTreeDataGridAdapter : TreeDataGridAdapter<CompositeIte
         imageComponent ??= new ImageComponent(value: ImagePipelines.ModPageThumbnailFallback);
         itemModel.Add(SharedColumns.Name.ImageComponentKey, imageComponent);
 
-        // TODO: conflict counts
-        // TODO: collections column
+        itemModel.Add(FileConflictsColumns.ConflictsColumn.NumConflictsComponentKey, new FileConflictsComponents.NumConflicts(
+            numWinners: new ValueComponent<int>(value: winners.Count),
+            numLosers: new ValueComponent<int>(value: losers.Count)
+        ));
+
         // TODO: "View Conflicts" action
         // itemModel.Add(FileConflictsColumns.Actions.ViewComponentKey, new FileConflictsComponents.ViewAction(loadoutGroup, loadoutFiles, conflictsByPath));
 
@@ -325,11 +328,28 @@ public class FileConflictsTreeDataGridAdapter : TreeDataGridAdapter<CompositeIte
         return itemModel;
     }
 
-    private static IObservable<IChangeSet<(EntityId Id, EntityId Target, ConflictPriority Priority, long Index, EntityId Prev, EntityId Next), EntityId>> ObservePriorityGroups(IConnection connection, LoadoutId loadoutId)
+    private void UpdateItemModel(CompositeItemModel<EntityId> itemModel, (EntityId Id, long Index, EntityId Prev, EntityId Next, List<EntityId> Winners, List<EntityId> Losers) tuple)
     {
-        return connection.Query<(EntityId Id, EntityId, ConflictPriority, long, EntityId, EntityId)>(
+        var (_, index, previousId, nextId, winners, losers) = tuple;
+
+        var indexComponent = itemModel.Get<SharedComponents.IndexComponent>(FileConflictsColumns.IndexColumn.IndexComponentKey);
+        indexComponent.Index.Value.Value = (int)index;
+        indexComponent.DisplaySortIndexComponent.Value.Value = index.ToString();
+
+        var neighbourIds = itemModel.Get<FileConflictsComponents.NeighbourIds>(FileConflictsColumns.IndexColumn.NeighbourIdsComponentKey);
+        neighbourIds.Prev = previousId;
+        neighbourIds.Next = nextId;
+
+        var numConflicts = itemModel.Get<FileConflictsComponents.NumConflicts>(FileConflictsColumns.ConflictsColumn.NumConflictsComponentKey);
+        numConflicts.NumWinners.Value.Value = winners.Count;
+        numConflicts.NumLosers.Value.Value = losers.Count;
+    }
+
+    private static IObservable<IChangeSet<(EntityId Id, long Index, EntityId Prev, EntityId Next, List<EntityId> Winners, List<EntityId> Losers), EntityId>> ObservePriorityGroups(IConnection connection, LoadoutId loadoutId)
+    {
+        return connection.Query<(EntityId Id, long, EntityId, EntityId, List<EntityId>, List<EntityId>)>(
             $"""
-             SELECT Id, Target, Priority, Index, Prev, Next
+             SELECT Id, Index, Prev, Next, Winners, Losers
              FROM
                synchronizer.PriorityGroups({connection})
              WHERE Loadout = {loadoutId};
@@ -345,11 +365,11 @@ public class FileConflictsTreeDataGridAdapter : TreeDataGridAdapter<CompositeIte
         [
             ITreeDataGridItemModel<CompositeItemModel<EntityId>, EntityId>.CreateExpanderColumn(indexColumn),
             ColumnCreator.Create<EntityId, SharedColumns.Name>(canUserSortColumn: false),
+            ColumnCreator.Create<EntityId, FileConflictsColumns.ConflictsColumn>(canUserSortColumn: false),
             ColumnCreator.Create<EntityId, FileConflictsColumns.Actions>(canUserSortColumn: false),
         ];
     }
-    
-    
+
     private bool _isDisposed;
     protected override void Dispose(bool disposing)
     {
