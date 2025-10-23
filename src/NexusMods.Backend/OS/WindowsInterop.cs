@@ -65,7 +65,8 @@ internal partial class WindowsInterop : IOSInterop
         // exists immediately. The process lifetime isn't tied to the window.
         // https://ss64.com/nt/explorer.html
         var nativePath = directoryPath.ToNativeSeparators(_fileSystem.OS);
-        var command = Cli.Wrap("explorer.exe").WithArguments($@"""{nativePath}""");
+        var command = Cli.Wrap("explorer.exe").WithArguments($@"""{nativePath}""")
+            .WithValidation(CommandResultValidation.None);
         _processRunner.Run(command, logOutput: false);
     }
 
@@ -75,7 +76,8 @@ internal partial class WindowsInterop : IOSInterop
         // exists immediately. The process lifetime isn't tied to the window.
         // https://ss64.com/nt/explorer.html
         var nativePath = filePath.ToNativeSeparators(_fileSystem.OS);
-        var command = Cli.Wrap("explorer.exe").WithArguments($@"/select,""{nativePath}""");
+        var command = Cli.Wrap("explorer.exe").WithArguments($@"/select,""{nativePath}""")
+            .WithValidation(CommandResultValidation.None);
         _processRunner.Run(command, logOutput: false);
     }
 
