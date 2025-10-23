@@ -85,9 +85,6 @@
         <Compile Update="IO\MemoryStreamFactory.cs">
           <DependentUpon>IStreamFactory.cs</DependentUpon>
         </Compile>
-        <Compile Update="IO\IChunkedStreamSource.cs">
-          <DependentUpon>ChunkedStream.cs</DependentUpon>
-        </Compile>
         <Compile Update="Settings\BooleanContainerOptions.cs">
           <DependentUpon>IContainerOptions.cs</DependentUpon>
         </Compile>

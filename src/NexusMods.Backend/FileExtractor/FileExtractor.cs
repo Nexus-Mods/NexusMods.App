@@ -76,6 +76,7 @@ public class FileExtractor : IFileExtractor
             catch (Exception ex)
             {
                 _logger.LogError(ex, "While extracting via {Extractor}", extractor);
+                throw;
             }
         }
 

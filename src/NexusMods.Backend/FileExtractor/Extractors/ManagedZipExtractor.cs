@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.IO.Compression;
 using System.IO.Hashing;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -8,6 +9,7 @@ using NexusMods.Abstractions.FileExtractor;
 using NexusMods.FileExtractor;
 using NexusMods.Paths;
 using NexusMods.Sdk.IO;
+using ZipFile = ICSharpCode.SharpZipLib.Zip.ZipFile;
 
 namespace NexusMods.Backend.FileExtractor.Extractors;
 
