@@ -349,7 +349,7 @@ public class FileConflictsTreeDataGridAdapter : TreeDataGridAdapter<CompositeIte
     {
         return connection.Query<(EntityId Id, long, EntityId, EntityId, List<EntityId>, List<EntityId>)>(
             $"""
-             SELECT Id, Index, Prev, Next, Winners, Losers
+             SELECT Id, Index, Prev, Next, WinningFiles, LosingFiles
              FROM
                synchronizer.PriorityGroups({connection})
              WHERE Loadout = {loadoutId};
