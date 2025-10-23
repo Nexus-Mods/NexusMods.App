@@ -62,6 +62,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="System.CommandLine" VersionOverride="2.0.0-rc.2.25502.107" />
         <None Update="uninstall-helper.ps1">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
             <DependentUpon>app.pupnet.conf</DependentUpon>
