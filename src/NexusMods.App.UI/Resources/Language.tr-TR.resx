@@ -8,10 +8,10 @@
         </xsd:element>
     </xsd:schema>
     <resheader name="resmimetype">
-    <value>text/microsoft-resx</value>
+        <value>text/microsoft-resx</value>
     </resheader>
     <resheader name="version">
-    <value>1.3</value>
+        <value>1.3</value>
     </resheader>
     <resheader name="reader">
         <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral,
@@ -176,8 +176,29 @@
     <data name="DownloadsView_UnderDevelopment" xml:space="preserve">
         <value>İndirmeler sayfası şu anda yeniden düzenleniyor ve gelecekteki bir güncellemede değiştirilecektir. Verdiğimiz rahatsızlıktan dolayı özür dileriz.</value>
     </data>
+    <data name="DownloadsLeftMenu_AllDownloads" xml:space="preserve">
+        <value>Tüm İndirmeler</value>
+    </data>
+    <data name="DownloadsLeftMenu_AllCompleted" xml:space="preserve">
+        <value>Tüm Tamamlananlar</value>
+    </data>
+    <data name="DownloadsLeftMenu_GameSpecificDownloads" xml:space="preserve">
+        <value>{0} İndirmeleri</value>
+    </data>
+    <data name="DownloadsPage_AllDownloads_Description" xml:space="preserve">
+        <value>İndirmelerinizi izleyin.</value>
+    </data>
+    <data name="DownloadsPage_AllCompleted_Description" xml:space="preserve">
+        <value>Tamamlanan İndirmelerinizi görüntüleyin.</value>
+    </data>
+    <data name="DownloadsPage_GameSpecificDownloads_Description" xml:space="preserve">
+        <value>İndirmelerinizi izleyin.</value>
+    </data>
+    <data name="DownloadsPage_Default_Description" xml:space="preserve">
+        <value>Etkin ve tamamlanan İndirmelerinizi yönetin</value>
+    </data>
     <data name="NexusLoginOverlayView__Please_Click_Authorize" xml:space="preserve">
-        <value>Lütfen web sitesinde "Authorise" düğmesine tıklayın</value>
+        <value>Lütfen web sitesinde &quot;Authorise&quot; düğmesine tıklayın</value>
     </data>
     <data name="NexusLoginOverlayView__BROWSER_DIDNT_OPEN" xml:space="preserve">
         <value>Tarayıcı otomatik olarak açılmadı mı?</value>
@@ -370,19 +391,15 @@
     </data>
     <data name="DiagnosticListView_DiagnosticListView_All" xml:space="preserve">
         <value>Tümü ({0})</value>
-        <comment>0 is placeholder for a number</comment>
     </data>
     <data name="DiagnosticListView_DiagnosticListView_Critical" xml:space="preserve">
         <value>Kritik ({0})</value>
-        <comment>0 is placeholder for a number</comment>
     </data>
     <data name="DiagnosticListView_DiagnosticListView_Warnings" xml:space="preserve">
         <value>Uyarılar ({0})</value>
-        <comment>0 is placeholder for a number</comment>
     </data>
     <data name="DiagnosticListView_DiagnosticListView_Suggestions" xml:space="preserve">
         <value>Öneriler ({0})</value>
-        <comment>0 is placeholder for a number</comment>
     </data>
     <data name="DiagnosticListView_DiagnosticListView_There_are_no_diagnostics" xml:space="preserve">
         <value>Tanılama yok</value>
@@ -392,7 +409,6 @@
     </data>
     <data name="ModFileTreeViewModel_StatusBar_Files__0__1" xml:space="preserve">
         <value>Dosyalar: {0} ({1})</value>
-        <comment>{0} Represents a number, {1} represents a formatted size (e.g. 12GB)</comment>
     </data>
     <data name="Helpers_GenerateHeader_File_Count" xml:space="preserve">
         <value>Dosya sayısı</value>
@@ -435,15 +451,12 @@
     </data>
     <data name="DiffTreeViewModel_StatusBar__File_Loadout_Disk" xml:space="preserve">
         <value>Dosyalar: Profil {0} ({1})  Disk {2} ({3})</value>
-        <comment>{0} and {2} are file counts, {1} and {3} are formatted file sizes</comment>
     </data>
     <data name="DiffTreeViewModel_StatusBar__Apply_changes" xml:space="preserve">
         <value>Değişiklikleri uygula: Eklenecek {0} Değiştirilecek {1} Kaldırılacak {2}</value>
-        <comment>{0}, {1} and {2} are integer representing the file counts</comment>
     </data>
     <data name="DiffTreeViewModel_StatusBar__Data_to_process___0_" xml:space="preserve">
         <value>İşlenecek veri: {0}</value>
-        <comment>{0} is a formatted file size, representing the data to be processed</comment>
     </data>
     <data name="ApplyControlView_ViewApplyChanges" xml:space="preserve">
         <value>Değişiklikleri önizle</value>
@@ -635,24 +648,22 @@
         <value>Biliyor muydunuz?</value>
     </data>
     <data name="NewTabPageInfoBannerText1" xml:space="preserve">
-        <value>Araç çubuğundaki</value>
+        <value>Araç çubuğundaki düğmeyi seçerek ekran bölme görünümü için panel ekleyebilirsiniz</value>
     </data>
     <data name="NewTabPageInfoBannerText2" xml:space="preserve">
-        <value>düğmeye tıklayarak panel ekleyebilirsiniz</value>
+        <value></value>
     </data>
     <data name="LoadoutGrid_EmptyModlistSubtitle_Add_from_library" xml:space="preserve">
         <value>Modlarınızı Kütüphaneden Yükleyin</value>
     </data>
     <data name="LoadoutGridViewModel_EmptyModlistTitleString" xml:space="preserve">
         <value>{0} için hiç mod eklenmedi</value>
-        <comment>{0} is the name of the currently managed game</comment>
     </data>
     <data name="EmptyLibraryTitleText" xml:space="preserve">
         <value>Kütüphanenizde mod yok</value>
     </data>
     <data name="FileOriginsPageViewModel_EmptyLibrarySubtitleText" xml:space="preserve">
         <value>Nexus Mods'dan {0} mod indir</value>
-        <comment>{0} is the name of the currently managed game</comment>
     </data>
     <data name="DiagnosticListView.Page_Title" xml:space="preserve">
         <value>Sağlık Kontrolü</value>
@@ -668,15 +679,12 @@
     </data>
     <data name="LoadoutCardViewModel_CreationTimeConverter_Created__0_" xml:space="preserve">
         <value>Oluşturuldu {0}</value>
-        <comment>Where {0} is a humanized time (e.g. "Created 2 hours ago")</comment>
     </data>
     <data name="LoadoutCardViewModel_FormatLastAppliedTime_Last_applied__0_" xml:space="preserve">
         <value>Son uygulama: {0}</value>
-        <comment>Where {0} is a humanized time (e.g. "Last applied 2 hours ago")</comment>
     </data>
     <data name="LoadoutCardViewModel_FormatNumMods_Mods__0_" xml:space="preserve">
         <value>Modlar {0}</value>
-        <comment>Where {0} is the number of mods in a loadout</comment>
     </data>
     <data name="MyLoadoutsPageTitle" xml:space="preserve">
         <value>Profillerim</value>
@@ -689,7 +697,6 @@
     </data>
     <data name="MyLoadoutsGameSectionHeading" xml:space="preserve">
         <value>{0} Profil</value>
-        <comment>Where {0} is the name of the game</comment>
     </data>
     <data name="CreateNewLoadoutCarViewTexBlock" xml:space="preserve">
         <value>Yeni oluştur</value>
@@ -924,7 +931,7 @@ Değişiklikleri uygulamak veya oyunu yeniden başlatmak için lütfen önce oyu
         <value>Bu oyunu yönetmek mevcut modları etkileyecektir</value>
     </data>
     <data name="ManageGameWarning_Desc1" xml:space="preserve">
-        <value>Eğer mevcut modların varsa, bunlar algılanacak ve ‘Harici Değişiklikler’ sayfasında uygulamayla birlikte kullanılabilecektir. Ancak daha sonra bu oyunu yönetmeyi bırakırsan veya uygulamayı kaldırırsan, o modlar oyun klasöründen kalıcı olarak silinecektir.</value>
+        <value>Eğer mevcut modların varsa, bunlar algılanacak ve ‘Harici Değişiklikler’ sayfasında uygulamayla birlikte kullanılabilecektir.  Ancak daha sonra bu oyunu yönetmeyi bırakırsan veya uygulamayı kaldırırsan, o modlar oyun klasöründen kalıcı olarak silinecektir.</value>
     </data>
     <data name="ManageGameWarning_Desc2" xml:space="preserve">
         <value>Saklamak istediğin modları, lütfen devam etmeden önce yedekle.</value>
@@ -943,6 +950,9 @@ Değişiklikleri uygulamak veya oyunu yeniden başlatmak için lütfen önce oyu
     </data>
     <data name="UpgradeToPremiumView_Desc2" xml:space="preserve">
         <value>Premium kullanıcılar ayrıca şunlara sahip olur:</value>
+    </data>
+    <data name="UpgradeToPremiumView_Bullet0" xml:space="preserve">
+        <value>Kesintisiz uygulama içi mod güncellemeleri; web siteleri veya elle indirmelere gerek yok.</value>
     </data>
     <data name="UpgradeToPremiumView_Bullet1" xml:space="preserve">
         <value>Sınırsız indirme hızı</value>
@@ -1037,7 +1047,7 @@ Eğer daha sonra tekrar denemek isterseniz, indirilen dosyalar kütüphanenizde 
     <data name="Library_UpdateMod_ToolTip" xml:space="preserve">
         <value>Modu güncelle</value>
     </data>
-    <data name="Library_MoreOptions_ToolTip" xml:space="preserve">
+    <data name="Menu_MoreOptions_ToolTip" xml:space="preserve">
         <value>Daha fazla seçenek</value>
     </data>
     <data name="Library_UpdateModAndReplace_ToolTip" xml:space="preserve">
@@ -1059,6 +1069,18 @@ Eğer daha sonra tekrar denemek isterseniz, indirilen dosyalar kütüphanenizde 
     <data name="PremiumDialog_UpdateManuallyButton" xml:space="preserve">
         <value>Modları manuel güncelle</value>
     </data>
+    <data name="DialogPremiumCollection_DialogTitle" xml:space="preserve">
+        <value>Premium ile 1-tık Collection'ları Açın</value>
+    </data>
+    <data name="DialogPremiumCollection_UpgradeToPremium" xml:space="preserve">
+        <value>Otomatik-İndirmeyi Açın</value>
+    </data>
+    <data name="DialogPremiumCollection_LearnMore" xml:space="preserve">
+        <value>Daha fazla bilgi</value>
+    </data>
+    <data name="DialogPremiumCollection_Cancel" xml:space="preserve">
+        <value>Manuel kuruluşla devam et</value>
+    </data>
     <data name="PremiumDialog_GoPremiumButton" xml:space="preserve">
         <value>Premium'a Geç</value>
     </data>
@@ -1078,16 +1100,16 @@ Eğer daha sonra tekrar denemek isterseniz, indirilen dosyalar kütüphanenizde 
         <value>Başarısız güncellemeleri yeniden dene</value>
     </data>
     <data name="Loadout_Dialog_CollectionPublished_FirstPublish_Listed" xml:space="preserve">
-        <value>"{0}" herkese açık olarak yayımlandı. Arama sonuçlarında görünecek ve öne çıkarılabilir.</value>
+        <value>&quot;{0}&quot; herkese açık olarak yayımlandı. Arama sonuçlarında görünecek ve öne çıkarılabilir.</value>
     </data>
     <data name="Loadout_Dialog_CollectionPublished_FirstPublish_Unlisted" xml:space="preserve">
-        <value>"{0}" liste dışı olarak yayımlandı. Sadece bağlantıya sahip kişiler görüntüleyebilir.</value>
+        <value>&quot;{0}&quot; liste dışı olarak yayımlandı. Sadece bağlantıya sahip kişiler görüntüleyebilir.</value>
     </data>
     <data name="Loadout_Dialog_CollectionPublished_FirstPublish_Help" xml:space="preserve">
         <value>Koleksiyonunuzun görünürlüğünü koleksiyon ayarlarından istediğiniz zaman değiştirebilirsiniz.</value>
     </data>
     <data name="Loadout_Dialog_CollectionPublished_Revision" xml:space="preserve">
-        <value>"{0}" yayımlandı.</value>
+        <value>&quot;{0}&quot; yayımlandı.</value>
     </data>
     <data name="Loadout_Dialog_CollectionPublished_Revision_Help" xml:space="preserve">
         <value>Kullanıcıların yenilikleri öğrenebilmesi için bu sürümün değişiklik günlüğünü güncellemenizi öneriyoruz.</value>
@@ -1107,4 +1129,164 @@ Eğer daha sonra tekrar denemek isterseniz, indirilen dosyalar kütüphanenizde 
     <data name="Loadout_Dialog_ShareCollection_ChangeVisibilityMessage" xml:space="preserve">
         <value>Görünürlüğü koleksiyon ayarlarından istediğiniz zaman değiştirebilirsiniz.</value>
     </data>
+    <data name="Library_DeleteItem_Text" xml:space="preserve">
+        <value>Sil</value>
+    </data>
+    <data name="CollectionDeleteConfirmation_Message" xml:space="preserve">
+        <value>'{0}' öğesini silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.</value>
+    </data>
+    <data name="ToastNotification_Settings_saved" xml:space="preserve">
+        <value>Ayarlar kaydedildi</value>
+    </data>
+    <data name="ToastNotification_Signed_in_successfully" xml:space="preserve">
+        <value>Başarıyla oturum açıldı</value>
+    </data>
+    <data name="ToastNotification_Items_deleted" xml:space="preserve">
+        <value>Mod silindi</value>
+    </data>
+    <data name="ToastNotification_Mods_removed" xml:space="preserve">
+        <value>Mod kaldırıldı</value>
+    </data>
+    <data name="ToastNotification_Installed_to__0_" xml:space="preserve">
+        <value>{0} öğesine kuruldu</value>
+    </data>
+    <data name="ToastNotification_Applied__0__successfully" xml:space="preserve">
+        <value>Loadout başarıyla uygulandı</value>
+    </data>
+    <data name="ToastNotification_Collection_removed" xml:space="preserve">
+        <value>Collection kaldırıldı</value>
+    </data>
+    <data name="ToastNotification_Collection_deleted" xml:space="preserve">
+        <value>Collection silindi</value>
+    </data>
+    <data name="ToastNotification_Collection_installed" xml:space="preserve">
+        <value>Collection kuruldu</value>
+    </data>
+    <data name="ToastNotification_Draft_revision_uploaded_successfully" xml:space="preserve">
+        <value>Taslak Revizyon başarıyla yüklendi</value>
+    </data>
+    <data name="ToastNotification_Mod_updated____0_" xml:space="preserve">
+        <value>Mod güncellendi - {0}</value>
+    </data>
+    <data name="ToastNotification_Adding_collection____0_" xml:space="preserve">
+        <value>Collection başarıyla eklendi - {0}</value>
+    </data>
+    <data name="ToastNotification_Mod_Download_started" xml:space="preserve">
+        <value>Mod İndirmesi başladı</value>
+    </data>
+    <data name="ToastNotification_Mod_Download_Completed____0_" xml:space="preserve">
+        <value>Mod İndirmesi Tamamlandı - {0}</value>
+    </data>
+    <data name="ToastNotification_Adding_new_Collection_to_Library" xml:space="preserve">
+        <value>Kütüphaneye yeni Collection ekleniyor</value>
+    </data>
+    <data name="ToastNotification_Collection_Add_failed___0__is_not_a_managed_game" xml:space="preserve">
+        <value>Collection eklemesi başarısız oldu: uygulama {0} öğesini yönetmiyor</value>
+    </data>
+    <data name="ToastNotification_Collection_Add_failed__An_unknown_error_occurred" xml:space="preserve">
+        <value>Collection eklemesi başarısız oldu</value>
+    </data>
+    <data name="ToastNotification_Download_failed__User_is_not_logged_in" xml:space="preserve">
+        <value>İndirme başarısız oldu: Nexus Mods'a giriş yapılmadı</value>
+    </data>
+    <data name="ToastNotification_Download_skipped__file_already_exists____0__" xml:space="preserve">
+        <value>İndirme atlandı: dosya zaten var - {0}</value>
+    </data>
+    <data name="ToastNotification_Download_failed__game_is_not_managed____0_" xml:space="preserve">
+        <value>İndirme başarısız oldu: uygulama {0} öğesini yönetmiyor</value>
+    </data>
+    <data name="ToastNotification_Download_failed__An_unknown_error_occurred" xml:space="preserve">
+        <value>İndirme başarısız oldu</value>
+    </data>
+    <data name="ToastNotification_Uploading_new_collection_revision___" xml:space="preserve">
+        <value>Yeni Collection Revizyon yükleniyor...</value>
+    </data>
+    <data name="ToastNotification_Collection_status_changed_to__0__" xml:space="preserve">
+        <value>Collection durumu değiştirildi: {0}</value>
+    </data>
+    <data name="CollectionStatus_Listed" xml:space="preserve">
+        <value>Listelendi</value>
+    </data>
+    <data name="CollectionStatus_Unlisted" xml:space="preserve">
+        <value>Listelenmiyor</value>
+    </data>
+    <data name="ToastNotification_Uploading_draft_collection_revision___" xml:space="preserve">
+        <value>Taslak Collection Revizyon yükleniyor...</value>
+    </data>
+    <data name="Loadout_UninstallItem_Menu_Text" xml:space="preserve">
+        <value>Kaldır</value>
+    </data>
+    <data name="Loadout_UninstallItem_Menu_Text__Uninstall_read_only" xml:space="preserve">
+        <value>Yalnızca oku modunda kaldır</value>
+    </data>
+    <data name="Loadout_DeleteCollection_Menu_Text" xml:space="preserve">
+        <value>Collection Sil</value>
+    </data>
+    <data name="Loadout_DeleteCollection_Confirmation_Title" xml:space="preserve">
+        <value>Collection Sil</value>
+    </data>
+    <data name="Loadout_DeleteCollection_Confirmation_Message" xml:space="preserve">
+        <value>'{0}' öğesini silmek istediğinizden emin misiniz?  Bu işlem geri alınamaz.</value>
+    </data>
+    <data name="Loadout_DeleteCollection_Confirmation_Cancel" xml:space="preserve">
+        <value>İptal</value>
+    </data>
+    <data name="Loadout_DeleteCollection_Confirmation_Delete" xml:space="preserve">
+        <value>Sil</value>
+    </data>
+    <data name="Downloads_SizeProgress_Of" xml:space="preserve">
+        <value> / </value>
+    </data>
+    <data name="Downloads_Speed_Inactive" xml:space="preserve">
+        <value>--</value>
+    </data>
+    <data name="Downloads_UnknownGame" xml:space="preserve">
+        <value>Bilinmeyen Oyun</value>
+    </data>
+    <data name="Downloads_UnknownDownload" xml:space="preserve">
+        <value>Bilinmeyen İndirme</value>
+    </data>
+    <data name="GameWidget_VersionUnknown" xml:space="preserve">
+        <value>Sürüm: Bilinmiyor</value>
+    </data>
+    <data name="CollectionLoadoutView_More_ToolTip" xml:space="preserve">
+        <value>Daha Fazla</value>
+    </data>
+    <data name="CollectionLoadoutView_MakeEditableLocalCopy" xml:space="preserve">
+        <value>Düzenlenebilir yerel kopya oluştur</value>
+    </data>
+    <data name="CollectionLoadoutView_ViewCollectionDownloadMenuItem" xml:space="preserve">
+        <value>Collection indirme sayfasını görüntüle</value>
+    </data>
+    <data name="CollectionLoadoutView_UninstallCollection" xml:space="preserve">
+        <value>Collection Kaldır</value>
+    </data>
+    <data name="CollectionLoadoutView_UninstallCollection_ToolTip" xml:space="preserve">
+        <value>Bu Collection'ı Loadout'tan kaldır. (Collection kütüphanede kalacak)</value>
+    </data>
+    <data name="CollectionLoadoutView_NexusMods" xml:space="preserve">
+        <value>Nexus Mods</value>
+    </data>
+    <data name="CollectionLoadoutView_ReadOnly_ToolTip" xml:space="preserve">
+        <value>Nexus Mods'tan indirilen Koleksiyonlar şu anda düzenlenemez. Ancak, yerel, düzenlenebilir kopyalar oluşturabilme özelliği yakında kullanılabilir olacak.</value>
+    </data>
+    <data name="CollectionLoadoutView_ReadOnly" xml:space="preserve">
+        <value>Salt Okunur</value>
+    </data>
+    <data name="CollectionLoadoutView_CollectionInstalled" xml:space="preserve">
+        <value>Collection Kuruldu</value>
+    </data>
+    <data name="CollectionLoadoutView_Required" xml:space="preserve">
+        <value>Gerekli</value>
+    </data>
+    <data name="CollectionDownloadView_Menu_ViewOnNexusMods" xml:space="preserve">
+        <value>Nexus Mods'ta Görüntüle</value>
+    </data>
+    <data name="CollectionDownloadView_Menu_OpenJsonFile" xml:space="preserve">
+        <value>JSON dosyasını aç</value>
+    </data>
+    <data name="CollectionDownloadView_Menu_DeleteCollectionRevision" xml:space="preserve">
+        <value>Collection revizyonunu sil</value>
+    </data>
 </root>
+
