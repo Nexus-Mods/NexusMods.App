@@ -6,15 +6,14 @@ using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.Types;
-using NexusMods.Abstractions.NexusWebApi.Types.V2.Uid;
 using NexusMods.Games.AdvancedInstaller.UI;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Paths;
+using NexusMods.Sdk.NexusModsApi;
 using NexusMods.Sdk.ProxyConsole;
 using NexusMods.StandardGameLocators;
 using StrawberryShake;
-using ModId = NexusMods.Abstractions.NexusWebApi.Types.V2.ModId;
 
 namespace NexusMods.Games.TestHarness.Verbs;
 
@@ -43,7 +42,7 @@ public class StressTest
 
         var domain = domainToIdCache[game.GameId].Value;
         var mods = await nexusApiClient.ModUpdatesAsync(domain, PastTime.Day, token);
-        var results = new List<(string FileName, ModId ModId, Abstractions.NexusWebApi.Types.V2.FileId FileId, Hash Hash, bool Passed, Exception? exception)>();
+        var results = new List<(string FileName, Sdk.NexusModsApi.ModId ModId, Sdk.NexusModsApi.FileId FileId, Hash Hash, bool Passed, Exception? exception)>();
 
         await using var gameFolder = temporaryFileManager.CreateFolder();
         var (manualId, install) = await manualLocator.Add(game, new Version(1, 0), gameFolder);
@@ -69,7 +68,7 @@ public class StressTest
                 var hash = Hash.Zero;
                 foreach (var file in files.Data!.ModFiles.Where(f => Size.FromLong(long.Parse(f.SizeInBytes ?? "0")) < MaxFileSize))
                 {
-                    var uid = UidForFile.FromV2Api(file.Uid);
+                    var uid = FileUid.FromV2Api(file.Uid);
                     try
                     {
                         var size = Size.FromLong(long.Parse(file.SizeInBytes ?? "0"));

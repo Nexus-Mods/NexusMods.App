@@ -10,16 +10,15 @@ using NexusMods.Abstractions.GameLocators.Stores.Steam;
 using NexusMods.Abstractions.GameLocators.Stores.Xbox;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Library.Installers;
-using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.NexusWebApi.Types;
-using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Games.MountAndBlade2Bannerlord.Diagnostics;
 using NexusMods.Games.MountAndBlade2Bannerlord.Installers;
 using NexusMods.Games.MountAndBlade2Bannerlord.LauncherManager;
 using NexusMods.Games.MountAndBlade2Bannerlord.Utils;
 using NexusMods.Paths;
 using NexusMods.Sdk.IO;
+using NexusMods.Sdk.NexusModsApi;
 using static NexusMods.Games.MountAndBlade2Bannerlord.BannerlordConstants;
 
 namespace NexusMods.Games.MountAndBlade2Bannerlord;
@@ -30,7 +29,7 @@ namespace NexusMods.Games.MountAndBlade2Bannerlord;
 /// </summary>
 public sealed class Bannerlord : AGame, ISteamGame, IGogGame, IXboxGame//, IEpicGame
 {
-    public static readonly GameId GameIdStatic = GameId.From(3174);
+    public static readonly GameId GameIdStatic = Sdk.NexusModsApi.GameId.From(3174);
     public static readonly GameDomain DomainStatic = GameDomain.From("mountandblade2bannerlord");
     public static string DisplayName => "Mount & Blade II: Bannerlord";
 

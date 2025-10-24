@@ -1,9 +1,9 @@
 using FluentAssertions;
-using NexusMods.Abstractions.NexusWebApi.Types.V2;
-using NexusMods.Abstractions.NexusWebApi.Types.V2.Uid;
+using NexusMods.Sdk.NexusModsApi;
+
 namespace NexusMods.Networking.NexusWebApi.Tests.Types.V2;
 
-public class UidForModTests
+public class ModUidTests
 {
     [Fact]
     public void UidForMod_IsCorrectSize()
@@ -14,7 +14,7 @@ public class UidForModTests
             // UidForMod does an unsafe cast in FromUlong and AsUlong
             // This test ensures nobody tampers with the size of the struct
             // or its components; ensuring those unsafe casts are safe.
-            sizeof(UidForMod).Should().Be(8);
+            sizeof(ModUid).Should().Be(8);
             sizeof(GameId).Should().Be(4);
             sizeof(FileId).Should().Be(4);
         }
@@ -64,7 +64,7 @@ public class UidForModTests
     public void FromV2Api_ValidInput_ReturnsCorrectUidForMod(uint expectedGameId, uint expectedModId, string uidString)
     {
         // Act
-        var result = UidForMod.FromV2Api(uidString);
+        var result = ModUid.FromV2Api(uidString);
 
         // Assert
         result.GameId.Should().Be((GameId)expectedGameId);
@@ -82,7 +82,7 @@ public class UidForModTests
         var invalidUid = "not a number";
 
         // Act & Assert
-        Action act = () => UidForMod.FromV2Api(invalidUid);
+        Action act = () => ModUid.FromV2Api(invalidUid);
         act.Should().Throw<FormatException>();
     }
 
@@ -100,7 +100,7 @@ public class UidForModTests
     public void AsUlong_ReturnsCorrectValue(uint gameId, uint modId, ulong expectedUlong)
     {
         // Arrange
-        var uidForMod = new UidForMod { GameId = (GameId)gameId, ModId = (ModId)modId };
+        var uidForMod = new ModUid(ModId.From(modId), GameId.From(gameId));
 
         // Act
         var result = uidForMod.AsUlong;
@@ -123,7 +123,7 @@ public class UidForModTests
     public void FromUlong_ReturnsCorrectUidForMod(ulong input, uint expectedGameId, uint expectedModId)
     {
         // Act
-        var result = UidForMod.FromUlong(input);
+        var result = ModUid.FromUlong(input);
 
         // Assert
         result.GameId.Should().Be((GameId)expectedGameId);
@@ -136,11 +136,11 @@ public class UidForModTests
     public void RoundTrip_UlongConversion_PreservesValues(uint gameId, uint modId)
     {
         // Arrange
-        var original = new UidForMod { GameId = (GameId)gameId, ModId = (ModId)modId };
+        var original = new ModUid(ModId.From(modId), GameId.From(gameId));
 
         // Act
         var asUlong = original.AsUlong;
-        var roundTripped = UidForMod.FromUlong(asUlong);
+        var roundTripped = ModUid.FromUlong(asUlong);
 
         // Assert
         roundTripped.Should().Be(original);

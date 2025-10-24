@@ -1,5 +1,5 @@
 using System.Reactive;
-using NexusMods.Abstractions.NexusWebApi.Types.V2.Uid;
+using NexusMods.Sdk.NexusModsApi;
 
 namespace NexusMods.Networking.NexusWebApi.UpdateFilters;
 
@@ -24,14 +24,14 @@ public interface IModUpdateFilterService : IDisposable
     /// </summary>
     /// <param name="fileUid">The unique identifier of the file to observe.</param>
     /// <returns>An observable that emits true when the file is hidden, false when it's visible.</returns>
-    IObservable<bool> ObserveFileHiddenState(UidForFile fileUid);
+    IObservable<bool> ObserveFileHiddenState(FileUid fileUid);
     
     /// <summary>
     /// Get the current hidden state of a specific file synchronously.
     /// </summary>
     /// <param name="fileUid">The unique identifier of the file to check.</param>
     /// <returns>True if the file is currently hidden, false if it's visible.</returns>
-    bool IsFileHidden(UidForFile fileUid);
+    bool IsFileHidden(FileUid fileUid);
     
     /// <summary>
     /// Manually trigger a filter re-evaluation.
@@ -43,25 +43,25 @@ public interface IModUpdateFilterService : IDisposable
     /// Hide (filter) a specific file from update notifications.
     /// </summary>
     /// <param name="fileUid">The unique identifier of the file to hide.</param>
-    Task HideFileAsync(UidForFile fileUid);
+    Task HideFileAsync(FileUid fileUid);
     
     /// <summary>
     /// Hide (filter) multiple files from update notifications.
     /// </summary>
     /// <param name="fileUids">The unique identifiers of the files to hide.</param>
-    Task HideFilesAsync(IEnumerable<UidForFile> fileUids);
+    Task HideFilesAsync(IEnumerable<FileUid> fileUids);
     
     /// <summary>
     /// Show (unfilter) a specific file in update notifications.
     /// </summary>
     /// <param name="fileUid">The unique identifier of the file to show.</param>
-    Task ShowFileAsync(UidForFile fileUid);
+    Task ShowFileAsync(FileUid fileUid);
     
     /// <summary>
     /// Show (unfilter) multiple files in update notifications.
     /// </summary>
     /// <param name="fileUids">The unique identifiers of the files to show.</param>
-    Task ShowFilesAsync(IEnumerable<UidForFile> fileUids);
+    Task ShowFilesAsync(IEnumerable<FileUid> fileUids);
     
     /// <summary>
     /// Filters a mod update to hide ignored files. Returns null if all files are filtered out.

@@ -442,4 +442,32 @@ internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
         if (!TryGetWorkspace(workspaceId, out WorkspaceViewModel? workspace)) throw new InvalidOperationException();
         return workspace.GetDefaultPageData();
     }
+
+    public void ReplacePages<TContext>(Func<TContext, bool> matchPredicate, Optional<PageData> targetPageData = default) where TContext : IPageFactoryContext
+    {
+        ReplacePagesCore(
+            pageData => pageData.Context is TContext context && matchPredicate(context), 
+            targetPageData
+        );
+    }
+
+    private void ReplacePagesCore(Func<PageData, bool> predicate, Optional<PageData> targetPageData = default)
+    {
+        Dispatcher.UIThread.VerifyAccess();
+        
+        foreach (var workspace in AllWorkspaces)
+        {
+            var replacementPageData = targetPageData.HasValue ? targetPageData.Value : GetDefaultPageData(workspace.Id);
+
+            foreach (var panel in workspace.Panels)
+            {
+                foreach (var tab in panel.Tabs)
+                {
+                    if (!predicate(tab.Contents.PageData)) continue;
+                    var behavior = new OpenPageBehavior.ReplaceTab(panel.Id, tab.Id);
+                    OpenPage(workspace.Id, replacementPageData, behavior, checkOtherPanels: false);
+                }
+            }
+        }
+    }
 }

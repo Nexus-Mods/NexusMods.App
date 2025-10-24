@@ -6,6 +6,7 @@ using Avalonia.Input;
 using JetBrains.Annotations;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.UI.Sdk.Icons;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.Controls.Navigation;
@@ -16,6 +17,10 @@ public class NavigationControl : StandardButton
     public static readonly StyledProperty<ReactiveCommand<NavigationInput, Unit>?> NavigateCommandProperty =
         AvaloniaProperty.Register<NavigationControl, ReactiveCommand<NavigationInput, Unit>?>(nameof(NavigationCommand));
 
+    public static readonly StyledProperty<IReadOnlyList<IContextMenuItem>> AdditionalContextMenuItemsProperty =
+        AvaloniaProperty.Register<NavigationControl, IReadOnlyList<IContextMenuItem>>(
+            nameof(AdditionalContextMenuItems));
+
     public ReactiveCommand<NavigationInformation, Unit>? NavigationCommand
     {
         get
@@ -24,6 +29,12 @@ public class NavigationControl : StandardButton
             return value as ReactiveCommand<NavigationInformation, Unit>;
         }
         set => SetValue(CommandProperty, value);
+    }
+
+    public IReadOnlyList<IContextMenuItem> AdditionalContextMenuItems
+    {
+        get => GetValue(AdditionalContextMenuItemsProperty) ?? Array.Empty<IContextMenuItem>();
+        set => SetValue(AdditionalContextMenuItemsProperty, value);
     }
 
     private NavigationInformation NavigationInformation
@@ -42,24 +53,76 @@ public class NavigationControl : StandardButton
             OnClick();
         });
 
-        var contextMenu = new ContextMenu
+        this.WhenAnyValue(x => x.AdditionalContextMenuItems)
+            .Subscribe(_ => UpdateContextMenu());
+
+        UpdateContextMenu();
+    }
+
+    private void UpdateContextMenu()
+    {
+        var contextMenu = new ContextMenu();
+
+        // Add standard items
+        contextMenu.Items.Add(new MenuItem
         {
-            Items =
+            Header = Language.NavigationControl_NavigationControl_Open_in_new_tab,
+            Command = _contextMenuCommand,
+            CommandParameter = OpenPageBehaviorType.NewTab,
+        });
+
+        contextMenu.Items.Add(new MenuItem
+        {
+            Header = Language.NavigationControl_NavigationControl_Open_in_new_panel,
+            Command = _contextMenuCommand,
+            CommandParameter = OpenPageBehaviorType.NewPanel,
+        });
+
+        // Add additional items if any exist
+        var additionalItems = AdditionalContextMenuItems
+            .Where(item => item.IsVisible)
+            .ToList();
+
+        if (additionalItems.Count > 0)
+        {
+            contextMenu.Items.Add(new Separator());
+
+            foreach (var item in additionalItems)
             {
-                new MenuItem
+                var menuItem = new MenuItem
                 {
-                    Header = Language.NavigationControl_NavigationControl_Open_in_new_tab,
-                    Command = _contextMenuCommand,
-                    CommandParameter = OpenPageBehaviorType.NewTab,
-                },
-                new MenuItem
+                    Header = item.Header,
+                    Command = item.Command,
+                };
+                
+                if (item.Icon != null)
                 {
-                    Header = Language.NavigationControl_NavigationControl_Open_in_new_panel,
-                    Command = _contextMenuCommand,
-                    CommandParameter = OpenPageBehaviorType.NewPanel,
-                },
-            },
-        };
+                    menuItem.Icon = new UnifiedIcon 
+                    { 
+                        Value = item.Icon,
+                        Size = 16,
+                    };
+                }
+                
+                // Apply CSS classes based on styling
+                switch (item.Styling)
+                {
+                    case ContextMenuItemStyling.Critical:
+                        menuItem.Classes.Add("Critical");
+                        break;
+                    case ContextMenuItemStyling.Premium:
+                        menuItem.Classes.Add("Premium");
+                        break;
+                    case ContextMenuItemStyling.None:
+                    case ContextMenuItemStyling.Default:
+                    default:
+                        // No additional classes for default styling
+                        break;
+                }
+                
+                contextMenu.Items.Add(menuItem);
+            }
+        }
 
         ContextMenu = contextMenu;
     }

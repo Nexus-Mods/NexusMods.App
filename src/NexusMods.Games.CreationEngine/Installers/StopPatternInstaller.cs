@@ -5,10 +5,10 @@ using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using NexusMods.Sdk;
+using NexusMods.Sdk.NexusModsApi;
 
 namespace NexusMods.Games.CreationEngine.Installers;
 

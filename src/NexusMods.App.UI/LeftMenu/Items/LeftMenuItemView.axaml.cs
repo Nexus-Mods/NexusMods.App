@@ -15,7 +15,7 @@ public partial class LeftMenuItemView : ReactiveUserControl<ILeftMenuItemViewMod
             {
                 this.OneWayBind(ViewModel, vm => vm.Text.Value.Value, view => view.LabelTextBlock.Text)
                     .DisposeWith(d);
-                
+
                 this.WhenAnyValue(view => view.ViewModel!.ToolTipText)
                     .Subscribe(text => ToolTip.SetTip(this, text))
                     .DisposeWith(d);
@@ -30,6 +30,9 @@ public partial class LeftMenuItemView : ReactiveUserControl<ILeftMenuItemViewMod
                     .DisposeWith(d);
 
                 this.OneWayBind(ViewModel, vm => vm.IsSelected, view => view.NavButton.IsSelected)
+                    .DisposeWith(d);
+
+                this.OneWayBind(ViewModel, vm => vm.AdditionalContextMenuItems, view => view.NavButton.AdditionalContextMenuItems)
                     .DisposeWith(d);
 
                 this.WhenAnyValue(view => view.ViewModel)

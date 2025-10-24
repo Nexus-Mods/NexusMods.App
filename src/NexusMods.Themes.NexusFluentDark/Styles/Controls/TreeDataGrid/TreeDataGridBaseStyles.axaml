@@ -5,7 +5,8 @@
         xmlns:files="clr-namespace:NexusMods.App.UI.Controls.Trees.Files;assembly=NexusMods.App.UI"
         xmlns:converters="clr-namespace:NexusMods.App.UI.Converters;assembly=NexusMods.App.UI"
         xmlns:controls="clr-namespace:NexusMods.App.UI.Controls;assembly=NexusMods.App.UI"
-        xmlns:games="clr-namespace:NexusMods.Abstractions.Games;assembly=NexusMods.Abstractions.Games">
+        xmlns:games="clr-namespace:NexusMods.Abstractions.Games;assembly=NexusMods.Abstractions.Games"
+        xmlns:abstractions="clr-namespace:NexusMods.MnemonicDB.Abstractions;assembly=NexusMods.MnemonicDB.Abstractions">
     <!-- NOTE(Al12rs): Keep: `xmlns:games="clr-namespace:NexusMods.Abstractions.Games;assembly=NexusMods.Abstractions.Games"` even if marked as unused -->
     <!-- See the false positive error and note for CompositeItemModel later down the file -->
 
@@ -33,6 +34,30 @@
         <ControlTemplate x:Key="LoadOrderItemTreeRowTemplate"
                          TargetType="TreeDataGridRow"
                          x:DataType="{x:Type controls:CompositeItemModel, x:TypeArguments=games:ISortItemKey}">
+            <Border x:Name="RowOuterBorder"
+                    Background="{StaticResource SurfaceTransparentBrush}">
+                <Border x:Name="RowBorder"
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        CornerRadius="{TemplateBinding CornerRadius}"
+                        Classes.IsActive="{CompiledBinding StyleFlags,
+                        Converter={x:Static converters:CompositeStyleFlagConverter.Instance},
+                        ConverterParameter=IsActive}">
+                    <TreeDataGridCellsPresenter Name="PART_CellsPresenter"
+                                                CornerRadius="{TemplateBinding CornerRadius}"
+                                                ElementFactory="{TemplateBinding ElementFactory}"
+                                                Items="{TemplateBinding Columns}"
+                                                Rows="{TemplateBinding Rows}" />
+                </Border>
+            </Border>
+        </ControlTemplate>
+        
+        <!-- needs to be a resource and not set by a style so we can add Clasess based on DataContext -->
+        <!-- NOTE(Al12rs): CompositeItemModel with new x:TypeArguments syntax works fine, but Rider doesn't like it. -->
+        <ControlTemplate x:Key="FileConflictsItemTreeRowTemplate"
+                         TargetType="TreeDataGridRow"
+                         x:DataType="{x:Type controls:CompositeItemModel, x:TypeArguments=abstractions:EntityId}">
             <Border x:Name="RowOuterBorder"
                     Background="{StaticResource SurfaceTransparentBrush}">
                 <Border x:Name="RowBorder"

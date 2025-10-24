@@ -1,31 +1,30 @@
+using System.Reactive.Linq;
 using Avalonia.Media.Imaging;
+using DynamicData;
 using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.Collections;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi.Types;
-using NexusMods.App.UI.Windows;
-using NexusMods.App.UI.WorkspaceSystem;
-using NexusMods.UI.Sdk.Icons;
-using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.MnemonicDB.Abstractions.ElementComparers;
-using System.Reactive.Linq;
-using DynamicData;
-using NexusMods.Abstractions.Collections;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.Dialog;
 using NexusMods.App.UI.Dialog.Enums;
 using NexusMods.App.UI.Extensions;
+using NexusMods.App.UI.Helpers;
 using NexusMods.App.UI.Pages.CollectionDownload;
-using NexusMods.App.UI.Resources;
+using NexusMods.App.UI.Windows;
+using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 using NexusMods.MnemonicDB.Abstractions.Query;
-using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Paths;
 using NexusMods.Sdk;
 using NexusMods.Sdk.Jobs;
 using NexusMods.UI.Sdk;
 using NexusMods.UI.Sdk.Dialog;
 using NexusMods.UI.Sdk.Dialog.Enums;
+using NexusMods.UI.Sdk.Icons;
 using R3;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -43,11 +42,11 @@ public class CollectionLoadoutViewModel : APageViewModel<ICollectionLoadoutViewM
         CollectionLoadoutPageContext pageContext) : base(windowManager)
     {
         var connection = serviceProvider.GetRequiredService<IConnection>();
+        var toastNotificationService = serviceProvider.GetRequiredService<IWindowNotificationService>();
 
         var tilePipeline = ImagePipelines.GetCollectionTileImagePipeline(serviceProvider);
         var backgroundPipeline = ImagePipelines.GetCollectionBackgroundImagePipeline(serviceProvider);
         var userAvatarPipeline = ImagePipelines.GetUserAvatarPipeline(serviceProvider);
-        var notificationService = serviceProvider.GetRequiredService<IWindowNotificationService>();
         
         var nexusCollectionGroup = NexusCollectionLoadoutGroup.Load(connection.Db, pageContext.GroupId);
         var group = nexusCollectionGroup.AsCollectionGroup();
@@ -112,29 +111,9 @@ public class CollectionLoadoutViewModel : APageViewModel<ICollectionLoadoutViewM
         CommandDeleteCollection = new ReactiveCommand(
             executeAsync: async (_, _) =>
             {
-                // Switch away from this page since its collection will be deleted
-                var pageData = new PageData
-                {
-                    FactoryId = CollectionDownloadPageFactory.StaticId,
-                    Context = new CollectionDownloadPageContext()
-                    {
-                        TargetLoadout = pageContext.LoadoutId,
-                        CollectionRevisionMetadataId = nexusCollectionGroup.RevisionId,
-                    },
-                };
-
                 var workspaceController = GetWorkspaceController();
-                var behavior = new OpenPageBehavior.ReplaceTab(PanelId, TabId);
-                workspaceController.OpenPage(WorkspaceId, pageData, behavior, checkOtherPanels: false);
-                
-                using var tx = connection.BeginTransaction();
-                
-                // Delete collection loadout group and all installed mods inside it
-                tx.Delete(nexusCollectionGroup.Id, recursive: true);
-                
-                await tx.Commit();
-                
-                notificationService.ShowToast(Language.ToastNotification_Collection_removed);
+                await CollectionDeleteHelpers.DeleteCollectionAsync(nexusCollectionGroup.AsCollectionGroup(), 
+                    workspaceController, connection, toastNotificationService);
             },
             awaitOperation: AwaitOperation.Drop,
             configureAwait: false

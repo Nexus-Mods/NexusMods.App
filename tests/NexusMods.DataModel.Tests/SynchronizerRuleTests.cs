@@ -113,9 +113,9 @@ public class SynchronizerRuleTests
             from isIgnored in new[] { false, true }
             from archivedState in new Hash[][] { [], [Hash1], [Hash2], [Hash3], [Hash1, Hash2], [Hash1, Hash3], [Hash2, Hash3], [Hash1, Hash2, Hash3] }
             from fileType in new[] { LoadoutSourceItemType.Loadout , LoadoutSourceItemType.Intrinsic, LoadoutSourceItemType.Game}
-            where disk.HasValue || prev.HasValue || loadout.HasValue
+            where (disk.HasValue || prev.HasValue || loadout.HasValue) || fileType == LoadoutSourceItemType.Intrinsic
             // If the file is intrinsic, we'll always have it
-            where fileType != LoadoutSourceItemType.Intrinsic || (fileType == LoadoutSourceItemType.Intrinsic && loadout.HasValue)
+            where fileType != LoadoutSourceItemType.Intrinsic || (fileType == LoadoutSourceItemType.Intrinsic && !loadout.HasValue)
             let sig = SignatureBuilder.Build(
             
                 diskHash: disk,

@@ -1,9 +1,9 @@
 using FluentAssertions;
-using NexusMods.Abstractions.NexusWebApi.Types.V2;
-using NexusMods.Abstractions.NexusWebApi.Types.V2.Uid;
+using NexusMods.Sdk.NexusModsApi;
+
 namespace NexusMods.Networking.NexusWebApi.Tests.Types.V2;
 
-public class UidForFileTests
+public class FileUidTests
 {
     [Fact]
     public void UidForFile_IsCorrectSize()
@@ -14,7 +14,7 @@ public class UidForFileTests
             // UidForFile does an unsafe cast in FromUlong and AsUlong
             // This test ensures nobody tampers with the size of the struct
             // or its components; ensuring those unsafe casts are safe.
-            sizeof(UidForFile).Should().Be(8);
+            sizeof(FileUid).Should().Be(8);
             sizeof(FileId).Should().Be(4);
             sizeof(GameId).Should().Be(4);
         }
@@ -37,7 +37,7 @@ public class UidForFileTests
     public void FromV2Api_ValidInput_ReturnsCorrectUidForFile(uint expectedGameId, uint expectedFileId, string uidString)
     {
         // Act
-        var result = UidForFile.FromV2Api(uidString);
+        var result = FileUid.FromV2Api(uidString);
 
         // Assert
         result.GameId.Should().Be((GameId)expectedGameId);
@@ -51,7 +51,7 @@ public class UidForFileTests
         var invalidUid = "not a number";
 
         // Act & Assert
-        Action act = () => UidForFile.FromV2Api(invalidUid);
+        Action act = () => FileUid.FromV2Api(invalidUid);
         act.Should().Throw<FormatException>();
     }
 
@@ -64,7 +64,7 @@ public class UidForFileTests
     public void AsUlong_ReturnsCorrectValue(uint gameId, uint fileId, ulong expectedUlong)
     {
         // Arrange
-        var uidForFile = new UidForFile((FileId)fileId, (GameId)gameId);
+        var uidForFile = new FileUid((FileId)fileId, (GameId)gameId);
 
         // Act
         var result = uidForFile.AsUlong;
@@ -82,7 +82,7 @@ public class UidForFileTests
     public void FromUlong_ReturnsCorrectUidForFile(ulong input, uint expectedGameId, uint expectedFileId)
     {
         // Act
-        var result = UidForFile.FromUlong(input);
+        var result = FileUid.FromUlong(input);
 
         // Assert
         result.GameId.Should().Be((GameId)expectedGameId);
@@ -95,11 +95,11 @@ public class UidForFileTests
     public void RoundTrip_UlongConversion_PreservesValues(uint gameId, uint fileId)
     {
         // Arrange
-        var original = new UidForFile((FileId)fileId, (GameId)gameId);
+        var original = new FileUid((FileId)fileId, (GameId)gameId);
 
         // Act
         var asUlong = original.AsUlong;
-        var roundTripped = UidForFile.FromUlong(asUlong);
+        var roundTripped = FileUid.FromUlong(asUlong);
 
         // Assert
         roundTripped.Should().Be(original);

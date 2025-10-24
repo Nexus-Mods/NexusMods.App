@@ -1,6 +1,7 @@
 using NexusMods.Abstractions.NexusWebApi.Types;
-using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.MnemonicDB.Abstractions.Models;
+using NexusMods.Sdk.NexusModsApi;
+
 namespace NexusMods.Networking.NexusWebApi.V1Interop;
 
 /// <summary>

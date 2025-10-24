@@ -2,12 +2,13 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.Types;
-using NexusMods.Abstractions.NexusWebApi.Types.V2.Uid;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.ModUpdates;
 using NexusMods.Networking.ModUpdates.Mixins;
 using NexusMods.Networking.ModUpdates.Traits;
 using NexusMods.Networking.NexusWebApi.Extensions;
+using NexusMods.Sdk.NexusModsApi;
+
 namespace NexusMods.Networking.NexusWebApi;
 
 /// <summary>
@@ -160,9 +161,9 @@ public static class RunUpdateCheck
     /// <remarks>
     ///     The returned items are returned in descending order, from newest to oldest.
     /// </remarks>
-    public static IEnumerable<NexusModsFileMetadata.ReadOnly> GetNewerFilesForExistingFile(IDb db, UidForFile uid)
+    public static IEnumerable<NexusModsFileMetadata.ReadOnly> GetNewerFilesForExistingFile(IDb db, FileUid fileUid)
     {
-        var metadata = NexusModsFileMetadata.FindByUid(db, uid).First();
+        var metadata = NexusModsFileMetadata.FindByUid(db, fileUid).First();
         return GetNewerFilesForExistingFile(metadata);
     } 
     
@@ -233,9 +234,9 @@ public static class RunUpdateCheck
     /// <summary>
     /// Returns all file versions for a file identified by UID; including itself.
     /// </summary>
-    public static IEnumerable<NexusModsFileMetadata.ReadOnly> GetAllVersionsForExistingFile(IDb db, UidForFile uid)
+    public static IEnumerable<NexusModsFileMetadata.ReadOnly> GetAllVersionsForExistingFile(IDb db, FileUid fileUid)
     {
-        var metadata = NexusModsFileMetadata.FindByUid(db, uid).First();
+        var metadata = NexusModsFileMetadata.FindByUid(db, fileUid).First();
         return GetAllVersionsForExistingFile(metadata);
     }
 }

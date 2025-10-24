@@ -10,8 +10,6 @@ using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi.Types;
-using NexusMods.Abstractions.NexusWebApi.Types.V2;
-using NexusMods.Abstractions.NexusWebApi.Types.V2.Uid;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.NexusWebApi.Errors;
 using NexusMods.Networking.NexusWebApi.Extensions;
@@ -19,11 +17,12 @@ using NexusMods.Paths;
 using NexusMods.Sdk;
 using NexusMods.Sdk.Hashes;
 using NexusMods.Sdk.IO;
+using NexusMods.Sdk.NexusModsApi;
 
 namespace NexusMods.Networking.NexusWebApi;
 
 using GameIdCache = Dictionary<GameDomain, GameId>;
-using ResolvedEntitiesLookup = Dictionary<UidForFile, ValueTuple<NexusModsModPageMetadataId, NexusModsFileMetadataId>>;
+using ResolvedEntitiesLookup = Dictionary<FileUid, ValueTuple<NexusModsModPageMetadataId, NexusModsFileMetadataId>>;
 using ModAndDownload = (Mod Mod, CollectionDownload.ReadOnly Download);
 
 public partial class NexusModsLibrary
@@ -480,7 +479,7 @@ public partial class NexusModsLibrary
         ICollectionRevision collectionRevision)
     {
         var res = new ResolvedEntitiesLookup();
-        var modPageIds = new Dictionary<UidForMod, EntityId>();
+        var modPageIds = new Dictionary<ModUid, EntityId>();
 
         foreach (var modFile in collectionRevision.ModFiles)
         {
@@ -491,7 +490,7 @@ public partial class NexusModsLibrary
             // method. Otherwise, if a collection contains two files from the same mod page
             // and the mod page isn't in the DB, we'll end up creating two mod pages, one for
             // each file.
-            var uidForMod = UidForMod.FromV2Api(file.Mod.Uid);
+            var uidForMod = ModUid.FromV2Api(file.Mod.Uid);
             if (!modPageIds.TryGetValue(uidForMod, out var modEntityId))
             {
                 modEntityId = file.Mod.Resolve(db, tx, setFilesTimestamp: false);
@@ -500,7 +499,7 @@ public partial class NexusModsLibrary
 
             var fileEntityId = file.Resolve(db, tx, modEntityId);
 
-            var id = new UidForFile(
+            var id = new FileUid(
                 fileId: FileId.From((uint)modFile.FileId),
                 gameId: GameId.From((uint)modFile.GameId)
             );
@@ -511,7 +510,7 @@ public partial class NexusModsLibrary
         foreach (var collectionMod in collectionRoot.Mods)
         {
             if (collectionMod.Source.Type != ModSourceType.NexusMods) continue;
-            var fileId = new UidForFile(fileId: collectionMod.Source.FileId, gameId: gameIds[collectionMod.DomainName]);
+            var fileId = new FileUid(fileId: collectionMod.Source.FileId, gameId: gameIds[collectionMod.DomainName]);
             if (res.ContainsKey(fileId)) continue;
 
             // TODO: use normal API to query information about this file
@@ -589,13 +588,9 @@ public partial class NexusModsLibrary
         GameIdCache gameIds,
         ResolvedEntitiesLookup resolvedEntitiesLookup)
     {
-        var modId = new UidForMod
-        {
-            GameId = gameIds[collectionMod.DomainName],
-            ModId = collectionMod.Source.ModId,
-        };
+        var modId = new ModUid(collectionMod.Source.ModId, gameIds[collectionMod.DomainName]);
 
-        var fileId = new UidForFile(fileId: collectionMod.Source.FileId, gameId: gameIds[collectionMod.DomainName]);
+        var fileId = new FileUid(fileId: collectionMod.Source.FileId, gameId: gameIds[collectionMod.DomainName]);
 
         Debug.Assert(resolvedEntitiesLookup.ContainsKey(fileId), message: "Should've resolved all mod files earlier");
         var (_, fileMetadataId) = resolvedEntitiesLookup[fileId];
