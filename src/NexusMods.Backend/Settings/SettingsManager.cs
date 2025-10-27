@@ -15,8 +15,8 @@ internal class SettingsManager : ISettingsManager
     private readonly IServiceProvider _serviceProvider;
     private readonly ILogger _logger;
 
-    private readonly Subject<(Type, object)> _subject = new();
-    private readonly Dictionary<Type, object> _values = new();
+    private readonly Subject<(SettingKey, object)> _subject = new();
+    private readonly Dictionary<SettingKey, object> _values = new();
 
     private readonly FrozenDictionary<Type, Func<object, object>> _overrides;
 
@@ -78,37 +78,38 @@ internal class SettingsManager : ISettingsManager
         _asyncStorageBackendMappings = asyncStorageBackendMappings.ToFrozenDictionary();
     }
 
-    private void CoreSet<T>(T value, bool notify) where T : class, ISettings, new()
+    private void CoreSet<T>(T value, SettingKey settingKey, bool notify) where T : class, ISettings, new()
     {
-        var type = typeof(T);
-        _values[type] = value;
+        _values[settingKey] = value;
         if (!notify) return;
 
-        _subject.OnNext((type, value));
-        Save(value);
+        _subject.OnNext((settingKey, value));
+        Save(value, settingKey.Key);
     }
  
-    public void Set<T>(T value) where T : class, ISettings, new() => CoreSet(value, notify: true);
+    public void Set<T>(T value, string? key) where T : class, ISettings, new() => CoreSet(value, new SettingKey(typeof(T), key), notify: true);
 
-    public T Get<T>() where T : class, ISettings, new()
+    public T Get<T>(string? key) where T : class, ISettings, new()
     {
-        if (_values.TryGetValue(typeof(T), out var obj))
+        var settingKey = new SettingKey(typeof(T), key);
+        
+        if (_values.TryGetValue(settingKey, out var obj))
         {
             Debug.Assert(obj is T);
             return (obj as T)!;
         }
 
-        var savedValue = Load<T>();
+        var savedValue = Load<T>(key);
         if (savedValue is not null)
         {
             savedValue = Override(savedValue, out _);
-            CoreSet(savedValue, notify: false);
+            CoreSet(savedValue, settingKey, notify: false);
             return savedValue;
         }
 
         var defaultValue = GetDefault<T>();
         defaultValue = Override(defaultValue, out var didOverride);
-        CoreSet(defaultValue, notify: !didOverride);
+        CoreSet(defaultValue, settingKey, notify: !didOverride);
 
         return defaultValue;
 
@@ -146,27 +147,29 @@ internal class SettingsManager : ISettingsManager
         return defaultValue;
     }
 
-    public T Update<T>(Func<T, T> updater) where T : class, ISettings, new()
+    public T Update<T>(Func<T, T> updater, string? key) where T : class, ISettings, new()
     {
-        var currentValue = Get<T>();
+        var currentValue = Get<T>(key);
         var newValue = updater(currentValue);
-        Set(newValue);
+        Set(newValue, key);
 
         return newValue;
     }
 
-    public Observable<T> GetChanges<T>(bool prependCurrent = false) where T : class, ISettings, new()
+    public Observable<T> GetChanges<T>(string? key, bool prependCurrent = false) where T : class, ISettings, new()
     {
+        var settingKey = new SettingKey(typeof(T), key);
+        
         var result = _subject
-            .Where(tuple => tuple.Item1 == typeof(T))
+            .Where(settingKey, static (tuple, state) => tuple.Item1 == state)
             .Select(tuple => (tuple.Item2 as T)!);
 
-        return prependCurrent ? result.Prepend(Get<T>()) : result;
+        return prependCurrent ? result.Prepend(Get<T>(key)) : result;
     }
 
 #region Save/Load
 
-    private void Save<T>(T value) where T : class, ISettings, new()
+    private void Save<T>(T value, string? key) where T : class, ISettings, new()
     {
         var type = typeof(T);
 
@@ -174,7 +177,7 @@ internal class SettingsManager : ISettingsManager
         {
             try
             {
-                storageBackend.Save(value);
+                storageBackend.Save(value, key);
             }
             catch (Exception e)
             {
@@ -182,13 +185,13 @@ internal class SettingsManager : ISettingsManager
             }
         } else if (_asyncStorageBackendMappings.TryGetValue(type, out var asyncStorageBackend))
         {
-            Scheduler.ScheduleAsync((value, asyncStorageBackend, _logger), TimeSpan.Zero, async static (_, state, cancellationToken) =>
+            Scheduler.ScheduleAsync((value, key, asyncStorageBackend, _logger), TimeSpan.Zero, async static (_, state, cancellationToken) =>
             {
-                var (valueToSave, backend, logger) = state;
+                var (valueToSave, stringKey, backend, logger) = state;
 
                 try
                 {
-                    await backend.Save(valueToSave, cancellationToken);
+                    await backend.Save(valueToSave, stringKey, cancellationToken);
                 }
                 catch (Exception e)
                 {
@@ -198,7 +201,7 @@ internal class SettingsManager : ISettingsManager
         }
     }
 
-    private T? Load<T>() where T : class, ISettings, new()
+    private T? Load<T>(string? key) where T : class, ISettings, new()
     {
         var type = typeof(T);
 
@@ -206,7 +209,7 @@ internal class SettingsManager : ISettingsManager
         {
             try
             {
-                return storageBackend.Load<T>();
+                return storageBackend.Load<T>(key);
             }
             catch (Exception e)
             {
@@ -223,7 +226,7 @@ internal class SettingsManager : ISettingsManager
             {
                 try
                 {
-                    res = await asyncStorageBackend.Load<T>(cts.Token);
+                    res = await asyncStorageBackend.Load<T>(key, cts.Token);
                     waitHandle.Set();
                 }
                 catch (Exception e)
