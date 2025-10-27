@@ -57,17 +57,17 @@ internal partial class LoadoutManager
     {
         private readonly LoadoutId _loadoutId;
         private readonly LoadoutItemGroupPriorityId _anchorId;
-        private readonly LoadoutItemGroupPriorityId[] _targetIds;
-        private readonly bool _moveTargetsBeforeAnchor;
+        private readonly LoadoutItemGroupPriorityId[] _itemIds;
+        private readonly bool _moveItemsBeforeAnchor;
 
-        public MoveFileConflicts(LoadoutId loadoutId, LoadoutItemGroupPriorityId anchorId, LoadoutItemGroupPriorityId[] targetIds, bool moveTargetsBeforeAnchor)
+        public MoveFileConflicts(LoadoutId loadoutId, LoadoutItemGroupPriorityId anchorId, LoadoutItemGroupPriorityId[] itemIds, bool moveItemsBeforeAnchor)
         {
-            Debug.Assert(!targetIds.Contains(anchorId), "Targets shouldn't include the anchor!");
+            Debug.Assert(!itemIds.Contains(anchorId), "Items shouldn't include the anchor!");
 
             _loadoutId = loadoutId;
             _anchorId = anchorId;
-            _targetIds = targetIds;
-            _moveTargetsBeforeAnchor = moveTargetsBeforeAnchor;
+            _itemIds = itemIds;
+            _moveItemsBeforeAnchor = moveItemsBeforeAnchor;
         }
 
         public bool Equals(ITxFunction? obj) => obj is MoveFileConflicts other && other._loadoutId == _loadoutId;
@@ -80,28 +80,28 @@ internal partial class LoadoutManager
                 .OrderBy(static model => model.Priority)
                 .ToList();
 
-            var targets = _targetIds
+            var items = _itemIds
                 .Select(id => LoadoutItemGroupPriority.Load(basis, id))
                 .OrderBy(x => x.Priority)
                 .ToArray();
 
-            // remove targets
-            foreach (var target in targets)
+            // remove items 
+            foreach (var item in items)
             {
-                if (target.LoadoutId != _loadoutId) throw new ArgumentException($"Expected target {target.Id} to be in the same loadout {_loadoutId} as the anchor {_anchorId} but found {target.LoadoutId}");
+                if (item.LoadoutId != _loadoutId) throw new ArgumentException($"Expected item {item.Id} to be in the same loadout {_loadoutId} as the anchor {_anchorId} but found {item.LoadoutId}");
 
-                var index = priorities.FindIndex(other => other.Id == target.Id);
+                var index = priorities.FindIndex(other => other.Id == item.Id);
                 Debug.Assert(index != -1, "should be an existing model");
 
                 priorities.RemoveAt(index);
             }
 
-            // insert targets
             var anchorIndex = priorities.FindIndex(other => other.Id == _anchorId.Value);
             Debug.Assert(anchorIndex != -1, "anchor should be an existing model");
 
-            var relative = _moveTargetsBeforeAnchor ? 0 : +1;
-            priorities.InsertRange(index: anchorIndex + relative, targets);
+            // insert items 
+            var relative = _moveItemsBeforeAnchor ? 0 : +1;
+            priorities.InsertRange(index: anchorIndex + relative, items);
 
             // recalculate new priorities
             var start = 0UL;

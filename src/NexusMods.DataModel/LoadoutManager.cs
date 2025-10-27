@@ -442,8 +442,8 @@ internal partial class LoadoutManager : ILoadoutManager
         tx.Add(new MoveFileConflicts(
             loadoutId: LoadoutItemGroupPriority.Load(db, loserId).LoadoutId,
             anchorId: loserId,
-            targetIds: winnerIds,
-            moveTargetsBeforeAnchor: false
+            itemIds: winnerIds,
+            moveItemsBeforeAnchor: false
         ));
 
         await tx.Commit();
@@ -457,8 +457,8 @@ internal partial class LoadoutManager : ILoadoutManager
         tx.Add(new MoveFileConflicts(
             loadoutId: LoadoutItemGroupPriority.Load(db, winnerId).LoadoutId,
             anchorId: winnerId,
-            targetIds: loserIds,
-            moveTargetsBeforeAnchor: true
+            itemIds: loserIds,
+            moveItemsBeforeAnchor: true
         ));
 
         await tx.Commit();
