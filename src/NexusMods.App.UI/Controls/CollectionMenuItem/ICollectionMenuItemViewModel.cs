@@ -1,15 +1,18 @@
 using NexusMods.UI.Sdk;
-using NexusMods.UI.Sdk.Icons;
 
 namespace NexusMods.App.UI.Controls.CollectionMenuItem;
 
 public interface ICollectionMenuItemViewModel : IViewModelInterface
 {
-    string CollectionName { get; }
-    CollectionMenuItemType CollectionType { get; }
-    bool IsAddedToTarget { get; }
-    IconValue CollectionIcon { get; }
-    IconValue? RightIndicatorIcon { get; }
-    bool ShowRightIndicator { get; }
-    bool? IsSelected { get; }
+    string CollectionName { get; set; }
+    bool IsReadOnly { get; set; }
+    
+    /// <summary>
+    /// Checkbox state.
+    /// 
+    /// False = In none of the collections
+    /// Null = In some of the collections
+    /// True = In all the collections
+    /// </summary>
+    bool? IsSelected { get; set; }
 }

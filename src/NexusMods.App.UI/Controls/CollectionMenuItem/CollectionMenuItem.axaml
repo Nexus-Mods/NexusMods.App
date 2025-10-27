@@ -14,15 +14,12 @@
     </Design.DataContext>
 
     <DockPanel Margin="{StaticResource ButtonPaddingSmall}">
-        <!-- Left side: Collection icon and name -->
-        <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" Spacing="{StaticResource Spacing-0.5}">
-            <icons:UnifiedIcon x:Name="CollectionIcon" />
-            <TextBlock x:Name="CollectionName" VerticalAlignment="Center" />
-        </StackPanel>
+        <!-- Left side: Collection name -->
+        <TextBlock x:Name="CollectionName" DockPanel.Dock="Left" VerticalAlignment="Center" />
         
-        <!-- Right side: Status indicators -->
+        <!-- Right side: Lock icon and checkbox -->
         <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Spacing="{StaticResource Spacing-0.5}" HorizontalAlignment="Right">
-            <icons:UnifiedIcon x:Name="RightIndicatorIcon" />
+            <icons:UnifiedIcon x:Name="LockIcon" Value="{x:Static icons:IconValues.Lock}" IsVisible="False" />
             <CheckBox Classes="accent" x:Name="SelectionCheckbox" IsThreeState="True" />
         </StackPanel>
     </DockPanel>
