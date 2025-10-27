@@ -144,6 +144,61 @@
     <StaticResource x:Key="CheckBoxCheckGlyphForegroundIndeterminateDisabled"
                     ResourceKey="NeutralInvertedBrush" />
 
+    <!-- Accent Color Resources -->
+    <StaticResource x:Key="CheckBoxCheckBackgroundStrokeUncheckedAccent"
+                    ResourceKey="PrimaryModerateBrush" />
+    <StaticResource x:Key="CheckBoxCheckBackgroundStrokeUncheckedPointerOverAccent"
+                    ResourceKey="PrimaryStrongBrush" />
+    <StaticResource x:Key="CheckBoxCheckBackgroundStrokeUncheckedPressedAccent"
+                    ResourceKey="PrimaryStrongBrush" />
+    <SolidColorBrush x:Key="CheckBoxCheckBackgroundStrokeUncheckedDisabledAccent"
+                     Color="{StaticResource PrimaryModerate}"
+                     Opacity="{StaticResource OpacityDisabledElement}" />
+
+    <StaticResource x:Key="CheckBoxCheckBackgroundStrokeCheckedDisabledAccent"
+                    ResourceKey="SurfaceTransparentBrush" />
+    <StaticResource x:Key="CheckBoxCheckBackgroundStrokeIndeterminateDisabledAccent"
+                    ResourceKey="SurfaceTransparentBrush" />
+
+    <StaticResource x:Key="CheckBoxCheckGlyphForegroundCheckedAccent"
+                    ResourceKey="NeutralInvertedBrush" />
+    <StaticResource x:Key="CheckBoxCheckGlyphForegroundCheckedPointerOverAccent"
+                    ResourceKey="NeutralInvertedBrush" />
+    <StaticResource x:Key="CheckBoxCheckGlyphForegroundCheckedPressedAccent"
+                    ResourceKey="NeutralInvertedBrush" />
+    <SolidColorBrush x:Key="CheckBoxCheckGlyphForegroundCheckedDisabledAccent"
+                     Color="{StaticResource NeutralInverted}"
+                     Opacity="{StaticResource OpacityDisabledElement}" />
+
+    <StaticResource x:Key="CheckBoxCheckGlyphForegroundIndeterminateAccent"
+                    ResourceKey="NeutralInvertedBrush" />
+    <StaticResource x:Key="CheckBoxCheckGlyphForegroundIndeterminatePointerOverAccent"
+                    ResourceKey="NeutralInvertedBrush" />
+    <StaticResource x:Key="CheckBoxCheckGlyphForegroundIndeterminatePressedAccent"
+                    ResourceKey="NeutralInvertedBrush" />
+    <SolidColorBrush x:Key="CheckBoxCheckGlyphForegroundIndeterminateDisabledAccent"
+                     Color="{StaticResource NeutralInverted}"
+                     Opacity="{StaticResource OpacityDisabledElement}" />
+
+    <!-- Background fill resources for checked and indeterminate states -->
+    <StaticResource x:Key="CheckBoxCheckBackgroundFillCheckedAccent" ResourceKey="PrimaryModerateBrush" />
+    <StaticResource x:Key="CheckBoxCheckBackgroundFillCheckedPointerOverAccent"
+                    ResourceKey="PrimaryModerateBrush" />
+    <StaticResource x:Key="CheckBoxCheckBackgroundFillCheckedPressedAccent"
+                    ResourceKey="PrimaryStrongBrush" />
+    <SolidColorBrush x:Key="CheckBoxCheckBackgroundFillCheckedDisabledAccent"
+                     Color="{StaticResource PrimaryModerate}"
+                     Opacity="{StaticResource OpacityDisabledElement}" />
+
+    <StaticResource x:Key="CheckBoxCheckBackgroundFillIndeterminateAccent" ResourceKey="PrimaryModerateBrush" />
+    <StaticResource x:Key="CheckBoxCheckBackgroundFillIndeterminatePointerOverAccent"
+                    ResourceKey="PrimaryModerateBrush" />
+    <StaticResource x:Key="CheckBoxCheckBackgroundFillIndeterminatePressedAccent"
+                    ResourceKey="PrimaryStrongBrush" />
+    <SolidColorBrush x:Key="CheckBoxCheckBackgroundFillIndeterminateDisabledAccent"
+                     Color="{StaticResource PrimaryModerate}"
+                     Opacity="{StaticResource OpacityDisabledElement}" />
+
     <ControlTheme x:Key="{x:Type CheckBox}" TargetType="CheckBox">
         <Setter Property="Padding" Value="8,0,0,0" />
         <Setter Property="HorizontalAlignment" Value="Left" />
@@ -435,6 +490,109 @@
                 <Style Selector="^ /template/ Path#CheckGlyph">
                     <Setter Property="Fill" Value="{StaticResource CheckBoxCheckGlyphForegroundIndeterminateDisabled}" />
                 </Style>
+            </Style>
+        </Style>
+
+        <!-- Accent Class Styling -->
+        <Style Selector="^.accent">
+            <!-- Unchecked Normal State -->
+            <Style Selector="^ /template/ Border#NormalRectangle">
+                <Setter Property="BorderBrush" Value="{StaticResource CheckBoxCheckBackgroundStrokeUncheckedAccent}" />
+            </Style>
+
+            <!-- Unchecked PointerOver State -->
+            <Style Selector="^:pointerover /template/ Border#NormalRectangle">
+                <Setter Property="BorderBrush" Value="{StaticResource CheckBoxCheckBackgroundStrokeUncheckedPointerOverAccent}" />
+            </Style>
+
+            <!-- Unchecked Pressed State -->
+            <Style Selector="^:pressed /template/ Border#NormalRectangle">
+                <Setter Property="BorderBrush" Value="{StaticResource CheckBoxCheckBackgroundStrokeUncheckedPressedAccent}" />
+            </Style>
+
+            <!-- Unchecked Disabled State -->
+            <Style Selector="^:disabled /template/ Border#NormalRectangle">
+                <Setter Property="BorderBrush" Value="{StaticResource CheckBoxCheckBackgroundStrokeUncheckedDisabledAccent}" />
+            </Style>
+
+            <!-- Checked Normal State -->
+            <Style Selector="^:checked /template/ Border#NormalRectangle">
+                <Setter Property="BorderBrush" Value="{StaticResource CheckBoxCheckBackgroundFillCheckedAccent}" />
+                <Setter Property="Background" Value="{StaticResource CheckBoxCheckBackgroundFillCheckedAccent}" />
+            </Style>
+
+            <Style Selector="^:checked /template/ Path#CheckGlyph">
+                <Setter Property="Fill" Value="{StaticResource CheckBoxCheckGlyphForegroundCheckedAccent}" />
+            </Style>
+
+            <!-- Checked PointerOver State -->
+            <Style Selector="^:checked:pointerover /template/ Border#NormalRectangle">
+                <Setter Property="BorderBrush" Value="{StaticResource CheckBoxCheckBackgroundFillCheckedPointerOverAccent}" />
+                <Setter Property="Background" Value="{StaticResource CheckBoxCheckBackgroundFillCheckedPointerOverAccent}" />
+            </Style>
+
+            <Style Selector="^:checked:pointerover /template/ Path#CheckGlyph">
+                <Setter Property="Fill" Value="{StaticResource CheckBoxCheckGlyphForegroundCheckedPointerOverAccent}" />
+            </Style>
+
+            <!-- Checked Pressed State -->
+            <Style Selector="^:checked:pressed /template/ Border#NormalRectangle">
+                <Setter Property="BorderBrush" Value="{StaticResource CheckBoxCheckBackgroundFillCheckedPressedAccent}" />
+                <Setter Property="Background" Value="{StaticResource CheckBoxCheckBackgroundFillCheckedPressedAccent}" />
+            </Style>
+
+            <Style Selector="^:checked:pressed /template/ Path#CheckGlyph">
+                <Setter Property="Fill" Value="{StaticResource CheckBoxCheckGlyphForegroundCheckedPressedAccent}" />
+            </Style>
+
+            <!-- Checked Disabled State -->
+            <Style Selector="^:checked:disabled /template/ Border#NormalRectangle">
+                <Setter Property="BorderBrush" Value="{StaticResource CheckBoxCheckBackgroundStrokeCheckedDisabledAccent}" />
+                <Setter Property="Background" Value="{StaticResource CheckBoxCheckBackgroundFillCheckedDisabledAccent}" />
+            </Style>
+
+            <Style Selector="^:checked:disabled /template/ Path#CheckGlyph">
+                <Setter Property="Fill" Value="{StaticResource CheckBoxCheckGlyphForegroundCheckedDisabledAccent}" />
+            </Style>
+
+            <!-- Indeterminate Normal State -->
+            <Style Selector="^:indeterminate /template/ Border#NormalRectangle">
+                <Setter Property="BorderBrush" Value="{StaticResource CheckBoxCheckBackgroundFillIndeterminateAccent}" />
+                <Setter Property="Background" Value="{StaticResource CheckBoxCheckBackgroundFillIndeterminateAccent}" />
+            </Style>
+
+            <Style Selector="^:indeterminate /template/ Path#CheckGlyph">
+                <Setter Property="Fill" Value="{StaticResource CheckBoxCheckGlyphForegroundIndeterminateAccent}" />
+            </Style>
+
+            <!-- Indeterminate PointerOver State -->
+            <Style Selector="^:indeterminate:pointerover /template/ Border#NormalRectangle">
+                <Setter Property="BorderBrush" Value="{StaticResource CheckBoxCheckBackgroundFillIndeterminatePointerOverAccent}" />
+                <Setter Property="Background" Value="{StaticResource CheckBoxCheckBackgroundFillIndeterminatePointerOverAccent}" />
+            </Style>
+
+            <Style Selector="^:indeterminate:pointerover /template/ Path#CheckGlyph">
+                <Setter Property="Fill" Value="{StaticResource CheckBoxCheckGlyphForegroundIndeterminatePointerOverAccent}" />
+            </Style>
+
+            <!-- Indeterminate Pressed State -->
+            <Style Selector="^:indeterminate:pressed /template/ Border#NormalRectangle">
+                <Setter Property="BorderBrush" Value="{StaticResource CheckBoxCheckBackgroundFillIndeterminatePressedAccent}" />
+                <Setter Property="Background" Value="{StaticResource CheckBoxCheckBackgroundFillIndeterminatePressedAccent}" />
+            </Style>
+
+            <Style Selector="^:indeterminate:pressed /template/ Path#CheckGlyph">
+                <Setter Property="Fill" Value="{StaticResource CheckBoxCheckGlyphForegroundIndeterminatePressedAccent}" />
+            </Style>
+
+            <!-- Indeterminate Disabled State -->
+            <Style Selector="^:indeterminate:disabled /template/ Border#NormalRectangle">
+                <Setter Property="BorderBrush" Value="{StaticResource CheckBoxCheckBackgroundStrokeIndeterminateDisabledAccent}" />
+                <Setter Property="Background" Value="{StaticResource CheckBoxCheckBackgroundFillIndeterminateDisabledAccent}" />
+            </Style>
+
+            <Style Selector="^:indeterminate:disabled /template/ Path#CheckGlyph">
+                <Setter Property="Fill" Value="{StaticResource CheckBoxCheckGlyphForegroundIndeterminateDisabledAccent}" />
             </Style>
         </Style>
     </ControlTheme>
