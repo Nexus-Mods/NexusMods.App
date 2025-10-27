@@ -86,16 +86,12 @@ public interface ILoadoutManager
     /// <summary>
     /// Resolves file conflicts by making items in <paramref name="winnerIds"/> win over <paramref name="loserId"/>.
     /// </summary>
-    /// <remarks>
-    /// If <paramref name="loserId"/> is none, then <paramref name="winnerIds"/> will win over "nothing" and lose over everything.
-    /// The items will move to the lowest priority.
-    /// </remarks>
-    ValueTask ResolveFileConflicts(LoadoutItemGroupPriorityId[] winnerIds, Optional<LoadoutItemGroupPriorityId> loserId);
+    ValueTask ResolveFileConflicts(LoadoutItemGroupPriorityId[] winnerIds, LoadoutItemGroupPriorityId loserId);
 
     /// <summary>
     /// Make items in <paramref name="losers"/> lose all file conflicts.
     /// </summary>
-    ValueTask LoseAllFileConflicts(LoadoutItemGroupPriorityId[] loserIds) => ResolveFileConflicts(winnerIds: loserIds, loserId: Optional<LoadoutItemGroupPriorityId>.None);
+    ValueTask LoseAllFileConflicts(LoadoutItemGroupPriorityId[] loserIds);
 
     /// <summary>
     /// Make items in <paramref name="winnerIds"/> win all file conflicts.

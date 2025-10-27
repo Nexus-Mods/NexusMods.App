@@ -106,7 +106,8 @@ public class FileConflictsViewModel : AViewModel<IFileConflictsViewModel>, IFile
                 };
 
                 var loserId = losingItemModel.Convert(x => (LoadoutItemGroupPriorityId)x.Key);
-                await _loadoutManager.ResolveFileConflicts(itemIds, loserId);
+                if (loserId.HasValue) await _loadoutManager.ResolveFileConflicts(itemIds, loserId.Value);
+                else await _loadoutManager.LoseAllFileConflicts(itemIds);
             },
             awaitOperation: AwaitOperation.Drop).AddTo(disposables);
         });

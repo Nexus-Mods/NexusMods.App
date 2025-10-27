@@ -434,7 +434,7 @@ internal partial class LoadoutManager : ILoadoutManager
         await tx.Commit();
     }
 
-    public async ValueTask ResolveFileConflicts(LoadoutItemGroupPriorityId[] winnerIds, Optional<LoadoutItemGroupPriorityId> loserId)
+    public async ValueTask ResolveFileConflicts(LoadoutItemGroupPriorityId[] winnerIds, LoadoutItemGroupPriorityId loserId)
     {
         var db = _connection.Db;
         using var tx = _connection.BeginTransaction();
@@ -443,6 +443,20 @@ internal partial class LoadoutManager : ILoadoutManager
             loadoutId: LoadoutItemGroupPriority.Load(db,winnerIds[0]).LoadoutId,
             winnerIds: winnerIds,
             loserId: loserId
+        ));
+
+        await tx.Commit();
+    }
+
+    public async ValueTask LoseAllFileConflicts(LoadoutItemGroupPriorityId[] loserIds)
+    {
+        var db = _connection.Db;
+        using var tx = _connection.BeginTransaction();
+
+        tx.Add(new ResolveFileConflictsTxFunc(
+            loadoutId: LoadoutItemGroupPriority.Load(db, loserIds[0]).LoadoutId,
+            winnerIds: loserIds,
+            loserId: Optional<LoadoutItemGroupPriorityId>.None
         ));
 
         await tx.Commit();
