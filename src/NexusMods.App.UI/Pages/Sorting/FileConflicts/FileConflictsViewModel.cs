@@ -87,49 +87,48 @@ public class FileConflictsViewModel : AViewModel<IFileConflictsViewModel>, IFile
             }).AddTo(disposables);
 
             // Handle row drops
-            TreeDataGridAdapter.RowDropSubject.SubscribeAwait(async (dragDropPayload, cancellationToken) =>
+            TreeDataGridAdapter.RowDropSubject.SubscribeAwait(async (eventPayload, _) =>
+            {
+                var (itemModels, anchorModel, eventArgs) = eventPayload;
+
+                var anchorId = (LoadoutItemGroupPriorityId)anchorModel.Key;
+
+                var itemIds = itemModels.Select(x => (LoadoutItemGroupPriorityId)x.Key).Where(x => x != anchorId).ToArray();
+                if (itemIds.Length == 0) return;
+
+                TargetRelativePosition relativePosition;
+                switch (eventArgs.Position)
                 {
-                    var (sourceModels, targetModel, eventArgs) = dragDropPayload;
-                
-                    var dropTargetKey = (LoadoutItemGroupPriorityId) targetModel.Key;
+                    case TreeDataGridRowDropPosition.Before when SortDirectionCurrent.Value == ListSortDirection.Ascending:
+                    case TreeDataGridRowDropPosition.After when SortDirectionCurrent.Value == ListSortDirection.Descending:
+                        relativePosition = TargetRelativePosition.BeforeTarget;
+                        break;
+                    case TreeDataGridRowDropPosition.After when SortDirectionCurrent.Value == ListSortDirection.Ascending:
+                    case TreeDataGridRowDropPosition.Before when SortDirectionCurrent.Value == ListSortDirection.Descending:
+                        relativePosition = TargetRelativePosition.AfterTarget;
+                        break;
+                    case TreeDataGridRowDropPosition.Inside when SortDirectionCurrent.Value == ListSortDirection.Ascending:
+                        relativePosition = PointerIsInVerticalTopHalf(eventArgs) ? TargetRelativePosition.BeforeTarget : TargetRelativePosition.AfterTarget;
+                        break;
+                    case TreeDataGridRowDropPosition.Inside when SortDirectionCurrent.Value == ListSortDirection.Descending:
+                        relativePosition = PointerIsInVerticalTopHalf(eventArgs) ? TargetRelativePosition.AfterTarget : TargetRelativePosition.BeforeTarget;
+                        break;
+                    case TreeDataGridRowDropPosition.None:
+                        // Invalid target, no move
+                        return;
+                    default:
+                        return;
+                }
 
-                    var keysToMove = sourceModels.Select(LoadoutItemGroupPriorityId (item) => item.Key).ToArray();
-                    if (keysToMove.Length == 0) return;
-                    if (keysToMove.Contains(dropTargetKey)) return;
+                var task = relativePosition switch
+                {
+                    TargetRelativePosition.BeforeTarget => _loadoutManager.LoseFileConflict(itemIds, anchorId),
+                    TargetRelativePosition.AfterTarget => _loadoutManager.WinFileConflict(itemIds, anchorId),
+                };
 
-                    TargetRelativePosition relativePosition;
-                    switch (eventArgs.Position)
-                    {
-                        case TreeDataGridRowDropPosition.Before when SortDirectionCurrent.Value == ListSortDirection.Ascending:
-                        case TreeDataGridRowDropPosition.After when SortDirectionCurrent.Value == ListSortDirection.Descending:
-                            relativePosition = TargetRelativePosition.BeforeTarget;
-                            break;
-                        case TreeDataGridRowDropPosition.After when SortDirectionCurrent.Value == ListSortDirection.Ascending:
-                        case TreeDataGridRowDropPosition.Before when SortDirectionCurrent.Value == ListSortDirection.Descending:
-                            relativePosition = TargetRelativePosition.AfterTarget;
-                            break;
-                        case TreeDataGridRowDropPosition.Inside when SortDirectionCurrent.Value == ListSortDirection.Ascending:
-                            relativePosition = PointerIsInVerticalTopHalf(eventArgs) ? TargetRelativePosition.BeforeTarget : TargetRelativePosition.AfterTarget;
-                            break;
-                        case TreeDataGridRowDropPosition.Inside when SortDirectionCurrent.Value == ListSortDirection.Descending:
-                            relativePosition = PointerIsInVerticalTopHalf(eventArgs) ? TargetRelativePosition.AfterTarget : TargetRelativePosition.BeforeTarget;
-                            break;
-                        case TreeDataGridRowDropPosition.None:
-                            // Invalid target, no move
-                            return;
-                        default:
-                            return;
-                    }
-
-                    var task = relativePosition switch
-                    {
-                        TargetRelativePosition.BeforeTarget => _loadoutManager.LoseFileConflict(keysToMove, dropTargetKey),
-                        TargetRelativePosition.AfterTarget => _loadoutManager.WinFileConflict(keysToMove, dropTargetKey),
-                    };
-
-                    await task;
-                },
-                awaitOperation: AwaitOperation.Drop).AddTo(disposables);
+                await task;
+            },
+            awaitOperation: AwaitOperation.Drop).AddTo(disposables);
         });
     }
 
