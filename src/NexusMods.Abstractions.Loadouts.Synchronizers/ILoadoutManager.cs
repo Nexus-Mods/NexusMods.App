@@ -86,5 +86,9 @@ public interface ILoadoutManager
     /// <summary>
     /// Resolves file conflicts by making items in <paramref name="winnerIds"/> win over <paramref name="loserId"/>.
     /// </summary>
+    /// <remarks>
+    /// If <paramref name="loserId"/> is none, then <paramref name="winnerIds"/> will win over "nothing" and lose over everything.
+    /// The items will move to the lowest priority.
+    /// </remarks>
     ValueTask ResolveFileConflicts(LoadoutItemGroupPriorityId[] winnerIds, Optional<LoadoutItemGroupPriorityId> loserId);
 }
