@@ -37,6 +37,9 @@ public partial class CollectionMenuItem : ReactiveUserControl<ICollectionMenuIte
 
             this.OneWayBind(ViewModel, vm => vm.ShowRightIndicator, v => v.RightIndicatorIcon.IsVisible)
                 .DisposeWith(d);
+
+            this.Bind(ViewModel, vm => vm.IsSelected, v => v.SelectionCheckbox.IsChecked)
+                .DisposeWith(d);
         });
     }
 

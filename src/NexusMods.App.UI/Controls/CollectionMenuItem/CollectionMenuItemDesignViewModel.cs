@@ -28,6 +28,7 @@ public class CollectionMenuItemDesignViewModel : AViewModel<ICollectionMenuItemV
     [Reactive] public IconValue CollectionIcon { get; set; } = IconValues.CollectionsOutline;
     [Reactive] public IconValue? RightIndicatorIcon { get; set; } = null;
     [Reactive] public bool ShowRightIndicator { get; set; } = true;
+    [Reactive] public bool? IsSelected { get; set; } = null;
 
     private void UpdateRightIndicator()
     {

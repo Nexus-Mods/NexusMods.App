@@ -14,6 +14,7 @@ public class CollectionMenuItemViewModel : AViewModel<ICollectionMenuItemViewMod
     [Reactive] public IconValue CollectionIcon { get; set; } = IconValues.CollectionsOutline;
     [Reactive] public IconValue? RightIndicatorIcon { get; set; }
     [Reactive] public bool ShowRightIndicator { get; set; } = true;
+    [Reactive] public bool? IsSelected { get; set; } = null;
 
     public CollectionMenuItemViewModel()
     {

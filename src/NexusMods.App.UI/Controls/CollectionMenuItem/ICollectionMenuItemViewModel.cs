@@ -12,4 +12,5 @@ public interface ICollectionMenuItemViewModel : IViewModelInterface
     IconValue CollectionIcon { get; }
     IconValue? RightIndicatorIcon { get; }
     bool ShowRightIndicator { get; }
+    bool? IsSelected { get; }
 }

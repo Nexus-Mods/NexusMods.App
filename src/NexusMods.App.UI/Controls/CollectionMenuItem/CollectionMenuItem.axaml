@@ -23,6 +23,7 @@
         <!-- Right side: Status indicators -->
         <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Spacing="{StaticResource Spacing-0.5}" HorizontalAlignment="Right">
             <icons:UnifiedIcon x:Name="RightIndicatorIcon" />
+            <CheckBox x:Name="SelectionCheckbox" IsThreeState="True" />
         </StackPanel>
     </DockPanel>
     
