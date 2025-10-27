@@ -8,6 +8,9 @@ namespace NexusMods.DataModel;
 
 internal partial class LoadoutManager
 {
+    /// <summary>
+    /// Rebalances the priorities of all items in a loadout.
+    /// </summary>
     private class RebalancePrioritiesTxFunc : ITxFunction
     {
         private readonly LoadoutId _loadoutId;
@@ -47,6 +50,9 @@ internal partial class LoadoutManager
         }
     }
 
+    /// <summary>
+    /// Moves targets before or after the anchor.
+    /// </summary>
     private class MoveFileConflicts : ITxFunction
     {
         private readonly LoadoutId _loadoutId;
@@ -105,6 +111,9 @@ internal partial class LoadoutManager
         }
     }
 
+    /// <summary>
+    /// Adds a priority to an item.
+    /// </summary>
     private class AddPriorityTxFunc : ITxFunction
     {
         private readonly LoadoutId _loadoutId;
