@@ -65,30 +65,6 @@ public static class FileConflictsComponents
         }
 
         public int CompareTo(ViewAction? other) => 0;
-
-        public string CreateMarkdown()
-        {
-            return "";
-            // var markdown = _loadoutFiles
-            //     .Select(GamePath (x) => x.AsLoadoutItemWithTargetPath().TargetPath)
-            //     .Select(gamePath =>
-            //     {
-            //         var conflicts = _conflictsByPath[gamePath].Items;
-            //         var conflictingGroups = conflicts.Where(x => x.File.IsT0).Select(x => x.File.AsT0.AsLoadoutItemWithTargetPath().AsLoadoutItem().Parent).ToArray();
-            //         return (gamePath, conflictingGroups);
-            //     })
-            //     .Select(tuple =>
-            //     {
-            //         var (gamePath, conflictingGroups) = tuple;
-            //         var heading = $"## {gamePath}\n";
-            //         var body = conflictingGroups.Select(x => $"- {x.AsLoadoutItem().Name}").Aggregate((a, b) => $"{a}\n{b}");
-            //
-            //         return $"{heading}\n{body}";
-            //     })
-            //     .Aggregate((a,b) => $"{a}\n{b}");
-
-            // return markdown;
-        }
     }
 }
 
