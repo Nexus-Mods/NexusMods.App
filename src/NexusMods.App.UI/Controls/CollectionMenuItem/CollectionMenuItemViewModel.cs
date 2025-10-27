@@ -10,7 +10,6 @@ public class CollectionMenuItemViewModel : AViewModel<ICollectionMenuItemViewMod
     [Reactive] public string CollectionName { get; set; } = string.Empty;
     [Reactive] public CollectionMenuItemType CollectionType { get; set; }
     [Reactive] public bool IsAddedToTarget { get; set; }
-    [Reactive] public bool IsInstalled { get; set; }
     [Reactive] public IconValue CollectionIcon { get; set; } = IconValues.CollectionsOutline;
     [Reactive] public IconValue? RightIndicatorIcon { get; set; }
     [Reactive] public bool ShowRightIndicator { get; set; } = true;
@@ -22,12 +21,11 @@ public class CollectionMenuItemViewModel : AViewModel<ICollectionMenuItemViewMod
             .Subscribe(_ => UpdateRightIndicator());
     }
 
-    public CollectionMenuItemViewModel(string name, CollectionMenuItemType type, bool isAdded, bool isInstalled)
+    public CollectionMenuItemViewModel(string name, CollectionMenuItemType type, bool isAdded)
     {
         CollectionName = name;
         CollectionType = type;
         IsAddedToTarget = isAdded;
-        IsInstalled = isInstalled;
 
         this.WhenAnyValue(x => x.CollectionType, x => x.IsAddedToTarget)
             .Subscribe(_ => UpdateRightIndicator());
