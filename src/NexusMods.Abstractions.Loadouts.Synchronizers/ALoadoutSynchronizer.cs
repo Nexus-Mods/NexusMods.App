@@ -196,44 +196,6 @@ public partial class ALoadoutSynchronizer : ILoadoutSynchronizer
         return newOverrides.Id;
     }
 
-    public Dictionary<GamePath, FileConflictGroup> GetFileConflicts(Loadout.ReadOnly loadout, bool removeDuplicates = true)
-    {
-        var db = loadout.Db;
-        var query = FileConflictsQuery(db, loadout, removeDuplicates: removeDuplicates);
-        var result = query.ToDictionary(row => new GamePath(row.Location, row.Path), row =>
-        {
-            var items = row.Item3.Select(tuple =>
-            {
-                var (entityId, isEnabled, isDeleted) = tuple;
-                OneOf<LoadoutFile.ReadOnly, DeletedFile.ReadOnly> file = isDeleted ? DeletedFile.Load(db, entityId) : LoadoutFile.Load(db, entityId);
-                return new FileConflictItem(isEnabled, file);
-            }).ToArray();
-
-            return new FileConflictGroup(new GamePath(row.Location, row.Path), items);
-        });
-
-        return result;
-    }
-
-    public Dictionary<LoadoutItemGroup.ReadOnly, LoadoutFile.ReadOnly[]> GetFileConflictsByParentGroup(Loadout.ReadOnly loadout, bool removeDuplicates = true)
-    {
-        var db = loadout.Db;
-        var query = FileConflictsByParentGroupQuery(db, loadout, removeDuplicates: removeDuplicates);
-        var result = query.ToDictionary(row => LoadoutItemGroup.Load(db,row.GroupId), row =>
-        {
-            var items = row.Item2.Select(tuple =>
-            {
-                var (entityId, locationId, targetPath) = tuple;
-                var file = LoadoutFile.Load(db, entityId);
-                return file;
-            }).ToArray();
-
-            return items;
-        }, comparer: LoadoutItemGroupComparer.Instance);
-
-        return result;
-    }
-
     private class LoadoutItemGroupComparer : IEqualityComparer<LoadoutItemGroup.ReadOnly>, IAlternateEqualityComparer<EntityId, LoadoutItemGroup.ReadOnly>
     {
         public static readonly IEqualityComparer<LoadoutItemGroup.ReadOnly> Instance = new LoadoutItemGroupComparer();
