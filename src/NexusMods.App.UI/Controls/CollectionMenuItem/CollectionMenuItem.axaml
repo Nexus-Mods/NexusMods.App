@@ -14,8 +14,11 @@
     </Design.DataContext>
 
     <DockPanel Margin="{StaticResource ButtonPaddingSmall}" x:Name="RootPanel">
-        <!-- Left side: Collection name -->
-        <TextBlock x:Name="CollectionName" DockPanel.Dock="Left" VerticalAlignment="Center" />
+        <!-- Left side: Collection icon and name -->
+        <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" Spacing="{StaticResource Spacing-0.5}" HorizontalAlignment="Left">
+            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Collections}" />
+            <TextBlock x:Name="CollectionName" DockPanel.Dock="Left" VerticalAlignment="Center" />
+        </StackPanel>
         
         <!-- Right side: Lock icon and checkbox -->
         <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Spacing="{StaticResource Spacing-0.5}" HorizontalAlignment="Right">
