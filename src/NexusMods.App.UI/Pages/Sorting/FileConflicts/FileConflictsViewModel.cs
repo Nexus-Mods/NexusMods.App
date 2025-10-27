@@ -91,14 +91,12 @@ public class FileConflictsViewModel : AViewModel<IFileConflictsViewModel>, IFile
                 {
                     var (sourceModels, targetModel, eventArgs) = dragDropPayload;
                 
-                    // Determine source items
-                    var keysToMove = sourceModels.Select(LoadoutItemGroupPriorityId (item) => item.Key).ToArray();
-                    if (keysToMove.Length == 0) return;
-
-                    // Determine target item
                     var dropTargetKey = (LoadoutItemGroupPriorityId) targetModel.Key;
 
-                    // Determine relative position
+                    var keysToMove = sourceModels.Select(LoadoutItemGroupPriorityId (item) => item.Key).ToArray();
+                    if (keysToMove.Length == 0) return;
+                    if (keysToMove.Contains(dropTargetKey)) return;
+
                     TargetRelativePosition relativePosition;
                     switch (eventArgs.Position)
                     {

@@ -62,6 +62,8 @@ internal partial class LoadoutManager
 
         public MoveFileConflicts(LoadoutId loadoutId, LoadoutItemGroupPriorityId anchorId, LoadoutItemGroupPriorityId[] targetIds, bool moveTargetsBeforeAnchor)
         {
+            Debug.Assert(!targetIds.Contains(anchorId), "Targets shouldn't include the anchor!");
+
             _loadoutId = loadoutId;
             _anchorId = anchorId;
             _targetIds = targetIds;
