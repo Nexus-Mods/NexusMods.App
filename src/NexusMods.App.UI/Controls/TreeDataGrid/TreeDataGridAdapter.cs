@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using Avalonia.Controls;
 using Avalonia.Controls.Models.TreeDataGrid;
 using Avalonia.Controls.Selection;
@@ -8,6 +9,8 @@ using R3;
 using System.Reactive.Linq;
 using Avalonia.Input;
 using System.Diagnostics;
+using DynamicData.Kernel;
+using NexusMods.Abstractions.Games;
 using NexusMods.App.UI.Controls.Filters;
 using NexusMods.UI.Sdk;
 using static NexusMods.App.UI.Controls.Filters.Filter;
@@ -25,7 +28,7 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object, ISea
 
     public Subject<(TModel[] sourceModels, TreeDataGridRowDragStartedEventArgs e)> RowDragStartedSubject { get; } = new();
     public Subject<(TModel[] sourceModels, TModel target, TreeDataGridRowDragEventArgs e)> RowDragOverSubject { get; } = new();
-    public Subject<(TModel[] sourceModels, TModel target, TreeDataGridRowDragEventArgs e)> RowDropSubject { get; } = new();
+    public Subject<(TModel[] sourceModels, TModel target, Optional<TModel> nextTarget, Optional<TModel> prevTarget, TreeDataGridRowDragEventArgs e)> RowDropSubject { get; } = new();
 
     private TreeDataGridRowSelectionModel<TModel>? _selectionModel;
     public BindableReactiveProperty<ITreeDataGridSource<TModel>> Source { get; } = new();
@@ -273,6 +276,13 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object, ISea
         var source = dragInfo.Source;
         var indices = dragInfo.Indexes;
 
+        var targetRowIndex = e.TargetRow.RowIndex;
+        var nextTargetIndex = targetRowIndex + 1;
+        var prevTargetIndex = targetRowIndex - 1;
+
+        var nextTargetModel = nextTargetIndex < 0 || nextTargetIndex >= source.Rows.Count ? Optional<TModel>.None : Optional<object>.Create(source.Rows[nextTargetIndex].Model).Convert(x => Optional<TModel>.Create(x as TModel));
+        var prevTargetModel = prevTargetIndex < 0 || prevTargetIndex >= source.Rows.Count ? Optional<TModel>.None : Optional<object>.Create(source.Rows[prevTargetIndex].Model).Convert(x => Optional<TModel>.Create(x as TModel));
+
         var sourceModels = new List<TModel>();
 
         foreach (var modelIndex in indices)
@@ -283,7 +293,7 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object, ISea
             sourceModels.Add(model);
         }
 
-        RowDropSubject.OnNext((sourceModels.ToArray(), targetModel, e));
+        RowDropSubject.OnNext((sourceModels.ToArray(), targetModel, nextTargetModel, prevTargetModel, e));
     }
 
     private static (TreeDataGridRowSelectionModel<TModel> selection, Observable<TreeSelectionModelSelectionChangedEventArgs<TModel>> selectionObservable, Observable<TreeSelectionModelSourceResetEventArgs> resetObservable) CreateSelection(ITreeDataGridSource<TModel> source)

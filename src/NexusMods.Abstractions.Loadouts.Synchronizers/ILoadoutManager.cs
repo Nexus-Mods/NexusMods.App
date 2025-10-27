@@ -84,12 +84,7 @@ public interface ILoadoutManager
     ValueTask ReplaceItems(LoadoutId loadoutId, LoadoutItemGroupId[] groupsToRemove, LibraryItem.ReadOnly libraryItemToInstall);
 
     /// <summary>
-    /// Make <paramref name="winnerIds"/> win in file conflicts against <paramref name="loserId"/>.
+    /// Resolves file conflicts by making items in <paramref name="winnerIds"/> win over <paramref name="loserId"/>.
     /// </summary>
-    ValueTask WinFileConflict(LoadoutItemGroupPriorityId[] winnerIds, LoadoutItemGroupPriorityId loserId);
-
-    /// <summary>
-    /// Make <paramref name="loserIds"/> lose in file conflicts against <paramref name="winnerId"/>.
-    /// </summary>
-    ValueTask LoseFileConflict(LoadoutItemGroupPriorityId[] loserIds, LoadoutItemGroupPriorityId winnerId);
+    ValueTask ResolveFileConflicts(LoadoutItemGroupPriorityId[] winnerIds, Optional<LoadoutItemGroupPriorityId> loserId);
 }

@@ -434,31 +434,15 @@ internal partial class LoadoutManager : ILoadoutManager
         await tx.Commit();
     }
 
-    public async ValueTask WinFileConflict(LoadoutItemGroupPriorityId[] winnerIds, LoadoutItemGroupPriorityId loserId)
+    public async ValueTask ResolveFileConflicts(LoadoutItemGroupPriorityId[] winnerIds, Optional<LoadoutItemGroupPriorityId> loserId)
     {
         var db = _connection.Db;
         using var tx = _connection.BeginTransaction();
 
-        tx.Add(new MoveFileConflicts(
-            loadoutId: LoadoutItemGroupPriority.Load(db, loserId).LoadoutId,
-            anchorId: loserId,
-            itemIds: winnerIds,
-            moveItemsBeforeAnchor: false
-        ));
-
-        await tx.Commit();
-    }
-
-    public async ValueTask LoseFileConflict(LoadoutItemGroupPriorityId[] loserIds, LoadoutItemGroupPriorityId winnerId)
-    {
-        var db = _connection.Db;
-        using var tx = _connection.BeginTransaction();
-
-        tx.Add(new MoveFileConflicts(
-            loadoutId: LoadoutItemGroupPriority.Load(db, winnerId).LoadoutId,
-            anchorId: winnerId,
-            itemIds: loserIds,
-            moveItemsBeforeAnchor: true
+        tx.Add(new ResolveFileConflictsTxFunc(
+            loadoutId: LoadoutItemGroupPriority.Load(db,winnerIds[0]).LoadoutId,
+            winnerIds: winnerIds,
+            loserId: loserId
         ));
 
         await tx.Commit();

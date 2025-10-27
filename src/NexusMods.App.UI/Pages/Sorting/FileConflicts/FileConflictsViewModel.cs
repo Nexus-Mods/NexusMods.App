@@ -6,6 +6,7 @@ using Avalonia.Controls.Models.TreeDataGrid;
 using Avalonia.Media.Imaging;
 using DynamicData;
 using DynamicData.Binding;
+using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
@@ -89,70 +90,39 @@ public class FileConflictsViewModel : AViewModel<IFileConflictsViewModel>, IFile
             // Handle row drops
             TreeDataGridAdapter.RowDropSubject.SubscribeAwait(async (eventPayload, _) =>
             {
-                var (itemModels, anchorModel, eventArgs) = eventPayload;
+                var (itemModels, targetModel, nextTarget, prevTarget, eventArgs) = eventPayload;
 
-                var anchorId = (LoadoutItemGroupPriorityId)anchorModel.Key;
-
-                var itemIds = itemModels.Select(x => (LoadoutItemGroupPriorityId)x.Key).Where(x => x != anchorId).ToArray();
+                var itemIds = itemModels.Select(x => (LoadoutItemGroupPriorityId)x.Key).ToArray();
                 if (itemIds.Length == 0) return;
 
-                TargetRelativePosition relativePosition;
-                switch (eventArgs.Position)
+                var losingItemModel = (eventArgs.Position, SortDirectionCurrent.Value) switch
                 {
-                    case TreeDataGridRowDropPosition.Before when SortDirectionCurrent.Value == ListSortDirection.Ascending:
-                    case TreeDataGridRowDropPosition.After when SortDirectionCurrent.Value == ListSortDirection.Descending:
-                        relativePosition = TargetRelativePosition.BeforeTarget;
-                        break;
-                    case TreeDataGridRowDropPosition.After when SortDirectionCurrent.Value == ListSortDirection.Ascending:
-                    case TreeDataGridRowDropPosition.Before when SortDirectionCurrent.Value == ListSortDirection.Descending:
-                        relativePosition = TargetRelativePosition.AfterTarget;
-                        break;
-                    case TreeDataGridRowDropPosition.Inside when SortDirectionCurrent.Value == ListSortDirection.Ascending:
-                        relativePosition = PointerIsInVerticalTopHalf(eventArgs) ? TargetRelativePosition.BeforeTarget : TargetRelativePosition.AfterTarget;
-                        break;
-                    case TreeDataGridRowDropPosition.Inside when SortDirectionCurrent.Value == ListSortDirection.Descending:
-                        relativePosition = PointerIsInVerticalTopHalf(eventArgs) ? TargetRelativePosition.AfterTarget : TargetRelativePosition.BeforeTarget;
-                        break;
-                    case TreeDataGridRowDropPosition.None:
-                        // Invalid target, no move
-                        return;
-                    default:
-                        return;
-                }
-
-                var task = relativePosition switch
-                {
-                    TargetRelativePosition.BeforeTarget => _loadoutManager.LoseFileConflict(itemIds, anchorId),
-                    TargetRelativePosition.AfterTarget => _loadoutManager.WinFileConflict(itemIds, anchorId),
+                    (TreeDataGridRowDropPosition.Before, ListSortDirection.Ascending) => prevTarget,
+                    (TreeDataGridRowDropPosition.Before, ListSortDirection.Descending) => targetModel,
+                    (TreeDataGridRowDropPosition.After, ListSortDirection.Ascending) => targetModel,
+                    (TreeDataGridRowDropPosition.After, ListSortDirection.Descending) => nextTarget,
+                    (TreeDataGridRowDropPosition.Inside, ListSortDirection.Ascending) => PointerIsInVerticalTopHalf(eventArgs) ? prevTarget : targetModel,
+                    (TreeDataGridRowDropPosition.Inside, ListSortDirection.Descending) => PointerIsInVerticalTopHalf(eventArgs) ? targetModel : nextTarget,
                 };
 
-                await task;
+                var loserId = losingItemModel.Convert(x => (LoadoutItemGroupPriorityId)x.Key);
+                await _loadoutManager.ResolveFileConflicts(itemIds, loserId);
             },
             awaitOperation: AwaitOperation.Drop).AddTo(disposables);
         });
     }
 
-    private async Task Move(EntityId anchorId, FileConflictsComponents.NeighbourIds neighbourIds, ListSortDirection sortDirection, bool moveUp)
+    private async Task Move(EntityId toMove, FileConflictsComponents.NeighbourIds neighbourIds, ListSortDirection sortDirection, bool moveUp)
     {
-        var makeAnchorWinner = (sortDirection, moveUp) switch
+        var (winnerId, loserId) = (sortDirection, moveUp) switch
         {
-            (ListSortDirection.Ascending, moveUp: false) => true,
-            (ListSortDirection.Descending, moveUp: true) => true,
-            _ => false,
+            (ListSortDirection.Ascending, moveUp: false) => (toMove, neighbourIds.Next.Value),
+            (ListSortDirection.Ascending, moveUp: true) => (neighbourIds.Prev.Value, toMove),
+            (ListSortDirection.Descending, moveUp: false) => (neighbourIds.Prev.Value, toMove),
+            (ListSortDirection.Descending, moveUp: true) => (toMove, neighbourIds.Next.Value),
         };
 
-        var target = (sortDirection, moveUp) switch
-        {
-            (ListSortDirection.Ascending, moveUp: false) => neighbourIds.Next.Value,
-            (ListSortDirection.Ascending, moveUp: true) => neighbourIds.Prev.Value,
-            (ListSortDirection.Descending, moveUp: false) => neighbourIds.Prev.Value,
-            (ListSortDirection.Descending, moveUp: true) => neighbourIds.Next.Value,
-        };
-
-        Debug.Assert(target.Value != 0, "should select correct non-null target");
-
-        if (makeAnchorWinner) await _loadoutManager.WinFileConflict(winnerIds: [anchorId], loserId: target);
-        else await _loadoutManager.LoseFileConflict(loserIds: [anchorId], winnerId: target);
+        await _loadoutManager.ResolveFileConflicts(winnerIds: [LoadoutItemGroupPriorityId.From(winnerId)], LoadoutItemGroupPriorityId.From(loserId));
     }
 
     private static async Task HandleViewConflictsMessage(
