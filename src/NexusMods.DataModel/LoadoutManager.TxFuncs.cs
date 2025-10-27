@@ -74,24 +74,23 @@ internal partial class LoadoutManager
                 .OrderBy(static model => model.Priority)
                 .ToList();
 
-            var items = _winnerIds
-                .Select(id => LoadoutItemGroupPriority.Load(basis, id))
-                .OrderBy(x => x.Priority)
+            var items = priorities
+                .Where(x => _winnerIds.Contains(x.LoadoutItemGroupPriorityId))
                 .ToArray();
 
+            var loserIndex = _loserId.Convert(id => priorities.FindIndex(other => other.Id == id.Value));
+ 
             // remove items
             foreach (var item in items)
             {
-                if (item.LoadoutId != _loadoutId) throw new ArgumentException($"Expected item {item.Id} to be in the loadout {_loadoutId} but found {item.LoadoutId}");
-
                 var index = priorities.FindIndex(other => other.Id == item.Id);
                 Debug.Assert(index != -1, "should be an existing model");
-
                 priorities.RemoveAt(index);
+
+                if (loserIndex.HasValue && loserIndex.Value >= index) loserIndex = loserIndex.Value - 1;
             }
 
             // insert items
-            var loserIndex = _loserId.Convert(id => priorities.FindIndex(other => other.Id == id.Value));
             var insertIndex = loserIndex.HasValue ? loserIndex.Value + 1 : 0;
 
             Debug.Assert(insertIndex >= 0 || insertIndex < priorities.Count);
