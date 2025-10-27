@@ -13,7 +13,7 @@
         <collectionMenuItem:CollectionMenuItemDesignViewModel />
     </Design.DataContext>
 
-    <DockPanel Margin="{StaticResource ButtonPaddingSmall}">
+    <DockPanel Margin="{StaticResource ButtonPaddingSmall}" x:Name="RootPanel">
         <!-- Left side: Collection name -->
         <TextBlock x:Name="CollectionName" DockPanel.Dock="Left" VerticalAlignment="Center" />
         

@@ -834,4 +834,10 @@
             <LastGenOutput>Language.Designer.cs</LastGenOutput>
         </EmbeddedResource>
     </ItemGroup>
+
+    <ItemGroup>
+      <AvaloniaXaml Update="Controls\CollectionMenuItem\CollectionMenuItemDesignPreview.axaml">
+        <DependentUpon>CollectionMenuItem.axaml</DependentUpon>
+      </AvaloniaXaml>
+    </ItemGroup>
 </Project>

@@ -6,6 +6,7 @@ public interface ICollectionMenuItemViewModel : IViewModelInterface
 {
     string CollectionName { get; set; }
     bool IsReadOnly { get; set; }
+    string ToolTipText { get; set; }
     
     /// <summary>
     /// Checkbox state.
