@@ -91,4 +91,14 @@ public interface ILoadoutManager
     /// The items will move to the lowest priority.
     /// </remarks>
     ValueTask ResolveFileConflicts(LoadoutItemGroupPriorityId[] winnerIds, Optional<LoadoutItemGroupPriorityId> loserId);
+
+    /// <summary>
+    /// Make items in <paramref name="losers"/> lose all file conflicts.
+    /// </summary>
+    ValueTask LoseAllFileConflicts(LoadoutItemGroupPriorityId[] loserIds) => ResolveFileConflicts(winnerIds: loserIds, loserId: Optional<LoadoutItemGroupPriorityId>.None);
+
+    /// <summary>
+    /// Make items in <paramref name="winnerIds"/> win all file conflicts.
+    /// </summary>
+    ValueTask WinAllFileConflicts(LoadoutItemGroupPriorityId[] winnerIds);
 }

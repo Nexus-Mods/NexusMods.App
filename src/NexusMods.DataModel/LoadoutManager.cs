@@ -447,4 +447,15 @@ internal partial class LoadoutManager : ILoadoutManager
 
         await tx.Commit();
     }
+
+    public ValueTask WinAllFileConflicts(LoadoutItemGroupPriorityId[] winnerIds)
+    {
+        var db = _connection.Db;
+        var loser = LoadoutItemGroupPriority
+            .FindByLoadout(db, LoadoutItemGroupPriority.Load(db, winnerIds[0]).LoadoutId)
+            .OrderByDescending(static model => model.Priority)
+            .First();
+
+        return ResolveFileConflicts(winnerIds: winnerIds, loserId: loser.LoadoutItemGroupPriorityId);
+    }
 }
