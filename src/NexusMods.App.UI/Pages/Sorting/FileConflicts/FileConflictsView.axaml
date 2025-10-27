@@ -92,7 +92,7 @@
                                                                     ComponentKey="{x:Static local:FileConflictsColumns+ConflictsColumn.NumConflictsComponentKey}">
                                         <controls:ComponentTemplate.DataTemplate>
                                             <DataTemplate DataType="{x:Type local:FileConflictsComponents+NumConflicts}">
-                                                <StackPanel Orientation="Horizontal" Spacing="{StaticResource Spacing-3}">
+                                                <StackPanel Orientation="Horizontal" Spacing="{StaticResource Spacing-4}">
                                                     <icons:UnifiedIcon Size="16"
                                                                        Value="{x:Static icons:IconValues.Remove}" IsVisible="{CompiledBinding !HasLosers.Value}"
                                                                        Foreground="{StaticResource SurfaceTranslucentLow}"/>
