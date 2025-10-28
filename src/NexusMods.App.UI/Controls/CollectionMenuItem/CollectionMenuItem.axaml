@@ -22,7 +22,7 @@
         
         <!-- Right side: Lock icon and checkbox -->
         <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Spacing="{StaticResource Spacing-0.5}" HorizontalAlignment="Right">
-            <icons:UnifiedIcon x:Name="LockIcon" Value="{x:Static icons:IconValues.Lock}" IsVisible="False" />
+            <icons:UnifiedIcon x:Name="LockIcon" Value="{x:Static icons:IconValues.LockOutline}" IsVisible="False" />
             <CheckBox Classes="accent" x:Name="SelectionCheckbox" IsThreeState="True" />
         </StackPanel>
     </DockPanel>
