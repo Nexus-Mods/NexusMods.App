@@ -43,11 +43,11 @@ SELECT
   arg_max(loadout_item.TargetPath, coalesce(group_priority.Priority, 0)) AS TargetPath,
   arg_max(loadout_item.Hash, coalesce(group_priority.Priority, 0)) AS Hash,
   arg_max(loadout_item.Size, coalesce(group_priority.Priority, 0)) AS Size,
-  arg_max(loadout_item.IsEnabled, coalesce(group_priority.Priority, 0)) AS IsEnabled,
   arg_max(loadout_item.IsDeleted, coalesce(group_priority.Priority, 0)) AS IsDeleted
 FROM
   synchronizer.LeafLoadoutItems (db) loadout_item
   LEFT JOIN MDB_LOADOUTITEMGROUPPRIORITY(DB => db) group_priority ON loadout_item.Parent = group_priority.Target
+WHERE loadout_item.IsEnabled
 GROUP BY loadout_item.Loadout, loadout_item.TargetPath.Item2, loadout_item.TargetPath.Item3;
 
 -- All the files in the overrides group
@@ -85,7 +85,6 @@ WITH all_files AS
     (CASE WHEN loadout_item.IsDeleted THEN 'Deleted' ELSE 'Loadout' END)::synchronizer.ItemType ItemType,
     1 Layer
   FROM synchronizer.WinningLeafLoadoutItem(db) loadout_item
-    WHERE loadout_item.IsEnabled
   UNION
   -- Override files on Layer 2
   SELECT
