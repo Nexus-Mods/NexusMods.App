@@ -141,9 +141,8 @@ SELECT
 FROM
   synchronizer.LeafLoadoutItems (db) loadout_item
   LEFT JOIN MDB_LOADOUTITEMGROUPPRIORITY (Db => db) priority ON priority.Target = loadout_item.Parent
-  LEFT JOIN synchronizer.LoadoutGroups (db) loadout_item_group ON loadout_item_group.Id = loadout_item.Parent
 WHERE
-  priority.Id IS NOT NULL AND loadout_item.IsEnabled AND loadout_item_group.IsEnabled
+  priority.Id IS NOT NULL AND loadout_item.IsEnabled
 GROUP BY loadout_item.Loadout, loadout_item.TargetPath.Item2, loadout_item.TargetPath.Item3
 HAVING count(DISTINCT loadout_item.Hash) > 1;
 
