@@ -61,42 +61,6 @@ public static class CollectionCreator
         string TemplatedName() => string.Format(template, ++count);
     }
 
-    public static async ValueTask DeleteCollectionGroup(
-        IConnection connection,
-        CollectionGroupId managedCollectionGroup,
-        CancellationToken cancellationToken)
-    {
-        using var tx = connection.BeginTransaction();
-
-        var groups = new Queue<LoadoutItemGroupId>();
-        groups.Enqueue(managedCollectionGroup.Value);
-
-        while (groups.TryDequeue(out var groupId))
-        {
-            var group = LoadoutItemGroup.Load(connection.Db, groupId);
-            foreach (var datom in group)
-            {
-                datom.Retract(tx);
-            }
-
-            foreach (var child in group.Children)
-            {
-                if (child.IsLoadoutItemGroup())
-                {
-                    groups.Enqueue(child.Id);
-                    continue;
-                }
-
-                foreach (var datom in child)
-                {
-                    datom.Retract(tx);
-                }
-            }
-        }
-
-        await tx.Commit();
-    }
-    
     /// <summary>
     /// Creates a new collection group in the loadout.
     /// </summary>

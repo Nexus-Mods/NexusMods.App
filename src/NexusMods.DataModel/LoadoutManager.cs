@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using System.Xml;
 using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -414,7 +413,7 @@ internal partial class LoadoutManager : ILoadoutManager
         }
     }
 
-    public async ValueTask RemoveCollection(LoadoutId loadoutId, CollectionGroupId collection)
+    public async ValueTask RemoveCollection(CollectionGroupId collection)
     {
         var db = _connection.Db;
         using var tx = _connection.BeginTransaction();

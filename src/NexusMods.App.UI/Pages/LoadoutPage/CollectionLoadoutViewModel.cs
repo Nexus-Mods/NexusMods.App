@@ -5,6 +5,7 @@ using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Collections;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.App.UI.Controls.Navigation;
@@ -112,8 +113,7 @@ public class CollectionLoadoutViewModel : APageViewModel<ICollectionLoadoutViewM
             executeAsync: async (_, _) =>
             {
                 var workspaceController = GetWorkspaceController();
-                await CollectionDeleteHelpers.DeleteCollectionAsync(nexusCollectionGroup.AsCollectionGroup(), 
-                    workspaceController, connection, toastNotificationService);
+                await CollectionDeleteHelpers.DeleteCollectionAsync(nexusCollectionGroup.AsCollectionGroup(), serviceProvider.GetRequiredService<ILoadoutManager>(), workspaceController, connection, toastNotificationService);
             },
             awaitOperation: AwaitOperation.Drop,
             configureAwait: false

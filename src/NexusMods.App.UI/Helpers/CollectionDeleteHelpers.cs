@@ -2,6 +2,7 @@ using Avalonia.Threading;
 using DynamicData;
 using NexusMods.Abstractions.Collections;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.App.UI.Dialog;
 using NexusMods.App.UI.Dialog.Enums;
 using NexusMods.App.UI.Pages.CollectionDownload;
@@ -60,6 +61,7 @@ public static class CollectionDeleteHelpers
     /// <returns>A task representing the asynchronous operation.</returns>
     public static async Task DeleteCollectionAsync(
         CollectionGroupId collectionId, 
+        ILoadoutManager loadoutManager,
         IWorkspaceController workspaceController,
         IConnection connection, 
         IWindowNotificationService notificationService)
@@ -92,9 +94,8 @@ public static class CollectionDeleteHelpers
                     context => context.GroupScope == CollectionGroupId.From(group.Id))
             );
         }
-        
-        await CollectionCreator.DeleteCollectionGroup(connection, collectionId, CancellationToken.None);
-        
+
+        await loadoutManager.RemoveCollection(collectionId);
         notificationService.ShowToast(Language.ToastNotification_Collection_removed);
     }
 
