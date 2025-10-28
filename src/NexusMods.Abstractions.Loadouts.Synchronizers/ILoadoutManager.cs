@@ -4,6 +4,7 @@ using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.GC;
 using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Library.Models;
+using NexusMods.Abstractions.Loadouts.Synchronizers.Conflicts;
 using NexusMods.Sdk.Jobs;
 
 namespace NexusMods.Abstractions.Loadouts.Synchronizers;
@@ -77,5 +78,23 @@ public interface ILoadoutManager
     /// </summary>
     ValueTask RemoveCollection(LoadoutId loadoutId, CollectionGroupId collection);
 
+    /// <summary>
+    /// Removes all groups and installs the new library item.
+    /// </summary>
     ValueTask ReplaceItems(LoadoutId loadoutId, LoadoutItemGroupId[] groupsToRemove, LibraryItem.ReadOnly libraryItemToInstall);
+
+    /// <summary>
+    /// Resolves file conflicts by making items in <paramref name="winnerIds"/> win over <paramref name="loserId"/>.
+    /// </summary>
+    ValueTask ResolveFileConflicts(LoadoutItemGroupPriorityId[] winnerIds, LoadoutItemGroupPriorityId loserId);
+
+    /// <summary>
+    /// Make items in <paramref name="losers"/> lose all file conflicts.
+    /// </summary>
+    ValueTask LoseAllFileConflicts(LoadoutItemGroupPriorityId[] loserIds);
+
+    /// <summary>
+    /// Make items in <paramref name="winnerIds"/> win all file conflicts.
+    /// </summary>
+    ValueTask WinAllFileConflicts(LoadoutItemGroupPriorityId[] winnerIds);
 }

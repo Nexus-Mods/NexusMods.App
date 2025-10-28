@@ -8,20 +8,6 @@ namespace NexusMods.Abstractions.Loadouts.Synchronizers;
 
 public partial class ALoadoutSynchronizer
 {
-    private static Query<(LocationId Location, RelativePath Path, List<(EntityId Id, bool IsEnabled, bool IsDeleted)>)> FileConflictsQuery(IDb db, LoadoutId loadoutId, bool removeDuplicates)
-    {
-        return db.Connection.Query<(LocationId Location, RelativePath Path, List<(EntityId Id, bool IsEnabled, bool IsDeleted)>)>(
-            $"SELECT Path.Location, Path.Path, Conflicts FROM synchronizer.FileConflicts({db}, {loadoutId}, {removeDuplicates})"
-        );
-    }
-
-    private static Query<(EntityId GroupId, List<(EntityId Id, LocationId Location, RelativePath Path)>)> FileConflictsByParentGroupQuery(IDb db, LoadoutId loadoutId, bool removeDuplicates)
-    {
-        return db.Connection.Query<(EntityId GroupId, List<(EntityId Id, LocationId Location, RelativePath Path)>)>(
-            $"SELECT * FROM synchronizer.FileConflictsByParentGroup({db}, {loadoutId}, {removeDuplicates})"
-        );
-    }
-
     private static Query<(EntityId Id, Hash Hash, Size Size, LocationId Location, RelativePath Path, string ItemType)> WinningFilesQuery(IDb db, LoadoutId loadoutId)
     {
         // TODO: https://github.com/Nexus-Mods/NexusMods.MnemonicDB/issues/183

@@ -152,8 +152,8 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
                 adapter.RowDropSubject
                     .SubscribeAwait(async (dragDropPayload, cancellationToken) =>
                         {
-                            var (sourceModels, targetModel, eventArgs) = dragDropPayload;
-                            
+                            var (sourceModels, targetModel, _, _, eventArgs) = dragDropPayload;
+
                             // Determine source items
                             var keysToMove = sourceModels.Select(item => item.Key).ToArray();
                             if (keysToMove.Length == 0) return;

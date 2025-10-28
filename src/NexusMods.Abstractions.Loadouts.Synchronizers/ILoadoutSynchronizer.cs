@@ -1,10 +1,6 @@
-using DynamicData.Kernel;
 using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.GC;
 using NexusMods.Abstractions.Loadouts.Files.Diff;
 using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.MnemonicDB.Abstractions.IndexSegments;
-using NexusMods.Sdk.Jobs;
 using OneOf;
 
 namespace NexusMods.Abstractions.Loadouts.Synchronizers;
@@ -45,9 +41,6 @@ public interface ILoadoutSynchronizer
     /// new changes in the loadout will be applied to the game folder.
     /// </summary>
     Task<Loadout.ReadOnly> Synchronize(Loadout.ReadOnly loadout, SynchronizeLoadoutJob? job = null);
-
-    Dictionary<GamePath, FileConflictGroup> GetFileConflicts(Loadout.ReadOnly loadout, bool removeDuplicates = true);
-    Dictionary<LoadoutItemGroup.ReadOnly, LoadoutFile.ReadOnly[]> GetFileConflictsByParentGroup(Loadout.ReadOnly loadout, bool removeDuplicates = true);
 
     /// <summary>
     /// Rescan the files in the folders this game requires. This is used to bring the local cache up to date with the
