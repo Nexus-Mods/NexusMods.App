@@ -286,7 +286,7 @@ public class FileConflictsTreeDataGridAdapter : TreeDataGridAdapter<CompositeIte
 
     protected override IObservable<IChangeSet<CompositeItemModel<EntityId>, EntityId>> GetRootsObservable(bool viewHierarchical)
     {
-        return ObservePriorityGroups(_connection, _loadoutId).TransformWithInlineUpdate(CreateItemModel, UpdateItemModel);
+        return ObservePriorityGroups(_connection, _loadoutId).OnUI().TransformWithInlineUpdate(CreateItemModel, UpdateItemModel);
     }
 
     private CompositeItemModel<EntityId> CreateItemModel((EntityId, long, EntityId, EntityId, long, long) tuple)
