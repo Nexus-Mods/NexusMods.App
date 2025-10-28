@@ -282,6 +282,20 @@ public class FileConflictsTreeDataGridAdapter : TreeDataGridAdapter<CompositeIte
                 adapter.MessageSubject.OnNext(new MoveDownCommandPayload(itemModel));
             })
         );
+        
+        // IsActive styling
+        model.SubscribeToComponentAndTrack<ValueComponent<bool>, FileConflictsTreeDataGridAdapter>(
+            key: FileConflictsColumns.IsActiveComponentKey,
+            state: this,
+            factory: static (adapter, itemModel, component) => component.Value
+                .Subscribe((adapter, itemModel, component),
+                    static (_, tuple) =>
+                    {
+                        var (_, itemModel, component) = tuple;
+                        itemModel.SetStyleFlag(FileConflictsColumns.IsActiveStyleTag, component.Value.Value);
+                    }
+                )
+        );
     }
 
     protected override IObservable<IChangeSet<CompositeItemModel<EntityId>, EntityId>> GetRootsObservable(bool viewHierarchical)
@@ -346,6 +360,9 @@ public class FileConflictsTreeDataGridAdapter : TreeDataGridAdapter<CompositeIte
             canExecuteMoveUp: canExecuteMoveUp,
             canExecuteMoveDown: canExecuteMoveDown
         ));
+        
+        // NOTE(Al12rs): Mark all items as active for styling purposes, change this if we need to display inactive items
+        itemModel.Add(FileConflictsColumns.IsActiveComponentKey, new ValueComponent<bool>(true));
 
         return itemModel;
     }

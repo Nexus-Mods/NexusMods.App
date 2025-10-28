@@ -115,4 +115,7 @@ public static class FileConflictsColumns
         public static string GetColumnHeader() => "Actions";
         public static string GetColumnTemplateResourceKey() => ColumnTemplateResourceKey;
     }
+    
+    public static readonly ComponentKey IsActiveComponentKey = ComponentKey.From(nameof(FileConflictsColumns) + "_" + "IsActiveComponent");
+    public static readonly string IsActiveStyleTag = "IsActive";
 }
