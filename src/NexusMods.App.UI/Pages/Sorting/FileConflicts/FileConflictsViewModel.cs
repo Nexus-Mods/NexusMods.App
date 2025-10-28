@@ -18,6 +18,7 @@ using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Controls.MarkdownRenderer;
 using NexusMods.App.UI.Dialog;
 using NexusMods.App.UI.Dialog.Enums;
+using NexusMods.App.UI.Pages.LoadoutPage;
 using NexusMods.App.UI.Windows;
 using NexusMods.HyperDuck;
 using NexusMods.MnemonicDB.Abstractions;
@@ -335,6 +336,11 @@ public class FileConflictsTreeDataGridAdapter : TreeDataGridAdapter<CompositeIte
             numLosers: new ValueComponent<long>(value: numLosingFiles)
         ));
 
+        if (loadoutGroup.AsLoadoutItem().Parent.TryGetAsCollectionGroup(out var collection))
+        {
+            itemModel.Add(LoadoutColumns.Collections.ComponentKey, new StringComponent(value: collection.AsLoadoutItemGroup().AsLoadoutItem().Name));
+        }
+
         itemModel.Add(FileConflictsColumns.Actions.ViewComponentKey, new FileConflictsComponents.ViewAction(hasConflicts: numWinningFiles > 0 || numLosingFiles > 0));
 
         var neighbourIds = new FileConflictsComponents.NeighbourIds(previousId, nextId);
@@ -431,6 +437,7 @@ public class FileConflictsTreeDataGridAdapter : TreeDataGridAdapter<CompositeIte
             ITreeDataGridItemModel<CompositeItemModel<EntityId>, EntityId>.CreateExpanderColumn(indexColumn),
             ColumnCreator.Create<EntityId, SharedColumns.Name>(canUserSortColumn: false),
             ColumnCreator.Create<EntityId, FileConflictsColumns.ConflictsColumn>(canUserSortColumn: false),
+            ColumnCreator.Create<EntityId, LoadoutColumns.Collections>(canUserSortColumn: false),
             ColumnCreator.Create<EntityId, FileConflictsColumns.Actions>(canUserSortColumn: false),
         ];
     }

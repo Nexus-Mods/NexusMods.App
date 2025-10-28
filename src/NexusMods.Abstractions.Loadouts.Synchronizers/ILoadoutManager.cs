@@ -76,7 +76,7 @@ public interface ILoadoutManager
     /// <summary>
     /// Removes a collection.
     /// </summary>
-    ValueTask RemoveCollection(LoadoutId loadoutId, CollectionGroupId collection);
+    ValueTask RemoveCollection(CollectionGroupId collection);
 
     /// <summary>
     /// Removes all groups and installs the new library item.
