@@ -11,10 +11,12 @@ using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.FileHashes;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.Types;
+using NexusMods.Hashing.xxHash3;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Networking.NexusWebApi.Errors;
@@ -59,6 +61,111 @@ public static class CollectionCreator
 
         return current;
         string TemplatedName() => string.Format(template, ++count);
+    }
+
+    public static async Task<EntityId> MakeEditableLocalCollection(
+        ILoadoutManager loadoutManager,
+        IConnection conn,
+        CollectionGroupId collectionGroupId,
+        string newName)
+    {
+        var cloneId = await loadoutManager.CloneCollection(collectionGroupId);
+        var cloneEnt = NexusCollectionLoadoutGroup.Load(conn.Db, cloneId);
+
+        using var tx = conn.BeginTransaction();
+        // Remap the name
+        tx.Add(cloneId, LoadoutItem.Name, newName);
+        // Make it editable
+        tx.Add(cloneId, CollectionGroup.IsReadOnly, false);
+        // Retract the Nexus references as this is no longer associated with the official collection
+        tx.Retract(cloneId, NexusCollectionLoadoutGroup.RevisionId, NexusCollectionLoadoutGroup.RevisionId.Get(cloneEnt));
+        tx.Retract(cloneId, NexusCollectionLoadoutGroup.CollectionId, NexusCollectionLoadoutGroup.CollectionId.Get(cloneEnt));
+        tx.Retract(cloneId, NexusCollectionLoadoutGroup.LibraryFileId, NexusCollectionLoadoutGroup.LibraryFileId.Get(cloneEnt));
+
+        // Retract the Nexus references in items so that this is no longer associated with the official collection
+        var db = conn.Db;
+        foreach (var item in conn.Query<EntityId>($"SELECT Id FROM mdb_NexusCollectionItemLoadoutGroup(Db=>{db}) WHERE Parent = {cloneId.Id}"))
+        {
+            var ent = NexusCollectionItemLoadoutGroup.Load(db, item);
+            tx.Retract(item, NexusCollectionItemLoadoutGroup.Download, NexusCollectionItemLoadoutGroup.Download.Get(ent));
+            tx.Retract(item, NexusCollectionItemLoadoutGroup.IsRequired, NexusCollectionItemLoadoutGroup.IsRequired.Get(ent));
+
+            if (NexusCollectionReplicatedLoadoutGroup.Replicated.TryGetValue(ent, out var replicated))
+                tx.Retract(item, NexusCollectionReplicatedLoadoutGroup.Replicated, replicated);
+
+            if (NexusCollectionBundledLoadoutGroup.CollectionLibraryFileId.TryGetValue(ent, out var bundleLibraryFileId))
+                tx.Retract(item, NexusCollectionBundledLoadoutGroup.CollectionLibraryFileId, bundleLibraryFileId);
+
+            if (NexusCollectionBundledLoadoutGroup.BundleDownload.TryGetValue(ent, out var bundleDownload))
+            {
+                tx.Retract(item, NexusCollectionBundledLoadoutGroup.BundleDownload, bundleDownload);
+
+                // We've now orphaned the bundled files, so we'll now create a download archive that contains the files this loadout group needs.
+
+                var fileName = "Bundled Files - " + ent.AsLoadoutItemGroup().AsLoadoutItem().Name;
+
+                // Create a new library item, 
+                var libraryFile = new ManuallyCreatedArchive.New(tx, out var libraryFileId)
+                {
+                    Source = ManuallyCreatedArchive.CreationSource.CollectionBundled,
+                    LibraryArchive = new LibraryArchive.New(tx, libraryFileId)
+                    {
+                        IsArchive = true,
+                        LibraryFile = new LibraryFile.New(tx, libraryFileId)
+                        {
+                            Hash = Hash.Zero,
+                            // We'll update the size later with the total size of all the files
+                            Size = Size.Zero,
+                            FileName = fileName,
+                            LibraryItem = new LibraryItem.New(tx, libraryFileId)
+                            {
+                                Name = fileName,
+                            },
+                        },
+
+                    },
+                };
+
+                // Link the mod group to the archive
+                tx.Add(item, LibraryLinkedLoadoutItem.LibraryItemId, libraryFileId);
+
+                var added = new HashSet<Hash>();
+
+                var sum = Size.Zero;
+                // Now link up all the required items
+                foreach (var child in ent.AsLoadoutItemGroup().Children.OfTypeLoadoutItemWithTargetPath().OfTypeLoadoutFile())
+                {
+                    // Don't add duplicates
+                    if (added.Contains(child.Hash))
+                        continue;
+
+                    var name = child.AsLoadoutItemWithTargetPath().AsLoadoutItem().Name;
+                    _ = new LibraryArchiveFileEntry.New(tx, out var fileId)
+                    {
+                        ParentId = libraryFileId,
+                        Path = child.AsLoadoutItemWithTargetPath().TargetPath.Item3,
+                        LibraryFile = new LibraryFile.New(tx, fileId)
+                        {
+                            Hash = child.Hash,
+                            Size = child.Size,
+                            FileName = name,
+                            LibraryItem = new LibraryItem.New(tx, fileId)
+                            {
+                                Name = name,
+                            },
+                        },
+                    };
+                    sum += child.Size;
+                    added.Add(child.Hash);
+                }
+
+                tx.Add(libraryFileId, NexusMods.Abstractions.Library.Models.LibraryFile.Size, sum);
+            }
+
+        }
+
+        await tx.Commit();
+        return cloneId;
     }
 
     /// <summary>
