@@ -493,6 +493,23 @@ internal partial class LoadoutManager : ILoadoutManager
             }
         }
 
+        var loadoutId = CollectionGroup.Load(basisDb, collectionId).AsLoadoutItemGroup().AsLoadoutItem().LoadoutId;
+        var nextPriority = GetNextPriority(loadoutId, _connection.Db);
+        var oldPriorities = LoadoutItemGroupPriority.All(basisDb).Where(priority => priority.Target.AsLoadoutItem().ParentId.Value == collectionId.Value).OrderBy(x => x.Priority).ToArray();
+
+        for (uint i = 0; i < oldPriorities.Length; i++)
+        {
+            var oldPriority = oldPriorities[i];
+            _ = new LoadoutItemGroupPriority.New(tx)
+            {
+                LoadoutId = loadoutId,
+                Priority = ConflictPriority.From(nextPriority.Value + i),
+                TargetId = remappedIds[oldPriority.TargetId],
+            };
+        }
+
+        tx.Add(new RebalancePrioritiesTxFunc(loadoutId, toSkip: []));
+
         var result = await tx.Commit();
         return CollectionGroup.Load(result.Db, result[remappedIds[collectionId]]);
     }
