@@ -9,6 +9,7 @@ using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.Helpers;
 using NexusMods.App.UI.Resources;
+using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
@@ -35,6 +36,7 @@ public class CollectionLeftMenuItemViewModel : LeftMenuItemViewModel, ILeftMenuI
     private readonly IWorkspaceController _workspaceController;
     private readonly bool _isNexusCollection;
     private readonly IWindowNotificationService _toastNotificationService;
+    private readonly IWindowManager _windowManager;
 
     public CollectionLeftMenuItemViewModel(
         IWorkspaceController workspaceController,
@@ -46,6 +48,7 @@ public class CollectionLeftMenuItemViewModel : LeftMenuItemViewModel, ILeftMenuI
         _serviceProvider = serviceProvider;
         _connection = serviceProvider.GetRequiredService<IConnection>();
         _toastNotificationService = serviceProvider.GetRequiredService<IWindowNotificationService>();
+        _windowManager = serviceProvider.GetRequiredService<IWindowManager>();
         _workspaceController = workspaceController;
 
         CollectionGroupId = collectionGroupId;
@@ -122,12 +125,18 @@ public class CollectionLeftMenuItemViewModel : LeftMenuItemViewModel, ILeftMenuI
 
         return ReactiveCommand.CreateFromTask(async () =>
         {
-            await CollectionDeleteHelpers.DeleteCollectionAsync(
-                CollectionGroupId,
-                _serviceProvider.GetRequiredService<ILoadoutManager>(),
-                _workspaceController,
-                _connection,
-                _toastNotificationService);
+            var collectionName = LoadoutItem.Load(_connection.Db, CollectionGroupId).Name;
+            var confirmed = await CollectionDeleteHelpers.ShowDeleteConfirmationDialogAsync(collectionName, _windowManager);
+            
+            if (confirmed)
+            {
+                await CollectionDeleteHelpers.DeleteCollectionAsync(
+                    CollectionGroupId,
+                    _serviceProvider.GetRequiredService<ILoadoutManager>(),
+                    _workspaceController,
+                    _connection,
+                    _toastNotificationService);
+            }
         }, canExecute: canExecute);
     }
 }
