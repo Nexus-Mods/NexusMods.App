@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -13,8 +14,10 @@ using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.Loadouts.Synchronizers.Conflicts;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.DatomIterators;
+using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 using NexusMods.MnemonicDB.Abstractions.Internals;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
+using NexusMods.MnemonicDB.Abstractions.ValueSerializers;
 using NexusMods.Sdk.Jobs;
 
 namespace NexusMods.DataModel;
@@ -423,6 +426,75 @@ internal partial class LoadoutManager : ILoadoutManager
         RemoveItems(tx, groupIds);
 
         await tx.Commit();
+    }
+
+    public async ValueTask<CollectionGroup.ReadOnly> CloneCollection(CollectionGroupId collectionId)
+    {
+        Span<byte> refScratch = stackalloc byte[8];
+        using var writer = new PooledMemoryBufferWriter();
+
+        var basisDb = _connection.Db;
+
+        Dictionary<EntityId, EntityId> remappedIds = new();
+        var query = _connection.Query<EntityId>($"""
+                                          WITH RECURSIVE ChildLoadoutItems (Id) AS 
+                                          (SELECT {collectionId.Value} 
+                                          UNION
+                                          SELECT Id FROM (SELECT Id, Parent FROM mdb_LoadoutItem(Db=>{basisDb})
+                                          UNION ALL
+                                          SELECT Id, ParentEntity FROM mdb_SortOrder(Db=>{basisDb})
+                                          UNION ALL
+                                          SELECT Id, ParentSortOrder FROM mdb_SortOrderItem(Db=>{basisDb}))
+                                          WHERE Parent in (SELECT Id FROM ChildLoadoutItems))
+                                          SELECT DISTINCT Id FROM ChildLoadoutItems
+                                          """);
+        using var tx = _connection.BeginTransaction();
+        foreach (var itemId in query)
+        {
+            remappedIds.TryAdd(itemId, tx.TempId());
+        }
+
+        foreach (var (oldId, newId) in remappedIds)
+        {
+            var entity = basisDb.Get(oldId);
+            foreach (var datom in entity)
+            {
+                // Remap the value part of references
+                if (datom.Prefix.ValueTag == ValueTag.Reference)
+                {
+                    var oldRef = EntityId.From(UInt64Serializer.Read(datom.ValueSpan));
+                    if (!remappedIds.TryGetValue(oldRef, out var newRef))
+                    {
+                        tx.Add(newId, datom.A, datom.Prefix.ValueTag, datom.ValueSpan);
+                        continue;
+                    }
+                    MemoryMarshal.Write(refScratch, newRef);
+                    tx.Add(newId, datom.A, datom.Prefix.ValueTag, refScratch);
+                }
+                // It's rare, but the Ref,UShort/String tuple type may include a ref that needs to be remapped
+                else if (datom.Prefix.ValueTag == ValueTag.Tuple3_Ref_UShort_Utf8I)
+                {
+                    var (r, s, str) = Tuple3_Ref_UShort_Utf8I_Serializer.Read(datom.ValueSpan);
+                    if (!remappedIds.TryGetValue(r, out var newR))
+                    {
+                        tx.Add(newId, datom.A, datom.Prefix.ValueTag, datom.ValueSpan);
+                        continue;
+                    }
+                    writer.Reset();
+                    var newTuple = (newR, s, str);
+                    Tuple3_Ref_UShort_Utf8I_Serializer.Write(newTuple, writer);
+                    tx.Add(newId, datom.A, datom.Prefix.ValueTag, writer.GetWrittenSpan());
+                }
+                // Otherwise just remap the E value
+                else
+                {
+                    tx.Add(newId, datom.A, datom.Prefix.ValueTag, datom.ValueSpan);
+                }
+            }
+        }
+
+        var result = await tx.Commit();
+        return CollectionGroup.Load(result.Db, result[remappedIds[collectionId]]);
     }
 
     public async ValueTask ReplaceItems(LoadoutId loadoutId, LoadoutItemGroupId[] groupsToRemove, LibraryItem.ReadOnly libraryItemToInstall)

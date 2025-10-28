@@ -79,6 +79,11 @@ public interface ILoadoutManager
     ValueTask RemoveCollection(CollectionGroupId collection);
 
     /// <summary>
+    /// Clones a collection.
+    /// </summary>
+    ValueTask<CollectionGroup.ReadOnly> CloneCollection(CollectionGroupId collection);
+
+    /// <summary>
     /// Removes all groups and installs the new library item.
     /// </summary>
     ValueTask ReplaceItems(LoadoutId loadoutId, LoadoutItemGroupId[] groupsToRemove, LibraryItem.ReadOnly libraryItemToInstall);
