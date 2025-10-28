@@ -45,6 +45,12 @@ internal partial class LoadoutManager
                 var index = Array.BinarySearch(_toSkip, model.TargetId);
                 if (index >= 0) continue;
 
+                if (!model.Target.IsValid())
+                {
+                    tx.Delete(model.Id, recursive: false);
+                    continue;
+                }
+
                 var newPriority = ConflictPriority.From(++start);
                 tx.Add(model.Id, LoadoutItemGroupPriority.Priority, newPriority);
             }
