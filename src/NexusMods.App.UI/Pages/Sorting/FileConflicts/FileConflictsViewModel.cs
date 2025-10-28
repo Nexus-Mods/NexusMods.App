@@ -22,7 +22,7 @@ using NexusMods.App.UI.Pages.LoadoutPage;
 using NexusMods.App.UI.Windows;
 using NexusMods.HyperDuck;
 using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.Paths;
+using Humanizer;
 using NexusMods.Sdk.Resources;
 using NexusMods.UI.Sdk;
 using R3;
@@ -362,7 +362,7 @@ public class FileConflictsTreeDataGridAdapter : TreeDataGridAdapter<CompositeIte
 
         itemModel.Add(FileConflictsColumns.IndexColumn.IndexComponentKey, new SharedComponents.IndexComponent(
             new ValueComponent<int>((int)index),
-            new ValueComponent<string>(index.ToString()),
+            new ValueComponent<string>(((int)index).Ordinalize()),
             canExecuteMoveUp: canExecuteMoveUp,
             canExecuteMoveDown: canExecuteMoveDown
         ));
@@ -389,7 +389,7 @@ public class FileConflictsTreeDataGridAdapter : TreeDataGridAdapter<CompositeIte
 
         var indexComponent = itemModel.Get<SharedComponents.IndexComponent>(FileConflictsColumns.IndexColumn.IndexComponentKey);
         indexComponent.Index.Value.Value = (int)index;
-        indexComponent.DisplaySortIndexComponent.Value.Value = index.ToString();
+        indexComponent.DisplaySortIndexComponent.Value.Value = ((int)index).Ordinalize();
     }
 
     private static Query<(EntityId WinnerPriorityId, EntityId WinnerLoadoutItemId, EntityId ConflictPriorityId, EntityId ConflictLoadoutItemId, EntityId LoserPriorityId, EntityId LoserLoadoutItemId)> GetPriorityConflicts(
