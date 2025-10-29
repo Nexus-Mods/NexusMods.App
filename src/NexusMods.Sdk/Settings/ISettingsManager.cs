@@ -1,4 +1,5 @@
 using System.Collections.Frozen;
+using System.Diagnostics.CodeAnalysis;
 using JetBrains.Annotations;
 using R3;
 
@@ -18,8 +19,14 @@ public interface ISettingsManager
     /// <summary>
     /// Gets the current value for <typeparamref name="T"/>.
     /// </summary>
-    /// <returns>The current value.</returns>
+    /// <returns>The current value, or the default value for type T if not set.</returns>
     T Get<T>(string? key = null) where T : class, ISettings, new();
+    
+    /// <summary>
+    /// Gets the current value of <typeparamref name="T"/>, if it was set.
+    /// </summary>
+    /// <returns>True if a value was set, false otherwise.</returns>
+    bool TryGet<T>([NotNullWhen(true)] out T? value, string? key = null) where T : class, ISettings, new();
 
     /// <summary>
     /// Gets the default value for <typeparamref name="T"/>.

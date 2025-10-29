@@ -1,5 +1,6 @@
 using System.Collections.Frozen;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Reactive.Concurrency;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -18,7 +19,7 @@ internal class SettingsManager : ISettingsManager
     private readonly Subject<(SettingKey, object)> _subject = new();
     private readonly Dictionary<SettingKey, object> _values = new();
 
-    private readonly FrozenDictionary<Type, Func<object, object>> _overrides;
+    private readonly FrozenDictionary<SettingKey, Func<object, object>> _overrides;
 
     private readonly FrozenDictionary<Type, IStorageBackend> _storageBackendMappings;
     private readonly FrozenDictionary<Type, IAsyncStorageBackend> _asyncStorageBackendMappings;
@@ -73,7 +74,7 @@ internal class SettingsManager : ISettingsManager
         }
 
         Configs = configs.ToFrozenDictionary(x => x.Type, x => x);
-        _overrides = serviceProvider.GetServices<OverrideHack>().ToFrozenDictionary(x => x.SettingsType, x => x.Method);
+        _overrides = serviceProvider.GetServices<OverrideHack>().ToFrozenDictionary(x => new SettingKey(x.SettingsType, x.Key), x => x.Method);
         _storageBackendMappings = storageBackendMappings.ToFrozenDictionary();
         _asyncStorageBackendMappings = asyncStorageBackendMappings.ToFrozenDictionary();
     }
@@ -102,29 +103,59 @@ internal class SettingsManager : ISettingsManager
         var savedValue = Load<T>(key);
         if (savedValue is not null)
         {
-            savedValue = Override(savedValue, out _);
+            savedValue = GetOverride(settingKey, savedValue, out _);
             CoreSet(savedValue, settingKey, notify: false);
             return savedValue;
         }
 
         var defaultValue = GetDefault<T>();
-        defaultValue = Override(defaultValue, out var didOverride);
+        defaultValue = GetOverride(settingKey, defaultValue, out var didOverride);
         CoreSet(defaultValue, settingKey, notify: !didOverride);
 
         return defaultValue;
+    }
 
-        // ReSharper disable once VariableHidesOuterVariable
-        T Override(T value, out bool didOverride)
+    public bool TryGet<T>([NotNullWhen(true)] out T? value, string? key = null) where T : class, ISettings, new()
+    {
+        value = null;
+        var settingKey = new SettingKey(typeof(T), key);
+        
+        if (_values.TryGetValue(settingKey, out var obj))
         {
-            didOverride = false;
-            if (!_overrides.TryGetValue(typeof(T), out var overrideMethod)) return value;
-
-            var overriden = overrideMethod.Invoke(value);
-            Debug.Assert(overriden.GetType() == typeof(T));
-
-            didOverride = true;
-            return (T)overriden;
+            Debug.Assert(obj is T);
+            value = (obj as T)!;
+            return true;
         }
+        
+        var savedValue = Load<T>(key);
+        if (savedValue is not null)
+        {
+            savedValue = GetOverride(settingKey, savedValue, out _);
+            CoreSet(savedValue, settingKey, notify: false);
+            value = savedValue;
+            return true;
+        }
+        
+        var defaultValue = GetDefault<T>();
+        defaultValue = GetOverride(settingKey, defaultValue, out var didOverride);
+
+        if (!didOverride) return false;
+        
+        CoreSet(defaultValue, settingKey, notify: !didOverride);
+        value = defaultValue;
+        return true;
+    }
+    
+    private T GetOverride<T>(SettingKey settingKey, T value, out bool didOverride) where T : class, ISettings, new()
+    {
+        didOverride = false;
+        if (!_overrides.TryGetValue(settingKey, out var overrideMethod)) return value;
+
+        var overriden = overrideMethod.Invoke(value);
+        Debug.Assert(overriden.GetType() == typeof(T));
+
+        didOverride = true;
+        return (T)overriden;
     }
 
     public T GetDefault<T>() where T : class, ISettings, new()
