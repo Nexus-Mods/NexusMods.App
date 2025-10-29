@@ -1,5 +1,6 @@
 using System.Collections.Frozen;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Reactive.Concurrency;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -102,29 +103,59 @@ internal class SettingsManager : ISettingsManager
         var savedValue = Load<T>(key);
         if (savedValue is not null)
         {
-            savedValue = Override(savedValue, out _);
+            savedValue = GetOverride(savedValue, out _);
             CoreSet(savedValue, settingKey, notify: false);
             return savedValue;
         }
 
         var defaultValue = GetDefault<T>();
-        defaultValue = Override(defaultValue, out var didOverride);
+        defaultValue = GetOverride(defaultValue, out var didOverride);
         CoreSet(defaultValue, settingKey, notify: !didOverride);
 
         return defaultValue;
+    }
 
-        // ReSharper disable once VariableHidesOuterVariable
-        T Override(T value, out bool didOverride)
+    public bool TryGet<T>([NotNullWhen(true)] out T? value, string? key = null) where T : class, ISettings, new()
+    {
+        value = null;
+        var settingKey = new SettingKey(typeof(T), key);
+        
+        if (_values.TryGetValue(settingKey, out var obj))
         {
-            didOverride = false;
-            if (!_overrides.TryGetValue(typeof(T), out var overrideMethod)) return value;
-
-            var overriden = overrideMethod.Invoke(value);
-            Debug.Assert(overriden.GetType() == typeof(T));
-
-            didOverride = true;
-            return (T)overriden;
+            Debug.Assert(obj is T);
+            value = (obj as T)!;
+            return true;
         }
+        
+        var savedValue = Load<T>(key);
+        if (savedValue is not null)
+        {
+            savedValue = GetOverride(savedValue, out _);
+            CoreSet(savedValue, settingKey, notify: false);
+            value = savedValue;
+            return true;
+        }
+        
+        var overrideVal = GetDefault<T>();
+        overrideVal = GetOverride(overrideVal, out var didOverride);
+
+        if (!didOverride) return false;
+        
+        CoreSet(overrideVal, settingKey, notify: !didOverride);
+        value = overrideVal;
+        return true;
+    }
+    
+    private T GetOverride<T>(T value, out bool didOverride) where T : class, ISettings, new()
+    {
+        didOverride = false;
+        if (!_overrides.TryGetValue(typeof(T), out var overrideMethod)) return value;
+
+        var overriden = overrideMethod.Invoke(value);
+        Debug.Assert(overriden.GetType() == typeof(T));
+
+        didOverride = true;
+        return (T)overriden;
     }
 
     public T GetDefault<T>() where T : class, ISettings, new()
