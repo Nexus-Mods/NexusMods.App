@@ -531,12 +531,23 @@ internal partial class LoadoutManager : ILoadoutManager
         return CollectionGroup.Load(result.Db, result[remappedIds[collectionId]]);
     }
 
-    public async ValueTask ReplaceItems(LoadoutId loadoutId, LoadoutItemGroupId[] groupsToRemove, LibraryItem.ReadOnly libraryItemToInstall)
+    public async ValueTask ReplaceItems(LoadoutId loadoutId, LoadoutItemGroupId[] loadoutItemGroupsToRemove, LibraryItem.ReadOnly libraryItemToInstall)
     {
-        using var tx = _connection.BeginTransaction();
-        RemoveItems(tx, groupsToRemove);
-        await InstallItem(libraryItemToInstall, loadoutId, inputTx: tx);
-        await tx.Commit();
+        var groupedByParent = loadoutItemGroupsToRemove
+            .Select(id => LoadoutItemGroup.Load(_connection.Db, id))
+            .GroupBy(group => group.AsLoadoutItem().ParentId, model => model.LoadoutItemGroupId)
+            .ToArray();
+
+        foreach (var parentGroup in groupedByParent)
+        {
+            var parentId = parentGroup.Key;
+            var loadoutItemsInParent = parentGroup.ToArray();
+
+            using var tx = _connection.BeginTransaction();
+            RemoveItems(tx, loadoutItemsInParent);
+            await InstallItem(libraryItemToInstall, loadoutId, parent: parentId, inputTx: tx);
+            await tx.Commit();
+        }
     }
 
     public async ValueTask ResolveFileConflicts(LoadoutItemGroupPriorityId[] winnerIds, LoadoutItemGroupPriorityId loserId)
