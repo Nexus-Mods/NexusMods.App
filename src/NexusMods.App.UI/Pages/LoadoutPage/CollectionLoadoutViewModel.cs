@@ -5,6 +5,7 @@ using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Collections;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.App.UI.Controls.Navigation;
@@ -15,6 +16,7 @@ using NexusMods.App.UI.Helpers;
 using NexusMods.App.UI.Pages.CollectionDownload;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.Collections;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 using NexusMods.MnemonicDB.Abstractions.Query;
@@ -112,8 +114,7 @@ public class CollectionLoadoutViewModel : APageViewModel<ICollectionLoadoutViewM
             executeAsync: async (_, _) =>
             {
                 var workspaceController = GetWorkspaceController();
-                await CollectionDeleteHelpers.DeleteCollectionAsync(nexusCollectionGroup.AsCollectionGroup(), 
-                    workspaceController, connection, toastNotificationService);
+                await CollectionDeleteHelpers.DeleteCollectionAsync(nexusCollectionGroup.AsCollectionGroup(), serviceProvider.GetRequiredService<ILoadoutManager>(), workspaceController, connection, toastNotificationService);
             },
             awaitOperation: AwaitOperation.Drop,
             configureAwait: false
@@ -167,8 +168,8 @@ public class CollectionLoadoutViewModel : APageViewModel<ICollectionLoadoutViewM
                 if (result.ButtonId != ButtonDefinitionId.Accept || string.IsNullOrWhiteSpace(result.InputText))
                     return;
                 
-                var cloneId = await NexusCollectionLoadoutGroup.MakeEditableLocalCollection(group.Db.Connection, group.Id, result.InputText);
-                
+                var cloneId = await CollectionCreator.MakeEditableLocalCollection(serviceProvider.GetRequiredService<ILoadoutManager>(), group.Db.Connection, group.Id, result.InputText);
+
                 var pageData = new PageData
                 {
                     FactoryId = LoadoutPageFactory.StaticId,

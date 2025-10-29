@@ -95,6 +95,9 @@ public static class IconValues
     // https://pictogrammers.com/library/mdi/icon/lock/
     public static readonly IconValue Lock = new ProjektankerIcon("mdi-lock");
 
+    // https://pictogrammers.com/library/mdi/icon/lock-outline/
+    public static readonly IconValue LockOutline = new ProjektankerIcon("mdi-lock-outline");
+
     // https://pictogrammers.com/library/mdi/icon/open-in-new/
     public static readonly IconValue OpenInNew = new ProjektankerIcon("mdi-open-in-new");
     
@@ -246,6 +249,9 @@ public static class IconValues
     // https://pictogrammers.com/library/mdi/icon/plus-circle-outline/
     public static readonly IconValue AddCircleOutline = new ProjektankerIcon("mdi-plus-circle-outline");
 
+    // https://pictogrammers.com/library/mdi/icon/block-helper/
+    public static readonly IconValue Block = new ProjektankerIcon("mdi-block-helper");
+
     // https://pictogrammers.com/library/mdi/icon/content-copy/
     public static readonly IconValue Copy = new ProjektankerIcon("mdi-content-copy");
 
@@ -254,6 +260,9 @@ public static class IconValues
 
     // https://pictogrammers.com/library/mdi/icon/redo/
     public static readonly IconValue Redo = new ProjektankerIcon("mdi-redo");
+
+    // https://pictogrammers.com/library/mdi/icon/minus/
+    public static readonly IconValue Remove = new ProjektankerIcon("mdi-minus");
 
     // https://pictogrammers.com/library/mdi/icon/minus-circle-outline/
     public static readonly IconValue RemoveCircleOutline = new ProjektankerIcon("mdi-minus-circle-outline");

@@ -5,6 +5,7 @@ using Microsoft.Extensions.Time.Testing;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Backend.Tracking;
 using NexusMods.Paths;
+using NexusMods.Sdk;
 using NexusMods.Sdk.Settings;
 using NexusMods.Sdk.Tracking;
 using NSubstitute;
@@ -52,6 +53,10 @@ public class EventTrackerTests
         await Assert.That(buffer).IsNotNull();
 
         var json = Encoding.UTF8.GetString(buffer!.WrittenSpan);
-        await VerifyJson(json);
+        await VerifyJson(json)
+            .AddScrubber(s => s.Replace(
+                ApplicationConstants.Version.ToSafeString(maxFieldCount: 3),
+                "{{app_version}}"
+            ));
     }
 }

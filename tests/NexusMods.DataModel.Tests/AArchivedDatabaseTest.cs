@@ -10,6 +10,7 @@ using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Synchronizers.Conflicts;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Abstractions.Serialization;
@@ -45,6 +46,8 @@ public abstract class AArchivedDatabaseTest
 {
     private readonly SignatureChecker _zipSignatureChecker = new(FileType.ZIP);
     private readonly ITestOutputHelper _helper;
+
+    protected IServiceProvider ServiceProvider { get; private set; } = null!;
 
     protected AArchivedDatabaseTest(ITestOutputHelper helper)
     {
@@ -92,6 +95,8 @@ public abstract class AArchivedDatabaseTest
             .AddNexusModsCollections()
             .AddNexusModsLibraryModels()
             .AddSortOrderItemModel()
+            .AddLoadoutItemGroupPriorityModel()
+            .AddJobMonitor()
             .OverrideSettingsForTests<FileHashesServiceSettings>(settings => settings with
             {
                 HashDatabaseLocation = new ConfigurablePath(baseKnownPath, $"{baseDirectory}/FileHashService"),
@@ -186,7 +191,8 @@ public abstract class AArchivedDatabaseTest
         await host.StartAsync();
         
         var services = host.Services;
-        
+        ServiceProvider = services;
+
         var connection = services.GetRequiredService<IConnection>();
         
         var migrationService = services.GetRequiredService<MigrationService>();
@@ -200,8 +206,6 @@ public abstract class AArchivedDatabaseTest
         };
     }
 
-    
-    
     public static IEnumerable<object[]> DatabaseNames()
     {
         var databaseFolder = DatabaseFolder();

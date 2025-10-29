@@ -46,10 +46,10 @@ public sealed class JsonStorageBackend : IStorageBackend
         return fileSystem.GetKnownPath(baseKnownPath).Combine(baseDirectoryName);
     }
 
-    private AbsolutePath GetConfigPath<T>()
+    private AbsolutePath GetConfigPath<T>(string? key)
     {
         var typeName = typeof(T).FullName ?? typeof(T).Name;
-        var fileName = $"{typeName}.json";
+        var fileName = string.IsNullOrWhiteSpace(key) ? $"{typeName}.json" : $"{typeName}_{key}.json";
         return _configDirectory.Combine(fileName);
     }
 
@@ -80,17 +80,17 @@ public sealed class JsonStorageBackend : IStorageBackend
     }
 
     /// <inheritdoc/>
-    public void Save<T>(T value) where T : class, ISettings, new()
+    public void Save<T>(T value, string? key) where T : class, ISettings, new()
     {
-        var configPath = GetConfigPath<T>();
+        var configPath = GetConfigPath<T>(key);
         using var stream = configPath.Open(FileMode.Create, FileAccess.ReadWrite, FileShare.None);
         Serialize(stream, value);
     }
 
     /// <inheritdoc/>
-    public T? Load<T>() where T : class, ISettings, new()
+    public T? Load<T>(string? key) where T : class, ISettings, new()
     {
-        var configPath = GetConfigPath<T>();
+        var configPath = GetConfigPath<T>(key);
         if (!configPath.FileExists) return null;
 
         using var stream = configPath.Open(FileMode.Open, FileAccess.Read, FileShare.Read);

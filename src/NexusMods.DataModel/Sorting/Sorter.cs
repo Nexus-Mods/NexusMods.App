@@ -113,6 +113,8 @@ public class Sorter : ISorter
                 }
             }
 
+            if (superSetSize == 0) throw new InvalidOperationException("Cyclic dependency detected");
+
             // Slice to our superset.
             valuesSlice = valuesSlice.Slice(0, superSetSize);
             if (comparer != null)
@@ -125,12 +127,9 @@ public class Sorter : ISorter
                 });
             }
 
-            var found = false;
-
             foreach (var value in valuesSlice)
             {
                 var id = idSelector(value.Item);
-                found = true;
                 sorted.Add(value.Item);
                 used.Add(id);
                 dict.Remove(id, out _);
@@ -143,9 +142,6 @@ public class Sorter : ISorter
                 dict = new Dictionary<TId, (TId[] After, TItem Item)>(dict);
                 prevPrime = RuntimePrimes[--currentPrimeIndex];
             }
-
-            if (!found)
-                throw new InvalidOperationException("Cyclic dependency detected");
         }
 
         return sorted;

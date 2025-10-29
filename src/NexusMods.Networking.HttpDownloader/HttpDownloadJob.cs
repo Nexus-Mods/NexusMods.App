@@ -117,26 +117,27 @@ public record HttpDownloadJob : IJobDefinitionWithStart<HttpDownloadJob, Absolut
         await context.YieldAsync();
         await using var fileStream = Destination.Open(FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read);
 
+        fileStream.Position = (long)_state.TotalBytesDownloaded.Value;
+        
         await using var outputStream = new StreamProgressWrapper<IJobContext<HttpDownloadJob>>(
             fileStream,
             context,
             (state, tuple) =>
-        {
-            var (bytesWritten, speed) = tuple;
+            {
+                var (bytesWritten, speed) = tuple;
 
-            _state.TotalBytesDownloaded = bytesWritten;
-            
-            state.SetPercent(bytesWritten, _state.ContentLength.ValueOr(static () => Size.One));
-            state.SetRateOfProgress(speed);
-        });
+                _state.TotalBytesDownloaded = bytesWritten;
+
+                state.SetPercent(bytesWritten, _state.ContentLength.ValueOr(static () => Size.One));
+                state.SetRateOfProgress(speed);
+            }
+        );
 
         if (_state.ContentLength.HasValue)
         {
             var contentLength = (long)_state.ContentLength.Value.Value;
             if (outputStream.Length != contentLength) outputStream.SetLength(contentLength);
         }
-
-        outputStream.Position = (long)_state.TotalBytesDownloaded.Value;
 
         await context.YieldAsync();
         using var request = PrepareRequest(out var isRangeRequest);

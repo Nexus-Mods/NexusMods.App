@@ -415,7 +415,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                 var confirmed = await CollectionDeleteHelpers.ShowDeleteConfirmationDialogAsync(collectionGroup.Name, WindowManager);
                 if (confirmed)
                 {
-                    await CollectionDeleteHelpers.DeleteCollectionAsync(collectionGroupId.Value, GetWorkspaceController(), _connection, _notificationService);
+                    await CollectionDeleteHelpers.DeleteCollectionAsync(collectionGroupId.Value, _loadoutManager, GetWorkspaceController(), _connection, _notificationService);
                     CommandOpenLibraryPage?.Execute(NavigationInformation.From(OpenPageBehaviorType.ReplaceTab));
                 }
             });
