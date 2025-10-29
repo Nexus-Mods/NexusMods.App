@@ -7,6 +7,36 @@ namespace NexusMods.DataModel.Tests;
 
 public class SortTests
 {
+    [Fact]
+    public void CyclicDependency()
+    {
+        var items = new List<Item>()
+        {
+            new() { Id = "A", Rules = [new After<Item, string>() { Other = "B" }] },
+            new() { Id = "B", Rules = [new After<Item, string>() { Other = "A" }] },
+        };
+
+        var act = () => new Sorter().Sort<Item, string>(items, x => x.Id, x => x.Rules).ToArray();
+
+        act.Should().Throw<InvalidOperationException>().WithMessage("Cyclic dependency detected");
+    }
+
+    [Fact]
+    public void MissingItem()
+    {
+        var items = new List<Item>()
+        {
+            new() { Id = "B", Rules = [
+                new After<Item, string>() { Other = "A" },
+                new Before<Item, string>() { Other = "C" },
+            ]},
+            new() { Id = "D", Rules = [new After<Item, string>() { Other = "B" }]},
+            new() { Id = "E", Rules = [new After<Item, string>() { Other = "A" }]},
+        };
+
+        var act = () => new Sorter().Sort(items, x => x.Id, x => x.Rules).ToArray();
+        act.Should().Throw<InvalidOperationException>().WithMessage("Cyclic dependency detected");
+    }
 
     [Fact]
     public void FirstItemsComeFirst()
@@ -89,10 +119,10 @@ public class SortTests
                 rules.Add(new Item
                 {
                     Id = n, Rules = new()
-                {
-                    new First<Item, string>(),
-                    new After<Item, string> { Other = letters.ElementAt(idx - 1)}
-                }
+                    {
+                        new First<Item, string>(),
+                        new After<Item, string> { Other = letters.ElementAt(idx - 1)}
+                    }
                 });
             }
         }
