@@ -125,6 +125,7 @@ public abstract class AGameIntegrationTest : IDisposable
             {
                 s.AddSingleton<IFileSystem>(_ => FileSystem)
                  .AddSingleton<TemporaryFileManager>()
+                 .AddGameServices()
                  .AddFileExtractors()
                  .AddSettingsManager()
                  .AddCreationEngine()
