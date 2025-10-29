@@ -1,3 +1,4 @@
+using System.Collections.Frozen;
 using System.Diagnostics;
 using System.Globalization;
 using System.Net.Http.Headers;
@@ -390,20 +391,20 @@ public partial class NexusModsLibrary
             .Select(static tuple => (tuple.Mod.Source.Md5, tuple.Download))
             .Where(static tuple => tuple.Md5 != default(Md5Value))
             .DistinctBy(static tuple => tuple.Md5)
-            .ToDictionary(static tuple => tuple.Md5, static tuple => tuple.Download);
+            .ToFrozenDictionary(static tuple => tuple.Md5, static tuple => tuple.Download);
 
         var tagToDownload = modsAndDownloads
             .Select(static tuple => (tuple.Mod.Source.Tag, tuple.Download))
             .Where(static tuple => !string.IsNullOrWhiteSpace(tuple.Tag))
             .DistinctBy(static tuple => tuple.Tag, StringComparer.Ordinal)
-            .ToDictionary(static tuple => tuple.Tag!, static tuple => tuple.Download, StringComparer.Ordinal);
+            .ToFrozenDictionary(static tuple => tuple.Tag!, static tuple => tuple.Download, StringComparer.Ordinal);
 
         var fileExpressionToDownload = modsAndDownloads
             .Select(static tuple => (tuple.Mod.Source.FileExpression, tuple.Download))
             .Where(static tuple => tuple.FileExpression != default(RelativePath))
             .Select(static tuple => (FileExpression: tuple.FileExpression.ToString(), tuple.Download))
             .DistinctBy(static tuple => tuple.FileExpression, StringComparer.Ordinal)
-            .ToDictionary(static tuple => tuple.FileExpression, static tuple => tuple.Download, StringComparer.Ordinal);
+            .ToFrozenDictionary(static tuple => tuple.FileExpression, static tuple => tuple.Download, StringComparer.Ordinal);
 
         for (var i = 0; i < collectionRoot.ModRules.Length; i++)
         {
@@ -436,9 +437,9 @@ public partial class NexusModsLibrary
 
     private static Optional<CollectionDownload.ReadOnly> VortexModReferenceToCollectionDownload(
         VortexModReference reference,
-        Dictionary<Md5Value, CollectionDownload.ReadOnly> md5ToDownload,
-        Dictionary<string, CollectionDownload.ReadOnly> tagToDownload,
-        Dictionary<string, CollectionDownload.ReadOnly> fileExpressionToDownload)
+        FrozenDictionary<Md5Value, CollectionDownload.ReadOnly> md5ToDownload,
+        FrozenDictionary<string, CollectionDownload.ReadOnly> tagToDownload,
+        FrozenDictionary<string, CollectionDownload.ReadOnly> fileExpressionToDownload)
     {
         // https://github.com/Nexus-Mods/Vortex/blob/1bc2a0bca27353df617f5a0b0f331cf9d23eea9c/src/extensions/mod_management/util/dependencies.ts#L28-L62
         // https://github.com/Nexus-Mods/Vortex/blob/1bc2a0bca27353df617f5a0b0f331cf9d23eea9c/src/extensions/mod_management/util/testModReference.ts#L285-L299

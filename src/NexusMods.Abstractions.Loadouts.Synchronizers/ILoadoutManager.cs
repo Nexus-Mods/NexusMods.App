@@ -1,10 +1,12 @@
 using DynamicData.Kernel;
 using JetBrains.Annotations;
+using NexusMods.Abstractions.Collections;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.GC;
 using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts.Synchronizers.Conflicts;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Sdk.Jobs;
 
 namespace NexusMods.Abstractions.Loadouts.Synchronizers;
@@ -49,6 +51,11 @@ public interface ILoadoutManager
     IJobTask<UnmanageGameJob, GameInstallation> UnManage(GameInstallation installation, bool runGc = true, bool cleanGameFolder = true, CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Wrapper for item installations.
+    /// </summary>
+    Task<LoadoutItemGroup.ReadOnly> InstallItemWrapper(LoadoutId targetLoadout, Func<ITransaction, Task<LoadoutItemGroupId>> func);
+
+    /// <summary>
     /// Installs a library item into a target loadout.
     /// </summary>
     /// <param name="libraryItem">The item to install.</param>
@@ -82,6 +89,11 @@ public interface ILoadoutManager
     /// Clones a collection.
     /// </summary>
     ValueTask<CollectionGroup.ReadOnly> CloneCollection(CollectionGroupId collection);
+
+    /// <summary>
+    /// Applies the collection download rules for an installed collection.
+    /// </summary>
+    ValueTask ApplyCollectionDownloadRules(NexusCollectionLoadoutGroupId collectionId);
 
     /// <summary>
     /// Removes all groups and installs the new library item.
