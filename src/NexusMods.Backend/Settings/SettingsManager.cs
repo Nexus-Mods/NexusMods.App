@@ -1,6 +1,7 @@
 using System.Collections.Frozen;
 using System.Diagnostics;
 using System.Reactive.Concurrency;
+using System.Runtime.ExceptionServices;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Sdk.Settings;
@@ -232,6 +233,7 @@ internal class SettingsManager : ISettingsManager
                 catch (Exception e)
                 {
                     _logger.LogError(e, "Exception while loading settings type `{Type}` with async storage backend `{AsyncStorageBackendType}`", type, asyncStorageBackend.GetType());
+                    waitHandle.Set();
                 }
             }, cts.Token);
 
