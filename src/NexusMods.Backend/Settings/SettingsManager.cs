@@ -136,13 +136,13 @@ internal class SettingsManager : ISettingsManager
             return true;
         }
         
-        var overrideVal = GetDefault<T>();
-        overrideVal = GetOverride(settingKey, overrideVal, out var didOverride);
+        var defaultValue = GetDefault<T>();
+        defaultValue = GetOverride(settingKey, defaultValue, out var didOverride);
 
         if (!didOverride) return false;
         
-        CoreSet(overrideVal, settingKey, notify: !didOverride);
-        value = overrideVal;
+        CoreSet(defaultValue, settingKey, notify: !didOverride);
+        value = defaultValue;
         return true;
     }
     
