@@ -343,6 +343,17 @@ internal partial class LoadoutManager : ILoadoutManager
         });
     }
 
+    public async Task<LoadoutItemGroup.ReadOnly> InstallItemWrapper(LoadoutId targetLoadout, Func<ITransaction, Task<LoadoutItemGroupId>> func)
+    {
+        using var tx = _connection.BeginTransaction();
+
+        var groupId = await func(tx);
+        tx.Add(new AddPriorityTxFunc(targetLoadout, groupId));
+
+        var result = await tx.Commit();
+        return LoadoutItemGroup.Load(result.Db, groupId);
+    }
+
     public IJobTask<IInstallLoadoutItemJob, InstallLoadoutItemJobResult> InstallItem(
         LibraryItem.ReadOnly libraryItem,
         LoadoutId targetLoadout,

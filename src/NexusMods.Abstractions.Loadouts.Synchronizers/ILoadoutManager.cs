@@ -6,6 +6,7 @@ using NexusMods.Abstractions.GC;
 using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts.Synchronizers.Conflicts;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Sdk.Jobs;
 
 namespace NexusMods.Abstractions.Loadouts.Synchronizers;
@@ -48,6 +49,11 @@ public interface ILoadoutManager
     /// Removes all the loadouts for a game, and resets the game folder to its initial state.
     /// </summary>
     IJobTask<UnmanageGameJob, GameInstallation> UnManage(GameInstallation installation, bool runGc = true, bool cleanGameFolder = true, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Wrapper for item installations.
+    /// </summary>
+    Task<LoadoutItemGroup.ReadOnly> InstallItemWrapper(LoadoutId targetLoadout, Func<ITransaction, Task<LoadoutItemGroupId>> func);
 
     /// <summary>
     /// Installs a library item into a target loadout.
