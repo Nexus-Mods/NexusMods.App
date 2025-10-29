@@ -1,5 +1,6 @@
 using DynamicData.Kernel;
 using JetBrains.Annotations;
+using NexusMods.Abstractions.Collections;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.GC;
 using NexusMods.Abstractions.Library.Installers;
@@ -82,6 +83,11 @@ public interface ILoadoutManager
     /// Clones a collection.
     /// </summary>
     ValueTask<CollectionGroup.ReadOnly> CloneCollection(CollectionGroupId collection);
+
+    /// <summary>
+    /// Applies the collection download rules for an installed collection.
+    /// </summary>
+    ValueTask ApplyCollectionDownloadRules(NexusCollectionLoadoutGroupId collectionId);
 
     /// <summary>
     /// Removes all groups and installs the new library item.
