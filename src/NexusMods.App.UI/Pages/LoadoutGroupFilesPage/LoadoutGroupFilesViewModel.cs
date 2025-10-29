@@ -188,7 +188,7 @@ public class LoadoutGroupFilesViewModel : APageViewModel<ILoadoutGroupFilesViewM
             // If no children, assume it's an empty mod and return the group
             if (childDatoms.Count == 0) return LoadoutItemGroup.Load(db, currentGroupId);
 
-            var childGroups = groupDatoms.MergeByEntityId(childDatoms);
+            var childGroups = MergeByEntityId(groupDatoms, childDatoms);
 
             // We have no child groups, check if children are files
             if (childGroups.Count == 0)
@@ -208,6 +208,37 @@ public class LoadoutGroupFilesViewModel : APageViewModel<ILoadoutGroupFilesViewM
             // We have multiple child groups, return None
             if (childGroups.Count > 1) return Optional<LoadoutItemGroup.ReadOnly>.None;
         }
+    }
+    
+    private static List<EntityId> MergeByEntityId(Datoms setA, Datoms setB)
+    {
+        // Entity ids are stored in the lower ulong of the key prefix
+        
+        // This is a merge join, we find the intersection of the two sets based on the E value
+        List<EntityId> result = [];
+        
+        var i = 0;
+        var j = 0;
+        while (true)
+        {
+            if (i >= setA.Count || j >= setB.Count)
+                break;
+            // Lop off the lower 8 bits as those are the flags
+            var a = setA[i].E;
+            var b = setB[j].E;
+            
+            if (a == b)
+            {
+                result.Add(a);
+                i++;
+                j++;
+            }
+            else if (a < b)
+                i++;
+            else
+                j++;
+        }
+        return result;    
     }
 }
 
