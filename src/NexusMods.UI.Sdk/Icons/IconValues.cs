@@ -95,6 +95,9 @@ public static class IconValues
     // https://pictogrammers.com/library/mdi/icon/lock/
     public static readonly IconValue Lock = new ProjektankerIcon("mdi-lock");
 
+    // https://pictogrammers.com/library/mdi/icon/lock-outline/
+    public static readonly IconValue LockOutline = new ProjektankerIcon("mdi-lock-outline");
+
     // https://pictogrammers.com/library/mdi/icon/open-in-new/
     public static readonly IconValue OpenInNew = new ProjektankerIcon("mdi-open-in-new");
     

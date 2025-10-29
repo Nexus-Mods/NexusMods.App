@@ -1,0 +1,43 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:collectionMenuItem="clr-namespace:NexusMods.App.UI.Controls.CollectionMenuItem"
+             mc:Ignorable="d" d:DesignWidth="250" d:DesignHeight="200"
+             x:Class="NexusMods.App.UI.Controls.CollectionMenuItem.CollectionMenuItemDesignPreview">
+    
+    <StackPanel Spacing="2" Margin="8">
+        <TextBlock Text="CollectionMenuItem Design Preview" FontWeight="Bold" Margin="0,0,0,8" />
+        
+        <!-- 5 CollectionMenuItem entries with specified values -->
+        <collectionMenuItem:CollectionMenuItem>
+            <collectionMenuItem:CollectionMenuItem.DataContext>
+                <collectionMenuItem:CollectionMenuItemDesignViewModel CollectionName="Immersive" IsReadOnly="True" IsSelected="True" />
+            </collectionMenuItem:CollectionMenuItem.DataContext>
+        </collectionMenuItem:CollectionMenuItem>
+        
+        <collectionMenuItem:CollectionMenuItem>
+            <collectionMenuItem:CollectionMenuItem.DataContext>
+                <collectionMenuItem:CollectionMenuItemDesignViewModel CollectionName="My Mods" IsReadOnly="False" IsSelected="{x:Null}" />
+            </collectionMenuItem:CollectionMenuItem.DataContext>
+        </collectionMenuItem:CollectionMenuItem>
+        
+        <collectionMenuItem:CollectionMenuItem>
+            <collectionMenuItem:CollectionMenuItem.DataContext>
+                <collectionMenuItem:CollectionMenuItemDesignViewModel CollectionName="My Mods 2" IsReadOnly="False" IsSelected="True" />
+            </collectionMenuItem:CollectionMenuItem.DataContext>
+        </collectionMenuItem:CollectionMenuItem>
+        
+        <collectionMenuItem:CollectionMenuItem>
+            <collectionMenuItem:CollectionMenuItem.DataContext>
+                <collectionMenuItem:CollectionMenuItemDesignViewModel CollectionName="My Mods 3" IsReadOnly="False" IsSelected="False" />
+            </collectionMenuItem:CollectionMenuItem.DataContext>
+        </collectionMenuItem:CollectionMenuItem>
+        
+        <collectionMenuItem:CollectionMenuItem>
+            <collectionMenuItem:CollectionMenuItem.DataContext>
+                <collectionMenuItem:CollectionMenuItemDesignViewModel CollectionName="Vanilla Plus" IsReadOnly="True" IsSelected="True" ToolTipText="Read-only Nexus Mods Collection" />
+            </collectionMenuItem:CollectionMenuItem.DataContext>
+        </collectionMenuItem:CollectionMenuItem>
+    </StackPanel>
+</UserControl>
