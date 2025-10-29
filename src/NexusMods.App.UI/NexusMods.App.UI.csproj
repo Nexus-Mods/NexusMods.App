@@ -772,9 +772,6 @@
         <Compile Update="Pages\Downloads\DownloadsPageViewModel.cs">
            <DependentUpon>IDownloadsPageViewModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="Pages\Downloads\DownloadsPageDesignViewModel.cs">
-           <DependentUpon>IDownloadsPageViewModel.cs</DependentUpon>
-        </Compile>
         <Compile Update="Pages\Downloads\DownloadsPageView.axaml.cs">
            <DependentUpon>DownloadsPageView.axaml</DependentUpon>
            <SubType>Code</SubType>
