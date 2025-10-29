@@ -1,6 +1,5 @@
 using FluentAssertions;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 using NexusMods.MnemonicDB.Abstractions.Query;
 using Xunit.Abstractions;
 using Xunit.DependencyInjection;
@@ -28,7 +27,7 @@ public class TestsFor_0004_RemoveGameFiles(ITestOutputHelper helper) : ALegacyDa
 
         var gameGroupAttrs = db.AttributeResolver.AttributeCache.AllAttributeIds
             .Where(sym => sym.Namespace == "NexusMods.Loadouts.LoadoutGameFilesGroup")
-            .Select(sym => (sym, db.AttributeResolver.AttributeCache[sym]))
+            .Select(sym => (sym, db.AttributeResolver.AttributeCache.GetAttributeId(sym)))
             .ToArray();
         
         foreach (var (sym, attrId) in gameGroupAttrs)

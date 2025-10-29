@@ -13,18 +13,19 @@ public class SchemaFailsafes(IConnection connection)
     public async Task SchemaFingerprintHasntChanged()
     {
         var db = connection.Db;
-        var records = db.AttributeCache.AllAttributeIds
+        var attrCache = db.AttributeResolver.AttributeCache;
+        var records = attrCache.AllAttributeIds
             .OrderBy(id => id.Id, StringComparer.Ordinal)
             .Select(id =>
                 {
-                    var aid = db.AttributeCache.GetAttributeId(id);
+                    var aid = attrCache.GetAttributeId(id);
                     return new string[]
                     {
                         id.ToString(),
-                        db.AttributeCache.GetValueTag(aid).ToString(),
-                        db.AttributeCache.IsIndexed(aid).ToString(),
-                        db.AttributeCache.IsCardinalityMany(aid).ToString(),
-                        db.AttributeCache.IsNoHistory(aid).ToString(),
+                        attrCache.GetValueTag(aid).ToString(),
+                        attrCache.IsIndexed(aid).ToString(),
+                        attrCache.IsCardinalityMany(aid).ToString(),
+                        attrCache.IsNoHistory(aid).ToString(),
                     };
                 }
             ).ToArray();
@@ -37,7 +38,7 @@ public class SchemaFailsafes(IConnection connection)
                      ## Statistics
                         - Fingerprint: {SchemaFingerprint.GenerateFingerprint(db)}
                         - Total attributes: {records.Length}
-                        - Total namespaces: {db.AttributeCache.AllAttributeIds.Select(id => id.Namespace).Distinct().Count()}
+                        - Total namespaces: {attrCache.AllAttributeIds.Select(id => id.Namespace).Distinct().Count()}
                         
                      ## Attributes
                      """;

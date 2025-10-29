@@ -133,12 +133,9 @@ internal partial class LoadoutManager : ILoadoutManager
     {
         var baseDb = _connection.Db;
         var loadout = Loadout.Load(baseDb, loadoutId);
-
-        // Temp space for datom values
-        Memory<byte> buffer = GC.AllocateUninitializedArray<byte>(length: 32);
-
+        
         // Cache some attribute ids
-        var cache = baseDb.AttributeCache;
+        var cache = baseDb.AttributeResolver.AttributeCache;
         var nameId = cache.GetAttributeId(Loadout.Name.Id);
         var shortNameId = cache.GetAttributeId(Loadout.ShortName.Id);
 
@@ -161,23 +158,21 @@ internal partial class LoadoutManager : ILoadoutManager
         foreach (var (oldId, newId) in entityIdList)
         {
             // Get the original entity
-            var entity = baseDb.Get(oldId);
+            var entity = baseDb[oldId];
 
             foreach (var datom in entity)
             {
                 if (datom.A == nameId || datom.A == shortNameId) continue;
-
-                if (buffer.Length < datom.ValueSpan.Length)
-                    buffer = GC.AllocateUninitializedArray<byte>(datom.ValueSpan.Length);
-
-                datom.ValueSpan.CopyTo(buffer.Span);
-
+                
                 var prefix = new KeyPrefix(newId, datom.A, TxId.Tmp, isRetract: false, datom.Prefix.ValueTag);
-                var newDatom = new Datom(prefix, buffer[..datom.ValueSpan.Length]);
-
-                datom.Prefix.ValueTag.Remap(buffer[..datom.ValueSpan.Length].Span, remapFn);
-
-                tx.Add(newDatom);
+                
+                var value = datom.V;
+                if (value is EntityId entityId)
+                    value = RemapFn(entityId);
+                if (value is ValueTuple<EntityId, ushort, string> valueTuple)
+                    value = (RemapFn(valueTuple.Item1), valueTuple.Item2, valueTuple.Item3);
+                
+                tx.Add(new Datom(prefix, value));
             }
         }
 

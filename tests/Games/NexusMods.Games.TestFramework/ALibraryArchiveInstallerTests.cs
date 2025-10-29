@@ -1,17 +1,14 @@
 using System.IO.Compression;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 using System.Text;
 using FluentAssertions;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
-using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 using NexusMods.Paths;
 using NexusMods.Sdk;
 using Xunit.Abstractions;
@@ -163,7 +160,7 @@ public abstract class ALibraryArchiveInstallerTests<TTest, TGame>(ITestOutputHel
 
 
 
-            switch (datom.ObjectValue)
+            switch (datom.V)
             {
                 case PathTuple pathTuple:
                     sb.Append((Remap(pathTuple.Item1).Value.ToString("X16"), pathTuple.Item2, pathTuple.Item3));
@@ -183,7 +180,7 @@ public abstract class ALibraryArchiveInstallerTests<TTest, TGame>(ITestOutputHel
                     sb.Append($"DateTime : {dateTimeCount++}".PadRight(48));
                     break;
                 default:
-                    sb.Append(TruncateOrPad(datom.ObjectValue.ToString()!, 48));
+                    sb.Append(TruncateOrPad(datom.V.ToString()!, 48));
                     break;
             }
 

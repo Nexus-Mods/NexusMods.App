@@ -17,11 +17,10 @@ using NexusMods.Sdk.NexusModsApi;
 
 namespace NexusMods.StandardGameLocators.TestHelpers;
 
-public class StubbedFileHasherService : IFileHashesService
+public class StubbedFileHasherService : IFileHashesService, IDisposable
 {
     private readonly IServiceProvider _provider;
-    private DatomStore _datomStore;
-    private Connection _connection;
+    private IConnection _connection;
     private IDb? _current;
     private readonly IFileStore _fileStore;
     private readonly TemporaryFileManager _temporaryFileManager;
@@ -37,10 +36,7 @@ public class StubbedFileHasherService : IFileHashesService
 
     private async Task SetupDb()
     {
-        var backend = new MnemonicDB.Storage.RocksDbBackend.Backend();
-        var settings = DatomStoreSettings.InMemory;
-        _datomStore = new DatomStore(_provider.GetRequiredService<ILogger<DatomStore>>(), settings, backend);
-        _connection = new Connection(_provider.GetRequiredService<ILogger<Connection>>(), _datomStore, _provider, [], prefix: "hashes", queryEngine: _provider.GetRequiredService<IQueryEngine>());
+        _connection = _provider.GetRequiredService<IConnectionFactory>().Create(_provider, DatomStoreSettings.InMemory);
 
         foreach (var file in new[] {"StubbedGameState.zip", "StubbedGameState_game_v2.zip"})
         {
@@ -217,5 +213,11 @@ public class StubbedFileHasherService : IFileHashesService
     public LocatorId[] GetLocatorIdsForGame(GameInstallation loadoutInstallationInstance)
     {
         throw new NotImplementedException();
+    }
+
+    public void Dispose()
+    {
+        _connection.Dispose();
+        _temporaryFileManager.Dispose();
     }
 }

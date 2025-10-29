@@ -106,13 +106,13 @@ internal class InstallLoadoutItemJob : IJobDefinitionWithStart<InstallLoadoutIte
 
         // TODO(erri120): rename this entity to something unique, like "LoadoutItemInstalledFromLibrary"
         var loadoutGroup = result!;
-        _ = new LibraryLinkedLoadoutItem.New(Transaction, loadoutGroup.Id)
+        _ = new LibraryLinkedLoadoutItem.New(Transaction, loadoutGroup.Value.Id)
         {
-            LoadoutItemGroup = loadoutGroup,
+            LoadoutItemGroup = loadoutGroup.Value,
             LibraryItemId = LibraryItem,
         };
 
-        return new InstallLoadoutItemJobResult(null, loadoutGroup);
+        return new InstallLoadoutItemJobResult(null, loadoutGroup.Value);
     }
 
     private async ValueTask<LoadoutItemGroup.New?> ExecuteInstallersAsync(

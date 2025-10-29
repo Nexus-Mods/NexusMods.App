@@ -41,13 +41,15 @@ public class GeneralModManagementTests(ITestOutputHelper helper) : ACyberpunkIso
         
         
         // Add mod A to loadout A
-        using (var tx = Connection.BeginTransaction())
         {
-            await AddModAsync(tx, modAFiles,loadoutA, "ModA");
+            var tx = Connection.BeginTransaction();
+            await AddModAsync(tx, modAFiles, loadoutA,
+                "ModA"
+            );
             await tx.Commit();
+            Refresh(ref loadoutA);
         }
-        Refresh(ref loadoutA);
-        
+
         loadoutA = await Synchronizer.Synchronize(loadoutA);
         await Synchronizer.RescanFiles(GameInstallation);
         
@@ -58,8 +60,8 @@ public class GeneralModManagementTests(ITestOutputHelper helper) : ACyberpunkIso
         
         
         // Add mod B to loadout A
-        using (var tx = Connection.BeginTransaction())
         {
+            var tx = Connection.BeginTransaction();
             await AddModAsync(tx, modBFiles, loadoutA, "ModB");
             await tx.Commit();
         }
@@ -75,8 +77,8 @@ public class GeneralModManagementTests(ITestOutputHelper helper) : ACyberpunkIso
      
  
         // Disable Mod B
-        using (var tx = Connection.BeginTransaction())
         {
+            var tx = Connection.BeginTransaction();
             var modB = LoadoutItem.FindByLoadout(Connection.Db, loadoutA).FirstOrOptional(li => li.Name == "ModB").Value;
             tx.Add(modB.Id, LoadoutItem.Disabled, Null.Instance);
             await tx.Commit();

@@ -44,7 +44,7 @@ public class AdvancedManualInstallerUI : ALibraryArchiveInstaller, IAdvancedInst
     {
         if (Headless) return new NotSupported(Reason: "The advanced manual installer can't be used in headless mode");
         var tree = LibraryArchiveTree.Create(libraryArchive);
-        var (shouldInstall, deploymentData) = await GetDeploymentDataAsync(loadoutGroup.GetLoadoutItem(transaction).Name, tree, loadout);
+        var (shouldInstall, deploymentData) = await GetDeploymentDataAsync(libraryArchive.AsLibraryFile().AsLibraryItem().Name, tree, loadout);
 
         // Note(sewer): Normally cancellation flows through CancellationTokenSource.Cancel() -> CancellationToken -> OperationCanceledException.
         //              Here we only have the CancellationToken (not the source), and the UI action itself is the cancellation signal.

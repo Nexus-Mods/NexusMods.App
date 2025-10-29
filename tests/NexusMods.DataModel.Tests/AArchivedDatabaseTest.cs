@@ -80,7 +80,6 @@ public abstract class AArchivedDatabaseTest
             .AddSettings<LoggingSettings>()
             .AddOSInterop()
             .AddRuntimeDependencies()
-            .AddRocksDbBackend()
             .AddFileHashes()
             .AddFileSystem()
             .AddDataModel()
@@ -174,11 +173,7 @@ public abstract class AArchivedDatabaseTest
             .ConfigureServices(s =>
                 {
                     AddServices(s);
-                    s.AddDatomStoreSettings(new DatomStoreSettings
-                        {
-                            Path = datamodelFolder
-                        }
-                    );
+                    s.AddSingleton<IConnection>(ser => ser.GetRequiredService<IConnectionFactory>().Create(ser, new DatomStoreSettings { Path = datamodelFolder }));
                 }
             )
             .Build();

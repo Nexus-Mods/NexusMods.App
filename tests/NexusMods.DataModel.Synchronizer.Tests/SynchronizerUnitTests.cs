@@ -67,8 +67,8 @@ public class SynchronizerUnitTests(ITestOutputHelper testOutputHelper) : ACyberp
         loadout.Items.Should().ContainSingle(f => f.Name == "grandchild.txt");
 
 
-        using (var tx = Connection.BeginTransaction())
         {
+            var tx = Connection.BeginTransaction();
             var toDelete = loadout.Items.First(f => f.Name == "grandchild.txt").Id;
             tx.Delete(toDelete, false);
             await tx.Commit();
