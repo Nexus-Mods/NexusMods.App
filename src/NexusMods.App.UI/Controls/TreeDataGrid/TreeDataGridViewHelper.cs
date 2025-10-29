@@ -1,6 +1,7 @@
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.ReactiveUI;
+using NexusMods.App.UI.Settings;
 using NexusMods.UI.Sdk;
 using R3;
 using ReactiveUI;
@@ -16,7 +17,8 @@ public static class TreeDataGridViewHelper
         TView view,
         Avalonia.Controls.TreeDataGrid treeDataGrid,
         Func<TViewModel, TreeDataGridAdapter<TItemModel, TKey>> getAdapter,
-        bool enableDragAndDrop = false)
+        bool enableDragAndDrop = false,
+        bool persistState = false)
         where TView : ReactiveUserControl<TViewModel>
         where TViewModel : class, IViewModelInterface
         where TItemModel : class, ITreeDataGridItemModel<TItemModel, TKey>
@@ -87,6 +89,37 @@ public static class TreeDataGridViewHelper
                     eventArgs.e.Handled = true;
                 })
                 .AddTo(disposables);
+            
+            // Persist treeDataGrid state on deactivation
+            Disposable.Create((view, treeDataGrid, getAdapter, persistState),
+                static input =>
+                {
+                    if (!input.persistState) return;
+                    
+                    var adapter = input.getAdapter(input.view.ViewModel!);
+                    var sortingState = GetSortingState(input.treeDataGrid);
+                    if (sortingState is not null)
+                    {
+                        adapter.PersistSortingState(sortingState);
+                    }
+                });
         });
+    }
+    
+    
+    private static TreeDataGridSortingStateSettings? GetSortingState(Avalonia.Controls.TreeDataGrid treeDataGrid)
+    {
+        var sortedColumn = treeDataGrid.Columns?.FirstOrDefault(col => col.SortDirection != null);
+        if (sortedColumn?.Tag is not string tag)
+        {
+            return null;
+        }
+                            
+        var state = new TreeDataGridSortingStateSettings
+        {
+            SortedColumnKey = tag,
+            SortDirection = sortedColumn.SortDirection,
+        };
+        return state;
     }
 }

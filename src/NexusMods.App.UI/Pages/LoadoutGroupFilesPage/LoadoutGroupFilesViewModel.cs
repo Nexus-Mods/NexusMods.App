@@ -215,7 +215,7 @@ public class LoadoutGroupFilesViewModel : APageViewModel<ILoadoutGroupFilesViewM
 /// <summary>
 /// Implementation of <see cref="TreeDataGridAdapter{TModel,TKey}"/> 
 /// </summary>
-public class ViewLoadoutGroupFilesTreeDataGridAdapter(IServiceProvider serviceProvider, ModFilesFilter filesFilter) : TreeDataGridAdapter<CompositeItemModel<GamePath>, GamePath>
+public class ViewLoadoutGroupFilesTreeDataGridAdapter(IServiceProvider serviceProvider, ModFilesFilter filesFilter) : TreeDataGridAdapter<CompositeItemModel<GamePath>, GamePath>(serviceProvider)
 {
     private readonly LoadoutGroupFilesProvider _loadoutGroupFilesProvider = new(serviceProvider);
     

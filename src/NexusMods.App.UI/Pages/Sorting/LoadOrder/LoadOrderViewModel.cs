@@ -222,7 +222,7 @@ public class LoadOrderTreeDataGridAdapter : TreeDataGridAdapter<CompositeItemMod
         ISortOrderVariety sortOrderVariety,
         LoadoutId loadoutId,
         IObservable<ListSortDirection> sortDirectionObservable,
-        IServiceProvider serviceProvider)
+        IServiceProvider serviceProvider) : base(serviceProvider)
     {
         _loadoutId = loadoutId;
         _sortOrderVariety = sortOrderVariety;

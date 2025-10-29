@@ -1,4 +1,3 @@
-using System.ComponentModel;
 using Avalonia.Controls;
 using Avalonia.Controls.Models.TreeDataGrid;
 using Avalonia.Controls.Selection;
@@ -10,8 +9,10 @@ using System.Reactive.Linq;
 using Avalonia.Input;
 using System.Diagnostics;
 using DynamicData.Kernel;
-using NexusMods.Abstractions.Games;
+using Microsoft.Extensions.DependencyInjection;
 using NexusMods.App.UI.Controls.Filters;
+using NexusMods.App.UI.Settings;
+using NexusMods.Sdk.Settings;
 using NexusMods.UI.Sdk;
 using static NexusMods.App.UI.Controls.Filters.Filter;
 
@@ -38,15 +39,19 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object, ISea
     public BindableReactiveProperty<IComparer<TModel>?> CustomSortComparer { get; } = new(value: null);
     public ObservableHashSet<TModel> SelectedModels { get; private set; } = [];
     public ReactiveProperty<Filter> Filter { get; } = new(value: NoFilter.Instance);
+    public string? SettingsScopeKey { get; protected set; }
     protected ObservableList<TModel> Roots { get; private set; } = [];
+    protected ISettingsManager SettingsManager { get; }
     private ISynchronizedView<TModel, TModel> RootsView { get; }
     private INotifyCollectionChangedSynchronizedViewList<TModel> RootsCollectionChangedView { get; }
 
     private readonly IDisposable _activationDisposable;
     private readonly SerialDisposable _selectionModelsSerialDisposable = new();
     
-    protected TreeDataGridAdapter()
-    { 
+    
+    protected TreeDataGridAdapter(IServiceProvider serviceProvider)
+    {
+        SettingsManager = serviceProvider.GetRequiredService<ISettingsManager>();
         RootsView = Roots.CreateView(static kv => kv);
         RootsCollectionChangedView = RootsView.ToNotifyCollectionChanged();
 
@@ -294,6 +299,12 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object, ISea
         }
 
         RowDropSubject.OnNext((sourceModels.ToArray(), targetModel, nextTargetModel, prevTargetModel, e));
+    }
+
+    public virtual void PersistSortingState(TreeDataGridSortingStateSettings sortingState)
+    {
+        if (SettingsScopeKey is null) return;
+        SettingsManager.Set(sortingState, SettingsScopeKey);
     }
 
     private static (TreeDataGridRowSelectionModel<TModel> selection, Observable<TreeSelectionModelSelectionChangedEventArgs<TModel>> selectionObservable, Observable<TreeSelectionModelSourceResetEventArgs> resetObservable) CreateSelection(ITreeDataGridSource<TModel> source)
