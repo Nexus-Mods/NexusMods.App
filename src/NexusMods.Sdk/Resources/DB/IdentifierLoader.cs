@@ -63,14 +63,10 @@ public sealed class IdentifierLoader<TResourceIdentifier, TData> : IResourceLoad
 
     private Optional<TResourceIdentifier> GetIdentifier(EntityId entityId)
     {
-        var indexSegment = _connection.Db.Get(entityId);
-        foreach (var datom in indexSegment)
-        {
-            if (!datom.A.Equals(_attributeId)) continue;
-            var value = _attribute.ReadValue(datom.ValueSpan, datom.Prefix.ValueTag, _connection.AttributeResolver);
-            return value;
-        }
-
+        var indexSegment = _connection.Db[entityId];
+        if (indexSegment.TryGetOne(_attribute, out var resolved))
+            return (TResourceIdentifier)_attribute.FromLowLevelObject(resolved, _connection.AttributeResolver);
+        
         return Optional<TResourceIdentifier>.None;
     }
 }

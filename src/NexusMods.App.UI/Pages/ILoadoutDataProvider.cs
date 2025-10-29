@@ -10,8 +10,6 @@ using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Pages.LoadoutPage;
 using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.MnemonicDB.Abstractions.DatomIterators;
-using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 using NexusMods.MnemonicDB.Abstractions.Models;
 using R3;
 
@@ -48,41 +46,7 @@ public static class LoadoutDataProviderHelper
             .Select(provider => provider.CountLoadoutItems(loadoutFilter))
             .CombineLatest(static counts => counts.Sum());
     }
-
-    public static ChangeSet<LoadoutItem.ReadOnly, EntityId> GetLinkedLoadoutItems(
-        IDb db,
-        LoadoutFilter loadoutFilter,
-        LibraryItemId libraryItemId)
-    {
-        List<EntityId> entityIds;
-
-        if (loadoutFilter.CollectionGroupId.HasValue)
-        {
-            entityIds = db.Datoms(
-                (LibraryLinkedLoadoutItem.LibraryItemId, libraryItemId),
-                (LoadoutItem.ParentId, loadoutFilter.CollectionGroupId.Value)
-            );
-        }
-        else
-        {
-            entityIds = db.Datoms(
-                (LibraryLinkedLoadoutItem.LibraryItemId, libraryItemId),
-                (LoadoutItem.LoadoutId, loadoutFilter.LoadoutId)
-            );
-        }
-
-        var changeSet = new ChangeSet<LoadoutItem.ReadOnly, EntityId>();
-
-        foreach (var entityId in entityIds)
-        {
-            var item = LoadoutItem.Load(db, entityId);
-            if (!item.IsValid()) continue;
-
-            changeSet.Add(new Change<LoadoutItem.ReadOnly, EntityId>(ChangeReason.Add, entityId, item));
-        }
-
-        return changeSet;
-    }
+    
 
     public static CompositeItemModel<EntityId> ToChildItemModel(IConnection connection, LoadoutItem.ReadOnly loadoutItem)
     {

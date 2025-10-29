@@ -30,13 +30,13 @@ public readonly partial struct GameDomain : IAugmentWith<DefaultValueAugment, Js
 public class GameDomainAttribute(string ns, string name) : ScalarAttribute<GameDomain, string, AsciiSerializer>(ns, name)
 {
     /// <inheritdoc />
-    protected override string ToLowLevel(GameDomain value)
+    public override string ToLowLevel(GameDomain value)
     {
         return value.Value;
     }
 
     /// <inheritdoc />
-    protected override GameDomain FromLowLevel(string value, AttributeResolver resolver)
+    public override GameDomain FromLowLevel(string value, AttributeResolver resolver)
     {
         return GameDomain.From(value);
     }

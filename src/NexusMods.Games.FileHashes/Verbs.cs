@@ -43,10 +43,10 @@ public static class Verbs
 
         await new (string, int)[]
         {
-            ("Hash Relations", HashRelation.All(db).Count),
-            ("Path Hash Relations", PathHashRelation.All(db).Count),
-            ("Gog Builds", GogBuild.All(db).Count),
-            ("Steam Manifests", SteamManifest.All(db).Count),
+            ("Hash Relations", HashRelation.All(db).Count()),
+            ("Path Hash Relations", PathHashRelation.All(db).Count()),
+            ("Gog Builds", GogBuild.All(db).Count()),
+            ("Steam Manifests", SteamManifest.All(db).Count()),
         }.RenderTable(renderer, "Statistic", "Value");
         
         return 0;

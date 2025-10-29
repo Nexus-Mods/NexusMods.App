@@ -2,7 +2,6 @@ using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.App.GarbageCollection.Interfaces;
 using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 namespace NexusMods.App.GarbageCollection.DataModel;
 
 /// <summary>
@@ -78,7 +77,7 @@ public static class DataStoreReferenceMarker
         */
     }
 
-    private static void MarkItemsUsedInLoadouts<TParsedHeaderState, TFileEntryWrapper>(ArchiveGarbageCollector<TParsedHeaderState, TFileEntryWrapper> archiveGc, Entities<LoadoutFile.ReadOnly> loadoutFiles, IDb db, Dictionary<LoadoutId, bool> isLoadoutValidDict)
+    private static void MarkItemsUsedInLoadouts<TParsedHeaderState, TFileEntryWrapper>(ArchiveGarbageCollector<TParsedHeaderState, TFileEntryWrapper> archiveGc, IEnumerable<LoadoutFile.ReadOnly> loadoutFiles, IDb db, Dictionary<LoadoutId, bool> isLoadoutValidDict)
         where TParsedHeaderState : ICanProvideFileHashes<TFileEntryWrapper> where TFileEntryWrapper : IHaveFileHash
     {
         foreach (var loadoutFile in loadoutFiles)

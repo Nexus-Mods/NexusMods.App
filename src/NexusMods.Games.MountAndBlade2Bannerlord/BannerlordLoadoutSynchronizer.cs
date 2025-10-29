@@ -125,7 +125,7 @@ public class BannerlordLoadoutSynchronizer : ALoadoutSynchronizer
     // The apis for this are removed for now. Post-beta we will update the structure of the app to support updating config files
     // in read-only collections as overlay mods.
     /*
-    protected override ValueTask MoveNewFilesToMods(Loadout.ReadOnly loadout, IEnumerable<AddedEntry> newFiles, ITransaction tx)
+    protected override ValueTask MoveNewFilesToMods(Loadout.ReadOnly loadout, IEnumerable<AddedEntry> newFiles, Transaction tx)
     {
         var modDirectoryNameToModel = new Dictionary<RelativePath, BannerlordModuleLoadoutItem.ReadOnly>();
 

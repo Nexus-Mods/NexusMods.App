@@ -50,7 +50,7 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable, IHost
     private readonly IQueryEngine _queryEngine;
     private IQueryMixin _queryMixin;
 
-    private record ConnectedDb(IDb Db, DatomStore Store, Backend Backend, DatabaseInfo DatabaseInfo);
+    private record ConnectedDb(IDb Db, IConnection Connection, DatabaseInfo DatabaseInfo);
 
     public FileHashesService(ILogger<FileHashesService> logger, ISettingsManager settingsManager, IFileSystem fileSystem, HttpClient httpClient, JsonSerializerOptions jsonSerializerOptions, IServiceProvider provider)
     {
@@ -76,15 +76,16 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable, IHost
                 return existing;
 
             _logger.LogInformation("Opening hash database at {Path} for {Timestamp}", databaseInfo.Path, databaseInfo.CreationTime);
-            var backend = new Backend(readOnly: true);
+
             var settings = new DatomStoreSettings
             {
                 Path = databaseInfo.Path,
+                IsReadOnly = true,
             };
 
-            var store = new DatomStore(_provider.GetRequiredService<ILogger<DatomStore>>(), settings, backend);
-            var connection = new Connection(_provider.GetRequiredService<ILogger<Connection>>(), store, _provider, [], readOnlyMode: true, prefix: "hashes", queryEngine: _queryEngine);
-            var connectedDb = new ConnectedDb(connection.Db, store, backend, databaseInfo);
+            var connectionFactory = _provider.GetRequiredService<IConnectionFactory>();
+            var connection = connectionFactory.Create(_provider, settings);
+            var connectedDb = new ConnectedDb(connection.Db, connection, databaseInfo);
 
             _databases[databaseInfo.Path] = connectedDb;
             return connectedDb;
@@ -355,7 +356,7 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable, IHost
                         continue;
                     
                     // If there is a language setting for the files, they have to be the same as the default language
-                    if (!(depot.Languages.Count == 0 || depot.Languages.Contains(DefaultLanguage)))
+                    if (!(!depot.Languages.Any() || depot.Languages.Contains(DefaultLanguage)))
                         continue;
 
                     gogManifests[depot.Manifest.Id] = depot.Manifest;
@@ -661,8 +662,7 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable, IHost
     {
         foreach (var connection in _databases.Values)
         {
-            connection.Backend.Dispose();
-            connection.Store.Dispose();
+            connection.Connection.Dispose();
         }
     }
 

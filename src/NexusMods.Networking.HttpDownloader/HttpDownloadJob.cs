@@ -55,7 +55,7 @@ public record HttpDownloadJob : IJobDefinitionWithStart<HttpDownloadJob, Absolut
     /// <summary>
     /// Only exists for extension by derived classes.
     /// </summary>
-    public virtual ValueTask AddMetadata(ITransaction transaction, LibraryFile.New libraryFile)
+    public virtual ValueTask AddMetadata(Transaction transaction, LibraryFile.New libraryFile)
     {
         return ValueTask.CompletedTask;
     }

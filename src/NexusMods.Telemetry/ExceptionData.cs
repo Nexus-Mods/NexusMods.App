@@ -53,7 +53,7 @@ internal record struct ExceptionData(string Type, string Message, string? StackT
         // --- End of stack trace from previous location ---
         //   at System.Threading.Tasks.Parallel.<>c__53`1.<<ForEachAsync>b__53_0>d.MoveNext()
         // --- End of stack trace from previous location ---
-        //   at NexusMods.Abstractions.Loadouts.Synchronizers.ALoadoutSynchronizer.ReindexState(GameInstallation installation, Boolean ignoreModifiedDates, IConnection connection, ITransaction tx) in /_/src/NexusMods.Abstractions.Loadouts.Synchronizers/ALoadoutSynchronizer.cs:line 1280
+        //   at NexusMods.Abstractions.Loadouts.Synchronizers.ALoadoutSynchronizer.ReindexState(GameInstallation installation, Boolean ignoreModifiedDates, IConnection connection, Transaction tx) in /_/src/NexusMods.Abstractions.Loadouts.Synchronizers/ALoadoutSynchronizer.cs:line 1280
         // Output:
         // NexusMods.Abstractions.Loadouts.Synchronizers.ALoadoutSynchronizer.<>c__DisplayClass44_0.<<ReindexState>b__0>d.MoveNext()
 

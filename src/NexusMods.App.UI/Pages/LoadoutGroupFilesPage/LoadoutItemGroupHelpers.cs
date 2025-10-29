@@ -151,7 +151,7 @@ public static class LoadoutItemGroupHelpers
 
     private static async Task DeleteFiles(IConnection connection, LoadoutItemWithTargetPath.ReadOnly[] loadoutItemsToDelete)
     {
-        using var tx = connection.BeginTransaction();
+        var tx = connection.BeginTransaction();
         foreach (var loadoutItem in loadoutItemsToDelete)
             tx.Delete(loadoutItem, recursive: false);
 

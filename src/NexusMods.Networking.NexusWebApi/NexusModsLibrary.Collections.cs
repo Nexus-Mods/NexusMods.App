@@ -97,7 +97,7 @@ public partial class NexusModsLibrary
         // TODO: handle errors
         var returnedCollection = result.AssertHasData();
 
-        using var tx = _connection.BeginTransaction();
+        var tx = _connection.BeginTransaction();
         var db = _connection.Db;
 
         var collectionEntityId = UpdateCollectionInfo(db, tx, returnedCollection);
@@ -150,7 +150,7 @@ public partial class NexusModsLibrary
         // TODO: handle errors
         var (collection, revision) = result.AssertHasData();
 
-        using var tx = _connection.BeginTransaction();
+        var tx = _connection.BeginTransaction();
         var db = _connection.Db;
 
         var collectionEntityId = UpdateCollectionInfo(db, tx, collection);
@@ -334,14 +334,14 @@ public partial class NexusModsLibrary
     {
         var gameIds = CacheGameIds(collectionManifest, cancellationToken);
 
-        using var tx = _connection.BeginTransaction();
+        var tx = _connection.BeginTransaction();
         var db = _connection.Db;
 
         var collectionEntityId = UpdateCollectionInfo(db, tx, collectionFragment);
 
         var revisionId = RevisionId.From((ulong)collectionRevisionFragment.Id);
         var existingRevisions = CollectionRevisionMetadata.FindByRevisionId(db, revisionId);
-        if (existingRevisions.Count > 0) throw new NotSupportedException($"Revision with id `{revisionId}` already exists!");
+        if (existingRevisions.Any()) throw new NotSupportedException($"Revision with id `{revisionId}` already exists!");
 
         var collectionRevisionEntityId = UpdateRevisionInfo(db, tx, collectionEntityId, collectionRevisionFragment);
 
@@ -351,7 +351,7 @@ public partial class NexusModsLibrary
         var results = await tx.Commit();
         var revisionMetadata = CollectionRevisionMetadata.Load(results.Db, results[collectionRevisionEntityId]);
 
-        using var ruleTx = _connection.BeginTransaction();
+        var ruleTx = _connection.BeginTransaction();
         AddCollectionDownloadRules(ruleTx, collectionManifest, revisionMetadata);
         await ruleTx.Commit();
 
@@ -378,7 +378,7 @@ public partial class NexusModsLibrary
     }
 
     private static void AddCollectionDownloadRules(
-        ITransaction tx,
+        Transaction tx,
         CollectionRoot collectionRoot,
         CollectionRevisionMetadata.ReadOnly revisionMetadata)
     {
@@ -473,7 +473,7 @@ public partial class NexusModsLibrary
 
     private static ResolvedEntitiesLookup ResolveModFiles(
         IDb db,
-        ITransaction tx,
+        Transaction tx,
         CollectionRoot collectionRoot,
         GameIdCache gameIds,
         ICollectionRevision collectionRevision)
@@ -540,7 +540,7 @@ public partial class NexusModsLibrary
 
     private static void UpdateFiles(
         IDb db,
-        ITransaction tx,
+        Transaction tx,
         CollectionRevisionMetadataId collectionRevisionEntityId,
         ICollectionRevision revisionInfo,
         CollectionRoot collectionRoot,
@@ -582,7 +582,7 @@ public partial class NexusModsLibrary
 
     private static void HandleNexusModsDownload(
         IDb db,
-        ITransaction tx,
+        Transaction tx,
         CollectionDownload.New downloadEntity,
         Mod collectionMod,
         GameIdCache gameIds,
@@ -605,7 +605,7 @@ public partial class NexusModsLibrary
     }
 
     private static void HandleExternalDownload(
-        ITransaction tx,
+        Transaction tx,
         CollectionDownload.New downloadEntity,
         Mod collectionMod)
     {
@@ -623,7 +623,7 @@ public partial class NexusModsLibrary
     }
 
     private static void HandleBundledFiles(
-        ITransaction tx,
+        Transaction tx,
         CollectionDownload.New downloadEntity,
         Mod collectionMod)
     {
@@ -638,7 +638,7 @@ public partial class NexusModsLibrary
 
     private EntityId UpdateRevisionInfo(
         IDb db,
-        ITransaction tx,
+        Transaction tx,
         EntityId collectionEntityId,
         ICollectionRevision revisionInfo)
     {
@@ -691,7 +691,7 @@ public partial class NexusModsLibrary
 
     private static EntityId UpdateCollectionInfo(
         IDb db,
-        ITransaction tx,
+        Transaction tx,
         ICollection collectionInfo)
     {
         var id = CollectionId.From((ulong)collectionInfo.Id);

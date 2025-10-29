@@ -47,11 +47,11 @@ public partial class DiskStateEntry : IModelDefinition
     {
 #region IHavePathHashSizeAndReference
 
-        GamePath IHavePathHashSizeAndReference.Path => DiskStateEntry.Path.Get(this);
+        GamePath IHavePathHashSizeAndReference.Path => DiskStateEntry.Path.GetFrom(this);
 
-        Hash IHavePathHashSizeAndReference.Hash => DiskStateEntry.Hash.Get(this);
+        Hash IHavePathHashSizeAndReference.Hash => DiskStateEntry.Hash.GetFrom(this);
 
-        Size IHavePathHashSizeAndReference.Size => DiskStateEntry.Size.Get(this);
+        Size IHavePathHashSizeAndReference.Size => DiskStateEntry.Size.GetFrom(this);
         EntityId IHavePathHashSizeAndReference.Reference => EntityId.From(0);
 #endregion
     }

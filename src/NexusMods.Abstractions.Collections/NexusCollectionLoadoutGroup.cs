@@ -39,8 +39,7 @@ public partial class NexusCollectionLoadoutGroup : IModelDefinition
         public IEnumerable<NexusCollectionItemLoadoutGroup.ReadOnly> GetCollectionItems()
         {
             return Db
-                .GetBackRefs(LoadoutItem.Parent, Id)
-                .AsModels<NexusCollectionItemLoadoutGroup.ReadOnly>(Db)
+                .GetBackrefModels<NexusCollectionItemLoadoutGroup.ReadOnly>(LoadoutItem.Parent, Id)
                 .Where(static model => model.IsValid());
         }
     }
@@ -50,31 +49,31 @@ public partial class NexusCollectionLoadoutGroup : IModelDefinition
         var cloneId = await CollectionGroup.Clone(conn, collId);
         var cloneEnt = Load(conn.Db, cloneId);
                 
-        using var tx = conn.BeginTransaction();
+        var tx = conn.BeginTransaction();
         // Remap the name
         tx.Add(cloneId, LoadoutItem.Name, newName);
         // Make it editable
         tx.Add(cloneId, CollectionGroup.IsReadOnly, false);
         // Retract the Nexus references as this is no longer associated with the official collection
-        tx.Retract(cloneId, RevisionId, RevisionId.Get(cloneEnt));
-        tx.Retract(cloneId, CollectionId, CollectionId.Get(cloneEnt));
-        tx.Retract(cloneId, LibraryFileId, LibraryFileId.Get(cloneEnt));
+        tx.Retract(cloneId, RevisionId, RevisionId.GetFrom(cloneEnt));
+        tx.Retract(cloneId, CollectionId, CollectionId.GetFrom(cloneEnt));
+        tx.Retract(cloneId, LibraryFileId, LibraryFileId.GetFrom(cloneEnt));
 
         // Retract the Nexus references in items so that this is no longer associated with the official collection
         var db = conn.Db;
         foreach (var item in conn.Query<EntityId>($"SELECT Id FROM mdb_NexusCollectionItemLoadoutGroup(Db=>{db}) WHERE Parent = {cloneId}"))
         {
             var ent = NexusCollectionItemLoadoutGroup.Load(db, item);
-            tx.Retract(item, NexusCollectionItemLoadoutGroup.Download, NexusCollectionItemLoadoutGroup.Download.Get(ent));
-            tx.Retract(item, NexusCollectionItemLoadoutGroup.IsRequired, NexusCollectionItemLoadoutGroup.IsRequired.Get(ent));
+            tx.Retract(item, NexusCollectionItemLoadoutGroup.Download, NexusCollectionItemLoadoutGroup.Download.GetFrom(ent));
+            tx.Retract(item, NexusCollectionItemLoadoutGroup.IsRequired, NexusCollectionItemLoadoutGroup.IsRequired.GetFrom(ent));
             
-            if (NexusCollectionReplicatedLoadoutGroup.Replicated.TryGetValue(ent, out var replicated))
+            if (ent.EntitySegment.TryGetResolved(NexusCollectionReplicatedLoadoutGroup.Replicated, out var replicated))
                 tx.Retract(item, NexusCollectionReplicatedLoadoutGroup.Replicated, replicated);
             
-            if (NexusCollectionBundledLoadoutGroup.CollectionLibraryFileId.TryGetValue(ent, out var bundleLibraryFileId))
+            if (ent.EntitySegment.TryGetResolved(NexusCollectionBundledLoadoutGroup.CollectionLibraryFileId, out var bundleLibraryFileId))
                 tx.Retract(item, NexusCollectionBundledLoadoutGroup.CollectionLibraryFileId, bundleLibraryFileId);
 
-            if (NexusCollectionBundledLoadoutGroup.BundleDownload.TryGetValue(ent, out var bundleDownload))
+            if (ent.EntitySegment.TryGetResolved(NexusCollectionBundledLoadoutGroup.BundleDownload, out var bundleDownload))
             {
                 tx.Retract(item, NexusCollectionBundledLoadoutGroup.BundleDownload, bundleDownload);
                 

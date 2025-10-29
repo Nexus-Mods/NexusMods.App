@@ -58,7 +58,7 @@ public class FomodXmlInstaller : ALibraryArchiveInstaller
     public override async ValueTask<InstallerResult> ExecuteAsync(
         LibraryArchive.ReadOnly libraryArchive,
         LoadoutItemGroup.New loadoutGroup,
-        ITransaction transaction,
+        Transaction transaction,
         Loadout.ReadOnly loadout,
         CancellationToken cancellationToken)
     {
@@ -68,7 +68,7 @@ public class FomodXmlInstaller : ALibraryArchiveInstaller
     public async ValueTask<InstallerResult> ExecuteAsync(
         LibraryArchive.ReadOnly libraryArchive,
         LoadoutItemGroup.New loadoutGroup,
-        ITransaction transaction,
+        Transaction transaction,
         Loadout.ReadOnly loadout,
         FomodOption[]? options,
         CancellationToken cancellationToken)
@@ -197,7 +197,7 @@ public class FomodXmlInstaller : ALibraryArchiveInstaller
     }
 
     private void InstructionsToLoadoutItems(
-        ITransaction transaction,
+        Transaction transaction,
         LoadoutId loadoutId,
         LoadoutItemGroup.New loadoutGroup,
         IList<Instruction> instructions,
@@ -223,7 +223,7 @@ public class FomodXmlInstaller : ALibraryArchiveInstaller
     }
 
     private void ConvertInstructionCopy(
-        ITransaction transaction,
+        Transaction transaction,
         Instruction instruction,
         LoadoutItemGroup.New loadoutGroup,
         LoadoutId loadoutId,

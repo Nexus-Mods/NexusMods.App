@@ -38,7 +38,7 @@ public class GenericInstallerTests : ALibraryArchiveInstallerTests<GenericInstal
         // 3D NPC Houses 1.0 https://www.nexusmods.com/stardewvalley/mods/763?tab=files
         var libraryArchive = await DownloadArchiveFromNexusMods(ModId.From(763), FileId.From(2874));
 
-        using var tx = Connection.BeginTransaction();
+        var tx = Connection.BeginTransaction();
         var group = new LoadoutItemGroup.New(tx, out var id)
         {
             IsGroup = true,

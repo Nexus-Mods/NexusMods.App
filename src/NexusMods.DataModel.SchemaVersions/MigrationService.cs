@@ -42,7 +42,7 @@ public class MigrationService
         if (currentVersion != 0)
             throw new InvalidOperationException("Cannot perform a schema init on a database that already has a schema version");
 
-        using var tx = _connection.BeginTransaction();
+        var tx = _connection.BeginTransaction();
         _ = new SchemaVersion.New(tx)
         {
             CurrentVersion = _migrations.Last().Id,
@@ -91,7 +91,7 @@ public class MigrationService
                 case IScanningMigration scanningMigration:
                 {
                     await _connection.ScanUpdate(scanningMigration.Update);
-                    using var tx = _connection.BeginTransaction();
+                    var tx = _connection.BeginTransaction();
                     _ = new MigrationLogItem.New(tx)
                     {
                         RunAt = DateTimeOffset.UtcNow,
@@ -103,9 +103,9 @@ public class MigrationService
                     await tx.Commit();
                     break;
                 }
-                case ITransactionalMigration transactionalMigration:
+                case TransactionalMigration transactionalMigration:
                 {
-                    using var tx = _connection.BeginTransaction();
+                    var tx = _connection.BeginTransaction();
                     transactionalMigration.Migrate(tx, _connection.Db);
                     _ = new MigrationLogItem.New(tx)
                     {
@@ -133,7 +133,7 @@ public class MigrationService
         _logger.LogInformation("Ran `{Count}` migration(s) in `{Duration}` seconds", numMigrations, totalDuration.TotalSeconds);
     }
 
-    private EntityId SchemaVersionEntityId(IDb db, ITransaction tx, MigrationId definitionId)
+    private EntityId SchemaVersionEntityId(IDb db, Transaction tx, MigrationId definitionId)
     {
         var existing = SchemaVersion.All(db).SingleOrDefault();
         if (existing.IsValid())

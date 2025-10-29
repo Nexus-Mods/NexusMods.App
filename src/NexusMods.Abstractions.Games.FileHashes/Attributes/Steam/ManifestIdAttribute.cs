@@ -10,12 +10,12 @@ namespace NexusMods.Abstractions.Games.FileHashes.Attributes.Steam;
 /// </summary>
 public class ManifestIdAttribute(string ns, string name) : ScalarAttribute<ManifestId, ulong, UInt64Serializer>(ns, name)
 {
-    protected override ulong ToLowLevel(ManifestId value)
+    public override ulong ToLowLevel(ManifestId value)
     {
         return value.Value;
     }
 
-    protected override ManifestId FromLowLevel(ulong value, AttributeResolver resolver)
+    public override ManifestId FromLowLevel(ulong value, AttributeResolver resolver)
     {
         return ManifestId.From(value);
     }

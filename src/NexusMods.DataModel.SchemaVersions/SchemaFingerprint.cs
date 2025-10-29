@@ -12,7 +12,7 @@ public class SchemaFingerprint
     public static Hash GenerateFingerprint(IDb db)
     {
         StringBuilder sb = new();
-        var cache = db.AttributeCache;
+        var cache = db.AttributeResolver.AttributeCache;
 
         
         void AppendLine(string s)

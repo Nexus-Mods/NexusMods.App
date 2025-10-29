@@ -40,7 +40,7 @@ public abstract class ALibraryItemInstaller : ILibraryItemInstaller
     public abstract ValueTask<InstallerResult> ExecuteAsync(
         LibraryItem.ReadOnly libraryItem,
         LoadoutItemGroup.New loadoutGroup,
-        ITransaction transaction,
+        Transaction transaction,
         Loadout.ReadOnly loadout,
         CancellationToken cancellationToken);
 }

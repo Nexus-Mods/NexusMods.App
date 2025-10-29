@@ -154,7 +154,7 @@ public sealed class LibraryService : ILibraryService
         );
     }
 
-    public async Task<LibraryFile.New> AddLibraryFile(ITransaction transaction, AbsolutePath source)
+    public async Task<LibraryFile.New> AddLibraryFile(Transaction transaction, AbsolutePath source)
     {
         return await AddLibraryFileJob.Create(_serviceProvider, transaction, filePath: source);
     }
@@ -165,7 +165,7 @@ public sealed class LibraryService : ILibraryService
         var groupIds = items.SelectMany(LoadoutsWithLibraryItem).Select(tuple => tuple.linkedItem.AsLoadoutItemGroup().LoadoutItemGroupId).ToArray();
         await _loadoutManager.RemoveItems(groupIds);
 
-        using var tx = _connection.BeginTransaction();
+        var tx = _connection.BeginTransaction();
 
         foreach (var item in items)
             tx.Delete(item.Id, recursive: true);

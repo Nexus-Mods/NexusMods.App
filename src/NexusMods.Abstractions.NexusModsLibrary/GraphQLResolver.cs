@@ -1,8 +1,6 @@
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
-using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 using NexusMods.MnemonicDB.Abstractions.Models;
-using Splat.ModeDetection;
 
 namespace NexusMods.Abstractions.NexusModsLibrary;
 
@@ -15,16 +13,17 @@ namespace NexusMods.Abstractions.NexusModsLibrary;
 /// will not be added.
 /// </summary>
 // ReSharper disable once InconsistentNaming
-public readonly struct GraphQLResolver(ITransaction Tx, ReadOnlyModel Model, bool Existing)
+public readonly struct GraphQLResolver(Transaction Tx, ReadOnlyModel Model, bool Existing)
 {
     /// <summary>
     /// Create a new resolver using the given primary key attribute and value.
     /// </summary>
-    public static GraphQLResolver Create<THighLevel>(IDb db, ITransaction tx, 
-        IWritableAttribute<THighLevel> primaryKeyAttribute,
-        THighLevel primaryKeyValue)
-        where THighLevel : IEquatable<THighLevel>
+    public static GraphQLResolver Create<THighLevel, TLowLevel, TSerializer>(IDb db, Transaction tx, Attribute<THighLevel, TLowLevel, TSerializer> primaryKeyAttribute, THighLevel primaryKeyValue)
+        where THighLevel : IEquatable<THighLevel> 
+        where TLowLevel : notnull 
+        where TSerializer : IValueSerializer<TLowLevel>
     {
+        if (primaryKeyAttribute == null) throw new ArgumentNullException(nameof(primaryKeyAttribute));
         if (!primaryKeyAttribute.IsIndexed) throw new ArgumentException($"Attribute {primaryKeyAttribute.Id} is not indexed", nameof(primaryKeyAttribute));
 
         var existing = db.Datoms(primaryKeyAttribute, primaryKeyValue);
@@ -33,52 +32,26 @@ public readonly struct GraphQLResolver(ITransaction Tx, ReadOnlyModel Model, boo
         if (!exists) tx.Add(id, primaryKeyAttribute, primaryKeyValue);
         return new GraphQLResolver(tx, new ReadOnlyModel(db, id), exists);
     }
-
-    /// <summary>
-    /// Create a resolver that depends on two primary key attributes and values.
-    /// </summary>
-    public static GraphQLResolver Create<THighLevel1, THighLevel2>(IDb referenceDb, ITransaction tx, 
-        (IWritableAttribute<THighLevel1> A, THighLevel1 V) pair1,
-        (IWritableAttribute<THighLevel2> A, THighLevel2 V) pair2) 
-        where THighLevel1 : IEquatable<THighLevel1>
-        where THighLevel2 : IEquatable<THighLevel2>
-    {
-        if (!pair1.A.IsIndexed) throw new ArgumentException($"Attribute {pair1.A.Id} is not indexed", nameof(pair1));
-        if (!pair2.A.IsIndexed) throw new ArgumentException($"Attribute {pair2.A.Id} is not indexed", nameof(pair2));
-
-        var existing = referenceDb.Datoms(pair1, pair2);
-        var exists = existing.Count > 0;
-        var id = existing.Count == 0 ? tx.TempId() : existing[0];
-        if (!exists)
-        {
-            tx.Add(id, pair1.A, pair1.V);
-            tx.Add(id, pair2.A, pair2.V);
-        }
-
-        return new GraphQLResolver(tx, new ReadOnlyModel(referenceDb, id), exists);
-    }
-
+    
     /// <summary>
     /// The id of the entity, may be temporary if this is a new entity.
     /// </summary>
     public EntityId Id => Model.Id;
-
-    /// <summary>
-    /// Whether we're updating an existing entity or creating a new one.
-    /// </summary>
-    public bool Existing => Existing;
     
     /// <summary>
     /// Add a value to the entity. If the value already exists, it will not be added again.
     /// </summary>
-    public void Add<TValue>(IWritableAttribute<TValue> attribute, TValue value)
+    public void Add<THighLevel, TLowLevel, TSerializer>(Attribute<THighLevel, TLowLevel, TSerializer> attribute, THighLevel value) 
+        where THighLevel : notnull 
+        where TLowLevel : notnull 
+        where TSerializer : IValueSerializer<TLowLevel>
     {
         foreach (var datom in Model)
         {
             if (datom.A != attribute)
                 continue;
             
-            if (datom.ObjectValue.Equals(value))
+            if (datom.V.Equals(value))
                 return;
         }
 
@@ -98,7 +71,7 @@ public readonly struct GraphQLResolver(ITransaction Tx, ReadOnlyModel Model, boo
             return;
         }
         
-        if (attribute.Get(Model).Contains(id))
+        if (Model.EntitySegment.GetAllResolved(attribute).Contains(id))
             return;
         
         // Else add the value
@@ -117,7 +90,7 @@ public readonly struct GraphQLResolver(ITransaction Tx, ReadOnlyModel Model, boo
             return;
         }
         
-        if (attribute.TryGetValue(Model, out var foundId) && foundId.Equals(id))
+        if (Model.EntitySegment.GetAllResolved(attribute).Contains(id))
             return;
         
         // Else add the value

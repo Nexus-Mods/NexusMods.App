@@ -269,7 +269,7 @@ public class GeneralLoadoutManagementTests(ITestOutputHelper helper) : ACyberpun
             """, [loadoutA, loadoutB]);
         
 
-        using var tx = Connection.BeginTransaction();
+        var tx = Connection.BeginTransaction();
         tx.Add(mod, LoadoutItem.Disabled, Null.Instance);
         await tx.Commit();
         
@@ -288,7 +288,7 @@ public class GeneralLoadoutManagementTests(ITestOutputHelper helper) : ACyberpun
             """, [loadoutA, loadoutB]);
         
         // Re-enable the mod
-        using var tx2 = Connection.BeginTransaction();
+        var tx2 = Connection.BeginTransaction();
         tx2.Retract(mod, LoadoutItem.Disabled, Null.Instance);
         await tx2.Commit();
         

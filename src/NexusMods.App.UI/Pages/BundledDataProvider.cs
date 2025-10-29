@@ -8,7 +8,6 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Pages.LoadoutPage;
 using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.MnemonicDB.Abstractions.DatomIterators;
 using NexusMods.MnemonicDB.Abstractions.Query;
 using UIObservableExtensions = NexusMods.App.UI.Extensions.ObservableExtensions;
 

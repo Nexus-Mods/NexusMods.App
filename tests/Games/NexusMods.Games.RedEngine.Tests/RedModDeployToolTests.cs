@@ -62,7 +62,7 @@ public class RedModDeployToolTests : ACyberpunkIsolatedGameTest<Cyberpunk2077Gam
         var modToDisable = LoadoutItemGroup.All(Connection.Db).Single(g => g.LoadoutItemGroupId == driverModGroupId);
         
         // Disable the mod
-        using var tx = Connection.BeginTransaction();
+        var tx = Connection.BeginTransaction();
         tx.Add(modToDisable.Id, LoadoutItem.Disabled, Null.Instance);
         await tx.Commit();
         

@@ -47,7 +47,7 @@ public class StubbedFileHasherService : IFileHashesService
             var stateFile = FileSystem.Shared.GetKnownPath(KnownPath.EntryDirectory) / "Resources" / file;
             using var zipArchive = new ZipArchive(stateFile.Read());
 
-            using var tx = _connection.BeginTransaction();
+            var tx = _connection.BeginTransaction();
 
             List<ArchivedFileEntry> archiveFiles = [];
             List<EntityId> pathIds = [];

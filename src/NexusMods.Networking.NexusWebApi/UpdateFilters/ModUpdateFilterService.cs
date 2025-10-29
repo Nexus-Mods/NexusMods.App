@@ -38,7 +38,7 @@ public class ModUpdateFilterService : IModUpdateFilterService
     /// <inheritdoc />
     public async Task HideFileAsync(FileUid fileUid)
     {
-        using var tx = _connection.BeginTransaction();
+        var tx = _connection.BeginTransaction();
         _ = new IgnoreFileUpdate.New(tx) { Uid = fileUid };
         await tx.Commit();
     }
@@ -46,7 +46,7 @@ public class ModUpdateFilterService : IModUpdateFilterService
     /// <inheritdoc />
     public async Task HideFilesAsync(IEnumerable<FileUid> fileUids)
     {
-        using var tx = _connection.BeginTransaction();
+        var tx = _connection.BeginTransaction();
         foreach (var fileUid in fileUids)
         {
             _ = new IgnoreFileUpdate.New(tx) { Uid = fileUid };
@@ -57,7 +57,7 @@ public class ModUpdateFilterService : IModUpdateFilterService
     /// <inheritdoc />
     public async Task ShowFileAsync(FileUid fileUid)
     {
-        using var tx = _connection.BeginTransaction();
+        var tx = _connection.BeginTransaction();
         var ignoreEntries = IgnoreFileUpdate.FindByUid(_connection.Db, fileUid);
         foreach (var entry in ignoreEntries)
         {
@@ -69,7 +69,7 @@ public class ModUpdateFilterService : IModUpdateFilterService
     /// <inheritdoc />
     public async Task ShowFilesAsync(IEnumerable<FileUid> fileUids)
     {
-        using var tx = _connection.BeginTransaction();
+        var tx = _connection.BeginTransaction();
         foreach (var fileUid in fileUids)
         {
             var ignoreEntries = IgnoreFileUpdate.FindByUid(_connection.Db, fileUid);

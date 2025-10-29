@@ -48,7 +48,7 @@ public static class RunUpdateCheck
     /// </summary>
     public static async Task UpdateModFilesForOutdatedPages(
         IDb db,
-        ITransaction tx,
+        Transaction tx,
         ILogger logger,
         IGraphQlClient graphQlClient,
         PerFeedCacheUpdaterResult<PageMetadataMixin> result,
@@ -129,7 +129,7 @@ public static class RunUpdateCheck
 
     private static async Task UpdateModPage(
         IDb db,
-        ITransaction tx,
+        Transaction tx,
         IGraphQlClient graphQlClient,
         PageMetadataMixin mixin,
         CancellationToken cancellationToken = default)

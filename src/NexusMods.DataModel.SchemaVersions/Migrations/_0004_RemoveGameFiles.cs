@@ -2,7 +2,6 @@ using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.FileHashes;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 
 namespace NexusMods.DataModel.SchemaVersions.Migrations;
@@ -10,7 +9,7 @@ namespace NexusMods.DataModel.SchemaVersions.Migrations;
 /// <summary>
 /// Delete the game files group, and add the loadout version and locatorids
 /// </summary>
-internal class _0004_RemoveGameFiles : ITransactionalMigration
+internal class _0004_RemoveGameFiles : TransactionalMigration
 {
     private readonly IFileHashesService _fileHashesService;
     private HashSet<Symbol> _gameGroupAttrs = [];
@@ -28,13 +27,13 @@ internal class _0004_RemoveGameFiles : ITransactionalMigration
     public async Task Prepare(IDb db)
     {
         await _fileHashesService.GetFileHashesDb();
-        _gameGroupAttrs = db.AttributeCache.AllAttributeIds
+        _gameGroupAttrs = db.AttributeResolver.AttributeCache.AllAttributeIds
             .Where(sym => sym.Namespace == "NexusMods.Loadouts.LoadoutGameFilesGroup")
             .ToHashSet();
         _resolvedGroupAttrs = db.Connection.AttributeResolver.DefinedAttributes.Where(attr => _gameGroupAttrs.Contains(attr.Id)).ToHashSet();
     }
 
-    public void Migrate(ITransaction tx, IDb db)
+    public void Migrate(Transaction tx, IDb db)
     {
         var seenGroups = new HashSet<EntityId>();
         
@@ -89,7 +88,7 @@ internal class _0004_RemoveGameFiles : ITransactionalMigration
 
         return;
         
-        void DeleteChildren(ITransaction tx, LoadoutItem.ReadOnly item)
+        void DeleteChildren(Transaction tx, LoadoutItem.ReadOnly item)
         {
             if (!item.IsValid())
                 return;

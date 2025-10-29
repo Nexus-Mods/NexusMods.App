@@ -16,7 +16,7 @@ public static class FragmentExtensions
     /// <summary>
     /// Resolves a category.
     /// </summary>
-    public static EntityId Resolve(this ICategory category, IDb db, ITransaction tx)
+    public static EntityId Resolve(this ICategory category, IDb db, Transaction tx)
     {
         var resolver = GraphQLResolver.Create(db, tx, CollectionCategory.NexusId, (ulong)category.Id);
         resolver.Add(CollectionCategory.Name, category.Name);
@@ -26,7 +26,7 @@ public static class FragmentExtensions
     /// <summary>
     /// Resolves the IUserFragment to an entity in the database, inserting or updating as necessary.
     /// </summary>
-    public static EntityId Resolve(this IUser userFragment, IDb db, ITransaction tx)
+    public static EntityId Resolve(this IUser userFragment, IDb db, Transaction tx)
     {
         var userResolver = GraphQLResolver.Create(db, tx, User.NexusId, (ulong)userFragment.MemberId);
         userResolver.Add(User.Name, userFragment.Name);
@@ -41,10 +41,10 @@ public static class FragmentExtensions
     /// <param name="db">Provides DB access.</param>
     /// <param name="tx">The current transaction for inserting items into database.,</param>
     /// <param name="modPageEid">ID of the mod page entity.</param>
-    public static EntityId Resolve(this IModFile modFileFragment, IDb db, ITransaction tx, EntityId modPageEid)
+    public static EntityId Resolve(this IModFile modFileFragment, IDb db, Transaction tx, EntityId modPageEid)
     {
         var nexusFileResolver = GraphQLResolver.Create(db, tx, NexusModsFileMetadata.Uid, FileUid.FromV2Api(modFileFragment.Uid));
-        nexusFileResolver.Add(NexusModsFileMetadata.ModPageId, modPageEid);
+        nexusFileResolver.Add(NexusModsFileMetadata.ModPage, modPageEid);
         nexusFileResolver.Add(NexusModsFileMetadata.Name, modFileFragment.Name);
         nexusFileResolver.Add(NexusModsFileMetadata.Version, modFileFragment.Version);
         nexusFileResolver.Add(NexusModsFileMetadata.UploadedAt,  DateTimeOffset.FromUnixTimeSeconds(modFileFragment.Date).DateTime);
@@ -65,7 +65,7 @@ public static class FragmentExtensions
     /// <summary>
     /// Resolves the IModFragment to an entity in the database, inserting or updating as necessary.
     /// </summary>
-    public static EntityId Resolve(this IMod modFragment, IDb db, ITransaction tx, bool setFilesTimestamp = false)
+    public static EntityId Resolve(this IMod modFragment, IDb db, Transaction tx, bool setFilesTimestamp = false)
     {
         var nexusModResolver = GraphQLResolver.Create(db, tx, NexusModsModPageMetadata.Uid, ModUid.FromV2Api(modFragment.Uid));
         nexusModResolver.Add(NexusModsModPageMetadata.Name, modFragment.Name);

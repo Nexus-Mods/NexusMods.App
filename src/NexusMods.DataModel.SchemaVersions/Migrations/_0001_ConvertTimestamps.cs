@@ -2,7 +2,6 @@ using System.Buffers;
 using System.Security.Cryptography.X509Certificates;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
-using NexusMods.MnemonicDB.Abstractions.DatomIterators;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 using NexusMods.MnemonicDB.Abstractions.Internals;
 using NexusMods.MnemonicDB.Abstractions.ValueSerializers;
@@ -26,19 +25,18 @@ public class _0001_ConvertTimestamps : IScanningMigration
     public async Task Prepare(IDb db)
     {
         _attrIds = db.Connection.AttributeResolver.DefinedAttributes.Where(a => a is TimestampAttribute)
-            .Select(a => db.AttributeCache.GetAttributeId(a.Id))
+            .Select(a => db.AttributeResolver.AttributeCache.GetAttributeId(a.Id))
             .ToHashSet();
     }
 
     /// <inheritdoc />
-    public ScanResultType Update(ref KeyPrefix prefix, ReadOnlySpan<byte> valueSpan, in IBufferWriter<byte> writer)
+    public ScanResultType Update(ref Datom datom)
     {
-        if (!_attrIds.Contains(prefix.A))
+        if (!_attrIds.Contains(datom.A))
             return ScanResultType.None;
-        
-        var oldTimestamp = Int64Serializer.Read(valueSpan);
-        var newTimestamp = ConvertTimestamps(oldTimestamp);
-        Int64Serializer.Write(newTimestamp, writer);
+
+        var newTimestamp = ConvertTimestamps((long)datom.V);
+        datom = new Datom(datom.Prefix, newTimestamp);
         return ScanResultType.Update;
     }
     

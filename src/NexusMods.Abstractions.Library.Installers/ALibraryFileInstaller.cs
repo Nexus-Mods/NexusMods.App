@@ -31,7 +31,7 @@ public abstract class ALibraryFileInstaller : ALibraryItemInstaller, ILibraryFil
     public override ValueTask<InstallerResult> ExecuteAsync(
         LibraryItem.ReadOnly libraryItem,
         LoadoutItemGroup.New loadoutGroup,
-        ITransaction transaction,
+        Transaction transaction,
         Loadout.ReadOnly loadout,
         CancellationToken cancellationToken)
     {
@@ -48,7 +48,7 @@ public abstract class ALibraryFileInstaller : ALibraryItemInstaller, ILibraryFil
     public abstract ValueTask<InstallerResult> ExecuteAsync(
         LibraryFile.ReadOnly libraryFile,
         LoadoutItemGroup.New loadoutGroup,
-        ITransaction transaction,
+        Transaction transaction,
         Loadout.ReadOnly loadout,
         CancellationToken cancellationToken);
 }

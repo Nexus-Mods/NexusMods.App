@@ -114,11 +114,22 @@ public class GameRegistry : IGameRegistry, IHostedService
         if (TryGetLocatorResultId(_conn.Db, locatableGame, result, out var id))
             return id.Value;
         
-        using var tx = _conn.BeginTransaction();
-        tx.Add(locatableGame, result, static (tx, db, game, result) =>
+        var tx = _conn.BeginTransaction();
+        tx.Add(new AddGameMetadata(locatableGame, result));
+        var txResult = await tx.Commit();
+        
+        if (!TryGetLocatorResultId(txResult.Db, locatableGame, result, out id))
+            throw new InvalidOperationException("Failed to get locator result id after inserting it, this should never happen");
+        
+        return id.Value;
+    }
+
+    private class AddGameMetadata(ILocatableGame game, GameLocatorResult result) : ITxFunction
+    {
+        public void Apply(Transaction tx)
         {
             // Check for a race condition, someone may have added it before us.
-            if (TryGetLocatorResultId(db, game, result, out var _))
+            if (TryGetLocatorResultId(tx.AsIf(), game, result, out var _))
                 return;
 
             // TX Functions don't yet support the .New() syntax, so we'll have to do it manually.
@@ -127,14 +138,7 @@ public class GameRegistry : IGameRegistry, IHostedService
             tx.Add(id, GameInstallMetadata.GameId, game.GameId);
             tx.Add(id, GameInstallMetadata.Name, game.Name);
             tx.Add(id, GameInstallMetadata.Path, result.Path.ToString());
-        });
-        
-        var txResult = await tx.Commit();
-        
-        if (!TryGetLocatorResultId(txResult.Db, locatableGame, result, out id))
-            throw new InvalidOperationException("Failed to get locator result id after inserting it, this should never happen");
-        
-        return id.Value;
+        }
     }
 
 

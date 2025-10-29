@@ -72,8 +72,8 @@ public sealed class PersistedDbResourceLoader<TResourceIdentifier> : IResourceLo
         var db = _connection.Db;
         var (entityId, innerResourceIdentifier) = resourceIdentifier;
 
-        var indexSegment = db.Datoms(entityId);
-        if (!_referenceAttribute.TryGetValue(indexSegment, out var persistedResourceId))
+        var indexSegment = db[entityId];
+        if (!indexSegment.TryGetResolved(_referenceAttribute, out var persistedResourceId))
             return null;
         
         var persistedResource = PersistedDbResource.Load(db, persistedResourceId);
@@ -97,7 +97,7 @@ public sealed class PersistedDbResourceLoader<TResourceIdentifier> : IResourceLo
     {
         var resource = await _innerLoader.LoadResourceAsync(resourceIdentifier.Item2, cancellationToken);
 
-        using var tx = _connection.BeginTransaction();
+        var tx = _connection.BeginTransaction();
         var tmpId = _partitionId.HasValue ? tx.TempId(_partitionId.Value) : tx.TempId();
 
         var expiresAt = _expiresAfter.HasValue ? TimeProvider.System.GetUtcNow() + _expiresAfter.Value : resource.ExpiresAt;
@@ -108,7 +108,7 @@ public sealed class PersistedDbResourceLoader<TResourceIdentifier> : IResourceLo
             ResourceIdentifierHash = _identifierToHash(resourceIdentifier.Item2),
         };
 
-        _referenceAttribute.Add(tx, resourceIdentifier.Item1, persisted);
+        tx.Add(resourceIdentifier.Item1, _referenceAttribute, tmpId);
         await tx.Commit();
 
         return resource;

@@ -14,7 +14,7 @@ public class LoadoutObservableTests(IServiceProvider provider) : AGameTest<Cyber
     public async Task DeletingAModShouldUpdateTheLoadout()
     {
 
-        using var tx = Connection.BeginTransaction();
+        var tx = Connection.BeginTransaction();
         var loadoutId = tx.TempId();
 
         var loadout = new Loadout.New(tx, loadoutId)
@@ -68,7 +68,7 @@ public class LoadoutObservableTests(IServiceProvider provider) : AGameTest<Cyber
         
         
         // Delete a file and the row should update
-        using var tx2 = Connection.BeginTransaction();
+        var tx2 = Connection.BeginTransaction();
         tx2.Delete(fileId, false);
         var result2 = await tx2.Commit();
 

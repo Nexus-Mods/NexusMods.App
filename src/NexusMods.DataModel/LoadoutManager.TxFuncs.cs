@@ -24,17 +24,9 @@ internal partial class LoadoutManager
             Array.Sort(toSkip);
             _toSkip = toSkip;
         }
-
-        public bool Equals(ITxFunction? obj)
+        public void Apply(Transaction tx)
         {
-            if (obj is not RebalancePrioritiesTxFunc other) return false;
-            return other._loadoutId.Equals(_loadoutId);
-        }
-
-        public override int GetHashCode() => _loadoutId.GetHashCode();
-
-        public void Apply(ITransaction tx, IDb basis)
-        {
+            var basis = tx.BasisDb;
             var priorities = LoadoutItemGroupPriority
                 .FindByLoadout(basis, _loadoutId)
                 .OrderBy(static model => model.Priority);
@@ -63,12 +55,9 @@ internal partial class LoadoutManager
             _winnerIds = winnerIds;
             _loserId = loserId;
         }
-
-        public bool Equals(ITxFunction? obj) => obj is ResolveFileConflictsTxFunc other && other._loadoutId == _loadoutId;
-        public override int GetHashCode() => _loadoutId.GetHashCode();
-
-        public void Apply(ITransaction tx, IDb basis)
+        public void Apply(Transaction tx)
         {
+            var basis = tx.BasisDb;
             var priorities = LoadoutItemGroupPriority
                 .FindByLoadout(basis, _loadoutId)
                 .OrderBy(static model => model.Priority)
@@ -119,18 +108,10 @@ internal partial class LoadoutManager
             _loadoutId = loadoutId;
             _targetId = targetId;
         }
-
-        public bool Equals(ITxFunction? obj)
+        
+        public void Apply(Transaction tx)
         {
-            if (obj is not AddPriorityTxFunc other) return false;
-            return other._loadoutId.Equals(_loadoutId);
-        }
-
-        public override int GetHashCode() => _loadoutId.GetHashCode();
-
-        public void Apply(ITransaction tx, IDb basis)
-        {
-            var priority = GetNextPriority(_loadoutId, basis);
+            var priority = GetNextPriority(_loadoutId, tx.BasisDb);
             var id = tx.TempId();
             tx.Add(id, LoadoutItemGroupPriority.Loadout, _loadoutId);
             tx.Add(id, LoadoutItemGroupPriority.Target, _targetId);

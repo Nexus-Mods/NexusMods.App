@@ -108,5 +108,5 @@ public class DefaultFileUpdateFilter : IShouldIgnoreFile
     public DefaultFileUpdateFilter(IConnection connection) => _connection = connection;
 
     /// <inheritdoc />
-    public bool ShouldIgnoreFile(FileUid file) => IgnoreFileUpdate.FindByUid(_connection.Db, file).Count > 0;
+    public bool ShouldIgnoreFile(FileUid file) => IgnoreFileUpdate.FindByUid(_connection.Db, file).Any();
 }

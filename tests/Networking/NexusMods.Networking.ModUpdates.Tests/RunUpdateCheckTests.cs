@@ -66,7 +66,7 @@ public class RunUpdateCheckTests : ACyberpunkIsolatedGameTest<RunUpdateCheckTest
         var outOfDateFileUid = modPages.Files.First().Uid;
 
         // Fetch updated content for mod pages.
-        using var tx = Connection.BeginTransaction();
+        var tx = Connection.BeginTransaction();
         var graphQlClient = ServiceProvider.GetRequiredService<IGraphQlClient>();
         await RunUpdateCheck.UpdateModFilesForOutdatedPages(Connection.Db, tx, Logger, graphQlClient, updates, CancellationToken.None);
         await tx.Commit();

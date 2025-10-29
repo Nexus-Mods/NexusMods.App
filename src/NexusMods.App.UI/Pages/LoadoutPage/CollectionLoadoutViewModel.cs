@@ -91,7 +91,7 @@ public class CollectionLoadoutViewModel : APageViewModel<ICollectionLoadoutViewM
         CommandToggle = new ReactiveCommand(
             executeAsync: async (_, _) =>
             {
-                using var tx = connection.BeginTransaction();
+                var tx = connection.BeginTransaction();
 
                 var shouldEnable = !IsCollectionEnabled;
                 if (shouldEnable)

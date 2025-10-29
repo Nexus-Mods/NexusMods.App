@@ -80,7 +80,7 @@ public class CollectionCardViewModel : AViewModel<ICollectionCardViewModel>, ICo
     [Reactive] public Bitmap? AuthorAvatar { get; private set; }
     public string Summary => _collection.Summary.ValueOr(string.Empty);
     public string Category => _collection.Category.Name;
-    public int NumDownloads => _revision.Downloads.Count;
+    public int NumDownloads => _revision.Downloads.Count();
     public RevisionNumber RevisionNumber => _revision.RevisionNumber;
     public ulong EndorsementCount => _collection.Endorsements.ValueOr(0ul);
     public ulong TotalDownloads => _collection.TotalDownloads.ValueOr(0ul);

@@ -276,7 +276,7 @@ public class LibraryServiceTests : ACyberpunkIsolatedGameTest<LibraryServiceTest
 
     private async Task<Loadout.ReadOnly> CreateTestLoadout(string name)
     {
-        using var tx = _connection.BeginTransaction();
+        var tx = _connection.BeginTransaction();
         var loadoutNew = new Loadout.New(tx)
         {
             Name = name,
@@ -296,7 +296,7 @@ public class LibraryServiceTests : ACyberpunkIsolatedGameTest<LibraryServiceTest
         string name = "My Mods",
         bool isReadOnly = false)
     {
-        using var tx = _connection.BeginTransaction();
+        var tx = _connection.BeginTransaction();
 
         var group = new CollectionGroup.New(tx, out var collectionId)
         {

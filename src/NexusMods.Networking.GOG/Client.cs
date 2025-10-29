@@ -145,7 +145,7 @@ internal class Client : IClient
         }
 
         // Save the login information
-        using var tx = _connection.BeginTransaction();
+        var tx = _connection.BeginTransaction();
         var e = tx.TempId();
         if (TryGetAuthInfo(out var found))
             e = found.Id;
@@ -215,8 +215,8 @@ internal class Client : IClient
                 throw new Exception("The OAuth login request did not return a token.");
             }
         
-            using var tx = _connection.BeginTransaction();
             var e = authInfo.Id;
+            var tx = _connection.BeginTransaction();
             tx.Add(e, AuthInfo.AccessToken, tokenResponse.AccessToken);
             tx.Add(e, AuthInfo.RefreshToken, tokenResponse.RefreshToken);
             tx.Add(e, AuthInfo.ExpiresAt, DateTimeOffset.UtcNow.AddSeconds(tokenResponse.ExpiresIn));
@@ -379,7 +379,7 @@ internal class Client : IClient
     /// </summary>
     public async Task LogOut()
     {
-        using var tx = _connection.BeginTransaction();
+        var tx = _connection.BeginTransaction();
         var infos = AuthInfo.All(_connection.Db).Select(ent => ent.Id).ToArray();
         foreach (var found in infos)
         {

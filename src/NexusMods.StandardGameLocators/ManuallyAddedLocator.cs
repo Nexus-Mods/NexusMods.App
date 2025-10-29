@@ -36,7 +36,7 @@ public class ManuallyAddedLocator : IGameLocator
     /// <returns></returns>
     public async Task<(EntityId, GameInstallation)> Add(IGame game, Version version, AbsolutePath path)
     {
-        using var tx = _conn.Value.BeginTransaction();
+        var tx = _conn.Value.BeginTransaction();
         var ent = new ManuallyAddedGame.New(tx)
         {
             GameId = game.GameId,
@@ -60,7 +60,7 @@ public class ManuallyAddedLocator : IGameLocator
         if (!ent.Contains(ManuallyAddedGame.GameId))
             throw new ArgumentOutOfRangeException(nameof(id), "The id must be a valid 'ManuallyAddedGame'");
 
-        using var tx = _conn.Value.BeginTransaction();
+        var tx = _conn.Value.BeginTransaction();
 
         tx.Delete(id, false);
         

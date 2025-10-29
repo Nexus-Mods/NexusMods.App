@@ -60,7 +60,7 @@ internal class MnemonicDBStorageBackend : IAsyncStorageBackend
     public async ValueTask Save<T>(T value, CancellationToken cancellationToken) where T : class, ISettings, new()
     {
         var db = _conn.Value.Db;
-        using var tx = _conn.Value.BeginTransaction();
+        var tx = _conn.Value.BeginTransaction();
 
         var name = GetId<T>();
 

@@ -110,8 +110,8 @@ public readonly struct ModUid : IEquatable<ModUid>
 public class ModUidAttribute(string ns, string name) : ScalarAttribute<ModUid, ulong, UInt64Serializer>(ns, name)
 {
     /// <inheritdoc />
-    protected override ulong ToLowLevel(ModUid value) => value.AsUlong;
+    public override ulong ToLowLevel(ModUid value) => value.AsUlong;
 
     /// <inheritdoc />
-    protected override ModUid FromLowLevel(ulong value, AttributeResolver resolver) => ModUid.FromUlong(value);
+    public override ModUid FromLowLevel(ulong value, AttributeResolver resolver) => ModUid.FromUlong(value);
 } 

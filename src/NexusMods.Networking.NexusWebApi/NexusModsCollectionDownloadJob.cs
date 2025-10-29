@@ -78,7 +78,7 @@ public class NexusModsCollectionDownloadJob : IJobDefinitionWithStart<NexusModsC
     }
 
     /// <inheritdoc />
-    public ValueTask AddMetadata(ITransaction tx, LibraryFile.New libraryFile)
+    public ValueTask AddMetadata(Transaction tx, LibraryFile.New libraryFile)
     {
         _ = new NexusModsCollectionLibraryFile.New(tx, libraryFile.Id)
         {

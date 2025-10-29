@@ -10,13 +10,13 @@ namespace NexusMods.DataModel.SchemaVersions;
 public class MigrationIdAttribute(string ns, string name) : ScalarAttribute<MigrationId, ushort, UInt16Serializer>(ns, name)
 {
     /// <inheritdoc />
-    protected override ushort ToLowLevel(MigrationId value)
+    public override ushort ToLowLevel(MigrationId value)
     {
         return value.Value;
     }
 
     /// <inheritdoc />
-    protected override MigrationId FromLowLevel(ushort value, AttributeResolver resolver)
+    public override MigrationId FromLowLevel(ushort value, AttributeResolver resolver)
     {
         return MigrationId.From(value);
     }

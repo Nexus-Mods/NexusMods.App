@@ -12,7 +12,7 @@ namespace NexusMods.Sdk.MnemonicAttributes;
 public sealed class GuidAttribute(string ns, string name) : ScalarAttribute<Guid, UInt128, UInt128Serializer>(ns, name)
 {
     /// <inheritdoc />
-    protected override UInt128 ToLowLevel(Guid value)
+    public override UInt128 ToLowLevel(Guid value)
     {
         Span<byte> bytes = stackalloc byte[16];
         var success = value.TryWriteBytes(bytes);
@@ -22,7 +22,7 @@ public sealed class GuidAttribute(string ns, string name) : ScalarAttribute<Guid
     }
 
     /// <inheritdoc />
-    protected override Guid FromLowLevel(UInt128 value, AttributeResolver resolver)
+    public override Guid FromLowLevel(UInt128 value, AttributeResolver resolver)
     {
         Span<byte> bytes = stackalloc byte[16];
         MemoryMarshal.Write(bytes, value);

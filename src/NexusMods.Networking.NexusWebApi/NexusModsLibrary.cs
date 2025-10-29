@@ -63,7 +63,7 @@ public partial class NexusModsLibrary
         var modPageEntities = NexusModsModPageMetadata.FindByUid(_connection.Db, uid);
         if (modPageEntities.TryGetFirst(x => x.Uid.GameId == gameId, out var modPage)) return modPage;
 
-        using var tx = _connection.BeginTransaction();
+        var tx = _connection.BeginTransaction();
 
         var modResult = await _graphQlClient.QueryMod(uid.ModId, uid.GameId, cancellationToken);
         // TODO: handle errors
@@ -76,7 +76,7 @@ public partial class NexusModsLibrary
         return NexusModsModPageMetadata.Load(txResults.Db, txResults[modEntityId]);
     }
 
-    private async Task ResolveAllFilesInModPage(ModUid modUid, ITransaction tx, EntityId modPageId, CancellationToken cancellationToken)
+    private async Task ResolveAllFilesInModPage(ModUid modUid, Transaction tx, EntityId modPageId, CancellationToken cancellationToken)
     {
         // Note(sewer):
         // Make sure to also fetch all files on the mod page.
@@ -109,7 +109,7 @@ public partial class NexusModsLibrary
         // TODO: handle errors
         var modFile = modFileResult.AssertHasData();
 
-        using var tx = _connection.BeginTransaction();
+        var tx = _connection.BeginTransaction();
 
         var size = Size.FromLong(long.Parse(modFile.SizeInBytes ?? "0"));
         var newFile = new NexusModsFileMetadata.New(tx)
@@ -173,8 +173,8 @@ public partial class NexusModsLibrary
         var modPage = await GetOrAddModPage(url.ModId, gameId, cancellationToken);
         var file = await GetOrAddFile(url.FileId, modPage, cancellationToken);
 
-        var foundItems = NexusModsLibraryItem.FindByFileMetadata(file.Db, file);
-        return (foundItems.Count != 0, foundItems.ToArray());
+        var foundItems = NexusModsLibraryItem.FindByFileMetadata(file.Db, file).ToArray();
+        return (foundItems.Any(), foundItems);
     }
 
     /// <summary>

@@ -30,7 +30,7 @@ public sealed class BannerlordModInstaller : ALibraryArchiveInstaller
         _fileStore = serviceProvider.GetRequiredService<IFileStore>();
     }
 
-    public override async ValueTask<InstallerResult> ExecuteAsync(LibraryArchive.ReadOnly libraryArchive, LoadoutItemGroup.New loadoutGroup, ITransaction transaction, Loadout.ReadOnly loadout, CancellationToken cancellationToken)
+    public override async ValueTask<InstallerResult> ExecuteAsync(LibraryArchive.ReadOnly libraryArchive, LoadoutItemGroup.New loadoutGroup, Transaction transaction, Loadout.ReadOnly loadout, CancellationToken cancellationToken)
     {
         var moduleInfoFileTuples = await GetModuleInfoFiles(libraryArchive, cancellationToken);
         if (moduleInfoFileTuples.Count == 0) return new NotSupported(Reason: "Found no module info files in the archive"); // TODO: Will it install in root folder the content?
@@ -141,7 +141,7 @@ public sealed class BannerlordModInstaller : ALibraryArchiveInstaller
     }
 
     private static Optional<EntityId> AddFileFromFilesToCopy(
-        LibraryArchive.ReadOnly libraryArchive, ITransaction transaction, Loadout.ReadOnly loadout, RelativePath source, RelativePath destination, LoadoutItemGroup.New modGroup, LibraryArchiveFileEntry.ReadOnly moduleInfoFile, Optional<EntityId> moduleInfoLoadoutItemId)
+        LibraryArchive.ReadOnly libraryArchive, Transaction transaction, Loadout.ReadOnly loadout, RelativePath source, RelativePath destination, LoadoutItemGroup.New modGroup, LibraryArchiveFileEntry.ReadOnly moduleInfoFile, Optional<EntityId> moduleInfoLoadoutItemId)
     {
         var fileEntry = libraryArchive.Children.First(x => x.Path.Equals(source));
         var to = new GamePath(LocationId.Game, destination);

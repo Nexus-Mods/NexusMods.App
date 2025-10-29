@@ -11,7 +11,6 @@ using NexusMods.App.UI.Helpers;
 using NexusMods.App.UI.Helpers.TreeDataGrid.New.FolderGenerator;
 using NexusMods.UI.Sdk.Icons;
 using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.MnemonicDB.Abstractions.DatomIterators;
 using NexusMods.Paths;
 using R3;
 using ZLinq;
@@ -204,10 +203,10 @@ internal static class LoadoutFilesObservableExtensions
     internal static bool FilterEntityId(IConnection connection, ModFilesFilter modFilesFilter, EntityId eId)
     {
         // Note(sewer): Direct GET on LoadoutItem.ParentId to avoid unnecessary boxing or DB fetches.
-        var segment = connection.Db.Get(eId);
+        var segment = connection.Db[eId];
 
         // Note(Al12rs): This only checks the direct parent of the LoadoutItem, not higher anchestors
-        var hasParent = LoadoutItem.Parent.TryGetValue(segment, out var parentId);
+        var hasParent = segment.TryGetResolved(LoadoutItem.Parent, out var parentId);
         if (!hasParent)
             return false;
 

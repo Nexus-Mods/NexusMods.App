@@ -14,5 +14,5 @@ public interface IScanningMigration : IMigration
     /// Called for every datom in the database. Return .Update to indicate that the data in `prefix` and `writer` have
     /// been populated with new data. Return .Delete to delete the datom. Return .None to do nothing.
     /// </summary>
-    ScanResultType Update(ref KeyPrefix prefix, ReadOnlySpan<byte> valueSpan, in IBufferWriter<byte> writer);
+    ScanResultType Update(ref Datom datom);
 }

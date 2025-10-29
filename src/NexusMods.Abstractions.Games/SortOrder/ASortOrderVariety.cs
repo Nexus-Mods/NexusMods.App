@@ -229,7 +229,7 @@ public abstract class ASortOrderVariety<TKey, TReactiveSortItem, TItemLoadoutDat
     /// <inheritdoc />
     public virtual async ValueTask DeleteSortOrder(SortOrderId sortOrderId, CancellationToken token = default)
     {
-        using var tx = Connection.BeginTransaction();
+        var tx = Connection.BeginTransaction();
         
         // Delete the items
         foreach (var item in Connection.Db.Datoms(SortOrderItem.ParentSortOrder, sortOrderId))
@@ -266,24 +266,14 @@ public abstract class ASortOrderVariety<TKey, TReactiveSortItem, TItemLoadoutDat
     /// </summary>
     protected virtual async ValueTask<bool> TryPersistSortOrder(SortOrderId sortOrderId, IReadOnlyList<TItemSortData> newOrder, IDb startingDb, CancellationToken token = default)
     {
-        using var tx = Connection.BeginTransaction();
+        var tx = Connection.BeginTransaction();
         
         PersistSortOrderCore(sortOrderId, newOrder, tx, startingDb, token);
 
         var sortOrderTxId = GetMaxTxIdForSortOrder(sortOrderId, startingDb) ;
         if (sortOrderTxId == default(TxId)) return false;
         
-        tx.Add(sortOrderId, sortOrderTxId,
-            (_ ,txDb, orderId, oldTxId) =>
-            {
-                var currentTxId = GetMaxTxIdForSortOrder(orderId, txDb);
-                
-                if (currentTxId > oldTxId || currentTxId == default(TxId))
-                {
-                    throw new InvalidOperationException(
-                        $"Unable to complete transaction: Sort Order {orderId} changed, Current TxId: {currentTxId}, Old TxId: {oldTxId}");
-                }
-            });
+        tx.Add(new SortOrderFailsafe(sortOrderId, sortOrderTxId));
         
         try
         {
@@ -298,6 +288,20 @@ public abstract class ASortOrderVariety<TKey, TReactiveSortItem, TItemLoadoutDat
         return true;
     }
     
+    private class SortOrderFailsafe(EntityId sortOrderId, TxId lastSeenTx) : ITxFunction
+    {
+        public void Apply(Transaction tx)
+        {
+            var currentTxId = GetMaxTxIdForSortOrder(sortOrderId, tx.BasisDb);
+                
+            if (currentTxId > lastSeenTx || currentTxId == default(TxId))
+            {
+                throw new InvalidOperationException(
+                    $"Unable to complete transaction: Sort Order {sortOrderId} changed, Current TxId: {currentTxId}, Old TxId: {lastSeenTx}");
+            }
+        }
+    }
+
     /// <summary>
     /// Prepares the transaction to persist the sort order for the provided list of sort items.
     /// </summary>
@@ -309,7 +313,7 @@ public abstract class ASortOrderVariety<TKey, TReactiveSortItem, TItemLoadoutDat
     protected abstract void PersistSortOrderCore(
         SortOrderId sortOrderId,
         IReadOnlyList<TItemSortData> newOrder,
-        ITransaction tx,
+        Transaction tx,
         IDb startingDb,
         CancellationToken token = default);
     
@@ -356,9 +360,9 @@ public abstract class ASortOrderVariety<TKey, TReactiveSortItem, TItemLoadoutDat
         var sortOrder = SortOrder.Load(db, sortOrderId);
         if (!sortOrder.IsValid()) return default(TxId);
         
-        var maxTxId = db.Get(sortOrderId).Max(datom => datom.T);
+        var maxTxId = db[sortOrderId].Max(datom => datom.T);
         var maxIds = db.Datoms(SortOrderItem.ParentSortOrder, sortOrderId)
-            .Select(d => db.Get(d.E).Max(datom => datom.T));
+            .Select(d => db[d.E].Max(datom => datom.T));
         
         foreach (var maxId in maxIds)
         {

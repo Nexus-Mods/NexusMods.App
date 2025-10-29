@@ -28,22 +28,15 @@ public class FullSystemTest(IServiceProvider serviceProvider, ISettingsManager s
         var loadout1Files = new List<RelativePath> { "loadout1_1.txt", "loadout1_2.txt" };
         var loadout2Files = new List<RelativePath> { "loadout2_1.txt", "loadout2_2.txt" };
 
-        List<Hash> loadout1SharedModHashes;
-        List<Hash> loadout2SharedModHashes;
-        List<Hash> loadout1ModHashes;
-        List<Hash> loadout2ModHashes;
+        var tx = Connection.BeginTransaction();
+        // Add shared files to both loadouts
+        var (_, loadout1SharedModHashes) = await AddModAsync(tx, sharedFiles, loadout1, "SharedMod");
+        var (_, loadout2SharedModHashes) = await AddModAsync(tx, sharedFiles, loadout2, "SharedMod");
 
-        using (var tx = Connection.BeginTransaction())
-        {
-            // Add shared files to both loadouts
-            (_, loadout1SharedModHashes) = await AddModAsync(tx, sharedFiles, loadout1, "SharedMod");
-            (_, loadout2SharedModHashes) = await AddModAsync(tx, sharedFiles, loadout2, "SharedMod");
-
-            // Add specific files to each loadout
-            (_, loadout1ModHashes) = await AddModAsync(tx, loadout1Files, loadout1, "Loadout1Mod");
-            (_, loadout2ModHashes) = await AddModAsync(tx, loadout2Files, loadout2, "Loadout2Mod");
-            await tx.Commit();
-        }
+        // Add specific files to each loadout
+        var (_, loadout1ModHashes) = await AddModAsync(tx, loadout1Files, loadout1, "Loadout1Mod");
+        var (_, loadout2ModHashes) = await AddModAsync(tx, loadout2Files, loadout2, "Loadout2Mod");
+        await tx.Commit();
 
         Refresh(ref loadout1);
         Refresh(ref loadout2);

@@ -22,16 +22,11 @@ public class MarkUsedLoadoutFilesTest(IServiceProvider serviceProvider) : AGameT
             "file-0", "file-1", "file-2",
             "file-3", "file-4", "file-5",
         };
-        
-        List<Hash> hashes;
 
         // Add files to the loadout
-        AbsolutePath archiveLocation;
-        using (var tx = Connection.BeginTransaction())
-        {
-            (archiveLocation, hashes) = await AddModAsync(tx, modFiles, loadout, "Infinite Worlds Collide at the Nexus");
-            await tx.Commit();
-        }
+        var tx = Connection.BeginTransaction();
+        var (archiveLocation, hashes) = await AddModAsync(tx, modFiles, loadout, "Infinite Worlds Collide at the Nexus");
+        await tx.Commit();
 
         // Refresh the loadout to get the updated state
         Refresh(ref loadout);

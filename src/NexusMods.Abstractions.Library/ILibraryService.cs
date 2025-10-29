@@ -72,7 +72,7 @@ public interface ILibraryService
     /// <summary>
     /// Adds a library file.
     /// </summary>
-    Task<LibraryFile.New> AddLibraryFile(ITransaction transaction, AbsolutePath source);
+    Task<LibraryFile.New> AddLibraryFile(Transaction transaction, AbsolutePath source);
 
     /// <summary>
     /// Removes a number of items from the library.
@@ -106,7 +106,7 @@ public interface ILibraryService
 }
 
 /// <summary>
-/// Represents the result of a <see cref="ILibraryService.ReplaceLinkedItemsInAllLoadouts(NexusMods.Abstractions.Library.Models.LibraryItem.ReadOnly,NexusMods.Abstractions.Library.Models.LibraryItem.ReadOnly,NexusMods.Abstractions.Library.ReplaceLibraryItemOptions,NexusMods.MnemonicDB.Abstractions.ITransaction)"/> operation.
+/// Represents the result of a <see cref="ILibraryService.ReplaceLinkedItemsInAllLoadouts(NexusMods.Abstractions.Library.Models.LibraryItem.ReadOnly,NexusMods.Abstractions.Library.Models.LibraryItem.ReadOnly,NexusMods.Abstractions.Library.ReplaceLibraryItemOptions,NexusMods.MnemonicDB.Abstractions.Transaction)"/> operation.
 /// </summary>
 public enum LibraryItemReplacementResult
 {
@@ -122,7 +122,7 @@ public enum LibraryItemReplacementResult
 }
 
 /// <summary>
-/// Options for the <see cref="ILibraryService.ReplaceLinkedItemsInAllLoadouts(NexusMods.Abstractions.Library.Models.LibraryItem.ReadOnly,NexusMods.Abstractions.Library.Models.LibraryItem.ReadOnly,NexusMods.Abstractions.Library.ReplaceLibraryItemOptions,NexusMods.MnemonicDB.Abstractions.ITransaction)"/>
+/// Options for the <see cref="ILibraryService.ReplaceLinkedItemsInAllLoadouts(NexusMods.Abstractions.Library.Models.LibraryItem.ReadOnly,NexusMods.Abstractions.Library.Models.LibraryItem.ReadOnly,NexusMods.Abstractions.Library.ReplaceLibraryItemOptions,NexusMods.MnemonicDB.Abstractions.Transaction)"/>
 /// API.
 /// </summary>
 public struct ReplaceLibraryItemOptions

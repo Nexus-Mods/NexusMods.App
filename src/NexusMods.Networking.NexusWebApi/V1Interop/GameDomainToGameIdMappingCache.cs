@@ -149,7 +149,7 @@ public sealed class GameDomainToGameIdMappingCache : IGameDomainToGameIdMappingC
         // Note(sewer): In theory, there's a race condition in here if multiple threads
         //              try to insert at once. However that should not be a concern here,
         //              there are no negative side effects.
-        using var tx = _conn.BeginTransaction();
+        var tx = _conn.BeginTransaction();
         _ = new GameDomainToGameIdMapping.New(tx)
         {
             Domain = gameDomain,

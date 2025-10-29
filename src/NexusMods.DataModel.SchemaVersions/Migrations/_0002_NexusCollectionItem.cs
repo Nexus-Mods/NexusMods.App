@@ -9,7 +9,7 @@ namespace NexusMods.DataModel.SchemaVersions.Migrations;
 /// <summary>
 /// Migration to add a reference to collection downloads on loadout items.
 /// </summary>
-internal class _0002_NexusCollectionItem : ITransactionalMigration
+internal class _0002_NexusCollectionItem : TransactionalMigration
 {
     public static (MigrationId Id, string Name) IdAndName { get; } = MigrationId.ParseNameAndId(nameof(_0002_NexusCollectionItem));
 
@@ -34,7 +34,7 @@ internal class _0002_NexusCollectionItem : ITransactionalMigration
             }).ToArray();
     }
 
-    public void Migrate(ITransaction tx, IDb db)
+    public void Migrate(Transaction tx, IDb db)
     {
         foreach (var data in _data)
         {

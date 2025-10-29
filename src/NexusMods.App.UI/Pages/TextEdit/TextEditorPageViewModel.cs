@@ -101,13 +101,10 @@ public class TextEditorPageViewModel : APageViewModel<ITextEditorPageViewModel>,
             }
 
             // update the file
-            using (var tx = connection.BeginTransaction())
-            {
-                tx.Add(loadoutFileId, LoadoutFile.Hash, hash);
-                tx.Add(loadoutFileId, LoadoutFile.Size, size);
-                // TODO: Revise
-                await tx.Commit();
-            }
+            var tx = connection.BeginTransaction();
+            tx.Add(loadoutFileId, LoadoutFile.Hash, hash);
+            tx.Add(loadoutFileId, LoadoutFile.Size, size);
+            await tx.Commit();
 
             IsModified = false;
         }, canSaveObservable);

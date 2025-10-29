@@ -49,9 +49,9 @@ public record struct LocatorIdsWithGameStore(GameStore GameStore, LocatorId[] Lo
 public sealed class LocatorIdsAttribute(string ns, string name) : CollectionAttribute<LocatorId, string, Utf8Serializer>(ns, name)
 {
     /// <inheritdoc/>
-    protected override string ToLowLevel(LocatorId value) => value.Value;
+    public override string ToLowLevel(LocatorId value) => value.Value;
 
     /// <inheritdoc/>
-    protected override LocatorId FromLowLevel(string value, AttributeResolver resolver) => LocatorId.From(value);
+    public override LocatorId FromLowLevel(string value, AttributeResolver resolver) => LocatorId.From(value);
 }
 

@@ -114,7 +114,7 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
         }
         else
         {
-            using var tx = Connection.BeginTransaction() ;
+            var tx = Connection.BeginTransaction() ;
             var group = new NexusCollectionLoadoutGroup.New(tx, out var id)
             {
                 CollectionId = RevisionMetadata.Collection,
@@ -162,7 +162,7 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
             .GetStatus(item, collectionGroup.AsCollectionGroup(), db: Connection.Db)
             .IsInstalled(out _));
         {
-            using var tx = Connection.BeginTransaction();
+            var tx = Connection.BeginTransaction();
 
             if (allRequiredItemsInstalled)
             {

@@ -109,7 +109,7 @@ internal sealed class WindowManager : ReactiveObject, IWindowManager
         {
             var data = window.WorkspaceController.ToData();
 
-            using var tx = _connection.BeginTransaction();
+            var tx = _connection.BeginTransaction();
             var found = WindowDataAttributes.All(_connection.Db).FirstOrDefault();
             if (!found.IsValid())
             {
@@ -168,7 +168,7 @@ internal sealed class WindowManager : ReactiveObject, IWindowManager
     private void ResetSavedData()
     {
         _logger.LogInformation("Removing possible broken window state from the DB");
-        using var tx = _connection.BeginTransaction();
+        var tx = _connection.BeginTransaction();
 
         foreach (var datom in _connection.Db.Datoms(WindowDataAttributes.PrimaryAttribute))
         {

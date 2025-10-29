@@ -398,7 +398,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                         await _nexusModsLibrary.EditCollectionName(collection, newName, cancellationToken);
                     }
 
-                    using var tx = _connection.BeginTransaction();
+                    var tx = _connection.BeginTransaction();
                     tx.Add(collectionGroupId.Value, LoadoutItem.Name, newName);
                     await tx.Commit();
 
@@ -715,7 +715,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
         // We only enable if all items are disabled, otherwise we disable
         var shouldEnable = toggleableItems.All(loadoutItem => loadoutItem.IsDisabled);
 
-        using var tx = connection.BeginTransaction();
+        var tx = connection.BeginTransaction();
 
         foreach (var id in toggleableItems)
         {
@@ -825,7 +825,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
         if (result.ButtonId != ButtonDefinitionId.Accept) return;
         
 
-        using var tx = connection.BeginTransaction();
+        var tx = connection.BeginTransaction();
         
         foreach (var itemId in removableIds)
             tx.Delete(itemId, recursive: true);
@@ -840,7 +840,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
         // TODO: handle errors
         var lastPublishedRevisionNumber = graphQlResult.AssertHasData();
 
-        using var tx = _connection.BeginTransaction();
+        var tx = _connection.BeginTransaction();
         if (lastPublishedRevisionNumber.HasValue)
         {
             tx.Add(managedCollectionLoadoutGroup, ManagedCollectionLoadoutGroup.LastPublishedRevisionNumber, lastPublishedRevisionNumber.Value);

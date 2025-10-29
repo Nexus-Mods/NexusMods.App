@@ -18,5 +18,5 @@ public interface IIntrinsicFile
     /// <summary>
     /// Ingest the contents of the stream into the loadout
     /// </summary>
-    public Task Ingest(Stream stream, Loadout.ReadOnly loadout, Dictionary<GamePath, SyncNode> syncTree, ITransaction tx);
+    public Task Ingest(Stream stream, Loadout.ReadOnly loadout, Dictionary<GamePath, SyncNode> syncTree, Transaction tx);
 }

@@ -12,8 +12,8 @@ namespace NexusMods.Abstractions.NexusModsLibrary.Attributes;
 public class CollectionsSlugAttribute(string ns, string name) : ScalarAttribute<CollectionSlug, string, AsciiSerializer>(ns, name)
 {
     /// <inheritdoc />
-    protected override string ToLowLevel(CollectionSlug value) => value.Value;
+    public override string ToLowLevel(CollectionSlug value) => value.Value;
 
     /// <inheritdoc />
-    protected override CollectionSlug FromLowLevel(string value, AttributeResolver resolver) => CollectionSlug.From(value);
+    public override CollectionSlug FromLowLevel(string value, AttributeResolver resolver) => CollectionSlug.From(value);
 }

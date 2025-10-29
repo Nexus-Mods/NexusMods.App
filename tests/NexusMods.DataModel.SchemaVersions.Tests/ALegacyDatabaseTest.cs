@@ -75,7 +75,6 @@ public abstract class ALegacyDatabaseTest
             .AddSettings<LoggingSettings>()
             .AddOSInterop()
             .AddRuntimeDependencies()
-            .AddRocksDbBackend()
             .AddFileHashes()
             .AddFileSystem()
             .AddDataModel()

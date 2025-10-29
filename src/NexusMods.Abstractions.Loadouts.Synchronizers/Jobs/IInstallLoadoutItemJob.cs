@@ -38,7 +38,7 @@ public interface IInstallLoadoutItemJob : IJobDefinition<InstallLoadoutItemJobRe
 ///
 /// If the value is 'null' then the job was attached to an existing, external transaction
 /// to be part of a larger atomic operation.
-/// (Done by passing an <see cref="ITransaction"/> transaction to the job.)
+/// (Done by passing an <see cref="Transaction"/> transaction to the job.)
 /// This is because the value is not yet available; as the transaction
 /// needs to be externally committed by the caller.
 /// </summary>

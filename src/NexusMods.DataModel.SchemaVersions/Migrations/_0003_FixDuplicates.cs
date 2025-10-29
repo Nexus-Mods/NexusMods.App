@@ -2,7 +2,6 @@ using System.Runtime.InteropServices;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
-using NexusMods.MnemonicDB.Abstractions.DatomIterators;
 using NexusMods.MnemonicDB.Abstractions.Query;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.MnemonicDB.Abstractions.ValueSerializers;
@@ -16,7 +15,7 @@ namespace NexusMods.DataModel.SchemaVersions.Migrations;
 /// This PR removes duplicate file and mod page metadata entities by updating every reference
 /// to point to the same entity.
 /// </summary>
-internal class _0003_FixDuplicates : ITransactionalMigration
+internal class _0003_FixDuplicates : TransactionalMigration
 {
     public static (MigrationId Id, string Name) IdAndName { get; } = MigrationId.ParseNameAndId(nameof(_0003_FixDuplicates));
 
@@ -55,7 +54,7 @@ internal class _0003_FixDuplicates : ITransactionalMigration
         }
     }
 
-    public unsafe void Migrate(ITransaction tx, IDb db)
+    public unsafe void Migrate(Transaction tx, IDb db)
     {
         Memory<byte> memory = new Memory<byte>(new byte[sizeof(EntityId)]);
 

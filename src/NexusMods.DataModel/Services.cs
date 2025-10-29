@@ -71,8 +71,6 @@ public static class Services
             }
         );
         
-        coll.AddSingleton<IStoreBackend>(_ => new Backend());
-
         coll.AddSingleton<JsonConverter, AbsolutePathConverter>();
         coll.AddSingleton<JsonConverter, RelativePathConverter>();
         coll.AddSingleton<JsonConverter, GamePathConverter>();

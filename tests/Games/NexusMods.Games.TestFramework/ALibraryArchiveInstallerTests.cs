@@ -64,7 +64,7 @@ public abstract class ALibraryArchiveInstallerTests<TTest, TGame>(ITestOutputHel
         Loadout.ReadOnly loadout,
         LibraryArchive.ReadOnly archive)
     {
-        using var tx = Connection.BeginTransaction();
+        var tx = Connection.BeginTransaction();
         var libraryItem = archive.AsLibraryFile().AsLibraryItem();
 
         var loadoutGroup = new LoadoutItemGroup.New(tx, out var groupId)
@@ -111,10 +111,10 @@ public abstract class ALibraryArchiveInstallerTests<TTest, TGame>(ITestOutputHel
     public SettingsTask VerifyTx(TxId tx, [CallerFilePath] string sourceFile = "")
     {
         // ReSharper disable once ExplicitCallerInfoArgument
-        return Verify(ToTable(Connection.Db.Datoms(tx)), sourceFile: sourceFile);
+        return Verify(ToTable(Connection.Db[tx]), sourceFile: sourceFile);
     }
     
-    public string ToTable(IndexSegment datoms)
+    public string ToTable(Datoms datoms)
     {
 
         string TruncateOrPad(string val, int length)

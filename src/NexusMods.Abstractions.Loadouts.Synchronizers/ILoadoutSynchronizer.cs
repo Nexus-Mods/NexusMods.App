@@ -74,7 +74,7 @@ public interface ILoadoutSynchronizer
         }
         else
         {
-            var txId = GameInstallMetadata.LastSyncedLoadoutTransactionId.Get(metadata);
+            var txId = GameInstallMetadata.LastSyncedLoadoutTransactionId.GetFrom(metadata);
             var asOfDb = metadata.Db.Connection.AsOf(TxId.From(txId.Value));
             var oldMetadata = GameInstallMetadata.Load(asOfDb, metadata.Id);
             prevItems = GetDiskStateForGame(oldMetadata);

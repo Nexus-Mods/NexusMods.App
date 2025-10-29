@@ -1,10 +1,8 @@
 using System.Runtime.InteropServices;
-using DynamicData.Kernel;
 using NexusMods.HyperDuck;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
-using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 using NexusMods.MnemonicDB.Abstractions.Models;
 using NexusMods.MnemonicDB.Abstractions.ValueSerializers;
 
@@ -34,9 +32,6 @@ public partial class CollectionGroup : IModelDefinition
     /// </summary>
     public static async Task<EntityId> Clone(IConnection conn, EntityId id)
     {
-        Span<byte> refScratch = stackalloc byte[8];
-        using var writer = new PooledMemoryBufferWriter();
-
         var basisDb = conn.Db;
 
         Dictionary<EntityId, EntityId> remappedIds = new();
@@ -52,7 +47,7 @@ public partial class CollectionGroup : IModelDefinition
                                           WHERE Parent in (SELECT Id FROM ChildLoadoutItems))
                                           SELECT DISTINCT Id FROM ChildLoadoutItems
                                           """);
-        using var tx = conn.BeginTransaction();
+        var tx = conn.BeginTransaction();
         foreach (var itemId in query)
         {
             remappedIds.TryAdd(itemId, tx.TempId());
@@ -60,39 +55,36 @@ public partial class CollectionGroup : IModelDefinition
 
         foreach (var (oldId, newId) in remappedIds)
         {
-            var entity = basisDb.Get(oldId);
+            var entity = basisDb[oldId];
             foreach (var datom in entity)
             {
                 // Remap the value part of references
                 if (datom.Prefix.ValueTag == ValueTag.Reference)
                 {
-                    var oldRef = EntityId.From(UInt64Serializer.Read(datom.ValueSpan));
+                    var oldRef = (EntityId)datom.V;
                     if (!remappedIds.TryGetValue(oldRef, out var newRef))
                     {
-                        tx.Add(newId, datom.A, datom.Prefix.ValueTag, datom.ValueSpan);
+                        tx.Add(datom);
                         continue;
                     }
-                    MemoryMarshal.Write(refScratch, newRef);
-                    tx.Add(newId, datom.A, datom.Prefix.ValueTag, refScratch);
+                    tx.Add(new Datom(datom.Prefix, newRef));
                 }
                 // It's rare, but the Ref,UShort/String tuple type may include a ref that needs to be remapped
                 else if (datom.Prefix.ValueTag == ValueTag.Tuple3_Ref_UShort_Utf8I)
                 {
-                    var (r, s, str) = Tuple3_Ref_UShort_Utf8I_Serializer.Read(datom.ValueSpan);
+                    var (r, s, str) = (ValueTuple<EntityId, ushort, string>)datom.V;
                     if (!remappedIds.TryGetValue(r, out var newR))
                     {
-                        tx.Add(newId, datom.A, datom.Prefix.ValueTag, datom.ValueSpan);
+                        tx.Add(datom);
                         continue;
                     }
-                    writer.Reset();
                     var newTuple = (newR, s, str);
-                    Tuple3_Ref_UShort_Utf8I_Serializer.Write(newTuple, writer);
-                    tx.Add(newId, datom.A, datom.Prefix.ValueTag, writer.GetWrittenSpan());
+                    tx.Add(new Datom(datom.Prefix, newTuple));
                 }
                 // Otherwise just remap the E value
                 else
                 {
-                    tx.Add(newId, datom.A, datom.Prefix.ValueTag, datom.ValueSpan);
+                    tx.Add(datom);
                 }
             }
         }

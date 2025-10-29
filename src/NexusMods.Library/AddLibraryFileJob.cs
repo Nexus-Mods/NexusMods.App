@@ -19,7 +19,7 @@ namespace NexusMods.Library;
 
 internal class AddLibraryFileJob : IJobDefinitionWithStart<AddLibraryFileJob, LibraryFile.New>, IAsyncDisposable
 {
-    public required ITransaction Transaction { get; init; }
+    public required Transaction Transaction { get; init; }
     public required AbsolutePath FilePath { get; init; }
     private ConcurrentBag<TemporaryPath> ExtractionDirectories { get; } = [];
     private ConcurrentBag<ArchivedFileEntry> ToArchive { get; } = [];
@@ -31,7 +31,7 @@ internal class AddLibraryFileJob : IJobDefinitionWithStart<AddLibraryFileJob, Li
         new(".dat"),
     ];
 
-    public static IJobTask<AddLibraryFileJob, LibraryFile.New> Create(IServiceProvider provider, ITransaction transaction, AbsolutePath filePath)
+    public static IJobTask<AddLibraryFileJob, LibraryFile.New> Create(IServiceProvider provider, Transaction transaction, AbsolutePath filePath)
     {
         var monitor = provider.GetRequiredService<IJobMonitor>();
         var job = new AddLibraryFileJob
@@ -137,7 +137,7 @@ internal class AddLibraryFileJob : IJobDefinitionWithStart<AddLibraryFileJob, Li
         return false;
     }
 
-    private static LibraryFile.New CreateLibraryFile(ITransaction tx, AbsolutePath filePath, Hash hash, Optional<Md5Value> md5)
+    private static LibraryFile.New CreateLibraryFile(Transaction tx, AbsolutePath filePath, Hash hash, Optional<Md5Value> md5)
     {
         var libraryFile = new LibraryFile.New(tx, out var id)
         {

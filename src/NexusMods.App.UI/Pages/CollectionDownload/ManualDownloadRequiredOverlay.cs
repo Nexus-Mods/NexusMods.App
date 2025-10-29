@@ -110,7 +110,7 @@ public class ManualDownloadRequiredOverlayViewModel : AOverlayViewModel<IManualD
                 IsIncorrectFile = true;
 
                 {
-                    using var tx = connection.BeginTransaction();
+                    var tx = connection.BeginTransaction();
                     tx.Delete(localFile, recursive: true);
                     await tx.Commit();
                 }

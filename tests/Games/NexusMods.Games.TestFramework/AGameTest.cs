@@ -91,7 +91,7 @@ public abstract class AGameTest<TGame> where TGame : AGame
     /// <summary>
     /// Adds an empty mod to the loadout in the given transaction.
     /// </summary>
-    protected LoadoutItemGroupId AddEmptyGroup(ITransaction tx, LoadoutId loadoutId, string name)
+    protected LoadoutItemGroupId AddEmptyGroup(Transaction tx, LoadoutId loadoutId, string name)
     {
         var mod = new LoadoutItemGroup.New(tx, out var id)
         {
@@ -111,7 +111,7 @@ public abstract class AGameTest<TGame> where TGame : AGame
     /// The file will be named with the given path, the hash will be the hash
     /// of the name, and the size will be the length of the name. 
     /// </summary>
-    public LoadoutFileId AddFile(ITransaction tx, LoadoutId loadoutId, LoadoutItemGroupId groupId, GamePath path, string? content = null)
+    public LoadoutFileId AddFile(Transaction tx, LoadoutId loadoutId, LoadoutItemGroupId groupId, GamePath path, string? content = null)
     {
         return AddFile(tx, loadoutId, groupId, path, content, out _, out _);
     }
@@ -121,7 +121,7 @@ public abstract class AGameTest<TGame> where TGame : AGame
     /// The file will be named with the given path, the hash will be the hash
     /// of the name, and the size will be the length of the name. 
     /// </summary>
-    public LoadoutFileId AddFile(ITransaction tx, LoadoutId loadoutId, LoadoutItemGroupId groupId, GamePath path, string? content, out Hash hash, out Size size)
+    public LoadoutFileId AddFile(Transaction tx, LoadoutId loadoutId, LoadoutItemGroupId groupId, GamePath path, string? content, out Hash hash, out Size size)
     {
         content ??= path.Path.ToString();
         var contentArray = Encoding.UTF8.GetBytes(content);
@@ -130,7 +130,7 @@ public abstract class AGameTest<TGame> where TGame : AGame
         size = Size.FromLong(contentArray.Length);
         return AddFileInternal(tx, loadoutId, groupId, path, hash, size).Id;
     }
-    private static LoadoutFile.New AddFileInternal(ITransaction tx, LoadoutId loadoutId, LoadoutItemGroupId groupId, GamePath path, Hash hash, Size size) => new(tx, out var id)
+    private static LoadoutFile.New AddFileInternal(Transaction tx, LoadoutId loadoutId, LoadoutItemGroupId groupId, GamePath path, Hash hash, Size size) => new(tx, out var id)
     {
         LoadoutItemWithTargetPath = new LoadoutItemWithTargetPath.New(tx, id)
         {
@@ -155,7 +155,7 @@ public abstract class AGameTest<TGame> where TGame : AGame
     /// <param name="fileName">Name of the archive.</param>
     public async Task<LibraryArchive.ReadOnly> CreateLibraryArchive(IConnection conn, string fileName)
     {
-        using var tx = conn.BeginTransaction();
+        var tx = conn.BeginTransaction();
         var libraryFile = CreateLibraryFile(fileName, tx, out var entityId);
         
         // Note(sewer): These are the same entity, just an API caveat that 2 objects are needed.
@@ -183,7 +183,7 @@ public abstract class AGameTest<TGame> where TGame : AGame
     ///     Specifying this parameter will add DB entries to simulate this being the original archive which
     ///     the files have come from.
     /// </param>
-    public async Task<(AbsolutePath archivePath, List<Hash> hashes)> AddModAsync(ITransaction tx, IEnumerable<RelativePath> paths, LoadoutId loadoutId, string modName, LibraryArchive.ReadOnly? libraryArchive = null)
+    public async Task<(AbsolutePath archivePath, List<Hash> hashes)> AddModAsync(Transaction tx, IEnumerable<RelativePath> paths, LoadoutId loadoutId, string modName, LibraryArchive.ReadOnly? libraryArchive = null)
     {
         var records = new List<ArchivedFileEntry>();
         var hashes = new List<Hash>();
@@ -226,7 +226,7 @@ public abstract class AGameTest<TGame> where TGame : AGame
         return (GetArchivePath(hashes.First()), hashes);
     }
 
-    private static LibraryFile.New CreateLibraryFile(string fileName, ITransaction tx, out EntityId entityId) => new(tx, out entityId)
+    private static LibraryFile.New CreateLibraryFile(string fileName, Transaction tx, out EntityId entityId) => new(tx, out entityId)
     {
         FileName = fileName,
         Hash = fileName.xxHash3AsUtf8(),

@@ -24,18 +24,12 @@ public class MarkUsedLibraryFilesTest(IServiceProvider serviceProvider, ILibrary
             "file-0", "file-1", "file-2",
             "file-3", "file-4", "file-5",
         };
-        
-        List<Hash> hashes;
 
         // Add files to the loadout
-        AbsolutePath archiveLocation;
-        LibraryArchive.ReadOnly libraryArchive;
-        using (var tx = Connection.BeginTransaction())
-        {
-            libraryArchive = await CreateLibraryArchive(Connection, "FunNeverStopsAtTheNexus.zip");
-            (archiveLocation, hashes) = await AddModAsync(tx, modFiles, loadout, "Fun Never Stops at the Nexus", libraryArchive);
-            await tx.Commit();
-        }
+        var tx = Connection.BeginTransaction();
+        var libraryArchive = await CreateLibraryArchive(Connection, "FunNeverStopsAtTheNexus.zip");
+        var (archiveLocation, hashes) = await AddModAsync(tx, modFiles, loadout, "Fun Never Stops at the Nexus", libraryArchive);
+        await tx.Commit();
 
         // Refresh the loadout to get the updated state
         Refresh(ref loadout);

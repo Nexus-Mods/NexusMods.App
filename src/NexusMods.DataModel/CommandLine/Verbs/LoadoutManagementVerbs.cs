@@ -69,7 +69,7 @@ public static class LoadoutManagementVerbs
             return -1;
         }
         
-        using var tx = loadout.Db.Connection.BeginTransaction();
+        var tx = loadout.Db.Connection.BeginTransaction();
 
         loadout = loadout.Rebase();
         // Retract the old ids
@@ -158,7 +158,7 @@ public static class LoadoutManagementVerbs
         var db = conn.Db;
         await Loadout.All(db)
             .Where(x => x.IsVisible())
-            .Select(list => (list.LoadoutId, list.Name, list.Installation.Name, list.GameVersion, list.Installation.Store, list.Items.Count))
+            .Select(list => (list.LoadoutId, list.Name, list.Installation.Name, list.GameVersion, list.Installation.Store, list.Items.Count()))
             .RenderTable(renderer, "Id", "Name", "Game", "Version", "Store", "Items");
         return 0;
     }
@@ -228,7 +228,7 @@ public static class LoadoutManagementVerbs
         
         await renderer.Text("Deleting {0} items", ids.Length);
         
-        using var tx = loadout.Db.Connection.BeginTransaction();
+        var tx = loadout.Db.Connection.BeginTransaction();
         foreach (var id in ids)
             tx.Delete(id, false);
         await tx.Commit();
@@ -245,7 +245,7 @@ public static class LoadoutManagementVerbs
     {
         await loadout.Items
             .OfTypeLoadoutItemGroup()
-            .Select(mod => (mod.AsLoadoutItem().Name, mod.Children.Count))
+            .Select(mod => (mod.AsLoadoutItem().Name, mod.Children.Count()))
             .RenderTable(renderer, "Name", "Items");
 
         return 0;

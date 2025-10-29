@@ -24,7 +24,7 @@ internal class InstallLoadoutItemJob : IJobDefinitionWithStart<InstallLoadoutIte
     public Optional<LoadoutItemGroupId> ParentGroupId { get; set; }
     public LoadoutId LoadoutId { get; init; }
     
-    public required ITransaction Transaction { get; init; }
+    public required Transaction Transaction { get; init; }
     internal required IConnection Connection { get; init; }
     internal required IServiceProvider ServiceProvider { get; init; }
 
@@ -38,7 +38,7 @@ internal class InstallLoadoutItemJob : IJobDefinitionWithStart<InstallLoadoutIte
         IServiceProvider serviceProvider,
         LibraryItem.ReadOnly libraryItem,
         LoadoutId targetLoadout,
-        ITransaction transaction,
+        Transaction transaction,
         Optional<LoadoutItemGroupId> groupId = default,
         ILibraryItemInstaller? installer = null,
         ILibraryItemInstaller? fallbackInstaller = null)
@@ -125,7 +125,7 @@ internal class InstallLoadoutItemJob : IJobDefinitionWithStart<InstallLoadoutIte
             var isSupported = installer.IsSupportedLibraryItem(LibraryItem);
             if (!isSupported) continue;
 
-            using var subTransaction = context.Definition.Transaction.CreateSubTransaction();
+            var subTransaction = context.Definition.Transaction.CreateSubTransaction();
             
             var loadoutGroup = new LoadoutItemGroup.New(subTransaction, out var groupId)
             {

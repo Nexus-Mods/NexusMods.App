@@ -97,9 +97,9 @@ public class NexusModsDownloadJob : INexusModsDownloadJob, IJobDefinitionWithSta
     }
 
     /// <inheritdoc/>
-    public ValueTask AddMetadata(ITransaction tx, LibraryFile.New libraryFile)
+    public ValueTask AddMetadata(Transaction tx, LibraryFile.New libraryFile)
     {
-        libraryFile.GetLibraryItem(tx).Name = FileMetadata.Name;
+        tx.Add(libraryFile.Id, LibraryItem.Name, FileMetadata.Name);
 
         // Not using .New here because we can't use the LibraryItem Id and don't have the LibraryItem in this method
         tx.Add(libraryFile.Id, NexusModsLibraryItem.FileMetadataId, FileMetadata.Id);

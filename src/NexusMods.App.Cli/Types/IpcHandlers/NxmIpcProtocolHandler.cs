@@ -11,12 +11,10 @@ using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Networking.NexusWebApi.Auth;
 using NexusMods.Paths;
 using NexusMods.Sdk;
-using System.Threading.Tasks;
 using NexusMods.Sdk.Tracking;
 
 namespace NexusMods.CLI.Types.IpcHandlers;
@@ -127,13 +125,10 @@ public class NxmIpcProtocolHandler : IIpcProtocolHandler
             var revision = collectionUrl.Revision;
 
             var db = connection.Db;
-            var list = db.Datoms(
-                (NexusModsCollectionLibraryFile.CollectionSlug, slug),
-                (NexusModsCollectionLibraryFile.CollectionRevisionNumber, revision)
-            );
-
+            var ids = db.Connection.Query<EntityId>($"SELECT id FROM mdb_NexusModsCollectionLibraryFile(Db=>{db} WHERE CollectionSlug = {slug} AND CollectionRevisionNumber = {revision}");
+                
             var sw = Stopwatch.StartNew();
-            if (!list.Select(id => NexusModsCollectionLibraryFile.Load(db, id)).TryGetFirst(x => x.IsValid(), out var collectionFile))
+            if (!ids.Select(id => NexusModsCollectionLibraryFile.Load(db, id)).TryGetFirst(x => x.IsValid(), out var collectionFile))
             {
                 var downloadJob = nexusModsLibrary.CreateCollectionDownloadJob(destination, collectionUrl.Collection.Slug, collectionUrl.Revision, CancellationToken.None);
                 var libraryFile = await library.AddDownload(downloadJob);
@@ -147,7 +142,7 @@ public class NxmIpcProtocolHandler : IIpcProtocolHandler
                 collectionId: collectionRevision.Collection.CollectionId.Value,
                 revisionId: collectionRevision.RevisionId.Value,
                 gameId: collectionRevision.Collection.GameId.Value,
-                modCount: collectionRevision.Downloads.Count,
+                modCount: collectionRevision.Downloads.Count(),
                 duration: sw
             );
 

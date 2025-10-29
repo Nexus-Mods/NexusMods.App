@@ -66,7 +66,7 @@ public static class CollectionCreator
         CollectionGroupId managedCollectionGroup,
         CancellationToken cancellationToken)
     {
-        using var tx = connection.BeginTransaction();
+        var tx = connection.BeginTransaction();
 
         var groups = new Queue<LoadoutItemGroupId>();
         groups.Enqueue(managedCollectionGroup.Value);
@@ -74,9 +74,9 @@ public static class CollectionCreator
         while (groups.TryDequeue(out var groupId))
         {
             var group = LoadoutItemGroup.Load(connection.Db, groupId);
-            foreach (var datom in group)
+            foreach (var datom in group.EntitySegment)
             {
-                datom.Retract(tx);
+                tx.Add(datom.WithRetract());
             }
 
             foreach (var child in group.Children)
@@ -87,9 +87,9 @@ public static class CollectionCreator
                     continue;
                 }
 
-                foreach (var datom in child)
+                foreach (var datom in child.EntitySegment)
                 {
-                    datom.Retract(tx);
+                    tx.Add(datom.WithRetract());
                 }
             }
         }
@@ -110,7 +110,7 @@ public static class CollectionCreator
             newName = GenerateNewCollectionName(names);
         }
 
-        using var tx = connection.BeginTransaction();
+        var tx = connection.BeginTransaction();
 
         var group = new CollectionGroup.New(tx, out var id)
         {
@@ -193,7 +193,7 @@ public static class CollectionCreator
         );
 
         if (result.HasErrors) return newStatus;
-        using var tx = connection.BeginTransaction();
+        var tx = connection.BeginTransaction();
 
         tx.Add(collection.Id, CollectionMetadata.Status, newStatus);
 
@@ -217,7 +217,7 @@ public static class CollectionCreator
         await using var _ = archiveFile;
 
         var group = CollectionGroup.Load(connection.Db, groupId);
-        using var tx = connection.BeginTransaction();
+        var tx = connection.BeginTransaction();
 
         var (collection, revisionId) = await nexusModsLibrary.CreateCollection(streamFactory, collectionManifest, cancellationToken);
         var uploadTime = DateTimeOffset.UtcNow;
@@ -292,7 +292,7 @@ public static class CollectionCreator
         // TODO: handle result
         _ = result.AssertHasData();
 
-        using var tx = connection.BeginTransaction();
+        var tx = connection.BeginTransaction();
         tx.Add(groupId, ManagedCollectionLoadoutGroup.LastPublishedRevisionNumber, managedGroup.CurrentRevisionNumber);
         tx.Add(groupId, ManagedCollectionLoadoutGroup.CurrentRevisionNumber, RevisionNumber.From(managedGroup.CurrentRevisionNumber.Value + 1));
         tx.Add(groupId, ManagedCollectionLoadoutGroup.LastUploadDate, DateTimeOffset.UtcNow);
@@ -318,7 +318,7 @@ public static class CollectionCreator
         var collection = managedCollectionLoadoutGroup.Collection;
         var (revisionNumber, revisionId) = await nexusModsLibrary.UploadDraftRevision(collection, streamFactory, collectionManifest, cancellationToken);
 
-        using var tx = connection.BeginTransaction();
+        var tx = connection.BeginTransaction();
         tx.Add(groupId, ManagedCollectionLoadoutGroup.CurrentRevisionNumber, revisionNumber);
         tx.Add(groupId, ManagedCollectionLoadoutGroup.CurrentRevisionId, revisionId);
         tx.Add(groupId, ManagedCollectionLoadoutGroup.LastUploadDate, DateTimeOffset.UtcNow);

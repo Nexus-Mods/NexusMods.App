@@ -20,5 +20,5 @@ public interface IDownloadJob : IJobDefinition<AbsolutePath>
     /// <summary>
     /// Adds metadata from the download to the library file
     /// </summary>
-    ValueTask AddMetadata(ITransaction transaction, LibraryFile.New libraryFile);
+    ValueTask AddMetadata(Transaction transaction, LibraryFile.New libraryFile);
 }

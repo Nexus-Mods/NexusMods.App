@@ -54,7 +54,7 @@ public partial class JWTToken : IModelDefinition
     /// Creates a new JWT Token model from a <see cref="JwtTokenReply"/>. And reuses the existing
     /// database id if it exists, as this data is a singleton.
     /// </summary>
-    public static Optional<EntityId> Create(IDb db, ITransaction tx, JwtTokenReply reply)
+    public static Optional<EntityId> Create(IDb db, Transaction tx, JwtTokenReply reply)
     {
         if (reply.AccessToken is null || reply.RefreshToken is null) return Optional<EntityId>.None;
 

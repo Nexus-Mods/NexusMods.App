@@ -86,7 +86,7 @@ public class DownloadJobFactory(IJobMonitor jobMonitor, IServiceProvider service
         var connection = serviceProvider.GetRequiredService<IConnection>();
         
         // Create proper test metadata with realistic data
-        using var tx = connection.BeginTransaction();
+        var tx = connection.BeginTransaction();
         
         // Generate deterministic test values based on filename hash for consistency
         var fileNameHash = (ulong)Math.Abs(fileName.GetHashCode());

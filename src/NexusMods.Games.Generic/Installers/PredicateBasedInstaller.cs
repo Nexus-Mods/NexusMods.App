@@ -125,7 +125,7 @@ public class PredicateBasedInstaller : ALibraryArchiveInstaller
         }
     }
 
-    public override ValueTask<InstallerResult> ExecuteAsync(LibraryArchive.ReadOnly libraryArchive, LoadoutItemGroup.New loadoutGroup, ITransaction transaction, Loadout.ReadOnly loadout, CancellationToken cancellationToken)
+    public override ValueTask<InstallerResult> ExecuteAsync(LibraryArchive.ReadOnly libraryArchive, LoadoutItemGroup.New loadoutGroup, Transaction transaction, Loadout.ReadOnly loadout, CancellationToken cancellationToken)
     {
         var tree = libraryArchive.GetTree();
 

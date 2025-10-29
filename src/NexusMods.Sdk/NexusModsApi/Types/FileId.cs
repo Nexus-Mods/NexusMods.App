@@ -21,8 +21,8 @@ public readonly partial struct FileId : IAugmentWith<DefaultValueAugment>, IAugm
 public class FileIdAttribute(string ns, string name) : ScalarAttribute<FileId, uint, UInt32Serializer>(ns, name)
 {
     /// <inheritdoc />
-    protected override uint ToLowLevel(FileId value) => value.Value;
+    public override uint ToLowLevel(FileId value) => value.Value;
 
     /// <inheritdoc />
-    protected override FileId FromLowLevel(uint value, AttributeResolver resolver) => FileId.From(value);
+    public override FileId FromLowLevel(uint value, AttributeResolver resolver) => FileId.From(value);
 }

@@ -28,8 +28,8 @@ public readonly partial struct VanityVersion : IAugmentWith<JsonAugment, Default
 public sealed class VanityVersionAttribute(string ns, string name) : ScalarAttribute<VanityVersion, string, Utf8Serializer>(ns, name)
 {
     /// <inheritdoc />
-    protected override string ToLowLevel(VanityVersion value) => value.Value;
+    public override string ToLowLevel(VanityVersion value) => value.Value;
 
     /// <inheritdoc />
-    protected override VanityVersion FromLowLevel(string value, AttributeResolver resolver) => VanityVersion.From(value);
+    public override VanityVersion FromLowLevel(string value, AttributeResolver resolver) => VanityVersion.From(value);
 }

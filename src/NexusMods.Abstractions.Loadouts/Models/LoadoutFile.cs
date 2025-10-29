@@ -43,11 +43,11 @@ public partial class LoadoutFile : IModelDefinition
 
 #region IHavePathHashSizeAndReference
 
-        GamePath IHavePathHashSizeAndReference.Path => LoadoutItemWithTargetPath.TargetPath.Get(this);
+        GamePath IHavePathHashSizeAndReference.Path => LoadoutItemWithTargetPath.TargetPath.GetFrom(this);
 
-        Hash IHavePathHashSizeAndReference.Hash => LoadoutFile.Hash.Get(this);
+        Hash IHavePathHashSizeAndReference.Hash => LoadoutFile.Hash.GetFrom(this);
 
-        Size IHavePathHashSizeAndReference.Size => LoadoutFile.Size.Get(this);
+        Size IHavePathHashSizeAndReference.Size => LoadoutFile.Size.GetFrom(this);
         EntityId IHavePathHashSizeAndReference.Reference => Id;
 
 #endregion

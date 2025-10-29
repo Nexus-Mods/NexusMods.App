@@ -19,7 +19,7 @@ public static class Extensions
         this KeyedBox<RelativePath, LibraryArchiveTree> input,
         LoadoutId loadoutId,
         LoadoutItemGroupId parent,
-        ITransaction tx,
+        Transaction tx,
         GamePath to,
         Optional<EntityId> entityId = default)
     {

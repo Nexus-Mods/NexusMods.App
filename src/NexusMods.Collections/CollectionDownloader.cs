@@ -16,9 +16,7 @@ using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Sdk.Settings;
 using NexusMods.Abstractions.Telemetry;
 using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.MnemonicDB.Abstractions.DatomIterators;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
-using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 using NexusMods.MnemonicDB.Abstractions.Query;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Networking.NexusWebApi;
@@ -151,7 +149,7 @@ public class CollectionDownloader
 
             if (download.Rebase(_connection.Db).IsManualOnly)
             {
-                using var tx = _connection.BeginTransaction();
+                var tx = _connection.BeginTransaction();
                 tx.Retract(download.Id, CollectionDownloadExternal.ManualOnly, Null.Instance);
                 await tx.Commit();
             }
@@ -171,7 +169,7 @@ public class CollectionDownloader
             _logger.LogInformation("Unable to direct download `{Uri}` (`{Hash}`)", download.Uri, download.Md5);
             if (download.Rebase(_connection.Db).IsManualOnly) return;
 
-            using var tx = _connection.BeginTransaction();
+            var tx = _connection.BeginTransaction();
             tx.Add(download.Id, CollectionDownloadExternal.ManualOnly, Null.Instance);
             await tx.Commit();
         }
@@ -321,11 +319,8 @@ public class CollectionDownloader
     {
         if (!collectionGroup.HasValue) return new CollectionDownloadStatus.Bundled();
 
-        var entityIds = db.Datoms(
-            (NexusCollectionBundledLoadoutGroup.BundleDownload, download),
-            (LoadoutItem.ParentId, collectionGroup.Value)
-        );
-
+        var entityIds = db.Connection.Query<EntityId>($"SELECT Id FROM mdb_NexusCollectionBundledLoadoutItem WHERE BundleDownload = {download.Id} AND ParentId = {collectionGroup.Value.Id}");
+            
         foreach (var entityId in entityIds)
         {
             var loadoutItem = LoadoutItem.Load(db, entityId);
@@ -434,12 +429,10 @@ public class CollectionDownloader
     {
         if (!collectionGroup.HasValue) return new CollectionDownloadStatus.InLibrary(libraryItem);
 
-        var entityIds = db.Datoms(
-            (LibraryLinkedLoadoutItem.LibraryItem, libraryItem),
-            (LoadoutItem.ParentId, collectionGroup.Value)
-        );
-
-        if (entityIds.Count == 0) return new CollectionDownloadStatus.InLibrary(libraryItem);
+        var entityIds = db.Connection.Query<EntityId>($"SELECT Id FROM mdb_LibraryLinkedLoadoutItem(Db=>{db}) WHERE LibraryItemId = {libraryItem.Id} AND ParentId = {collectionGroup.Value.Id}");
+        
+        if (!entityIds.Any()) 
+            return new CollectionDownloadStatus.InLibrary(libraryItem);
 
         foreach (var entityId in entityIds)
         {
@@ -464,9 +457,9 @@ public class CollectionDownloader
                     .Select(group =>
                     {
                         if (!group.HasValue) return false;
-                        var itemLoadoutId = LoadoutItem.LoadoutId.Get(item);
-                        var groupLoadoutId = LoadoutItem.LoadoutId.Get(group.Value);
-                        var parentId = LoadoutItem.ParentId.Get(item);
+                        var itemLoadoutId = LoadoutItem.LoadoutId.GetFrom(item);
+                        var groupLoadoutId = LoadoutItem.LoadoutId.GetFrom(group.Value);
+                        var parentId = LoadoutItem.ParentId.GetFrom(item);
                         var id = group.Value.Id;
 
                         return itemLoadoutId == groupLoadoutId && parentId == id;
@@ -550,7 +543,7 @@ public class CollectionDownloader
     public async ValueTask DeleteCollectionLoadoutGroup(CollectionRevisionMetadata.ReadOnly revision, CancellationToken cancellationToken)
     {
         var db = _connection.Db;
-        using var tx = _connection.BeginTransaction();
+        var tx = _connection.BeginTransaction();
 
         var groupDatoms = db.Datoms(NexusCollectionLoadoutGroup.Revision, revision);
         foreach (var datom in groupDatoms)
@@ -566,7 +559,7 @@ public class CollectionDownloader
     /// </summary>
     public static CollectionDownload.ReadOnly[] GetItems(CollectionRevisionMetadata.ReadOnly revision, ItemType itemType)
     {
-        var res = new CollectionDownload.ReadOnly[revision.Downloads.Count];
+        var res = new CollectionDownload.ReadOnly[revision.Downloads.Count()];
 
         var i = 0;
         foreach (var download in revision.Downloads)
@@ -584,13 +577,13 @@ public class CollectionDownloader
     /// </summary>
     public NexusModsCollectionLibraryFile.ReadOnly GetLibraryFile(CollectionRevisionMetadata.ReadOnly revisionMetadata)
     {
-        var datoms = _connection.Db.Datoms(
-            (NexusModsCollectionLibraryFile.CollectionSlug, revisionMetadata.Collection.Slug),
-            (NexusModsCollectionLibraryFile.CollectionRevisionNumber, revisionMetadata.RevisionNumber)
-        );
-
-        if (datoms.Count == 0) throw new Exception($"Unable to find collection file for revision `{revisionMetadata.Collection.Slug}` (`{revisionMetadata.RevisionNumber}`)");
-        var source = NexusModsCollectionLibraryFile.Load(_connection.Db, datoms[0]);
+        
+        var ids = _connection.Query<EntityId>($"SELECT Id FROM mdb_NexusModsCollectionLibraryFile WHERE CollectionSlug = '{revisionMetadata.Collection.Slug}' AND RevisionNumber = {revisionMetadata.RevisionNumber}");
+        
+        if (!ids.Any()) 
+            throw new Exception($"Unable to find collection file for revision `{revisionMetadata.Collection.Slug}` (`{revisionMetadata.RevisionNumber}`)");
+        
+        var source = NexusModsCollectionLibraryFile.Load(_connection.Db, ids.First());
         return source;
     }
 
@@ -602,12 +595,9 @@ public class CollectionDownloader
         LoadoutId loadoutId,
         IDb db)
     {
-        var entityIds = db.Datoms(
-            (NexusCollectionLoadoutGroup.Revision, revisionMetadata),
-            (LoadoutItem.Loadout, loadoutId)
-        );
-
-        if (entityIds.Count == 0) return Optional.None<NexusCollectionLoadoutGroup.ReadOnly>();
+        var entityIds = db.Connection.Query<EntityId>($"SELECT Id FROM mdb_NexusCollectionLoadoutGroup(Db=>{db}) WHERE Revision = {revisionMetadata.Id} AND LoadoutId = {loadoutId.Value}");
+        
+        if (!entityIds.Any()) return Optional.None<NexusCollectionLoadoutGroup.ReadOnly>();
         foreach (var entityId in entityIds)
         {
             var group = NexusCollectionLoadoutGroup.Load(db, entityId);
@@ -645,7 +635,7 @@ public class CollectionDownloader
     public async ValueTask DeleteRevision(CollectionRevisionMetadataId revisionId)
     {
         var db = _connection.Db;
-        using var tx = _connection.BeginTransaction();
+        var tx = _connection.BeginTransaction();
 
         var downloadIds = db.Datoms(CollectionDownload.CollectionRevision, revisionId);
         foreach (var downloadId in downloadIds)
@@ -664,7 +654,7 @@ public class CollectionDownloader
     public async ValueTask DeleteCollection(CollectionMetadataId collectionMetadataId)
     {
         var db = _connection.Db;
-        using var tx = _connection.BeginTransaction();
+        var tx = _connection.BeginTransaction();
 
         var revisionIds = db.Datoms(CollectionRevisionMetadata.CollectionId, collectionMetadataId);
         foreach (var revisionId in revisionIds)

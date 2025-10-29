@@ -1,12 +1,8 @@
 using System.Collections.Frozen;
-using System.Diagnostics;
-using FomodInstaller.Interface;
 using NexusMods.Abstractions.Collections;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.HyperDuck;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
-using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 using NexusMods.MnemonicDB.Abstractions.Query;
 using NexusMods.MnemonicDB.Abstractions.ValueSerializers;
 
@@ -69,7 +65,7 @@ public class UndoService
     {
         var currentDb = _conn.Db;
         var revertDb = _conn.AsOf(TxId.From(revisionRevision.TxEntity.Value));
-        var ignoreAttrs = IgnoreAttributes.Select(a => currentDb.AttributeCache.GetAttributeId(a.Id)).ToFrozenSet();
+        var ignoreAttrs = IgnoreAttributes.Select(a => currentDb.AttributeResolver.AttributeCache[a]).ToFrozenSet();
         var toProcess = new HashSet<EntityId>();
         toProcess.Add(revisionRevision.TxEntity);
 
@@ -90,8 +86,8 @@ public class UndoService
                 continue;
 
 
-            var desiredState = revertDb.Datoms(current);
-            var currentState = currentDb.Datoms(current);
+            var desiredState = revertDb[current];
+            var currentState = currentDb[current];
 
 
             CompareEntities(current, currentState, processed, toProcess, desiredState, tx, ignoreAttrs);
@@ -107,7 +103,6 @@ public class UndoService
     private static void ExtractBackReferences(IDb currentDb, EntityId current, FrozenSet<AttributeId> ignoreAttrs, HashSet<EntityId> processed, HashSet<EntityId> toProcess, IDb revertDb)
     {
         var backReferenceDatoms = currentDb.Datoms(SliceDescriptor.CreateReferenceTo(current));
-        var resolver = currentDb.AttributeCache;
         foreach (var datom in backReferenceDatoms)
         {
             if (ignoreAttrs.Contains(datom.A) || processed.Contains(datom.E) || datom.E.Partition == PartitionId.Transactions)
@@ -125,39 +120,37 @@ public class UndoService
         }
     }
 
-    private static void CompareEntities(EntityId current, EntitySegment currentState, HashSet<EntityId> processed, HashSet<EntityId> toProcess, EntitySegment desiredState, ITransaction tx, FrozenSet<AttributeId> ignoreAttrs)
+    private static void CompareEntities(EntityId current, Datoms currentState, HashSet<EntityId> processed, HashSet<EntityId> toProcess, Datoms desiredState, Transaction tx, FrozenSet<AttributeId> ignoreAttrs)
     {
         
-        foreach (var avData in currentState.GetAVEnumerable())
-        {
-            if (ignoreAttrs.Contains(avData.A))
-                continue;
-            
-            if (avData.ValueType == ValueTag.Reference)
-            {
-                var value = EntityIdSerializer.Read(avData.Value.Span);
-                if (!processed.Contains(value) && value.Partition != PartitionId.Transactions)
-                    toProcess.Add(value);
-            }
-                
-            if (!desiredState.Contains(avData)) 
-                tx.Add(current, avData.A, avData.ValueType, avData.Value.Span, true);
-        }
-
-        foreach (var datom in desiredState.GetAVEnumerable())
+        foreach (var datom in currentState)
         {
             if (ignoreAttrs.Contains(datom.A))
                 continue;
             
-            if (datom.ValueType == ValueTag.Reference)
+            if (datom is { Tag: ValueTag.Reference, V: EntityId value })
             {
-                var value = EntityIdSerializer.Read(datom.Value.Span);
+                if (!processed.Contains(value) && value.Partition != PartitionId.Transactions)
+                    toProcess.Add(value);
+            }
+            
+            if (!desiredState.Contains(datom)) 
+                tx.Add(new Datom(datom.Prefix with { E = current, IsRetract = true}, datom.V));
+        }
+
+        foreach (var datom in desiredState)
+        {
+            if (ignoreAttrs.Contains(datom.A))
+                continue;
+            
+            if (datom.Tag == ValueTag.Reference && datom.V is EntityId value)
+            {
                 if (!processed.Contains(value) && value.Partition != PartitionId.Transactions) 
                     toProcess.Add(value);
             }
-                
-            if (!currentState.Contains(datom)) 
-                tx.Add(current, datom.A, datom.ValueType, datom.Value.Span);
+
+            if (!currentState.Contains(datom))
+                tx.Add(new Datom(datom.Prefix with { E = current }, datom.V));
         }
     }
 }

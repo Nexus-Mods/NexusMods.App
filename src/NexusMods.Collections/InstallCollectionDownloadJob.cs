@@ -93,7 +93,7 @@ public class InstallCollectionDownloadJob : IJobDefinitionWithStart<InstallColle
     {
         var (group, patchedFiles) = await Install(context);
 
-        using var tx = Connection.BeginTransaction();
+        var tx = Connection.BeginTransaction();
 
         // Patch files
         foreach (var patchedFile in patchedFiles)
@@ -164,7 +164,7 @@ public class InstallCollectionDownloadJob : IJobDefinitionWithStart<InstallColle
         var prefixPath = RelativePath.FromUnsanitizedInput("bundled").Join(download.BundledPath);
         var prefixFiles = SourceCollectionArchive.Children.Where(f => f.Path.InFolder(prefixPath)).ToArray();
 
-        using var tx = Connection.BeginTransaction();
+        var tx = Connection.BeginTransaction();
 
         var modGroup = new NexusCollectionBundledLoadoutGroup.New(tx, out var id)
         {
@@ -242,7 +242,7 @@ public class InstallCollectionDownloadJob : IJobDefinitionWithStart<InstallColle
 
         var fomodInstaller = GetFomodXmlInstaller(cancellationToken);
 
-        using var tx = Connection.BeginTransaction();
+        var tx = Connection.BeginTransaction();
         var group = new LoadoutItemGroup.New(tx, out var id)
         {
             IsGroup = true,
@@ -317,32 +317,34 @@ public class InstallCollectionDownloadJob : IJobDefinitionWithStart<InstallColle
             hashes[patchedFile.PatchedFileHashes.Md5] = hashMapping;
         }
 
-        using var tx = Connection.BeginTransaction();
+        var tx = Connection.BeginTransaction();
 
-        var group = new NexusCollectionReplicatedLoadoutGroup.New(tx, out var id)
+        var itemGroup = new LoadoutItemGroup.New(tx, out var id)
+        {
+            IsGroup = true,
+            LoadoutItem = new LoadoutItem.New(tx, id)
+            {
+                Name = Item.Name,
+                LoadoutId = TargetLoadout,
+                ParentId = Group.Id,
+            },
+        };
+
+        var group = new NexusCollectionReplicatedLoadoutGroup.New(tx, id)
         {
             IsReplicated = true,
             NexusCollectionItemLoadoutGroup = new NexusCollectionItemLoadoutGroup.New(tx, id)
             {
                 DownloadId = Item,
                 IsRequired = Item.IsRequired,
-                LoadoutItemGroup = new LoadoutItemGroup.New(tx, id)
-                {
-                    IsGroup = true,
-                    LoadoutItem = new LoadoutItem.New(tx, id)
-                    {
-                        Name = Item.Name,
-                        LoadoutId = TargetLoadout,
-                        ParentId = Group.Id,
-                    },
-                },
+                LoadoutItemGroup = itemGroup,
             },
         };
 
         _ = new LibraryLinkedLoadoutItem.New(tx, id)
         {
             LibraryItemId = libraryFile.AsLibraryItem(),
-            LoadoutItemGroup = group.GetNexusCollectionItemLoadoutGroup(tx).GetLoadoutItemGroup(tx),
+            LoadoutItemGroup = itemGroup,
         };
 
         // Now we map the files to their locations based on the hashes

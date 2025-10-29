@@ -10,12 +10,12 @@ namespace NexusMods.Abstractions.Games.FileHashes.Attributes.Steam;
 /// </summary>
 public class AppIdAttribute(string ns, string name) : ScalarAttribute<AppId, uint, UInt32Serializer>(ns, name) 
 {
-    protected override uint ToLowLevel(AppId value)
+    public override uint ToLowLevel(AppId value)
     {
         return value.Value;
     }
 
-    protected override AppId FromLowLevel(uint value, AttributeResolver resolver)
+    public override AppId FromLowLevel(uint value, AttributeResolver resolver)
     {
         return AppId.From(value);
     }

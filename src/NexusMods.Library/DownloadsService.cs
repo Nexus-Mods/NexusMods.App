@@ -304,7 +304,7 @@ public sealed class DownloadsService : IDownloadsService, IDisposable
             
             // Find library items that match this file metadata
             var libraryItems = NexusModsLibraryItem.FindByFileMetadata(_connection.Db, fileMetadata);
-            if (libraryItems.Count == 0)
+            if (!libraryItems.Any())
                 return Optional<LibraryFile.ReadOnly>.None;
             
             // Convert the first library item to LibraryFile.ReadOnly

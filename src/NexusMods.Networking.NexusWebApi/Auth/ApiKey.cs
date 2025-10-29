@@ -31,7 +31,7 @@ public partial class ApiKey : IModelDefinition
     /// </summary>
     public static async Task Set(IConnection conn, string key)
     {
-        using var tx = conn.BeginTransaction();
+        var tx = conn.BeginTransaction();
         var oldId = All(conn.Db).Select(ent => ent.Id).FirstOrDefault(tx.TempId());
         tx.Add(oldId, Key, key);
         await tx.Commit();

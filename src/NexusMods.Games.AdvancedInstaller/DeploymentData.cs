@@ -104,7 +104,7 @@ public readonly struct DeploymentData
         KeyedBox<RelativePath, LibraryArchiveTree> archiveFiles,
         LoadoutId loadoutId,
         LoadoutItemGroup.New loadoutGroup,
-        ITransaction transaction)
+        Transaction transaction)
     {
         foreach (var (src, value) in ArchiveToOutputMap)
         {

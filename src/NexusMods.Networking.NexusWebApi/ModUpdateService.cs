@@ -163,7 +163,7 @@ public class ModUpdateService : IModUpdateService, IDisposable
         // Fetch the data from the Nexus servers if at least a single item needs updating.
         if (updateCheckResult.AnyItemNeedsUpdate())
         {
-            using var tx = _connection.BeginTransaction();
+            var tx = _connection.BeginTransaction();
             await RunUpdateCheck.UpdateModFilesForOutdatedPages(
                 _connection.Db,
                 tx,
@@ -495,7 +495,7 @@ public class ModUpdateService : IModUpdateService, IDisposable
 
                 // Only add a file as one that we have if an associated library file,
                 // exists.
-                if (file.LibraryFiles.Count > 0) // Note(sewer): Avoiding IEnumerable to not allocate on Gen0
+                if (file.LibraryFiles.Any()) // Note(sewer): Avoiding IEnumerable to not allocate on Gen0
                     filesInLibrary[file.Id] = file;
             }
         }

@@ -30,7 +30,7 @@ public partial class LibraryItem
         /// Adds a retraction which effectively deletes the current archived file from the data store.
         /// </summary>
         /// <param name="tx">The transaction to add the retraction to.</param>
-        public void Retract(ITransaction tx) => tx.Retract(Id, LibraryItem.Name, Name);
+        public void Retract(Transaction tx) => tx.Retract(Id, LibraryItem.Name, Name);
         
         /// <summary>
         /// Tries to get the entity as a DownloadedFile entity, if the entity is not a DownloadedFile entity, it returns false.

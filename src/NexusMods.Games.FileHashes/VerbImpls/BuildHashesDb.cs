@@ -37,13 +37,11 @@ using VersionFileFormat = Dictionary<string, Dictionary<string, VersionContribDe
 public class BuildHashesDb : IAsyncDisposable
 {
     private readonly TemporaryPath _tempFolder;
-    private readonly DatomStore _datomStore;
-    private readonly Connection _connection;
+    private readonly IConnection _connection;
     private readonly IRenderer _renderer;
     private readonly JsonSerializerOptions _jsonOptions;
     
     private readonly Dictionary<(RelativePath Path, EntityId HashId), EntityId> _knownHashPaths = new();
-    private readonly MnemonicDB.Storage.RocksDbBackend.Backend _backend;
     private readonly IGameRegistry _gameRegistry;
 
     public BuildHashesDb(IRenderer renderer, IServiceProvider provider, TemporaryFileManager temporaryFileManager, IGameRegistry gameRegistry)
@@ -54,15 +52,12 @@ public class BuildHashesDb : IAsyncDisposable
         _tempFolder = temporaryFileManager.CreateFolder();
         _jsonOptions = provider.GetRequiredService<JsonSerializerOptions>();
         
-        
-        
-        _backend = new MnemonicDB.Storage.RocksDbBackend.Backend();
         var settings = new DatomStoreSettings
         {
             Path = _tempFolder,
         };
-        _datomStore = new DatomStore(provider.GetRequiredService<ILogger<DatomStore>>(), settings, _backend);
-        _connection = new Connection(provider.GetRequiredService<ILogger<Connection>>(), _datomStore, provider, []);
+        
+        _connection = provider.GetRequiredService<IConnectionFactory>().Create(provider, settings);
     }
     
     public IServiceProvider Provider { get; set; }
@@ -86,8 +81,7 @@ public class BuildHashesDb : IAsyncDisposable
         await _renderer.TextLine("Exporting database");
         await _connection.FlushAndCompact();
         
-        _datomStore.Dispose();
-        _backend.Dispose();
+        _connection.Dispose();
         
         if (output.FileExists)
             output.Delete();
@@ -139,7 +133,7 @@ public class BuildHashesDb : IAsyncDisposable
         await _renderer.TextLine("Found {0} version mappings", versionData.Length);
         
         var referenceDb = _connection.Db;
-        using var tx = _connection.BeginTransaction();
+        var tx = _connection.BeginTransaction();
         foreach (var (gameName, osName, definition) in versionData)
         {
             var gameObject = _gameRegistry.SupportedGames.First(g => g.Name == gameName);
@@ -218,7 +212,7 @@ public class BuildHashesDb : IAsyncDisposable
     private async Task AddSteamData(AbsolutePath path)
     {
         var refDb = _connection.Db;
-        using var tx = _connection.BeginTransaction();
+        var tx = _connection.BeginTransaction();
         await _renderer.TextLine("Importing Steam data");
         
         var appPath = path / "json" / "stores" / "steam" / "apps";
@@ -296,7 +290,7 @@ public class BuildHashesDb : IAsyncDisposable
 
     private async Task AddGogData(AbsolutePath path)
     {
-        using var tx = _connection.BeginTransaction();
+        var tx = _connection.BeginTransaction();
         await _renderer.TextLine("Importing GOG data");
         
         var foundHashesPath = path / "json" / "stores" / "gog" / "found_hashes";
@@ -417,7 +411,7 @@ public class BuildHashesDb : IAsyncDisposable
 
     private async Task AddEpicGameStoreData(AbsolutePath path)
     {
-        using var tx = _connection.BeginTransaction();
+        var tx = _connection.BeginTransaction();
         await _renderer.TextLine("Importing GOG data");
 
         var buildsPath = path / "json" / "stores" / "egs" / "builds";
@@ -500,7 +494,7 @@ public class BuildHashesDb : IAsyncDisposable
         var hashPath = path / "json" / "hashes";
 
         await _renderer.TextLine("Importing hashes");
-        using var tx = _connection.BeginTransaction();
+        var tx = _connection.BeginTransaction();
         
         var count = 0;
         foreach (var file in hashPath.EnumerateFiles(KnownExtensions.Json))
@@ -535,7 +529,7 @@ public class BuildHashesDb : IAsyncDisposable
     /// <summary>
     /// Find or insert a hash path relation
     /// </summary>
-    private EntityId EnsureHashPathRelation(ITransaction tx, IDb referenceDb, RelativePath path, Hash hash)
+    private EntityId EnsureHashPathRelation(Transaction tx, IDb referenceDb, RelativePath path, Hash hash)
     {
         var hashRelation = HashRelation.FindByXxHash3(referenceDb, hash).FirstOrDefault();
         
@@ -550,7 +544,7 @@ public class BuildHashesDb : IAsyncDisposable
     /// <summary>
     /// Find or insert a hash path relation
     /// </summary>
-    private EntityId EnsureHashPathRelation(ITransaction tx, IDb referenceDb, RelativePath path, Sha1Value hash)
+    private EntityId EnsureHashPathRelation(Transaction tx, IDb referenceDb, RelativePath path, Sha1Value hash)
     {
         var hashRelation = HashRelation.FindBySha1(referenceDb, hash).FirstOrDefault();
         
@@ -562,7 +556,7 @@ public class BuildHashesDb : IAsyncDisposable
         return EnsureHashPathRelation(tx, path, hashRelation);
     }
 
-    private EntityId EnsureHashPathRelation(ITransaction tx, RelativePath path, HashRelationId hashRelation)
+    private EntityId EnsureHashPathRelation(Transaction tx, RelativePath path, HashRelationId hashRelation)
     {
         if (_knownHashPaths.TryGetValue((path, hashRelation), out var entityId))
         {
@@ -582,7 +576,7 @@ public class BuildHashesDb : IAsyncDisposable
 
     public async ValueTask DisposeAsync()
     {
-        _datomStore.Dispose();
+        _connection.Dispose();
         await _tempFolder.DisposeAsync();
     }
 }

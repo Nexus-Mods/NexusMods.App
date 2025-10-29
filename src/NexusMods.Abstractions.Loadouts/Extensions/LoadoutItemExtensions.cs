@@ -1,7 +1,5 @@
 using System.Reactive.Linq;
 using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.MnemonicDB.Abstractions.IndexSegments;
-using NexusMods.MnemonicDB.Abstractions.Query;
 
 namespace NexusMods.Abstractions.Loadouts.Extensions;
 
@@ -19,7 +17,7 @@ public static class LoadoutItemExtensions
         {
             yield return item;
 
-            if (LoadoutItem.Parent.TryGetValue(item, out var parent))
+            if (item.EntitySegment.TryGetResolved(LoadoutItem.Parent, out var parent))
             {
                 item = LoadoutItem.Load(item.Db, parent);
             }
@@ -43,7 +41,7 @@ public static class LoadoutItemExtensions
         {
             yield return itemId;
             
-            if (LoadoutItem.Parent.TryGetValue(model, out var parent))
+            if (model.EntitySegment.TryGetResolved(LoadoutItem.Parent, out var parent))
             {
                 itemId = parent;
                 model = LoadoutItem.Load(db, itemId);
@@ -75,7 +73,7 @@ public static class LoadoutItemExtensions
     /// </summary>
     /// <param name="items"></param>
     /// <returns></returns>
-    public static IEnumerable<LoadoutFile.ReadOnly> GetEnabledLoadoutFiles(this Entities<LoadoutItem.ReadOnly> items)
+    public static IEnumerable<LoadoutFile.ReadOnly> GetEnabledLoadoutFiles(this IEnumerable<LoadoutItem.ReadOnly> items)
     {
         return items.Where(i => i.IsEnabled())
             .OfTypeLoadoutItemWithTargetPath()
@@ -94,7 +92,7 @@ public static class LoadoutItemExtensions
             if (current.IsDisabled)
                 return false;
             
-            if (!LoadoutItem.Parent.TryGetValue(current, out var parentId))
+            if (!current.EntitySegment.TryGetResolved(LoadoutItem.Parent, out var parentId))
                 break;
             
             current = LoadoutItem.Load(current.Db, parentId);

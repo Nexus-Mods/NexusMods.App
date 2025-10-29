@@ -13,7 +13,6 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.Loadouts.Synchronizers.Conflicts;
 using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.MnemonicDB.Abstractions.DatomIterators;
 using NexusMods.MnemonicDB.Abstractions.Internals;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Sdk.Jobs;
@@ -50,7 +49,7 @@ internal partial class LoadoutManager : ILoadoutManager
 
             var shortName = GetNewShortName(_connection.Db, installation.GameMetadataId);
 
-            using var tx = _connection.BeginTransaction();
+            var tx = _connection.BeginTransaction();
 
             List<LocatorId> locatorIds = [];
             if (installation.LocatorResultMetadata != null)
@@ -147,7 +146,7 @@ internal partial class LoadoutManager : ILoadoutManager
         Dictionary<EntityId, EntityId> entityIdList = new();
         var remapFn = RemapFn;
 
-        using var tx = _connection.BeginTransaction();
+        var tx = _connection.BeginTransaction();
 
         // Add the loadout
         var newLoadoutId = tx.TempId();
@@ -203,7 +202,7 @@ internal partial class LoadoutManager : ILoadoutManager
     public async ValueTask DeleteLoadout(LoadoutId loadoutId, GarbageCollectorRunMode gcRunMode = GarbageCollectorRunMode.DoNotRun, bool deactivateIfActive = true, CancellationToken cancellationToken = default)
     {
         {
-            using var tx1 = _connection.BeginTransaction();
+            var tx1 = _connection.BeginTransaction();
             tx1.Add(loadoutId, Loadout.LoadoutKind, LoadoutKind.Deleted);
             await tx1.Commit();
         }
@@ -217,7 +216,7 @@ internal partial class LoadoutManager : ILoadoutManager
             await DeactivateCurrentLoadout(loadout.InstallationInstance, cancellationToken: cancellationToken);
         }
 
-        using var tx = _connection.BeginTransaction();
+        var tx = _connection.BeginTransaction();
 
         tx.Delete(loadoutId, recursive: false);
         foreach (var item in loadout.Items)
@@ -284,7 +283,7 @@ internal partial class LoadoutManager : ILoadoutManager
             await ctx.YieldAsync();
 
             {
-                using var tx1 = _connection.BeginTransaction();
+                var tx1 = _connection.BeginTransaction();
                 foreach (var loadout in metadata.Loadouts)
                 {
                     tx1.Add(loadout.Id, Loadout.LoadoutKind, LoadoutKind.Deleted);
@@ -304,7 +303,7 @@ internal partial class LoadoutManager : ILoadoutManager
             }
 
             // Retract all `GameBakedUpFile` entries to allow for game file backups to be cleaned up from the FileStore
-            using var tx = _connection.BeginTransaction();
+            var tx = _connection.BeginTransaction();
             foreach (var file in GameBackedUpFile.All(_connection.Db))
             {
                 if (file.GameInstallId.Value == installation.GameMetadataId)
@@ -348,7 +347,7 @@ internal partial class LoadoutManager : ILoadoutManager
     private IJobTask<IInstallLoadoutItemJob, InstallLoadoutItemJobResult> InstallItem(
         LibraryItem.ReadOnly libraryItem,
         LoadoutId targetLoadout,
-        ITransaction? inputTx,
+        Transaction? inputTx,
         Optional<LoadoutItemGroupId> parent = default,
         ILibraryItemInstaller? installer = null,
         ILibraryItemInstaller? fallbackInstaller = null)
@@ -375,12 +374,12 @@ internal partial class LoadoutManager : ILoadoutManager
 
     public async ValueTask RemoveItems(LoadoutItemGroupId[] groupIds)
     {
-        using var tx = _connection.BeginTransaction();
+        var tx = _connection.BeginTransaction();
         RemoveItems(tx, groupIds);
         await tx.Commit();
     }
 
-    private void RemoveItems(ITransaction tx, LoadoutItemGroupId[] groupIds)
+    private void RemoveItems(Transaction tx, LoadoutItemGroupId[] groupIds)
     {
         var db = _connection.Db;
         var loadouts = new Dictionary<LoadoutId, List<LoadoutItemGroupId>>();
@@ -417,7 +416,7 @@ internal partial class LoadoutManager : ILoadoutManager
     public async ValueTask RemoveCollection(LoadoutId loadoutId, CollectionGroupId collection)
     {
         var db = _connection.Db;
-        using var tx = _connection.BeginTransaction();
+        var tx = _connection.BeginTransaction();
 
         tx.Delete(collection, recursive: true);
         var groupIds = LoadoutItem.FindByParent(db, collection).OfTypeLoadoutItemGroup().Select(x => x.LoadoutItemGroupId).ToArray();
@@ -428,7 +427,7 @@ internal partial class LoadoutManager : ILoadoutManager
 
     public async ValueTask ReplaceItems(LoadoutId loadoutId, LoadoutItemGroupId[] groupsToRemove, LibraryItem.ReadOnly libraryItemToInstall)
     {
-        using var tx = _connection.BeginTransaction();
+        var tx = _connection.BeginTransaction();
         RemoveItems(tx, groupsToRemove);
         await InstallItem(libraryItemToInstall, loadoutId, inputTx: tx);
         await tx.Commit();
@@ -437,7 +436,7 @@ internal partial class LoadoutManager : ILoadoutManager
     public async ValueTask ResolveFileConflicts(LoadoutItemGroupPriorityId[] winnerIds, LoadoutItemGroupPriorityId loserId)
     {
         var db = _connection.Db;
-        using var tx = _connection.BeginTransaction();
+        var tx = _connection.BeginTransaction();
 
         tx.Add(new ResolveFileConflictsTxFunc(
             loadoutId: LoadoutItemGroupPriority.Load(db,winnerIds[0]).LoadoutId,
@@ -451,7 +450,7 @@ internal partial class LoadoutManager : ILoadoutManager
     public async ValueTask LoseAllFileConflicts(LoadoutItemGroupPriorityId[] loserIds)
     {
         var db = _connection.Db;
-        using var tx = _connection.BeginTransaction();
+        var tx = _connection.BeginTransaction();
 
         tx.Add(new ResolveFileConflictsTxFunc(
             loadoutId: LoadoutItemGroupPriority.Load(db, loserIds[0]).LoadoutId,

@@ -59,7 +59,7 @@ public record ExternalDownloadJob : HttpDownloadJob
 
 
     /// <inheritdoc />
-    public override async ValueTask AddMetadata(ITransaction tx, LibraryFile.New libraryFile)
+    public override async ValueTask AddMetadata(Transaction tx, LibraryFile.New libraryFile)
     {
         await using (var fileStream = Destination.Read())
         {
@@ -83,11 +83,11 @@ public record ExternalDownloadJob : HttpDownloadJob
         if (FileName.HasValue)
         {
             libraryFile.FileName = FileName.Value;
-            libraryFile.GetLibraryItem(tx).Name = FileName.Value;
+            tx.Add(libraryFile, LibraryItem.Name, FileName.Value);
         }
         else
         {
-            libraryFile.GetLibraryItem(tx).Name = LogicalFileName;
+            tx.Add(libraryFile, LibraryItem.Name, LogicalFileName);
         }
     }
 }

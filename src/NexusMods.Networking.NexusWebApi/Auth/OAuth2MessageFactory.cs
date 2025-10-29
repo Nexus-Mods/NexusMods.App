@@ -56,7 +56,7 @@ public class OAuth2MessageFactory : BaseHttpMessageFactory, IAuthenticatingMessa
 
         var newToken = await _auth.RefreshToken(token.RefreshToken, cancellationToken);
         var db = _conn.Db;
-        using var tx = _conn.BeginTransaction();
+        var tx = _conn.BeginTransaction();
 
         var newTokenEntity = JWTToken.Create(db, tx, newToken!);
         if (!newTokenEntity.HasValue)

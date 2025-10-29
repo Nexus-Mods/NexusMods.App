@@ -55,7 +55,7 @@ public record TestNexusModsDownloadJob : IJobDefinitionWithStart<TestNexusModsDo
     }
     
     // <see cref="IDownloadJob"/> metadata implementation
-    public ValueTask AddMetadata(ITransaction transaction, LibraryFile.New libraryFile)
+    public ValueTask AddMetadata(Transaction transaction, LibraryFile.New libraryFile)
     {
         // For testing purposes, we don't need to add any metadata
         return ValueTask.CompletedTask;

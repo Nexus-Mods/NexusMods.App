@@ -9,7 +9,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Diagnostics;
-using NexusMods.Abstractions.FileExtractor;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Games.FileHashes;
@@ -26,7 +25,6 @@ using NexusMods.DataModel;
 using NexusMods.Games.FOMOD;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.MnemonicDB.Abstractions.BuiltInEntities;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 using NexusMods.MnemonicDB.Abstractions.Models;
 using NexusMods.Networking.NexusWebApi;
@@ -176,7 +174,7 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
     /// Adds an empty mod to the loadout in the given transaction.
     /// </summary>
     protected LoadoutItemGroupId AddEmptyGroup(
-        ITransaction tx, 
+        Transaction tx, 
         LoadoutId loadoutId, 
         string name, 
         LoadoutItemGroupId? parentGroup = null)
@@ -215,7 +213,7 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
     /// The file will be named with the given path, the hash will be the hash
     /// of the name, and the size will be the length of the name. 
     /// </summary>
-    public LoadoutFileId AddFile(ITransaction tx, LoadoutId loadoutId, LoadoutItemGroupId groupId, GamePath path, string? content = null)
+    public LoadoutFileId AddFile(Transaction tx, LoadoutId loadoutId, LoadoutItemGroupId groupId, GamePath path, string? content = null)
     {
         return AddFile(tx, loadoutId, groupId, path, content, out _, out _);
     }
@@ -225,7 +223,7 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
     /// The file will be named with the given path, the hash will be the hash
     /// of the name, and the size will be the length of the name. 
     /// </summary>
-    public LoadoutFileId AddFile(ITransaction tx, LoadoutId loadoutId, LoadoutItemGroupId groupId, GamePath path, string? content, out Hash hash, out Size size)
+    public LoadoutFileId AddFile(Transaction tx, LoadoutId loadoutId, LoadoutItemGroupId groupId, GamePath path, string? content, out Hash hash, out Size size)
     {
         content ??= path.Path.ToString();
         var contentArray = Encoding.UTF8.GetBytes(content);
@@ -234,7 +232,7 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
         size = Size.FromLong(contentArray.Length);
         return AddFileInternal(tx, loadoutId, groupId, path, hash, size).Id;
     }
-    private static LoadoutFile.New AddFileInternal(ITransaction tx, LoadoutId loadoutId, LoadoutItemGroupId groupId, GamePath path, Hash hash, Size size) => new(tx, out var id)
+    private static LoadoutFile.New AddFileInternal(Transaction tx, LoadoutId loadoutId, LoadoutItemGroupId groupId, GamePath path, Hash hash, Size size) => new(tx, out var id)
     {
         LoadoutItemWithTargetPath = new LoadoutItemWithTargetPath.New(tx, id)
         {
@@ -259,7 +257,7 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
     /// <param name="fileName">Name of the archive.</param>
     public async Task<LibraryArchive.ReadOnly> CreateLibraryArchive(IConnection conn, string fileName)
     {
-        using var tx = conn.BeginTransaction();
+        var tx = conn.BeginTransaction();
         var libraryFile = CreateLibraryFile(fileName, tx, out var entityId);
         
         // Note(sewer): These are the same entity, just an API caveat that 2 objects are needed.
@@ -288,7 +286,7 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
     ///     the files have come from.
     /// </param>
     public async Task<(AbsolutePath archivePath, List<Hash> hashes)> AddModAsync(
-        ITransaction tx,
+        Transaction tx,
         IEnumerable<RelativePath> paths, 
         LoadoutId loadoutId,
         string modName, 
@@ -336,7 +334,7 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
         return (GetArchivePath(hashes.First()), hashes);
     }
 
-    private static LibraryFile.New CreateLibraryFile(string fileName, ITransaction tx, out EntityId entityId) => new(tx, out entityId)
+    private static LibraryFile.New CreateLibraryFile(string fileName, Transaction tx, out EntityId entityId) => new(tx, out entityId)
     {
         FileName = fileName,
         Hash = fileName.xxHash3AsUtf8(),
@@ -396,7 +394,7 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
 
     protected async ValueTask<CollectionGroup.ReadOnly> CreateCollection(LoadoutId loadoutId, string name)
     {
-        using var tx = Connection.BeginTransaction();
+        var tx = Connection.BeginTransaction();
         var collection = new CollectionGroup.New(tx, out var id)
         {
             IsReadOnly = false,
@@ -417,14 +415,14 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
     
     protected async ValueTask EnableItem(EntityId entityId)
     {
-        using var tx = Connection.BeginTransaction();
+        var tx = Connection.BeginTransaction();
         tx.Retract(entityId, LoadoutItem.Disabled, Null.Instance);
         await tx.Commit();
     }
 
     protected async ValueTask DisableItem(EntityId entityId)
     {
-        using var tx = Connection.BeginTransaction();
+        var tx = Connection.BeginTransaction();
         tx.Add(entityId, LoadoutItem.Disabled, Null.Instance);
         await tx.Commit();
     }
@@ -547,7 +545,7 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
 
         
         
-        void Section(string sectionName, Transaction.ReadOnly asOf)
+        void Section(string sectionName, NexusMods.MnemonicDB.Abstractions.BuiltInEntities.Transaction.ReadOnly asOf)
         {
             var entries = Synchronizer.GetDiskStateForGameAsOf(metadata, TxId.From(asOf.Id.Value));;
             sb.AppendLine($"{sectionName} - ({entries.Count})");

@@ -12,8 +12,8 @@ namespace NexusMods.Abstractions.NexusModsLibrary.Attributes;
 public class RevisionIdAttribute(string ns, string name) : ScalarAttribute<RevisionId, ulong, UInt64Serializer>(ns, name)
 {
     /// <inheritdoc />
-    protected override ulong ToLowLevel(RevisionId value) => value.Value;
+    public override ulong ToLowLevel(RevisionId value) => value.Value;
 
     /// <inheritdoc />
-    protected override RevisionId FromLowLevel(ulong value, AttributeResolver resolver) => RevisionId.From(value);
+    public override RevisionId FromLowLevel(ulong value, AttributeResolver resolver) => RevisionId.From(value);
 }

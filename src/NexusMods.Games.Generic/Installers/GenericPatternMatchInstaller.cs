@@ -14,7 +14,7 @@ using NexusMods.Paths.Trees.Traits;
 
 namespace NexusMods.Games.Generic.Installers;
 
-using InstallDataTuple = (LoadoutItemGroup.New loadoutGroup, ITransaction transaction, Loadout.ReadOnly loadout);
+using InstallDataTuple = (LoadoutItemGroup.New loadoutGroup, Transaction transaction, Loadout.ReadOnly loadout);
 
 
 /// <summary>
@@ -36,7 +36,7 @@ public class GenericPatternMatchInstaller : ALibraryArchiveInstaller
     public override ValueTask<InstallerResult> ExecuteAsync(
         LibraryArchive.ReadOnly libraryArchive,
         LoadoutItemGroup.New loadoutGroup,
-        ITransaction transaction,
+        Transaction transaction,
         Loadout.ReadOnly loadout,
         CancellationToken cancellationToken)
     {
@@ -145,7 +145,7 @@ public class GenericPatternMatchInstaller : ALibraryArchiveInstaller
 
     protected virtual void GenerateFileItem(
         InstallFolderTarget target,
-        ITransaction transaction,
+        Transaction transaction,
         Loadout.ReadOnly loadout,
         RelativePath relativePath,
         LoadoutItemGroup.New loadoutGroup,

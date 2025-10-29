@@ -188,7 +188,7 @@ public sealed class LoginManager : IDisposable, ILoginManager
 
     private async ValueTask AddUserToDb(UserInfo userInfo)
     {
-        using var tx = _conn.BeginTransaction();
+        var tx = _conn.BeginTransaction();
 
         var existingDatoms = _conn.Db.Datoms(UserInDb.NexusId, userInfo.UserId.Value);
         Debug.Assert(existingDatoms.Count <= 1, "ID should be unique");
@@ -265,7 +265,7 @@ public sealed class LoginManager : IDisposable, ILoginManager
             return;
         }
         
-        using var tx = _conn.BeginTransaction();
+        var tx = _conn.BeginTransaction();
 
         var newTokenEntity = JWTToken.Create(_conn.Db, tx, jwtToken);
         if (!newTokenEntity.HasValue)
@@ -286,7 +286,7 @@ public sealed class LoginManager : IDisposable, ILoginManager
         var tokenEntities = JWTToken.All(_conn.Db).Select(e => e.Id).ToArray();
 
         // Retract the entities first, so the UI updates, then excise them
-        using var tx = _conn.BeginTransaction();
+        var tx = _conn.BeginTransaction();
         foreach (var entity in tokenEntities)
             tx.Delete(entity, false);
         await tx.Commit();

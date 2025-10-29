@@ -85,24 +85,12 @@ public partial class Loadout : IModelDefinition
             get
             {
                 var registry = Db.Connection.ServiceProvider.GetRequiredService<IGameRegistry>();
-                if (!registry.Installations.TryGetValue(Loadout.Installation.Get(this), out var gameInstallation))
+                if (!registry.Installations.TryGetValue(Loadout.Installation.GetFrom(this), out var gameInstallation))
                     throw new KeySelectorException($"Game installation of `{Installation.GameId}` at `{Installation.Path}` not found in registry!");
                 return gameInstallation;
             }
         }
-        
-        /// <summary>
-        /// Issue a new revision of this loadout into the transaction, this will increment the revision number
-        /// </summary>
-        public void Revise(ITransaction tx)
-        {
-            tx.Add(Id, static (innerTx, db, id) =>
-            {
-                var self = ReadOnly.Create(db, id);
-                innerTx.Add(id, Loadout.Revision, self.Revision + 1);
-            });
-        }
-        
+
         /// <summary>
         /// Get the loadout tx pair for this loadout.
         /// </summary>

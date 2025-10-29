@@ -14,7 +14,7 @@ namespace NexusMods.Abstractions.Loadouts.Attributes;
 public class LoadoutOrCollectionAttribute(string ns, string name) : ScalarAttribute<OneOf<LoadoutId, CollectionGroupId>, UInt128, UInt128Serializer>(ns, name) 
 {
     /// <inheritdoc />
-    protected override UInt128 ToLowLevel(OneOf<LoadoutId, CollectionGroupId> value)
+    public override UInt128 ToLowLevel(OneOf<LoadoutId, CollectionGroupId> value)
     {
         UInt128 entityID = value.Match(
             loadoutId => loadoutId.Value.Value,
@@ -24,7 +24,7 @@ public class LoadoutOrCollectionAttribute(string ns, string name) : ScalarAttrib
     }
 
     /// <inheritdoc />
-    protected override OneOf<LoadoutId, CollectionGroupId> FromLowLevel(UInt128 value, AttributeResolver resolver)
+    public override OneOf<LoadoutId, CollectionGroupId> FromLowLevel(UInt128 value, AttributeResolver resolver)
     {
         UInt128 mask = ulong.MaxValue;
         var entityId = (ulong)(value & mask);

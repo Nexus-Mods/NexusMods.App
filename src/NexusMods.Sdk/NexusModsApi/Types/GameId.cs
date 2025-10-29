@@ -21,8 +21,8 @@ public readonly partial struct GameId : IAugmentWith<DefaultValueAugment>, IAugm
 public class GameIdAttribute(string ns, string name) : ScalarAttribute<GameId, uint, UInt32Serializer>(ns, name)
 {
     /// <inheritdoc />
-    protected override uint ToLowLevel(GameId value) => value.Value;
+    public override uint ToLowLevel(GameId value) => value.Value;
 
     /// <inheritdoc />
-    protected override GameId FromLowLevel(uint value, AttributeResolver resolver) => GameId.From(value);
+    public override GameId FromLowLevel(uint value, AttributeResolver resolver) => GameId.From(value);
 }

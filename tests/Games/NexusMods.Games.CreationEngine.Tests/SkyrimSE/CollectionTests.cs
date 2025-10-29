@@ -63,7 +63,7 @@ public class CollectionTests(ITestOutputHelper outputHelper) : AIsolatedGameTest
         {
             foreach (var file in mod.Children.OfTypeLoadoutItemWithTargetPath().OfTypeLoadoutFile())
             {
-                collectionFiles.Add((mod.AsLoadoutItem().Name, file.AsLoadoutItemWithTargetPath().TargetPath, file.Hash, file.Size, mod.Children.Count));
+                collectionFiles.Add((mod.AsLoadoutItem().Name, file.AsLoadoutItemWithTargetPath().TargetPath, file.Hash, file.Size, mod.Children.Count()));
             }
         }
         

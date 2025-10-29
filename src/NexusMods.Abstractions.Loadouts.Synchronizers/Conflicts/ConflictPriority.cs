@@ -21,7 +21,7 @@ public class ConflictPriorityAttribute : ScalarAttribute<ConflictPriority, ulong
 {
     public ConflictPriorityAttribute(string ns, string name) : base(ns, name) { }
 
-    protected override ulong ToLowLevel(ConflictPriority value) => value.Value;
+    public override ulong ToLowLevel(ConflictPriority value) => value.Value;
 
-    protected override ConflictPriority FromLowLevel(ulong value, AttributeResolver resolver) => ConflictPriority.From(value);
+    public override ConflictPriority FromLowLevel(ulong value, AttributeResolver resolver) => ConflictPriority.From(value);
 }

@@ -9,7 +9,7 @@ using StrawberryShake;
 
 namespace NexusMods.DataModel.SchemaVersions.Migrations;
 
-internal class _0008_AddCollectionId : ITransactionalMigration
+internal class _0008_AddCollectionId : TransactionalMigration
 {
     public static (MigrationId Id, string Name) IdAndName => MigrationId.ParseNameAndId(nameof(_0008_AddCollectionId));
 
@@ -66,7 +66,7 @@ internal class _0008_AddCollectionId : ITransactionalMigration
         }
     }
 
-    public void Migrate(ITransaction tx, IDb db)
+    public void Migrate(Transaction tx, IDb db)
     {
         foreach (var tuple in _entitiesToUpdate)
         {

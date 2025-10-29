@@ -15,7 +15,6 @@ using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.UI.Sdk.Icons;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
-using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 using ObservableCollections;
 using R3;
 using ReactiveUI;

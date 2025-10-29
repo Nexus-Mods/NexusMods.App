@@ -26,9 +26,9 @@ public class TestsFor_0004_RemoveGameFiles(ITestOutputHelper helper) : ALegacyDa
             loadout.Contains(Loadout.GameVersion).Should().BeTrue("Loadout should contain GameVersion");
         }
 
-        var gameGroupAttrs = db.AttributeCache.AllAttributeIds
+        var gameGroupAttrs = db.AttributeResolver.AttributeCache.AllAttributeIds
             .Where(sym => sym.Namespace == "NexusMods.Loadouts.LoadoutGameFilesGroup")
-            .Select(sym => (sym, db.AttributeCache.GetAttributeId(sym)))
+            .Select(sym => (sym, db.AttributeResolver.AttributeCache[sym]))
             .ToArray();
         
         foreach (var (sym, attrId) in gameGroupAttrs)

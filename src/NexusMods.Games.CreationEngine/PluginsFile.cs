@@ -127,7 +127,7 @@ public class PluginsFile : IIntrinsicFile
     
 
 
-    public Task Ingest(Stream stream, Loadout.ReadOnly loadout, Dictionary<GamePath, SyncNode> syncTree, ITransaction tx)
+    public Task Ingest(Stream stream, Loadout.ReadOnly loadout, Dictionary<GamePath, SyncNode> syncTree, Transaction tx)
     {
         // TODO: Implement once we have sorting
         return Task.CompletedTask;

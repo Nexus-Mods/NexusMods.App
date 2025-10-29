@@ -11,8 +11,8 @@ namespace NexusMods.Sdk.Hashes;
 public class HashAttribute(string ns, string name) : ScalarAttribute<Hash, ulong, UInt64Serializer>(ns, name)
 {
     /// <inheritdoc />
-    protected override ulong ToLowLevel(Hash value) => value.Value;
+    public override ulong ToLowLevel(Hash value) => value.Value;
 
     /// <inheritdoc />
-    protected override Hash FromLowLevel(ulong value, AttributeResolver resolver) => Hash.From(value);
+    public override Hash FromLowLevel(ulong value, AttributeResolver resolver) => Hash.From(value);
 }

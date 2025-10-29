@@ -258,7 +258,7 @@ public class IgnoreModUpdateFilterTests(IConnection connection)
 
     private async Task<NexusModsFileMetadata.ReadOnly> CreateFileMetadataAsync(ulong fileId)
     {
-        using var tx = connection.BeginTransaction();
+        var tx = connection.BeginTransaction();
 
         var metadata = new NexusModsFileMetadata.New(tx)
         {

@@ -57,7 +57,7 @@ public class CollectionLeftMenuItemViewModel : LeftMenuItemViewModel, ILeftMenuI
         
         ToggleIsEnabledCommand = ReactiveCommand.CreateFromTask(async () =>
         {
-            using var tx = _connection.BeginTransaction();
+            var tx = _connection.BeginTransaction();
             
             if (IsEnabled)
             {

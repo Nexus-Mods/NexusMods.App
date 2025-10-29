@@ -43,7 +43,7 @@ public class BLSEInstaller : ALibraryArchiveInstaller
 
     /// <inheritdoc/>
     public override ValueTask<InstallerResult> ExecuteAsync(
-        LibraryArchive.ReadOnly libraryArchive, LoadoutItemGroup.New loadoutGroup, ITransaction transaction, Loadout.ReadOnly loadout, CancellationToken cancellationToken)
+        LibraryArchive.ReadOnly libraryArchive, LoadoutItemGroup.New loadoutGroup, Transaction transaction, Loadout.ReadOnly loadout, CancellationToken cancellationToken)
     {
         const string launcherFileName = "Bannerlord.BLSE.Launcher.exe";
         

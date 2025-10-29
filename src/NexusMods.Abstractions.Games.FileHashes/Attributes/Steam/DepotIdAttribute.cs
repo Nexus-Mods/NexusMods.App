@@ -10,12 +10,12 @@ namespace NexusMods.Abstractions.Games.FileHashes.Attributes.Steam;
 /// </summary>
 public class DepotIdAttribute(string ns, string name) : ScalarAttribute<DepotId, uint, UInt32Serializer>(ns, name)
 {
-    protected override uint ToLowLevel(DepotId value)
+    public override uint ToLowLevel(DepotId value)
     {
         return value.Value;
     }
 
-    protected override DepotId FromLowLevel(uint value, AttributeResolver resolver)
+    public override DepotId FromLowLevel(uint value, AttributeResolver resolver)
     {
         return DepotId.From(value);
     }

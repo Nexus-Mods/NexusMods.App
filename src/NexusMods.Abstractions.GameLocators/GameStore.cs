@@ -63,8 +63,8 @@ public readonly partial struct GameStore
 public class GameStoreAttribute(string ns, string name) : ScalarAttribute<GameStore, string, AsciiSerializer>(ns, name)
 {
     /// <inheritdoc />
-    protected override string ToLowLevel(GameStore value) => value.Value;
+    public override string ToLowLevel(GameStore value) => value.Value;
 
     /// <inheritdoc />
-    protected override GameStore FromLowLevel(string value, AttributeResolver resolver) => GameStore.From(value);
+    public override GameStore FromLowLevel(string value, AttributeResolver resolver) => GameStore.From(value);
 }

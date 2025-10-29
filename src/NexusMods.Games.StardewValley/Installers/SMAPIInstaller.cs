@@ -46,7 +46,7 @@ public class SMAPIInstaller : ALibraryArchiveInstaller
     public override async ValueTask<InstallerResult> ExecuteAsync(
         LibraryArchive.ReadOnly libraryArchive,
         LoadoutItemGroup.New loadoutGroup,
-        ITransaction transaction,
+        Transaction transaction,
         Loadout.ReadOnly loadout,
         CancellationToken cancellationToken)
     {
@@ -197,7 +197,7 @@ public class SMAPIInstaller : ALibraryArchiveInstaller
         _ = new SMAPILoadoutItem.New(transaction, loadoutGroup.Id)
         {
             LoadoutItemGroup = loadoutGroup,
-            Version = version.ValueOrDefault(),
+            Version = version.ValueOrDefault()!,
             ModDatabaseId = modDatabaseEntityId.ValueOrDefault(),
         };
 

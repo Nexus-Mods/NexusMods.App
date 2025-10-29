@@ -21,8 +21,8 @@ public readonly partial struct ModId : IAugmentWith<DefaultValueAugment>, IAugme
 public class ModIdAttribute(string ns, string name) : ScalarAttribute<ModId, uint, UInt32Serializer>(ns, name)
 {
     /// <inheritdoc />
-    protected override uint ToLowLevel(ModId value) => value.Value;
+    public override uint ToLowLevel(ModId value) => value.Value;
 
     /// <inheritdoc />
-    protected override ModId FromLowLevel(uint value, AttributeResolver resolver) => ModId.From(value);
+    public override ModId FromLowLevel(uint value, AttributeResolver resolver) => ModId.From(value);
 } 

@@ -106,8 +106,8 @@ public readonly struct FileUid : IEquatable<FileUid>
 public class FileUidAttribute(string ns, string name) : ScalarAttribute<FileUid, ulong, UInt64Serializer>(ns, name)
 {
     /// <inheritdoc />
-    protected override ulong ToLowLevel(FileUid value) => value.AsUlong;
+    public override ulong ToLowLevel(FileUid value) => value.AsUlong;
 
     /// <inheritdoc />
-    protected override FileUid FromLowLevel(ulong value, AttributeResolver resolver) => FileUid.FromUlong(value);
+    public override FileUid FromLowLevel(ulong value, AttributeResolver resolver) => FileUid.FromUlong(value);
 } 

@@ -10,12 +10,12 @@ namespace NexusMods.Abstractions.Games.FileHashes.Attributes.Gog;
 /// </summary>
 public class BuildIdAttribute(string ns, string name) : ScalarAttribute<BuildId, ulong, UInt64Serializer>(ns, name)
 {
-    protected override ulong ToLowLevel(BuildId value)
+    public override ulong ToLowLevel(BuildId value)
     {
         return value.Value;
     }
 
-    protected override BuildId FromLowLevel(ulong value, AttributeResolver resolver)
+    public override BuildId FromLowLevel(ulong value, AttributeResolver resolver)
     {
         return BuildId.From(value);
     }

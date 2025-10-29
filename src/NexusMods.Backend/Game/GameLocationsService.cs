@@ -113,7 +113,7 @@ internal class GameLocationsService : IGameLocationsService
     private static async ValueTask<Optional<Hash>> GetExistingHash(IDb hashesDb, AbsolutePath file, GamePath gamePath, CancellationToken cancellationToken)
     {
         var pathHashRelations = PathHashRelation.FindByPath(hashesDb, gamePath.Path);
-        if (pathHashRelations.Count == 0) return Optional<Hash>.None;
+        if (!pathHashRelations.Any()) return Optional<Hash>.None;
 
         var minimalHash = await GetMinimalHash(file, cancellationToken);
 

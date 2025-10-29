@@ -54,7 +54,7 @@ public class Cyberpunk2077DiagnosticTests(ITestOutputHelper outputHelper) : ACyb
         // Install the dependant but not the dependency
         {
             var filesToBackup = new List<ArchivedFileEntry>();
-            using var tx = Connection.BeginTransaction();
+            var tx = Connection.BeginTransaction();
             var pluginMod = AddEmptyGroup(tx, loadout, "PluginMod");
             foreach (var searchPattern in pattern.DependantSearchPatterns)
             {
@@ -80,7 +80,7 @@ public class Cyberpunk2077DiagnosticTests(ITestOutputHelper outputHelper) : ACyb
         
         // Install the dependency and the diagnostic should disappear
         {
-            using var tx = Connection.BeginTransaction();
+            var tx = Connection.BeginTransaction();
             var dependencyMod = AddEmptyGroup(tx, loadout, "DependencyMod");
             foreach (var dependencyPath in pattern.DependencyPaths)
             {
@@ -97,7 +97,7 @@ public class Cyberpunk2077DiagnosticTests(ITestOutputHelper outputHelper) : ACyb
         // Disable the dependency and the diagnostic should reappear
         {
             var dependencyMod = LoadoutItemGroup.Load(Connection.Db, loadout.Items.First(m => m.Name == "DependencyMod").Id);
-            using var tx = Connection.BeginTransaction();
+            var tx = Connection.BeginTransaction();
             tx.Add(dependencyMod, LoadoutItem.Disabled, Null.Instance);
             await tx.Commit();
         }

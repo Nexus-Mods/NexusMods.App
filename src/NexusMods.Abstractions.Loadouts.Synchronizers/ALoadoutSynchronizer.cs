@@ -5,7 +5,6 @@ using System.Runtime.InteropServices;
 using System.Text;
 using CommunityToolkit.HighPerformance.Buffers;
 using DynamicData.Kernel;
-using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
@@ -15,9 +14,7 @@ using NexusMods.Abstractions.Loadouts.Files.Diff;
 using NexusMods.Abstractions.Loadouts.Sorting;
 using NexusMods.Abstractions.Loadouts.Synchronizers.Rules;
 using NexusMods.Hashing.xxHash3;
-using NexusMods.HyperDuck;
 using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 using NexusMods.MnemonicDB.Abstractions.Query;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Paths;
@@ -25,12 +22,11 @@ using NexusMods.Sdk;
 using NexusMods.Sdk.FileStore;
 using NexusMods.Sdk.IO;
 using NexusMods.Sdk.Jobs;
-using OneOf;
 using Reloaded.Memory.Extensions;
 
 namespace NexusMods.Abstractions.Loadouts.Synchronizers;
 
-using DiskState = Entities<DiskStateEntry.ReadOnly>;
+using DiskState = IEnumerable<DiskStateEntry.ReadOnly>;
 
 /// <summary>
 /// Base class for loadout synchronizers, provides some common functionality. Does not have to be user,
@@ -174,7 +170,7 @@ public partial class ALoadoutSynchronizer : ILoadoutSynchronizer
     /// <summary>
     /// Gets or creates the override group.
     /// </summary>
-    protected LoadoutOverridesGroupId GetOrCreateOverridesGroup(ITransaction tx, Loadout.ReadOnly loadout)
+    protected LoadoutOverridesGroupId GetOrCreateOverridesGroup(Transaction tx, Loadout.ReadOnly loadout)
     {
         if (LoadoutOverridesGroup.FindByOverridesFor(loadout.Db, loadout.Id).TryGetFirst(out var found))
             return found;
@@ -315,11 +311,12 @@ public partial class ALoadoutSynchronizer : ILoadoutSynchronizer
     {
         var db = metadata.Db;
         var pairs = new List<PathPartPair>();
-        var mainAttrId = db.AttributeCache.GetAttributeId(DiskStateEntry.GameId.Id);
-        var pathAttrId = db.AttributeCache.GetAttributeId(DiskStateEntry.Path.Id);
-        var hashAttrId = db.AttributeCache.GetAttributeId(DiskStateEntry.Hash.Id);
-        var sizeAttrId = db.AttributeCache.GetAttributeId(DiskStateEntry.Size.Id);
-        var lastModifiedAttrId = db.AttributeCache.GetAttributeId(DiskStateEntry.LastModified.Id);
+        var attrCache = db.AttributeResolver.AttributeCache;
+        var mainAttrId = attrCache[DiskStateEntry.GameId];
+        var pathAttrId = attrCache[DiskStateEntry.Path];
+        var hashAttrId = attrCache[DiskStateEntry.Hash];
+        var sizeAttrId = attrCache[DiskStateEntry.Size];
+        var lastModifiedAttrId = attrCache[DiskStateEntry.LastModified];
         
         // We start with a single reference iterator, that points to the game data we are trying to access
         // Since this data will return results sorted by E (entry Id) we can merge join to any other data 
@@ -336,10 +333,10 @@ public partial class ALoadoutSynchronizer : ILoadoutSynchronizer
         while (iterator.MoveNext())
         {
             // Fast-forward the other iterators to the same entry
-            pathIterator.FastForwardTo(iterator.KeyPrefix.E);
-            hashIterator.FastForwardTo(iterator.KeyPrefix.E);
-            sizeIterator.FastForwardTo(iterator.KeyPrefix.E);
-            lastModifiedIterator.FastForwardTo(iterator.KeyPrefix.E);
+            pathIterator.FastForwardTo(iterator.E);
+            hashIterator.FastForwardTo(iterator.E);
+            sizeIterator.FastForwardTo(iterator.E);
+            lastModifiedIterator.FastForwardTo(iterator.E);
             
             // Get the location id for the path
             var locationId = MemoryMarshal.Read<LocationId>(pathIterator.ValueSpan.SliceFast(sizeof(EntityId)));
@@ -354,7 +351,7 @@ public partial class ALoadoutSynchronizer : ILoadoutSynchronizer
                 Path = gamePath,
                 Part = new SyncNodePart
                 {
-                    EntityId = iterator.KeyPrefix.E,
+                    EntityId = iterator.E,
                     Hash = MemoryMarshal.Read<Hash>(hashIterator.ValueSpan),
                     Size = MemoryMarshal.Read<Size>(sizeIterator.ValueSpan),
                     LastModifiedTicks = MemoryMarshal.Read<long>(lastModifiedIterator.ValueSpan),
@@ -418,7 +415,7 @@ public partial class ALoadoutSynchronizer : ILoadoutSynchronizer
     public async Task<Loadout.ReadOnly> RunActions(Dictionary<GamePath, SyncNode> syncTree, Loadout.ReadOnly loadout, SynchronizeLoadoutJob? job = null)
     {
         using var _ = await _lock.LockAsync();
-        using var tx = Connection.BeginTransaction();
+        var tx = Connection.BeginTransaction();
         var gameMetadataId = loadout.InstallationInstance.GameMetadataId;
         var register = loadout.InstallationInstance.LocationsRegister;
         HashSet<GamePath> foldersWithDeletedFiles = [];
@@ -503,7 +500,7 @@ public partial class ALoadoutSynchronizer : ILoadoutSynchronizer
         return loadout;
     }
 
-    private async Task ActionWriteIntrinsics(Dictionary<GamePath, SyncNode> syncTree, IGameLocationsRegister register, IMainTransaction tx, Loadout.ReadOnly loadout, SynchronizeLoadoutJob? job)
+    private async Task ActionWriteIntrinsics(Dictionary<GamePath, SyncNode> syncTree, IGameLocationsRegister register, MainTransaction tx, Loadout.ReadOnly loadout, SynchronizeLoadoutJob? job)
     {
         var intrinsicFiles = IntrinsicFiles(loadout);
         foreach (var (path, node) in syncTree)
@@ -520,7 +517,7 @@ public partial class ALoadoutSynchronizer : ILoadoutSynchronizer
         }
     }
 
-    private async Task AdaptLoadout(Dictionary<GamePath, SyncNode> syncTree, IGameLocationsRegister register, Loadout.ReadOnly loadout, IMainTransaction tx)
+    private async Task AdaptLoadout(Dictionary<GamePath, SyncNode> syncTree, IGameLocationsRegister register, Loadout.ReadOnly loadout, MainTransaction tx)
     {
         var intrinsicFiles = IntrinsicFiles(loadout);
         foreach (var (path, node) in syncTree)
@@ -571,7 +568,7 @@ public partial class ALoadoutSynchronizer : ILoadoutSynchronizer
             Logger.LogInformation("Locator IDs changed Current=`{CurrentIds}` ToAdd=`{ToAdd}` ToRemove=`{ToRemove}`", sCurrent, sToAdd, sToRemove);
         }
 
-        using var tx = Connection.BeginTransaction();
+        var tx = Connection.BeginTransaction();
 
         if (_fileHashService.TryGetVanityVersion((gameLocatorResult.Store, newLocatorIds), out var vanityVersion))
         {
@@ -611,7 +608,7 @@ public partial class ALoadoutSynchronizer : ILoadoutSynchronizer
         if (!toDelete.Any())
             return loadout;
 
-        using var tx = Connection.BeginTransaction();
+        var tx = Connection.BeginTransaction();
         var gameMetadataId = loadout.InstallationInstance.GameMetadataId;
 
         // Delete all the matching override files
@@ -643,7 +640,7 @@ public partial class ALoadoutSynchronizer : ILoadoutSynchronizer
     public async Task RunActions(Dictionary<GamePath, SyncNode> syncTree, GameInstallation gameInstallation)
     {
         using var _ = await _lock.LockAsync();
-        using var tx = Connection.BeginTransaction();
+        var tx = Connection.BeginTransaction();
         var gameMetadataId = gameInstallation.GameMetadataId;
         var gameMetadata = GameInstallMetadata.Load(Connection.Db, gameMetadataId);
         var register = gameInstallation.LocationsRegister;
@@ -740,7 +737,7 @@ public partial class ALoadoutSynchronizer : ILoadoutSynchronizer
         }
     }
 
-    private void ActionAddReifiedDelete(Dictionary<GamePath, SyncNode> groupings, Loadout.ReadOnly loadout, ITransaction tx, ref EntityId? overridesGroup)
+    private void ActionAddReifiedDelete(Dictionary<GamePath, SyncNode> groupings, Loadout.ReadOnly loadout, Transaction tx, ref EntityId? overridesGroup)
     {
 
         foreach (var (path, node) in groupings)
@@ -788,7 +785,7 @@ public partial class ALoadoutSynchronizer : ILoadoutSynchronizer
         }
     }
 
-    private async Task ActionExtractToDisk(Dictionary<GamePath, SyncNode> groupings, IGameLocationsRegister register, ITransaction tx, EntityId gameMetadataId, SynchronizeLoadoutJob? job = null)
+    private async Task ActionExtractToDisk(Dictionary<GamePath, SyncNode> groupings, IGameLocationsRegister register, Transaction tx, EntityId gameMetadataId, SynchronizeLoadoutJob? job = null)
     {
         List<(Hash Hash, AbsolutePath Path)> toExtract = [];
         
@@ -865,7 +862,7 @@ public partial class ALoadoutSynchronizer : ILoadoutSynchronizer
     private void ActionDeleteFromDisk(
         Dictionary<GamePath, SyncNode> groupings,
         IGameLocationsRegister register,
-        ITransaction tx,
+        Transaction tx,
         GameInstallMetadataId gameMetadataId,
         HashSet<GamePath> foldersWithDeletedFiles,
         SynchronizeLoadoutJob? job = null)
@@ -910,7 +907,7 @@ public partial class ALoadoutSynchronizer : ILoadoutSynchronizer
         public required LoadoutFile.New LoadoutFileEntry { get; init; }
     }
 
-    private bool ActionIngestFromDisk(Dictionary<GamePath, SyncNode> syncTree, Loadout.ReadOnly loadout, ITransaction tx, ref EntityId? overridesGroupId)
+    private bool ActionIngestFromDisk(Dictionary<GamePath, SyncNode> syncTree, Loadout.ReadOnly loadout, Transaction tx, ref EntityId? overridesGroupId)
     {
         overridesGroupId ??= GetOrCreateOverridesGroup(tx, loadout);
         var newGroup = true;
@@ -1191,7 +1188,7 @@ public partial class ALoadoutSynchronizer : ILoadoutSynchronizer
         await _fileStore.BackupFiles(archivedFiles, deduplicate: false);
 
         // Pin the files to avoid garbage collection.
-        using var tx = Connection.BeginTransaction();
+        var tx = Connection.BeginTransaction();
         foreach (var hash in pinnedFileHashes)
         {
             _ = new GameBackedUpFile.New(tx)
@@ -1210,7 +1207,7 @@ public partial class ALoadoutSynchronizer : ILoadoutSynchronizer
     {        
         using var _ = await _lock.LockAsync();
         var originalMetadata = installation.GetMetadata(Connection);
-        using var tx = Connection.BeginTransaction();
+        var tx = Connection.BeginTransaction();
 
         // Index the state
         var changed = await ReindexState(installation, tx);
@@ -1234,7 +1231,7 @@ public partial class ALoadoutSynchronizer : ILoadoutSynchronizer
     private FrozenDictionary<GamePath, DiskStateEntry.ReadOnly> GetDiskState(GameInstallMetadata.ReadOnly gameInstallMetadata)
     {
         var entities = gameInstallMetadata.DiskStateEntries;
-        var result = new Dictionary<GamePath, DiskStateEntry.ReadOnly>(capacity: entities.Count);
+        var result = new Dictionary<GamePath, DiskStateEntry.ReadOnly>();
 
         foreach (var entity in entities)
         {
@@ -1254,7 +1251,7 @@ public partial class ALoadoutSynchronizer : ILoadoutSynchronizer
     /// <summary>
     /// Reindex the state of the game
     /// </summary>
-    public async Task<bool> ReindexState(GameInstallation installation, ITransaction tx)
+    public async Task<bool> ReindexState(GameInstallation installation, Transaction tx)
     {
         var gameInstallMetadata = GameInstallMetadata.Load(Connection.Db, installation.GameMetadataId);
         var previousState = GetDiskState(gameInstallMetadata);
@@ -1320,7 +1317,7 @@ public partial class ALoadoutSynchronizer : ILoadoutSynchronizer
         await RunActions(tree, loadout);
     }
 
-    private LoadoutGameFilesGroup.New CreateLoadoutGameFilesGroup(LoadoutId loadout, GameInstallation installation, ITransaction tx)
+    private LoadoutGameFilesGroup.New CreateLoadoutGameFilesGroup(LoadoutId loadout, GameInstallation installation, Transaction tx)
     {
         return new LoadoutGameFilesGroup.New(tx, out var id)
         {

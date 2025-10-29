@@ -6,7 +6,7 @@ using NexusMods.MnemonicDB.Abstractions;
 
 namespace NexusMods.DataModel.SchemaVersions.Migrations;
 
-public class _0009_AddLoadoutItemGroupPriority : ITransactionalMigration
+public class _0009_AddLoadoutItemGroupPriority : TransactionalMigration
 {
     public static (MigrationId Id, string Name) IdAndName => MigrationId.ParseNameAndId(nameof(_0009_AddLoadoutItemGroupPriority));
 
@@ -34,7 +34,7 @@ public class _0009_AddLoadoutItemGroupPriority : ITransactionalMigration
         return Task.CompletedTask;
     }
 
-    public void Migrate(ITransaction tx, IDb db)
+    public void Migrate(Transaction tx, IDb db)
     {
         foreach (var kv in _loadouts)
         {

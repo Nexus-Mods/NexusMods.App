@@ -10,12 +10,12 @@ namespace NexusMods.Abstractions.Games.FileHashes.Attributes.Gog;
 /// </summary>
 public class ProductIdAttribute(string ns, string name) : ScalarAttribute<ProductId, ulong, UInt64Serializer>(ns, name)
 {
-    protected override ulong ToLowLevel(ProductId value)
+    public override ulong ToLowLevel(ProductId value)
     {
         return value.Value;
     }
 
-    protected override ProductId FromLowLevel(ulong value, AttributeResolver resolver)
+    public override ProductId FromLowLevel(ulong value, AttributeResolver resolver)
     {
         return ProductId.From(value);
     }

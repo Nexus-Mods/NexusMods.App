@@ -51,7 +51,7 @@ public class RedModSortOrderVariety : ASortOrderVariety<
         
         token.ThrowIfCancellationRequested();
         
-        using var ts = Connection.BeginTransaction();
+        var ts = Connection.BeginTransaction();
         var newSortOrder = new Abstractions.Loadouts.SortOrder.New(ts)
         {
             LoadoutId = loadoutId,
@@ -198,7 +198,7 @@ public class RedModSortOrderVariety : ASortOrderVariety<
     protected override void PersistSortOrderCore(
         SortOrderId sortOrderId,
         IReadOnlyList<SortItemData<SortItemKey<string>>> newOrder,
-        ITransaction tx,
+        Transaction tx,
         IDb startingDb,
         CancellationToken token = default)
     {

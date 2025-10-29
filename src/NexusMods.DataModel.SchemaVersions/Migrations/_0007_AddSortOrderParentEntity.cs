@@ -8,7 +8,7 @@ namespace NexusMods.DataModel.SchemaVersions.Migrations;
 /// <summary>
 /// Adds the ParentEntity attribute to all SortOrder entities, setting it to the Loadout's EntityId.
 /// </summary>
-internal class _0007_AddSortOrderParentEntity : ITransactionalMigration
+internal class _0007_AddSortOrderParentEntity : TransactionalMigration
 {
     public static (MigrationId Id, string Name) IdAndName { get; } = MigrationId.ParseNameAndId(nameof(_0007_AddSortOrderParentEntity));
     
@@ -20,10 +20,10 @@ internal class _0007_AddSortOrderParentEntity : ITransactionalMigration
         // Select all SortOrder entities that do not yet have the ParentEntity attribute
         _sortOrdersToUpdate = db.Datoms(SortOrder.LoadoutId)
             .Resolved(db.Connection)
-            .OfType<ReferenceAttribute<Loadout>.ReadDatom>()
+            .Where(datom => datom.A is ReferenceAttribute<Loadout>)
             .Select(datom =>
                 {
-                    return (datom.E, datom.V);
+                    return (datom.E, (EntityId)datom.V);
                 }
             ).ToArray();
 
@@ -31,7 +31,7 @@ internal class _0007_AddSortOrderParentEntity : ITransactionalMigration
     }
 
     /// <inheritdoc />
-    public void Migrate(ITransaction tx, IDb db)
+    public void Migrate(Transaction tx, IDb db)
     {
         foreach (var (sortOrderId, loadoutId) in _sortOrdersToUpdate)
         {

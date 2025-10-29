@@ -15,8 +15,8 @@ public class TestsFor_0001_ConvertTimestamps(ITestOutputHelper helper) : ALegacy
 
         var txTimes = tempConnection.Connection.Db.Datoms(Transaction.Timestamp)
             .Resolved(tempConnection.Connection)
-            .OfType<TimestampAttribute.ReadDatom>()
-            .Select(d => d.V.Year)
+            .Where(d => d.A == Transaction.Timestamp)
+            .Select(d => ((DateTimeOffset)d.V).Year)
             .ToArray();
         
         txTimes.Should().NotBeEmpty();

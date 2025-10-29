@@ -11,8 +11,8 @@ namespace NexusMods.Abstractions.NexusModsLibrary.Attributes;
 public class CollectionIdAttribute(string ns, string name) : ScalarAttribute<CollectionId, ulong, UInt64Serializer>(ns, name)
 {
     /// <inheritdoc />
-    protected override ulong ToLowLevel(CollectionId value) => value.Value;
+    public override ulong ToLowLevel(CollectionId value) => value.Value;
 
     /// <inheritdoc />
-    protected override CollectionId FromLowLevel(ulong value, AttributeResolver resolver) => CollectionId.From(value);
+    public override CollectionId FromLowLevel(ulong value, AttributeResolver resolver) => CollectionId.From(value);
 }
