@@ -1182,7 +1182,7 @@ Keep the downloaded files in your library in case you want to retry the installa
         <value>Delete</value>
     </data>
     <data name="CollectionDeleteConfirmation_Message" xml:space="preserve">
-        <value>Are you sure you want to delete '{0}'? This action cannot be undone.</value>
+        <value>Are you sure you want to delete '{0}'?</value>
     </data>
     <data name="ToastNotification_Settings_saved" xml:space="preserve">
         <value>Settings saved</value>
@@ -1275,9 +1275,7 @@ Keep the downloaded files in your library in case you want to retry the installa
         <value>Delete Collection</value>
     </data>
     <data name="Loadout_DeleteCollection_Confirmation_Message" xml:space="preserve">
-        <value>Are you sure you want to delete '{0}'?
-
-This action cannot be undone.</value>
+        <value>Are you sure you want to delete '{0}'?</value>
     </data>
     <data name="Loadout_DeleteCollection_Confirmation_Cancel" xml:space="preserve">
         <value>Cancel</value>
