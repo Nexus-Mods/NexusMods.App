@@ -1,4 +1,5 @@
 -- namespace: NexusMods.Games.RedEngine.Cyberpunk2077.SortOrder
+-- requires: NexusMods.DataModel.Synchronizer
 
 CREATE SCHEMA IF NOT EXISTS redmod;
 

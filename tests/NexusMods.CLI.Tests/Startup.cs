@@ -10,11 +10,13 @@ using NexusMods.DataModel;
 using NexusMods.FileExtractor;
 using NexusMods.Games.FileHashes;
 using NexusMods.Library;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.HttpDownloader.Tests;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Paths;
 using NexusMods.Sdk;
+using NexusMods.Sdk.FileStore;
 using NexusMods.Sdk.Settings;
 using NexusMods.SingleProcess;
 using NexusMods.StandardGameLocators;
@@ -62,6 +64,18 @@ public class Startup
                 .AddLogging(builder => builder.AddXunitOutput().SetMinimumLevel(LogLevel.Trace))
                 .AddSingleton<LocalHttpServer>()
                 .AddLogging(builder => builder.AddXUnit())
+                .AddSingleton<IConnection>(s =>
+                    {
+                        var settingsManager = s.GetRequiredService<ISettingsManager>();
+                        var settings = settingsManager.Get<DataModelSettings>();
+                        var fileSystem = s.GetRequiredService<IFileSystem>();
+                        var storeSettings = new DatomStoreSettings()
+                        {
+                            Path = settings.UseInMemoryDataModel ? null : settings.MnemonicDBPath.ToPath(fileSystem)
+                        };
+                        return s.GetRequiredService<IConnectionFactory>().Create(s, storeSettings);
+                    }
+                )
                 .Validate();
     }
 }

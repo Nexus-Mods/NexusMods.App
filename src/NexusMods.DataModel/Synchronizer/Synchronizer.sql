@@ -1,4 +1,5 @@
 -- namespace: NexusMods.DataModel.Synchronizer
+-- requires: NexusMods.Games.FileHashes
 CREATE SCHEMA IF NOT EXISTS synchronizer;
 
 -- The sources of items in the loadout.
