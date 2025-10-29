@@ -35,6 +35,8 @@ public class SortTests
         };
 
         var act = () => new Sorter().Sort(items, x => x.Id, x => x.Rules).ToArray();
+
+        // NOTE(erri120): This is completely misleading but that's the exception we currently get for missing items
         act.Should().Throw<InvalidOperationException>().WithMessage("Cyclic dependency detected");
     }
 

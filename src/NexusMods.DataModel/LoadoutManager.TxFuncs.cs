@@ -1,4 +1,3 @@
-using System.Collections.Frozen;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using DynamicData.Kernel;
@@ -172,7 +171,7 @@ internal partial class LoadoutManager
                 var index = priorities.FindIndex(priority => priority.TargetId.Value == itemId);
                 if (index == -1)
                 {
-                    // TODO: fix items not getting a priority because they don't go through the loadout manager
+                    // TODO: add new priority, blocked on tx rework
                     continue;
                 }
 
