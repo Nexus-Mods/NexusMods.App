@@ -28,7 +28,7 @@ using NexusMods.App.UI.Overlays;
 using NexusMods.App.UI.Pages.Library;
 using NexusMods.App.UI.Pages.LibraryPage.Collections;
 using NexusMods.App.UI.Resources;
-using NexusMods.App.UI.Resources;
+using NexusMods.App.UI.Settings;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Collections;
@@ -129,7 +129,19 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         var loadout = Loadout.Load(_connection.Db, loadoutId);
         var libraryFilter = new LibraryFilter(loadout, loadout.InstallationInstance.Game);
 
-        Adapter = new LibraryTreeDataGridAdapter(serviceProvider, libraryFilter);
+        var sortingOptions = new TreeDataGridSortingOptions()
+        {
+            UseSortingStatePersistence = true,
+            DefaultSortingState = new TreeDataGridSortingStateSettings()
+            {
+                SortedColumnKey = LibraryColumns.ItemVersion.ColumnTemplateResourceKey,
+                SortDirection = ListSortDirection.Descending,
+                SchemaRevision = 3,
+            },
+            SettingsScopeKey = $"{nameof(LibraryTreeDataGridAdapter)}_{libraryFilter.Game.GameId}_{libraryFilter.LoadoutId}",
+        };
+        
+        Adapter = new LibraryTreeDataGridAdapter(serviceProvider, libraryFilter, sortingOptions);
 
         _advancedInstaller = serviceProvider.GetRequiredKeyedService<ILibraryItemInstaller>("AdvancedManualInstaller_Direct");
 
@@ -1076,12 +1088,11 @@ public class LibraryTreeDataGridAdapter :
 
     public Subject<OneOf<InstallMessage, UpdateAndReplaceMessage, UpdateAndKeepOldMessage, ViewChangelogMessage, ViewModPageMessage, HideUpdatesMessage, DeleteItemMessage>> MessageSubject { get; } = new();
 
-    public LibraryTreeDataGridAdapter(IServiceProvider serviceProvider, LibraryFilter libraryFilter) : base(serviceProvider)
+    public LibraryTreeDataGridAdapter(IServiceProvider serviceProvider, LibraryFilter libraryFilter, TreeDataGridSortingOptions sortingOptions) : base(serviceProvider, sortingOptions)
     {
         _libraryFilter = libraryFilter;
         _libraryDataProviders = serviceProvider.GetServices<ILibraryDataProvider>().ToArray();
         _connection = serviceProvider.GetRequiredService<IConnection>();
-        SettingsScopeKey = $"{libraryFilter.Game.Name}_{libraryFilter.LoadoutId}";
     }
 
     protected override IObservable<IChangeSet<CompositeItemModel<EntityId>, EntityId>> GetRootsObservable(bool viewHierarchical)
