@@ -1,4 +1,4 @@
-﻿using System.Collections.Immutable;
+﻿using NexusMods.Sdk.Hashes;
 using TransparentValueObjects;
 
 namespace NexusMods.Abstractions.GameLocators;
@@ -9,39 +9,16 @@ namespace NexusMods.Abstractions.GameLocators;
 [ValueObject<ushort>]
 public readonly partial struct LocationId
 {
-    private static ImmutableDictionary<ushort, string> _cache = ImmutableDictionary<ushort, string>.Empty;
-    
+    private static readonly FNV1a16Pool HashPool = new(name: nameof(LocationId));
+
     /// <summary>
-    /// Converts the string to a LocationId, if the string is not already interned it will be added to the cache, if a hash collision is
-    /// detected (highly unlikely) an exception will be thrown.
+    /// Converts the string to a LocationId.
     /// </summary>
-    /// <param name="value"></param>
-    /// <returns></returns>
-    /// <exception cref="InvalidOperationException"></exception>
-    public static LocationId From(string value)
-    {
-        var mixed = FNV1aHash.MixToShort(FNV1aHash.Hash(value));
-        if (_cache.TryGetValue(mixed, out var existing))
-        {
-            if (existing != value)
-            {
-                throw new InvalidOperationException($"Hash collision detected for '{value}' and '{existing}'");
-            }
-            return From(mixed);
-        }
-        
-        while (true)
-        {
-            var newCache = _cache.Add(mixed, value);
-            if (ReferenceEquals(Interlocked.CompareExchange(ref _cache, newCache, _cache), _cache))
-                break;
-        }
-        return From(mixed);
-    }
+    public static LocationId From(string value) => From(HashPool.GetOrAdd(value));
 
     /// <inheritdoc />
-    public override string ToString() => _cache[Value];
-    
+    public override string ToString() => HashPool[Value];
+
     /// <summary>
     /// Unknown game folder type, used for default values.
     /// </summary>
