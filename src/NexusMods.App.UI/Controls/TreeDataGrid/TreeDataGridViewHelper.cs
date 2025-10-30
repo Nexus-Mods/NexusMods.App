@@ -17,8 +17,7 @@ public static class TreeDataGridViewHelper
         TView view,
         Avalonia.Controls.TreeDataGrid treeDataGrid,
         Func<TViewModel, TreeDataGridAdapter<TItemModel, TKey>> getAdapter,
-        bool enableDragAndDrop = false,
-        bool persistState = false)
+        bool enableDragAndDrop = false)
         where TView : ReactiveUserControl<TViewModel>
         where TViewModel : class, IViewModelInterface
         where TItemModel : class, ITreeDataGridItemModel<TItemModel, TKey>
@@ -91,18 +90,20 @@ public static class TreeDataGridViewHelper
                 .AddTo(disposables);
             
             // Persist treeDataGrid state on deactivation
-            Disposable.Create((view, treeDataGrid, getAdapter, persistState),
+            Disposable.Create((view, treeDataGrid, getAdapter),
                 static input =>
                 {
-                    if (!input.persistState) return;
                     
                     var adapter = input.getAdapter(input.view.ViewModel!);
+                    if (!adapter.SortingOptions.UseSortingStatePersistence)
+                        return;
                     var sortingState = GetSortingState(input.treeDataGrid);
                     if (sortingState is not null)
                     {
                         adapter.PersistSortingState(sortingState);
                     }
-                });
+                })
+                .AddTo(disposables);
         });
     }
     

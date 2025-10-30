@@ -41,6 +41,7 @@ public interface ICompositeColumnDefinition<TSelf>
         )
         {
             Id = TSelf.GetColumnId(),
+            Tag = TSelf.GetColumnId(),
             SortDirection = sortDirection.HasValue ? sortDirection.Value : null,
         };
     }
