@@ -1,7 +1,5 @@
-using System.Buffers;
 using System.IO.Hashing;
 using System.Runtime.InteropServices;
-using System.Security.Cryptography;
 using JetBrains.Annotations;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.Paths;
@@ -19,81 +17,73 @@ public static class MultiHasher
         stream.Position = 0;
         var buffer = GC.AllocateUninitializedArray<byte>(BufferSize);
 
-        var md5 = MD5.Create();
-        var xxHash3 = new XxHash3();
-        var xxHash64 = new XxHash64();
-        var crc32 = new Crc32();
-        var sha1 = SHA1.Create();
+        var crcState = Crc32Hasher.Initialize();
+        var md5State = Md5Hasher.Initialize();
+        var sha1State = Sha1Hasher.Initialize();
+        var xxHash3State = Xx3Hasher.Initialize();
+        var xxHash64State = Xx64Hasher.Initialize();
 
-        while (true)
+        while (!cancellationToken.IsCancellationRequested)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-
             var bytesRead = await stream.ReadAsync(buffer, cancellationToken);
             if (bytesRead == 0) break;
 
-            var span = buffer.AsSpan(0, bytesRead);
-            xxHash3.Append(span);
-            xxHash64.Append(span);
-            crc32.Append(span);
-            md5.TransformBlock(buffer, inputOffset: 0, inputCount: bytesRead, buffer, outputOffset: 0);
-            sha1.TransformBlock(buffer, inputOffset: 0, inputCount: bytesRead, buffer, outputOffset: 0);
+            crcState = Crc32Hasher.Update(crcState, buffer);
+            md5State = Md5Hasher.Update(md5State, buffer);
+            sha1State = Sha1Hasher.Update(sha1State, buffer);
+            xxHash3State = Xx3Hasher.Update(xxHash3State, buffer);
+            xxHash64State = Xx64Hasher.Update(xxHash64State, buffer);
         }
 
-        md5.TransformFinalBlock(buffer, inputOffset: 0, inputCount: 0);
-        sha1.TransformFinalBlock(buffer, inputOffset: 0, inputCount: 0);
-
-        var minimalHash = await MinimalHash(stream, cancellationToken: cancellationToken);
+        cancellationToken.ThrowIfCancellationRequested();
+        var minimalHash = await MinimalHash<Hash, XxHash3, Xx3Hasher>(stream, cancellationToken: cancellationToken);
 
         var result = new MultiHash
         {
-            XxHash3 = Hash.From(xxHash3.GetCurrentHashAsUInt64()),
-            XxHash64 = Hash.From(xxHash64.GetCurrentHashAsUInt64()),
+            Crc32 = Crc32Hasher.Finish(crcState),
+            Md5 = Md5Hasher.Finish(md5State),
+            Sha1 = Sha1Hasher.Finish(sha1State),
+            XxHash3 = Xx3Hasher.Finish(xxHash3State),
+            XxHash64 = Xx64Hasher.Finish(xxHash64State),
+
             MinimalHash = minimalHash,
-            Sha1 = Sha1Value.From(sha1.Hash),
-            Md5 = Md5Value.From(md5.Hash),
-            Crc32 = Crc32Value.From(crc32.GetCurrentHashAsUInt32()),
             Size = Size.FromLong(stream.Length),
         };
 
         return result;
     }
 
-    public static async ValueTask<Hash> MinimalHash(Stream stream, CancellationToken cancellationToken = default)
+    public static async ValueTask<THash> MinimalHash<THash, TState, THasher>(Stream stream, CancellationToken cancellationToken = default)
+        where THash : unmanaged, IEquatable<THash>
+        where THasher : IStreamingHasher<THash, TState, THasher>
     {
         stream.Position = 0;
-        var hasher = new XxHash3();
+        if (stream.Length <= MaxFullFileHash) return await THasher.HashAsync(stream, cancellationToken: cancellationToken);
 
-        if (stream.Length <= MaxFullFileHash)
-        {
-            await hasher.AppendAsync(stream, cancellationToken);
-            return Hash.From(hasher.GetCurrentHashAsUInt64());
-        }
-
-        using var bufferOwner = MemoryPool<byte>.Shared.Rent(BufferSize);
-        var buffer = bufferOwner.Memory[..BufferSize];
+        var buffer = GC.AllocateUninitializedArray<byte>(BufferSize);
+        var state = THasher.Initialize();
 
         // Read the block at the start of the file
         await stream.ReadExactlyAsync(buffer, cancellationToken);
-        hasher.Append(buffer.Span);
+        state = THasher.Update(state, buffer);
 
         // Read the block at the end of the file
         stream.Position = stream.Length - BufferSize;
         await stream.ReadExactlyAsync(buffer, cancellationToken);
-        hasher.Append(buffer.Span);
+        state = THasher.Update(state, buffer);
 
         // Read the block in the middle, if the file is too small, offset the middle enough to not read past the end
         // of the file
         var middleOffset = Math.Min(stream.Length / 2, stream.Length - BufferSize);
         stream.Position = middleOffset;
         await stream.ReadExactlyAsync(buffer, cancellationToken);
-        hasher.Append(buffer.Span);
+        state = THasher.Update(state, buffer);
 
         // Add the length of the file to the hash (as an ulong)
         Span<byte> lengthBuffer = stackalloc byte[sizeof(ulong)];
         MemoryMarshal.Write(lengthBuffer, (ulong)stream.Length);
-        hasher.Append(lengthBuffer);
+        state = THasher.Update(state, lengthBuffer);
 
-        return Hash.From(hasher.GetCurrentHashAsUInt64());
+        return THasher.Finish(state);
     }
 }

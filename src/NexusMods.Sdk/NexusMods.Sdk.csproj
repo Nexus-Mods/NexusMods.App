@@ -108,6 +108,9 @@
           <DesignTime>True</DesignTime>
           <DependentUpon>Signatures.tt</DependentUpon>
         </Compile>
+        <Compile Update="Hashes\IStreamingHasher.cs">
+          <DependentUpon>IHasher.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>

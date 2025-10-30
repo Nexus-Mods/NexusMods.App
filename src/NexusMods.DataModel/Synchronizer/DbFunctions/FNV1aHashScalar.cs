@@ -30,7 +30,7 @@ public class FNV1aHashScalar : AScalarFunction
             }
 
             var element = elements[(int)row];
-            var hash = FNV1a.Hash16(element.GetSpan());
+            var hash = FNV1a16Hasher.Hash(element.GetSpan());
             output[(int)row] = hash;
             outputMask[row] = true;
         }

@@ -3,7 +3,7 @@
     <PackageVersion Include="CommunityToolkit.HighPerformance" Version="8.4.0" />
     <PackageVersion Include="Mutagen.Bethesda.Fallout4" Version="0.51.3" />
     <PackageVersion Include="SharpZipLib" Version="1.4.2" />
-    <PackageVersion Include="TUnit" Version="0.57.24" />
+    <PackageVersion Include="TUnit" Version="0.86.5" />
     <PackageVersion Include="Avalonia.AvaloniaEdit" Version="11.3.0" />
     <PackageVersion Include="Avalonia.Labs.Panels" Version="11.3.1" />
     <PackageVersion Include="Avalonia.Skia" Version="11.3.5" />

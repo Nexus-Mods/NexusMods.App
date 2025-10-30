@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography;
 using System.Text.Json.Serialization;
 using JetBrains.Annotations;
 
@@ -98,4 +99,26 @@ public readonly struct Sha1Value : IEquatable<Sha1Value>
     public static bool operator ==(Sha1Value left, Sha1Value right) => left.Equals(right);
     /// <summary/>
     public static bool operator !=(Sha1Value left, Sha1Value right) => !(left == right);
+}
+
+[PublicAPI]
+public class Sha1Hasher : IStreamingHasher<Sha1Value, SHA1, Sha1Hasher>
+{
+    public static Sha1Value Hash(ReadOnlySpan<byte> input) => Sha1Value.From(SHA1.HashData(input));
+
+    public static SHA1 Initialize() => SHA1.Create();
+
+    public static SHA1 Update(SHA1 state, ReadOnlySpan<byte> input) => throw new NotSupportedException("SHA1 hasher doesn't support updates with spans");
+
+    public static SHA1 Update(SHA1 state, byte[] input)
+    {
+        state.TransformBlock(input, inputOffset: 0, inputCount: input.Length, input, outputOffset: 0);
+        return state;
+    }
+
+    public static Sha1Value Finish(SHA1 state)
+    {
+        var bytes = state.TransformFinalBlock([], inputCount: 0, inputOffset: 0);
+        return Sha1Value.From(bytes);
+    }
 }
