@@ -1,49 +1,40 @@
-using Microsoft.Extensions.DependencyInjection;
 using Mutagen.Bethesda.Plugins;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Games.CreationEngine.Abstractions;
-using NexusMods.Games.TestFramework;
-using NexusMods.HyperDuck;
+using NexusMods.Games.CreationEngine.Tests.TestAttributes;
+using NexusMods.Games.IntegrationTestFramework;
 using NexusMods.Sdk.NexusModsApi;
-using NexusMods.StandardGameLocators.TestHelpers;
-using Xunit.Abstractions;
+using Xunit;
 
 namespace NexusMods.Games.CreationEngine.Tests.SkyrimSE;
 
-public class LibraryArchiveInstallerTests(ITestOutputHelper outputHelper) : AIsolatedGameTest<CollectionTests, CreationEngine.SkyrimSE.SkyrimSE>(outputHelper)
+[SkyrimSESteamCurrent]
+public class LibraryArchiveInstallerTests(Type gameType, GameLocatorResult locatorResult) : AGameIntegrationTest(gameType, locatorResult)
 {
-    protected override IServiceCollection AddServices(IServiceCollection services)
-    {
-        return base.AddServices(services)
-            .AddCreationEngine()
-            .AddAdapters()
-            .AddUniversalGameLocator<CreationEngine.SkyrimSE.SkyrimSE>(new Version("1.6.1"));
-    }
-
-    [Theory]
+    [Test]
     // Has files in a named folder, which go in the game folder, but also includes a Data folder that contains files to be copied to the game folder.
-    [InlineData("SKSE (Steam)", 30379, 462377)]
+    [Arguments("SKSE (Steam)", 30379, 462377)]
     // SKSE plugin has files all in a Data folder, this is considered a "normal" configuration where all files are in `/Data/...` 
-    [InlineData("JContainers (SE)", 16495, 463765)]
+    [Arguments("JContainers (SE)", 16495, 463765)]
     // contains meshes and textures for the Data folder, but data is spelled as `data` instead of `Data` so this is a case insensitive test
-    [InlineData("Nordic Chair", 102400, 439688)]
+    [Arguments("Nordic Chair", 102400, 439688)]
     // Just contains a .swf file in an `Interface` folder
-    [InlineData("Better Dialogue Controls", 1429, 11022)]
+    [Arguments("Better Dialogue Controls", 1429, 11022)]
     // Just files in a meshes folder base
-    [InlineData("Floating Ash Pile Fix", 63434, 264466)]
+    [Arguments("Floating Ash Pile Fix", 63434, 264466)]
     // Files in a sounds folder base
-    [InlineData("Misc Voice Consistency Fixes", 135051, 568516)]
+    [Arguments("Misc Voice Consistency Fixes", 135051, 568516)]
     // Script/Source folders
-    [InlineData("Magic Student (WIChangeLocation04) Quest Fix", 80676, 340731)]
+    [Arguments("Magic Student (WIChangeLocation04) Quest Fix", 80676, 340731)]
     // An archive that contains a file swapper "_SWAP.ini" file
-    [InlineData("Lightened Skyrim - Base Object Swapper edition", 111475, 652709)]
+    [Arguments("Lightened Skyrim - Base Object Swapper edition", 111475, 652709)]
     // Raw BSA/ESP files in an archive (no subfolders)
-    [InlineData("Vanilla Purity Patch", 157236, 659486)]
+    [Arguments("Vanilla Purity Patch", 157236, 659486)]
     // A SKSE folder in the root
-    [InlineData("Exit Sneak On Sprint", 138669, 584283)]
+    [Arguments("Exit Sneak On Sprint", 138669, 584283)]
     // Description Framework Configs
-    [InlineData("Creation Club Item Descriptions", 106048, 598464)]
+    [Arguments("Creation Club Item Descriptions", 106048, 598464)]
     [Trait("RequiresNetworking", "True")]
     public async Task CanInstallMod(string name, uint modId, uint fileId)
     {
@@ -60,13 +51,14 @@ public class LibraryArchiveInstallerTests(ITestOutputHelper outputHelper) : AIso
             .Select(child => ((GamePath)child.AsLoadoutItemWithTargetPath().TargetPath, child.Hash, child.Size))
             .OrderBy(x => x.Item1);
 
-        await VerifyTable(contents, name);
-
+        await Verify(Table(contents), "md")
+            .UseDirectory("Verification Files")
+            .UseParameters(name);
     }
 
-    [Theory]
-    [InlineData("Honeystrand Grove is an Actual Grove", 158433, 662320)]
-    [InlineData("JK's Interiors Patch Collection", 35910, 549166)]
+    [Test]
+    [Arguments("Honeystrand Grove is an Actual Grove", 158433, 662320)]
+    [Arguments("JK's Interiors Patch Collection", 35910, 549166)]
     [Trait("RequiresNetworking", "True")]
     public async Task CanReadPluginData(string name, uint modId, uint fileId)
     {
@@ -98,7 +90,8 @@ public class LibraryArchiveInstallerTests(ITestOutputHelper outputHelper) : AIso
             }
         }
 
-        await VerifyTable(data, name);
-
+        await Verify(Table(data))
+            .UseDirectory("Verification Files")
+            .UseParameters(name);
     }
 }

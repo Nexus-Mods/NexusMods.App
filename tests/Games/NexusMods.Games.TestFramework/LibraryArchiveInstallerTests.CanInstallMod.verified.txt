@@ -1,0 +1,4 @@
+﻿{
+  target: null,
+  NAME_: SKSE (Steam)
+}

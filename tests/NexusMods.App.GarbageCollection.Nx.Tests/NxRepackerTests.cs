@@ -20,7 +20,8 @@ public class NxRepackerTests
     private const string File3Content = "Content 3";
     private const string OriginalArchiveName = "archive.nx";
 
-    [Theory, AutoFileSystem]
+    // TODO: DISABLED UNTIL WE MOVE THIS TO tUnit with better
+    //[Theory, AutoFileSystem]
     public async Task CollectGarbage_ShouldRepackArchiveCorrectly(InMemoryFileSystem fs, AbsolutePath folderPath)
     {
 /*

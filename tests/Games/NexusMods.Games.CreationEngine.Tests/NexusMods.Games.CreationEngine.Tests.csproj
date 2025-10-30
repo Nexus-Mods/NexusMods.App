@@ -1,9 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <XunitStartupAssembly>NexusMods.Games.CreationEngine.Tests</XunitStartupAssembly>
-    </PropertyGroup>
-
-    <PropertyGroup>
+        <OutputType>Exe</OutputType>
         <TargetFramework>net9.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
@@ -11,7 +8,11 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\..\src\NexusMods.Games.CreationEngine\NexusMods.Games.CreationEngine.csproj" />
-      <ProjectReference Include="..\NexusMods.Games.TestFramework\NexusMods.Games.TestFramework.csproj" />
+      <ProjectReference Include="..\NexusMods.Games.IntegrationTestFramework\NexusMods.Games.IntegrationTestFramework.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="TUnit.Core" />
     </ItemGroup>
 
 </Project>
