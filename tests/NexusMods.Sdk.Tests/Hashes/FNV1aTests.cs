@@ -44,6 +44,6 @@ public class FNV1aTests
         await Assert.That(actual).IsEqualTo(hash);
 
         var act = () => pool.GetOrAdd(right);
-        await Assert.That(act).ThrowsExactly<InvalidOperationException>().WithMessage($"Hash collision detected in pool '{nameof(Test_HashCollision)}' for {hash:X} between '{right}' and '{left}'");
+        await Assert.That(act).ThrowsExactly<HashCollisionException>().WithMessage($"Hash collision detected in pool '{nameof(Test_HashCollision)}' for {hash:X} between '{right}' and '{left}'");
     }
 }
