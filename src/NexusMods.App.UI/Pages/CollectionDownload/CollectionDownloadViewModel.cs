@@ -564,7 +564,7 @@ public class CollectionDownloadTreeDataGridAdapter :
     public CollectionDownloadTreeDataGridAdapter(
         IServiceProvider serviceProvider,
         CollectionRevisionMetadata.ReadOnly revisionMetadata,
-        LoadoutId targetLoadout)
+        LoadoutId targetLoadout) : base(serviceProvider)
     {
         _revisionMetadata = revisionMetadata;
         _targetLoadout = targetLoadout;

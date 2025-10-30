@@ -1,13 +1,9 @@
-using System.Globalization;
 using Avalonia.Controls;
 using Avalonia.ReactiveUI;
 using JetBrains.Annotations;
 using NexusMods.App.UI.Controls;
-using NexusMods.App.UI.Controls.TreeDataGrid.Filters;
-using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Resources;
 using NexusMods.MnemonicDB.Abstractions;
-using ObservableCollections;
 using R3;
 using ReactiveUI;
 

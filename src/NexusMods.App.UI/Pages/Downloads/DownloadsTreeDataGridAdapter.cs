@@ -13,8 +13,8 @@ public readonly record struct PauseMessage(DownloadInfo[] Downloads);
 public readonly record struct ResumeMessage(DownloadInfo[] Downloads);
 public readonly record struct CancelMessage(DownloadInfo[] Downloads);
 
-public sealed class DownloadsTreeDataGridAdapter(IDownloadsDataProvider provider, DownloadsFilter filter) :
-    TreeDataGridAdapter<CompositeItemModel<DownloadId>, DownloadId>,
+public sealed class DownloadsTreeDataGridAdapter(IServiceProvider serviceProvider,IDownloadsDataProvider provider, DownloadsFilter filter) :
+    TreeDataGridAdapter<CompositeItemModel<DownloadId>, DownloadId>(serviceProvider),
     ITreeDataGirdMessageAdapter<OneOf<PauseMessage, ResumeMessage, CancelMessage>>
 {
     public Subject<OneOf<PauseMessage, ResumeMessage, CancelMessage>> MessageSubject { get; } = new();

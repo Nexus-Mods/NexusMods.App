@@ -218,7 +218,7 @@ public class FileConflictsTreeDataGridAdapter : TreeDataGridAdapter<CompositeIte
         IConnection connection, 
         ILoadoutSynchronizer synchronizer, 
         Observable<ListSortDirection> sortDirectionObservable,
-        LoadoutId loadoutId)
+        LoadoutId loadoutId) : base(serviceProvider)
     {
         _connection = connection;
         _synchronizer = synchronizer;

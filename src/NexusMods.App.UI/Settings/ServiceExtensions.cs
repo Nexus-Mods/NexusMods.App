@@ -10,6 +10,7 @@ public static class ServiceExtensions
         return serviceCollection
             .AddSettings<LanguageSettings>()
             .AddSettings<TextEditorSettings>()
+            .AddSettings<TreeDataGridSortingStateSettings>()
             .AddSettings<AlertSettings>()
             .AddSettings<BehaviorSettings>()
             .AddSettings<UpdaterSettings>()

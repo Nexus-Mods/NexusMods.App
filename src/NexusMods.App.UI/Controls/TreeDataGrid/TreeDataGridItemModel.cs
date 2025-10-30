@@ -42,10 +42,7 @@ public interface ITreeDataGridItemModel<out TModel, TKey> : ITreeDataGridItemMod
             childSelector: static model => model.Children,
             hasChildrenSelector: static model => model.HasChildren.Value,
             isExpandedSelector: static model => model.IsExpanded
-        )
-        {
-            Tag = "expander",
-        };
+        );
     }
 }
 

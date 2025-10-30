@@ -630,12 +630,6 @@
         <Compile Update="Pages\Sorting\SortingSelection\SortingSelectionViewModel.cs">
           <DependentUpon>ISortingSelectionViewModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="Pages\Sorting\LoadOrder\LoadOrderViewDesignViewModel.cs">
-          <DependentUpon>ILoadOrderViewModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="Pages\Sorting\SortingSelection\SortingSelectionDesignViewModel.cs">
-          <DependentUpon>ISortingSelectionViewModel.cs</DependentUpon>
-        </Compile>
         <Compile Update="Pages\Diagnostics\List\DiagnosticListDesignViewModel.cs.old">
           <DependentUpon>IDiagnosticListViewModel.cs</DependentUpon>
         </Compile>
@@ -770,9 +764,6 @@
            <DependentUpon>DialogCollectionPublishedView.axaml</DependentUpon>
         </Compile>
         <Compile Update="Pages\Downloads\DownloadsPageViewModel.cs">
-           <DependentUpon>IDownloadsPageViewModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="Pages\Downloads\DownloadsPageDesignViewModel.cs">
            <DependentUpon>IDownloadsPageViewModel.cs</DependentUpon>
         </Compile>
         <Compile Update="Pages\Downloads\DownloadsPageView.axaml.cs">

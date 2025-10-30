@@ -1,6 +1,7 @@
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.ReactiveUI;
+using NexusMods.App.UI.Settings;
 using NexusMods.UI.Sdk;
 using R3;
 using ReactiveUI;
@@ -87,6 +88,39 @@ public static class TreeDataGridViewHelper
                     eventArgs.e.Handled = true;
                 })
                 .AddTo(disposables);
+            
+            // Persist treeDataGrid state on deactivation
+            Disposable.Create((view, treeDataGrid, getAdapter),
+                static input =>
+                {
+                    
+                    var adapter = input.getAdapter(input.view.ViewModel!);
+                    if (!adapter.SortingOptions.UseSortingStatePersistence)
+                        return;
+                    var sortingState = GetSortingState(input.treeDataGrid);
+                    if (sortingState is not null)
+                    {
+                        adapter.PersistSortingState(sortingState);
+                    }
+                })
+                .AddTo(disposables);
         });
+    }
+    
+    
+    private static TreeDataGridSortingStateSettings? GetSortingState(Avalonia.Controls.TreeDataGrid treeDataGrid)
+    {
+        var sortedColumn = treeDataGrid.Columns?.FirstOrDefault(col => col.SortDirection != null);
+        if (sortedColumn?.Tag is not string tag)
+        {
+            return null;
+        }
+                            
+        var state = new TreeDataGridSortingStateSettings
+        {
+            SortedColumnKey = tag,
+            SortDirection = sortedColumn.SortDirection,
+        };
+        return state;
     }
 }

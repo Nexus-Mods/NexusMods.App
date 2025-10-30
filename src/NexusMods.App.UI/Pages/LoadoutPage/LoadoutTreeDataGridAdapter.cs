@@ -28,7 +28,7 @@ public class LoadoutTreeDataGridAdapter :
     private readonly LoadoutFilter _loadoutFilter;
     private readonly IConnection _connection;
 
-    public LoadoutTreeDataGridAdapter(IServiceProvider serviceProvider, LoadoutFilter loadoutFilter)
+    public LoadoutTreeDataGridAdapter(IServiceProvider serviceProvider, LoadoutFilter loadoutFilter) : base(serviceProvider)
     {
         _loadoutDataProviders = serviceProvider.GetServices<ILoadoutDataProvider>().ToArray();
         _loadoutFilter = loadoutFilter;

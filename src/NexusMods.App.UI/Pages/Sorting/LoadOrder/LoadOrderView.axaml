@@ -11,10 +11,6 @@
                                 x:Class="NexusMods.App.UI.Pages.Sorting.LoadOrderView"
                                 x:DataType="sorting:ILoadOrderViewModel">
 
-    <Design.DataContext>
-        <sorting:LoadOrderDesignViewModel />
-    </Design.DataContext>
-
     <controls:EmptyState x:Name="EmptyState">
 
         <controls:EmptyState.Subtitle>
