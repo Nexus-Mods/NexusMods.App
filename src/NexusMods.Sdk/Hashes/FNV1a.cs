@@ -13,6 +13,34 @@ public static class FNV1a
     // https://datatracker.ietf.org/doc/html/draft-eastlake-fnv-35#name-fnv-constants
     private const uint Prime32 = 0x01000193;
     private const uint Offset32 = 0x811C9DC5;
+    private const ulong Prime64 = 0x00000100_000001B3;
+    private const ulong Offset64 = 0xCBF29CE4_84222325;
+
+    public static ulong Hash64(ReadOnlySpan<char> input)
+    {
+        var hash = Offset64;
+        for (var i = 0; i < input.Length; i++)
+        {
+            var current = input[i];
+            hash ^= current;
+            hash *= Prime64;
+        }
+
+        return hash;
+    }
+
+    public static ulong Hash64(ReadOnlySpan<byte> input)
+    {
+        var hash = Offset64;
+        for (var i = 0; i < input.Length; i++)
+        {
+            var current = input[i];
+            hash ^= current;
+            hash *= Prime64;
+        }
+
+        return hash;
+    }
 
     public static uint Hash32(ReadOnlySpan<char> input)
     {
@@ -50,6 +78,18 @@ public static class FNV1a
     {
         return (ushort) ((hash >> 16) ^ (hash & 0xFFFF));
     }
+}
+
+/// <summary>
+/// String hash pool using 64-bit FNV1a hashes.
+/// </summary>
+[PublicAPI]
+[SuppressMessage("ReSharper", "InconsistentNaming")]
+public class FNV1a64Pool : AStringHashPool<ulong>
+{
+    public FNV1a64Pool(string name) : base(name) { }
+
+    protected override ulong Hash(string input) => FNV1a.Hash64(input);
 }
 
 /// <summary>

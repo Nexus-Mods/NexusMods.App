@@ -8,10 +8,24 @@ namespace NexusMods.Sdk.Tests.Hashes;
 public class FNV1aTests
 {
     [Test]
+    [Arguments("", 0xcbf29ce484222325)]
+    [Arguments("foo bar baz", 0x2ece4bef60afe2af)]
+    [Arguments("Game", 0xb568a67e05a19907)]
+    public async Task Test_Hash64(string input, ulong expected)
+    {
+        var actual = FNV1a.Hash64(input);
+        await Assert.That(actual).IsEqualTo(expected);
+
+        var bytes = Encoding.ASCII.GetBytes(input);
+        var hashFromBytes = FNV1a.Hash64(bytes);
+        await Assert.That(hashFromBytes).IsEqualTo(expected);
+    }
+    
+    [Test]
     [Arguments("", 0x811c9dc5)]
     [Arguments("foo bar baz", 0xa3c6e38f)]
     [Arguments("Game", 0xc2762327)]
-    public async Task Test_Hash(string input, uint expected)
+    public async Task Test_Hash32(string input, uint expected)
     {
         var actual = FNV1a.Hash32(input);
         await Assert.That(actual).IsEqualTo(expected);
@@ -25,7 +39,7 @@ public class FNV1aTests
     [Arguments("", 0x1cd9)]
     [Arguments("foo bar baz", 0x4049)]
     [Arguments("Game", 0xe151)]
-    public async Task Test_HashShort(string input, ushort expected)
+    public async Task Test_Hash16(string input, ushort expected)
     {
         var actual = FNV1a.Hash16(input);
         await Assert.That(actual).IsEqualTo(expected);
