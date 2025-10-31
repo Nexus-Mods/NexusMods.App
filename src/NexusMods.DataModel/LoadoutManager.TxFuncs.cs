@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using System.Diagnostics;
 using DynamicData.Kernel;
 using NexusMods.Abstractions.Loadouts;
@@ -44,6 +45,12 @@ internal partial class LoadoutManager
             {
                 var index = Array.BinarySearch(_toSkip, model.TargetId);
                 if (index >= 0) continue;
+
+                if (!model.Target.IsValid())
+                {
+                    tx.Delete(model.Id, recursive: false);
+                    continue;
+                }
 
                 var newPriority = ConflictPriority.From(++start);
                 tx.Add(model.Id, LoadoutItemGroupPriority.Priority, newPriority);
@@ -135,6 +142,53 @@ internal partial class LoadoutManager
             tx.Add(id, LoadoutItemGroupPriority.Loadout, _loadoutId);
             tx.Add(id, LoadoutItemGroupPriority.Target, _targetId);
             tx.Add(id, LoadoutItemGroupPriority.Priority, priority);
+        }
+    }
+
+    private class ApplyCollectionRulesTxFunc : ITxFunction
+    {
+        private readonly LoadoutId _loadoutId;
+        private readonly ImmutableArray<EntityId> _sortedItems;
+
+        public ApplyCollectionRulesTxFunc(LoadoutId loadoutId, ImmutableArray<EntityId> sortedItems)
+        {
+            _loadoutId = loadoutId;
+            _sortedItems = sortedItems;
+        }
+
+        public bool Equals(ITxFunction? other) => other is ApplyCollectionRulesTxFunc;
+
+        public void Apply(ITransaction tx, IDb basis)
+        {
+            var priorities = LoadoutItemGroupPriority
+                .FindByLoadout(basis, _loadoutId)
+                .OrderBy(static model => model.Priority)
+                .ToList();
+
+            var prioritiesOfSortedItems = new List<LoadoutItemGroupPriority.ReadOnly>(capacity: _sortedItems.Length);
+            foreach (var itemId in _sortedItems)
+            {
+                var index = priorities.FindIndex(priority => priority.TargetId.Value == itemId);
+                if (index == -1)
+                {
+                    // TODO: add new priority, blocked on tx rework
+                    continue;
+                }
+
+                var priority = priorities[index];
+                priorities.RemoveAt(index);
+
+                prioritiesOfSortedItems.Add(priority);
+            }
+
+            priorities.AddRange(prioritiesOfSortedItems);
+
+            var start = 0UL;
+            foreach (var model in priorities)
+            {
+                var newPriority = ConflictPriority.From(++start);
+                tx.Add(model.Id, LoadoutItemGroupPriority.Priority, newPriority);
+            }
         }
     }
 }

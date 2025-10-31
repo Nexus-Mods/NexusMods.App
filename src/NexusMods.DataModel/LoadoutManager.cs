@@ -1,8 +1,11 @@
+using System.Collections.Frozen;
+using System.Collections.Immutable;
 using System.Diagnostics;
-using System.Xml;
+using System.Runtime.InteropServices;
 using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.Collections;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Games.FileHashes;
@@ -10,12 +13,17 @@ using NexusMods.Abstractions.GC;
 using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Sorting;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.Loadouts.Synchronizers.Conflicts;
+using NexusMods.Abstractions.NexusModsLibrary.Models;
+using NexusMods.DataModel.Sorting;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.DatomIterators;
+using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 using NexusMods.MnemonicDB.Abstractions.Internals;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
+using NexusMods.MnemonicDB.Abstractions.ValueSerializers;
 using NexusMods.Sdk.Jobs;
 
 namespace NexusMods.DataModel;
@@ -335,6 +343,17 @@ internal partial class LoadoutManager : ILoadoutManager
         });
     }
 
+    public async Task<LoadoutItemGroup.ReadOnly> InstallItemWrapper(LoadoutId targetLoadout, Func<ITransaction, Task<LoadoutItemGroupId>> func)
+    {
+        using var tx = _connection.BeginTransaction();
+
+        var groupId = await func(tx);
+        tx.Add(new AddPriorityTxFunc(targetLoadout, groupId));
+
+        var result = await tx.Commit();
+        return LoadoutItemGroup.Load(result.Db, groupId);
+    }
+
     public IJobTask<IInstallLoadoutItemJob, InstallLoadoutItemJobResult> InstallItem(
         LibraryItem.ReadOnly libraryItem,
         LoadoutId targetLoadout,
@@ -414,7 +433,7 @@ internal partial class LoadoutManager : ILoadoutManager
         }
     }
 
-    public async ValueTask RemoveCollection(LoadoutId loadoutId, CollectionGroupId collection)
+    public async ValueTask RemoveCollection(CollectionGroupId collection)
     {
         var db = _connection.Db;
         using var tx = _connection.BeginTransaction();
@@ -424,6 +443,92 @@ internal partial class LoadoutManager : ILoadoutManager
         RemoveItems(tx, groupIds);
 
         await tx.Commit();
+    }
+
+    public async ValueTask<CollectionGroup.ReadOnly> CloneCollection(CollectionGroupId collectionId)
+    {
+        Span<byte> refScratch = stackalloc byte[8];
+        using var writer = new PooledMemoryBufferWriter();
+
+        var basisDb = _connection.Db;
+
+        Dictionary<EntityId, EntityId> remappedIds = new();
+        var query = _connection.Query<EntityId>($"""
+                                          WITH RECURSIVE ChildLoadoutItems (Id) AS 
+                                          (SELECT {collectionId.Value} 
+                                          UNION
+                                          SELECT Id FROM (SELECT Id, Parent FROM mdb_LoadoutItem(Db=>{basisDb})
+                                          UNION ALL
+                                          SELECT Id, ParentEntity FROM mdb_SortOrder(Db=>{basisDb})
+                                          UNION ALL
+                                          SELECT Id, ParentSortOrder FROM mdb_SortOrderItem(Db=>{basisDb}))
+                                          WHERE Parent in (SELECT Id FROM ChildLoadoutItems))
+                                          SELECT DISTINCT Id FROM ChildLoadoutItems
+                                          """);
+        using var tx = _connection.BeginTransaction();
+        foreach (var itemId in query)
+        {
+            remappedIds.TryAdd(itemId, tx.TempId());
+        }
+
+        foreach (var (oldId, newId) in remappedIds)
+        {
+            var entity = basisDb.Get(oldId);
+            foreach (var datom in entity)
+            {
+                // Remap the value part of references
+                if (datom.Prefix.ValueTag == ValueTag.Reference)
+                {
+                    var oldRef = EntityId.From(UInt64Serializer.Read(datom.ValueSpan));
+                    if (!remappedIds.TryGetValue(oldRef, out var newRef))
+                    {
+                        tx.Add(newId, datom.A, datom.Prefix.ValueTag, datom.ValueSpan);
+                        continue;
+                    }
+                    MemoryMarshal.Write(refScratch, newRef);
+                    tx.Add(newId, datom.A, datom.Prefix.ValueTag, refScratch);
+                }
+                // It's rare, but the Ref,UShort/String tuple type may include a ref that needs to be remapped
+                else if (datom.Prefix.ValueTag == ValueTag.Tuple3_Ref_UShort_Utf8I)
+                {
+                    var (r, s, str) = Tuple3_Ref_UShort_Utf8I_Serializer.Read(datom.ValueSpan);
+                    if (!remappedIds.TryGetValue(r, out var newR))
+                    {
+                        tx.Add(newId, datom.A, datom.Prefix.ValueTag, datom.ValueSpan);
+                        continue;
+                    }
+                    writer.Reset();
+                    var newTuple = (newR, s, str);
+                    Tuple3_Ref_UShort_Utf8I_Serializer.Write(newTuple, writer);
+                    tx.Add(newId, datom.A, datom.Prefix.ValueTag, writer.GetWrittenSpan());
+                }
+                // Otherwise just remap the E value
+                else
+                {
+                    tx.Add(newId, datom.A, datom.Prefix.ValueTag, datom.ValueSpan);
+                }
+            }
+        }
+
+        var loadoutId = CollectionGroup.Load(basisDb, collectionId).AsLoadoutItemGroup().AsLoadoutItem().LoadoutId;
+        var nextPriority = GetNextPriority(loadoutId, _connection.Db);
+        var oldPriorities = LoadoutItemGroupPriority.All(basisDb).Where(priority => priority.Target.AsLoadoutItem().ParentId.Value == collectionId.Value).OrderBy(x => x.Priority).ToArray();
+
+        for (uint i = 0; i < oldPriorities.Length; i++)
+        {
+            var oldPriority = oldPriorities[i];
+            _ = new LoadoutItemGroupPriority.New(tx)
+            {
+                LoadoutId = loadoutId,
+                Priority = ConflictPriority.From(nextPriority.Value + i),
+                TargetId = remappedIds[oldPriority.TargetId],
+            };
+        }
+
+        tx.Add(new RebalancePrioritiesTxFunc(loadoutId, toSkip: []));
+
+        var result = await tx.Commit();
+        return CollectionGroup.Load(result.Db, result[remappedIds[collectionId]]);
     }
 
     public async ValueTask ReplaceItems(LoadoutId loadoutId, LoadoutItemGroupId[] groupsToRemove, LibraryItem.ReadOnly libraryItemToInstall)
@@ -445,6 +550,43 @@ internal partial class LoadoutManager : ILoadoutManager
             loserId: loserId
         ));
 
+        await tx.Commit();
+    }
+
+    public async ValueTask ApplyCollectionDownloadRules(NexusCollectionLoadoutGroupId collectionId)
+    {
+        var items = _connection.Query<EntityId>($"SELECT Id FROM MDB_NexusCollectionItemLoadoutGroup(Db => {_connection}) WHERE Parent = {collectionId.Value}").ToList();
+
+        var rulesQuery = _connection.Query<(EntityId SourceId, EntityId OtherId, int RuleType)>(
+            $"""
+              SELECT Source, Other, RuleType FROM loadouts.CollectionRulesOnItems({_connection})
+              WHERE Parent = {collectionId.Value};
+              """
+        );
+
+        var rules = rulesQuery
+            .GroupBy(tuple => tuple.SourceId, tuple => (tuple.OtherId, tuple.RuleType))
+            .ToFrozenDictionary(group => group.Key, group => group.ToArray());
+
+        var sortedItems = new Sorter().Sort(
+            items: items,
+            idSelector: static x => x,
+            ruleFn: id =>
+            {
+                if (!rules.TryGetValue(id, out var itemRules)) return [];
+                return itemRules.Select(ISortRule<EntityId, EntityId> (rule) => (CollectionDownloadRuleType)rule.RuleType switch
+                {
+                    CollectionDownloadRuleType.Before => new Before<EntityId, EntityId>() { Other = rule.OtherId },
+                    CollectionDownloadRuleType.After => new After<EntityId, EntityId>() { Other = rule.OtherId },
+                    _ => throw new UnreachableException(),
+                }).ToArray();
+            }
+        ).ToImmutableArray();
+
+        using var tx = _connection.BeginTransaction();
+
+        var loadoutId = LoadoutItem.Load(_connection.Db, collectionId).LoadoutId;
+        tx.Add(new ApplyCollectionRulesTxFunc(loadoutId, sortedItems));
         await tx.Commit();
     }
 

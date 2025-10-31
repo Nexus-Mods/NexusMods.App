@@ -4,6 +4,16 @@ CREATE SCHEMA IF NOT EXISTS synchronizer;
 -- The sources of items in the loadout.
 CREATE TYPE synchronizer.ItemType AS ENUM ('Loadout', 'Game', 'Deleted', 'Intrinsic');
 
+-- Gets all loadout item groups and their enabled state
+CREATE OR REPLACE MACRO synchronizer.LoadoutGroups (db) AS TABLE
+SELECT
+  loadout_item_group.*,
+  loadout_item_group.Disabled = FALSE
+  AND COALESCE(collection_group.Disabled, FALSE) = FALSE AS IsEnabled
+FROM
+  MDB_LOADOUTITEMGROUP (Db => db) loadout_item_group
+  LEFT JOIN MDB_COLLECTIONGROUP (Db => db) collection_group ON loadout_item_group.Parent = collection_group.Id;
+
 -- All leaf loadout items with a target path
 CREATE OR REPLACE MACRO synchronizer.LeafLoadoutItems (db) AS TABLE
 SELECT
@@ -33,11 +43,11 @@ SELECT
   arg_max(loadout_item.TargetPath, coalesce(group_priority.Priority, 0)) AS TargetPath,
   arg_max(loadout_item.Hash, coalesce(group_priority.Priority, 0)) AS Hash,
   arg_max(loadout_item.Size, coalesce(group_priority.Priority, 0)) AS Size,
-  arg_max(loadout_item.IsEnabled, coalesce(group_priority.Priority, 0)) AS IsEnabled,
   arg_max(loadout_item.IsDeleted, coalesce(group_priority.Priority, 0)) AS IsDeleted
 FROM
   synchronizer.LeafLoadoutItems (db) loadout_item
   LEFT JOIN MDB_LOADOUTITEMGROUPPRIORITY(DB => db) group_priority ON loadout_item.Parent = group_priority.Target
+WHERE loadout_item.IsEnabled
 GROUP BY loadout_item.Loadout, loadout_item.TargetPath.Item2, loadout_item.TargetPath.Item3;
 
 -- All the files in the overrides group
@@ -75,7 +85,6 @@ WITH all_files AS
     (CASE WHEN loadout_item.IsDeleted THEN 'Deleted' ELSE 'Loadout' END)::synchronizer.ItemType ItemType,
     1 Layer
   FROM synchronizer.WinningLeafLoadoutItem(db) loadout_item
-    WHERE loadout_item.IsEnabled
   UNION
   -- Override files on Layer 2
   SELECT
@@ -132,7 +141,7 @@ FROM
   synchronizer.LeafLoadoutItems (db) loadout_item
   LEFT JOIN MDB_LOADOUTITEMGROUPPRIORITY (Db => db) priority ON priority.Target = loadout_item.Parent
 WHERE
-  priority.Id IS NOT NULL
+  priority.Id IS NOT NULL AND loadout_item.IsEnabled
 GROUP BY loadout_item.Loadout, loadout_item.TargetPath.Item2, loadout_item.TargetPath.Item3
 HAVING count(DISTINCT loadout_item.Hash) > 1;
 
@@ -152,11 +161,13 @@ WITH
   )
 SELECT
   priority.*,
-  row_number() OVER (PARTITION BY Loadout ORDER BY Priority) AS Index,
-  lead(priority.Id, -1, 0) OVER (PARTITION BY Loadout ORDER BY Priority) As Prev,
-  lead(priority.Id, 1, 0) OVER (PARTITION BY Loadout ORDER BY Priority) As Next,
+  row_number() OVER (PARTITION BY priority.Loadout ORDER BY priority.Priority) AS Index,
+  lead(priority.Id, -1, 0) OVER (PARTITION BY priority.Loadout ORDER BY priority.Priority) As Prev,
+  lead(priority.Id, 1, 0) OVER (PARTITION BY priority.Loadout ORDER BY priority.Priority) As Next,
   coalesce(winnersAndLoser.WinningFiles, []) AS WinningFiles,
   coalesce(winnersAndLoser.LosingFiles, []) AS LosingFiles
 FROM
   MDB_LOADOUTITEMGROUPPRIORITY (Db => db) priority
-  LEFT JOIN winnersAndLosers winnersAndLoser ON winnersAndLoser.Id = priority.Id;
+  LEFT JOIN winnersAndLosers winnersAndLoser ON winnersAndLoser.Id = priority.Id
+  LEFT JOIN synchronizer.LoadoutGroups (db) loadout_item_group ON priority.Target = loadout_item_group.Id
+WHERE loadout_item_group.IsEnabled;

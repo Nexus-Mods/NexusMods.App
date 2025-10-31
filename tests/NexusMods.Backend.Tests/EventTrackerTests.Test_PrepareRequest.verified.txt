@@ -4,7 +4,7 @@
     properties: {
       time: 0,
       app_name: Nexus Mods App,
-      app_version: 0.0.1,
+      app_version: {{app_version}},
       platform_type: app,
       token: Guid_1,
       $device_id: Guid_Empty,
@@ -22,7 +22,7 @@
     properties: {
       time: 0,
       app_name: Nexus Mods App,
-      app_version: 0.0.1,
+      app_version: {{app_version}},
       platform_type: app,
       token: Guid_1,
       $device_id: Guid_Empty,
@@ -40,7 +40,7 @@
     properties: {
       time: 0,
       app_name: Nexus Mods App,
-      app_version: 0.0.1,
+      app_version: {{app_version}},
       platform_type: app,
       token: Guid_1,
       $device_id: Guid_Empty,
@@ -58,7 +58,7 @@
     properties: {
       time: 0,
       app_name: Nexus Mods App,
-      app_version: 0.0.1,
+      app_version: {{app_version}},
       platform_type: app,
       token: Guid_1,
       $device_id: Guid_Empty,
@@ -76,7 +76,7 @@
     properties: {
       time: 0,
       app_name: Nexus Mods App,
-      app_version: 0.0.1,
+      app_version: {{app_version}},
       platform_type: app,
       token: Guid_1,
       $device_id: Guid_Empty,

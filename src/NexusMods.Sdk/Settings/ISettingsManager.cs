@@ -1,4 +1,5 @@
 using System.Collections.Frozen;
+using System.Diagnostics.CodeAnalysis;
 using JetBrains.Annotations;
 using R3;
 
@@ -13,13 +14,19 @@ public interface ISettingsManager
     /// <summary>
     /// Sets the current value of <typeparamref name="T"/>.
     /// </summary>
-    void Set<T>(T value) where T : class, ISettings, new();
+    void Set<T>(T value, string? key = null) where T : class, ISettings, new();
 
     /// <summary>
     /// Gets the current value for <typeparamref name="T"/>.
     /// </summary>
-    /// <returns>The current value.</returns>
-    T Get<T>() where T : class, ISettings, new();
+    /// <returns>The current value, or the default value for type T if not set.</returns>
+    T Get<T>(string? key = null) where T : class, ISettings, new();
+    
+    /// <summary>
+    /// Gets the current value of <typeparamref name="T"/>, if it was set.
+    /// </summary>
+    /// <returns>True if a value was set, false otherwise.</returns>
+    bool TryGet<T>([NotNullWhen(true)] out T? value, string? key = null) where T : class, ISettings, new();
 
     /// <summary>
     /// Gets the default value for <typeparamref name="T"/>.
@@ -35,12 +42,12 @@ public interface ISettingsManager
     /// value will be ignored, unless the modified input value gets returned.
     /// </param>
     /// <returns>The updated value.</returns>
-    T Update<T>(Func<T, T> updater) where T : class, ISettings, new();
+    T Update<T>(Func<T, T> updater, string? key = null) where T : class, ISettings, new();
 
     /// <summary>
     /// Gets an observable stream to be notified about changes to <typeparamref name="T"/>.
     /// </summary>
-    Observable<T> GetChanges<T>(bool prependCurrent) where T : class, ISettings, new();
+    Observable<T> GetChanges<T>(string? key = null, bool prependCurrent = false) where T : class, ISettings, new();
 
     /// <summary>
     /// Gets configs for all registered settings.

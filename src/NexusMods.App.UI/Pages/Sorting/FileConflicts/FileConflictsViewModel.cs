@@ -18,10 +18,11 @@ using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Controls.MarkdownRenderer;
 using NexusMods.App.UI.Dialog;
 using NexusMods.App.UI.Dialog.Enums;
+using NexusMods.App.UI.Pages.LoadoutPage;
 using NexusMods.App.UI.Windows;
 using NexusMods.HyperDuck;
 using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.Paths;
+using Humanizer;
 using NexusMods.Sdk.Resources;
 using NexusMods.UI.Sdk;
 using R3;
@@ -282,11 +283,25 @@ public class FileConflictsTreeDataGridAdapter : TreeDataGridAdapter<CompositeIte
                 adapter.MessageSubject.OnNext(new MoveDownCommandPayload(itemModel));
             })
         );
+        
+        // IsActive styling
+        model.SubscribeToComponentAndTrack<ValueComponent<bool>, FileConflictsTreeDataGridAdapter>(
+            key: FileConflictsColumns.IsActiveComponentKey,
+            state: this,
+            factory: static (adapter, itemModel, component) => component.Value
+                .Subscribe((adapter, itemModel, component),
+                    static (_, tuple) =>
+                    {
+                        var (_, itemModel, component) = tuple;
+                        itemModel.SetStyleFlag(FileConflictsColumns.IsActiveStyleTag, component.Value.Value);
+                    }
+                )
+        );
     }
 
     protected override IObservable<IChangeSet<CompositeItemModel<EntityId>, EntityId>> GetRootsObservable(bool viewHierarchical)
     {
-        return ObservePriorityGroups(_connection, _loadoutId).TransformWithInlineUpdate(CreateItemModel, UpdateItemModel);
+        return ObservePriorityGroups(_connection, _loadoutId).OnUI().TransformWithInlineUpdate(CreateItemModel, UpdateItemModel);
     }
 
     private CompositeItemModel<EntityId> CreateItemModel((EntityId, long, EntityId, EntityId, long, long) tuple)
@@ -321,6 +336,11 @@ public class FileConflictsTreeDataGridAdapter : TreeDataGridAdapter<CompositeIte
             numLosers: new ValueComponent<long>(value: numLosingFiles)
         ));
 
+        if (loadoutGroup.AsLoadoutItem().Parent.TryGetAsCollectionGroup(out var collection))
+        {
+            itemModel.Add(LoadoutColumns.Collections.ComponentKey, new StringComponent(value: collection.AsLoadoutItemGroup().AsLoadoutItem().Name));
+        }
+
         itemModel.Add(FileConflictsColumns.Actions.ViewComponentKey, new FileConflictsComponents.ViewAction(hasConflicts: numWinningFiles > 0 || numLosingFiles > 0));
 
         var neighbourIds = new FileConflictsComponents.NeighbourIds(previousId, nextId);
@@ -342,10 +362,13 @@ public class FileConflictsTreeDataGridAdapter : TreeDataGridAdapter<CompositeIte
 
         itemModel.Add(FileConflictsColumns.IndexColumn.IndexComponentKey, new SharedComponents.IndexComponent(
             new ValueComponent<int>((int)index),
-            new ValueComponent<string>(index.ToString()),
+            new ValueComponent<string>(((int)index).Ordinalize()),
             canExecuteMoveUp: canExecuteMoveUp,
             canExecuteMoveDown: canExecuteMoveDown
         ));
+        
+        // NOTE(Al12rs): Mark all items as active for styling purposes, change this if we need to display inactive items
+        itemModel.Add(FileConflictsColumns.IsActiveComponentKey, new ValueComponent<bool>(true));
 
         return itemModel;
     }
@@ -366,7 +389,7 @@ public class FileConflictsTreeDataGridAdapter : TreeDataGridAdapter<CompositeIte
 
         var indexComponent = itemModel.Get<SharedComponents.IndexComponent>(FileConflictsColumns.IndexColumn.IndexComponentKey);
         indexComponent.Index.Value.Value = (int)index;
-        indexComponent.DisplaySortIndexComponent.Value.Value = index.ToString();
+        indexComponent.DisplaySortIndexComponent.Value.Value = ((int)index).Ordinalize();
     }
 
     private static Query<(EntityId WinnerPriorityId, EntityId WinnerLoadoutItemId, EntityId ConflictPriorityId, EntityId ConflictLoadoutItemId, EntityId LoserPriorityId, EntityId LoserLoadoutItemId)> GetPriorityConflicts(
@@ -414,6 +437,7 @@ public class FileConflictsTreeDataGridAdapter : TreeDataGridAdapter<CompositeIte
             ITreeDataGridItemModel<CompositeItemModel<EntityId>, EntityId>.CreateExpanderColumn(indexColumn),
             ColumnCreator.Create<EntityId, SharedColumns.Name>(canUserSortColumn: false),
             ColumnCreator.Create<EntityId, FileConflictsColumns.ConflictsColumn>(canUserSortColumn: false),
+            ColumnCreator.Create<EntityId, LoadoutColumns.Collections>(canUserSortColumn: false),
             ColumnCreator.Create<EntityId, FileConflictsColumns.Actions>(canUserSortColumn: false),
         ];
     }

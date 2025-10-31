@@ -123,6 +123,15 @@
                                         </StackPanel>
                                     </Expander>
                                 </StackPanel>
+                                <StackPanel Spacing="8">
+                                    <TextBlock Text="CheckBox (Accent)" />
+                                    <CheckBox Classes="accent">Enabled</CheckBox>
+                                    <CheckBox Classes="accent" IsChecked="True">Checked</CheckBox>
+                                    <CheckBox Classes="accent" IsChecked="{x:Null}" IsThreeState="True">3-State</CheckBox>
+                                    <CheckBox Classes="accent" IsEnabled="False">Disabled</CheckBox>
+                                    <CheckBox Classes="accent" IsChecked="True" IsEnabled="False">Checked</CheckBox>
+                                    <CheckBox Classes="accent" IsChecked="{x:Null}" IsEnabled="False">3-State</CheckBox>
+                                </StackPanel>
                             </StackPanel>
                             <StackPanel Orientation="Vertical" Spacing="8">
                                 <TextBlock Text="StandardButton" Theme="{StaticResource BodyMDSemiTheme}" />

@@ -52,17 +52,18 @@ internal class MnemonicDBStorageBackend : IAsyncStorageBackend
         }
     }
 
-    private static string GetId<T>() where T : ISettings
+    private static string GetId<T>(string? key) where T : ISettings
     {
-        return typeof(T).FullName ?? typeof(T).Name;
+        var typeName = typeof(T).FullName ?? typeof(T).Name;
+        return string.IsNullOrWhiteSpace(key) ? typeName : $"{typeName}|{key}";
     }
 
-    public async ValueTask Save<T>(T value, CancellationToken cancellationToken) where T : class, ISettings, new()
+    public async ValueTask Save<T>(T value, string? key, CancellationToken cancellationToken) where T : class, ISettings, new()
     {
         var db = _conn.Value.Db;
         using var tx = _conn.Value.BeginTransaction();
 
-        var name = GetId<T>();
+        var name = GetId<T>(key);
 
         EntityId id;
         var settings = Setting.FindByName(db, name).ToArray();
@@ -80,9 +81,9 @@ internal class MnemonicDBStorageBackend : IAsyncStorageBackend
         await tx.Commit();
     }
 
-    public ValueTask<T?> Load<T>(CancellationToken cancellationToken) where T : class, ISettings, new()
+    public ValueTask<T?> Load<T>(string? key, CancellationToken cancellationToken) where T : class, ISettings, new()
     {
-        var settings = Setting.FindByName(_conn.Value.Db, GetId<T>()).ToArray();
+        var settings = Setting.FindByName(_conn.Value.Db, GetId<T>(key)).ToArray();
         if (settings.Length == 0) return ValueTask.FromResult<T?>(null);
         return ValueTask.FromResult(Deserialize<T>(settings.First().Value));
     }

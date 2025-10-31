@@ -32,10 +32,11 @@ public static class ServiceExtensions
 
     public static IServiceCollection OverrideSettingsForTests<T>(
         this IServiceCollection serviceCollection,
-        Func<T, T> overrideMethod
+        Func<T, T> overrideMethod,
+        string? key = null
     ) where T : class, ISettings, new()
     {
-        return serviceCollection.AddSingleton(new OverrideHack(typeof(T), Hack));
+        return serviceCollection.AddSingleton(new OverrideHack(typeof(T), Hack, key));
         object Hack(object obj)
         {
             if (obj is not T value) throw new ArgumentException($"Expected value of type {typeof(T)}", nameof(obj));

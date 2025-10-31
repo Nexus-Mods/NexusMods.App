@@ -1,6 +1,9 @@
 using FluentAssertions;
+using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Collections;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Synchronizers;
+using NexusMods.Collections;
 using NexusMods.MnemonicDB.Abstractions;
 using Xunit.Abstractions;
 
@@ -20,9 +23,9 @@ public class CollectionTests(ITestOutputHelper helper) : AArchivedDatabaseTest(h
         
         coll.AsCollectionGroup().AsLoadoutItemGroup().AsLoadoutItem().Name.Should().BeEquivalentTo("Aesthetic Valley | Witchcore");
 
-        var newId = await NexusCollectionLoadoutGroup.MakeEditableLocalCollection(tmpConn.Connection, coll, "[Copy Of] Aesthetic Valley | Witchcore");
+        var newId = await CollectionCreator.MakeEditableLocalCollection(ServiceProvider.GetRequiredService<ILoadoutManager>(), tmpConn.Connection, coll.AsCollectionGroup(), "[Copy Of] Aesthetic Valley | Witchcore");
         var newColl = CollectionGroup.Load(tmpConn.Connection.Db, newId);
-        
+
         newColl.AsLoadoutItemGroup().AsLoadoutItem().Name.Should().BeEquivalentTo("[Copy Of] Aesthetic Valley | Witchcore");
         newColl.IsReadOnly.Should().BeFalse();
 

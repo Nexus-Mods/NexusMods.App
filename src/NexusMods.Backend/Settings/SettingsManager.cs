@@ -1,6 +1,8 @@
 using System.Collections.Frozen;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Reactive.Concurrency;
+using System.Runtime.ExceptionServices;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Sdk.Settings;
@@ -15,10 +17,10 @@ internal class SettingsManager : ISettingsManager
     private readonly IServiceProvider _serviceProvider;
     private readonly ILogger _logger;
 
-    private readonly Subject<(Type, object)> _subject = new();
-    private readonly Dictionary<Type, object> _values = new();
+    private readonly Subject<(SettingKey, object)> _subject = new();
+    private readonly Dictionary<SettingKey, object> _values = new();
 
-    private readonly FrozenDictionary<Type, Func<object, object>> _overrides;
+    private readonly FrozenDictionary<SettingKey, Func<object, object>> _overrides;
 
     private readonly FrozenDictionary<Type, IStorageBackend> _storageBackendMappings;
     private readonly FrozenDictionary<Type, IAsyncStorageBackend> _asyncStorageBackendMappings;
@@ -73,57 +75,88 @@ internal class SettingsManager : ISettingsManager
         }
 
         Configs = configs.ToFrozenDictionary(x => x.Type, x => x);
-        _overrides = serviceProvider.GetServices<OverrideHack>().ToFrozenDictionary(x => x.SettingsType, x => x.Method);
+        _overrides = serviceProvider.GetServices<OverrideHack>().ToFrozenDictionary(x => new SettingKey(x.SettingsType, x.Key), x => x.Method);
         _storageBackendMappings = storageBackendMappings.ToFrozenDictionary();
         _asyncStorageBackendMappings = asyncStorageBackendMappings.ToFrozenDictionary();
     }
 
-    private void CoreSet<T>(T value, bool notify) where T : class, ISettings, new()
+    private void CoreSet<T>(T value, SettingKey settingKey, bool notify) where T : class, ISettings, new()
     {
-        var type = typeof(T);
-        _values[type] = value;
+        _values[settingKey] = value;
         if (!notify) return;
 
-        _subject.OnNext((type, value));
-        Save(value);
+        _subject.OnNext((settingKey, value));
+        Save(value, settingKey.Key);
     }
  
-    public void Set<T>(T value) where T : class, ISettings, new() => CoreSet(value, notify: true);
+    public void Set<T>(T value, string? key) where T : class, ISettings, new() => CoreSet(value, new SettingKey(typeof(T), key), notify: true);
 
-    public T Get<T>() where T : class, ISettings, new()
+    public T Get<T>(string? key) where T : class, ISettings, new()
     {
-        if (_values.TryGetValue(typeof(T), out var obj))
+        var settingKey = new SettingKey(typeof(T), key);
+        
+        if (_values.TryGetValue(settingKey, out var obj))
         {
             Debug.Assert(obj is T);
             return (obj as T)!;
         }
 
-        var savedValue = Load<T>();
+        var savedValue = Load<T>(key);
         if (savedValue is not null)
         {
-            savedValue = Override(savedValue, out _);
-            CoreSet(savedValue, notify: false);
+            savedValue = GetOverride(settingKey, savedValue, out _);
+            CoreSet(savedValue, settingKey, notify: false);
             return savedValue;
         }
 
         var defaultValue = GetDefault<T>();
-        defaultValue = Override(defaultValue, out var didOverride);
-        CoreSet(defaultValue, notify: !didOverride);
+        defaultValue = GetOverride(settingKey, defaultValue, out var didOverride);
+        CoreSet(defaultValue, settingKey, notify: !didOverride);
 
         return defaultValue;
+    }
 
-        // ReSharper disable once VariableHidesOuterVariable
-        T Override(T value, out bool didOverride)
+    public bool TryGet<T>([NotNullWhen(true)] out T? value, string? key = null) where T : class, ISettings, new()
+    {
+        value = null;
+        var settingKey = new SettingKey(typeof(T), key);
+        
+        if (_values.TryGetValue(settingKey, out var obj))
         {
-            didOverride = false;
-            if (!_overrides.TryGetValue(typeof(T), out var overrideMethod)) return value;
-
-            var overriden = overrideMethod.Invoke(value);
-            Debug.Assert(overriden.GetType() == typeof(T));
-
-            didOverride = true;
-            return (T)overriden;
+            Debug.Assert(obj is T);
+            value = (obj as T)!;
+            return true;
         }
+        
+        var savedValue = Load<T>(key);
+        if (savedValue is not null)
+        {
+            savedValue = GetOverride(settingKey, savedValue, out _);
+            CoreSet(savedValue, settingKey, notify: false);
+            value = savedValue;
+            return true;
+        }
+        
+        var defaultValue = GetDefault<T>();
+        defaultValue = GetOverride(settingKey, defaultValue, out var didOverride);
+
+        if (!didOverride) return false;
+        
+        CoreSet(defaultValue, settingKey, notify: !didOverride);
+        value = defaultValue;
+        return true;
+    }
+    
+    private T GetOverride<T>(SettingKey settingKey, T value, out bool didOverride) where T : class, ISettings, new()
+    {
+        didOverride = false;
+        if (!_overrides.TryGetValue(settingKey, out var overrideMethod)) return value;
+
+        var overriden = overrideMethod.Invoke(value);
+        Debug.Assert(overriden.GetType() == typeof(T));
+
+        didOverride = true;
+        return (T)overriden;
     }
 
     public T GetDefault<T>() where T : class, ISettings, new()
@@ -146,27 +179,29 @@ internal class SettingsManager : ISettingsManager
         return defaultValue;
     }
 
-    public T Update<T>(Func<T, T> updater) where T : class, ISettings, new()
+    public T Update<T>(Func<T, T> updater, string? key) where T : class, ISettings, new()
     {
-        var currentValue = Get<T>();
+        var currentValue = Get<T>(key);
         var newValue = updater(currentValue);
-        Set(newValue);
+        Set(newValue, key);
 
         return newValue;
     }
 
-    public Observable<T> GetChanges<T>(bool prependCurrent = false) where T : class, ISettings, new()
+    public Observable<T> GetChanges<T>(string? key, bool prependCurrent = false) where T : class, ISettings, new()
     {
+        var settingKey = new SettingKey(typeof(T), key);
+        
         var result = _subject
-            .Where(tuple => tuple.Item1 == typeof(T))
+            .Where(settingKey, static (tuple, state) => tuple.Item1 == state)
             .Select(tuple => (tuple.Item2 as T)!);
 
-        return prependCurrent ? result.Prepend(Get<T>()) : result;
+        return prependCurrent ? result.Prepend(Get<T>(key)) : result;
     }
 
 #region Save/Load
 
-    private void Save<T>(T value) where T : class, ISettings, new()
+    private void Save<T>(T value, string? key) where T : class, ISettings, new()
     {
         var type = typeof(T);
 
@@ -174,7 +209,7 @@ internal class SettingsManager : ISettingsManager
         {
             try
             {
-                storageBackend.Save(value);
+                storageBackend.Save(value, key);
             }
             catch (Exception e)
             {
@@ -182,13 +217,13 @@ internal class SettingsManager : ISettingsManager
             }
         } else if (_asyncStorageBackendMappings.TryGetValue(type, out var asyncStorageBackend))
         {
-            Scheduler.ScheduleAsync((value, asyncStorageBackend, _logger), TimeSpan.Zero, async static (_, state, cancellationToken) =>
+            Scheduler.ScheduleAsync((value, key, asyncStorageBackend, _logger), TimeSpan.Zero, async static (_, state, cancellationToken) =>
             {
-                var (valueToSave, backend, logger) = state;
+                var (valueToSave, stringKey, backend, logger) = state;
 
                 try
                 {
-                    await backend.Save(valueToSave, cancellationToken);
+                    await backend.Save(valueToSave, stringKey, cancellationToken);
                 }
                 catch (Exception e)
                 {
@@ -198,7 +233,7 @@ internal class SettingsManager : ISettingsManager
         }
     }
 
-    private T? Load<T>() where T : class, ISettings, new()
+    private T? Load<T>(string? key) where T : class, ISettings, new()
     {
         var type = typeof(T);
 
@@ -206,7 +241,7 @@ internal class SettingsManager : ISettingsManager
         {
             try
             {
-                return storageBackend.Load<T>();
+                return storageBackend.Load<T>(key);
             }
             catch (Exception e)
             {
@@ -223,12 +258,13 @@ internal class SettingsManager : ISettingsManager
             {
                 try
                 {
-                    res = await asyncStorageBackend.Load<T>(cts.Token);
+                    res = await asyncStorageBackend.Load<T>(key, cts.Token);
                     waitHandle.Set();
                 }
                 catch (Exception e)
                 {
                     _logger.LogError(e, "Exception while loading settings type `{Type}` with async storage backend `{AsyncStorageBackendType}`", type, asyncStorageBackend.GetType());
+                    waitHandle.Set();
                 }
             }, cts.Token);
 
