@@ -12,22 +12,22 @@ public record MultiHash
     /// The xxHash3 hash of the data.
     /// </summary>
     public required Hash XxHash3 { get; init; }
-    
+
     /// <summary>
     /// The xxHash64 hash of the data.
     /// </summary>
     public required Hash XxHash64 { get; init; }
-    
+
     /// <summary>
     /// the minimal hash of the data.
     /// </summary>
     public required Hash MinimalHash { get; init; }
-    
+
     /// <summary>
     /// The Sha1 hash of the data.
     /// </summary>
     public required Sha1Value Sha1 { get; init; }
-    
+
     /// <summary>
     /// The Md5 hash of the data.
     /// </summary>
@@ -37,7 +37,7 @@ public record MultiHash
     /// The Crc32 hash of the data.
     /// </summary>
     public required Crc32Value Crc32 { get; init; }
-    
+
     /// <summary>
     /// The size of the data in bytes.
     /// </summary>

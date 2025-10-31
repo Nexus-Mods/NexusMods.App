@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using System.Collections.Frozen;
+using System.IO.Hashing;
 using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -139,6 +140,6 @@ internal class GameLocationsService : IGameLocationsService
     private static async ValueTask<Hash> GetMinimalHash(AbsolutePath file, CancellationToken cancellationToken)
     {
         await using var fileStream = file.Read();
-        return await MultiHasher.MinimalHash(fileStream, cancellationToken: cancellationToken);
+        return await MultiHasher.MinimalHash<Hash, XxHash3, Xx3Hasher>(fileStream, cancellationToken: cancellationToken);
     }
 }

@@ -30,5 +30,10 @@ public static class Hasher<THash, THasher>
     /// <summary>
     /// Hashes the input.
     /// </summary>
+    public static THash Hash(ReadOnlySpan<byte> input) => THasher.Hash(input);
+
+    /// <summary>
+    /// Hashes the input.
+    /// </summary>
     public static THash Hash(ReadOnlySpan<char> input) => THasher.Hash(input);
 }
