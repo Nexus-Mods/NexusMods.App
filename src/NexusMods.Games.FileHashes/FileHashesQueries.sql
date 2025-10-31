@@ -54,25 +54,31 @@ SELECT files.Loadout, files.FileId PathId FROM
 -- gets all the paths and hashes of game files for gog loadouts
 CREATE OR REPLACE MACRO file_hashes.gog_loadout_files(db) AS TABLE
 WITH 
+  -- GOG locatorIds can contain a mix of BuildIds and DLC ProductIds
   locatorIds AS (SELECT Loadout, LocatorId::UBIGINT LocatorId
                  FROM file_hashes.loadout_locatorids(db) locators
                  WHERE locators.Store = 'GOG'), 
-  builds AS (SELECT Loadout, BuildId, ProductId BaseProductId, unnest(build.Depots) DepotId
+  builds AS (SELECT Loadout, BuildId, ProductId BuildProductId, unnest(build.Depots) DepotId
              FROM MDB_GOGBUILD(DBName=>"hashes") build
              INNER JOIN locatorIds ON build.BuildId = locatorIds.LocatorId),
-  validDepots AS (SELECT Id, ProductId, Manifest 
-                  FROM MDB_GOGDEPOT(DBName=>"hashes") 
+  validDepots AS (SELECT Id, ProductId, Manifest ManifestId 
+                  FROM MDB_GOGDEPOT(DBName=>"hashes")
                   WHERE Languages == [] OR 'en-US' in Languages),
-  manifests AS (SELECT builds.Loadout, validDepots.Manifest 
-                FROM validDepots 
-                INNER JOIN builds ON validDepots.ProductId = builds.BaseProductId
+  buildDepots AS (SELECT builds.Loadout, builds.DepotId, validDepots.ProductId DepotProductId, builds.BuildProductId, validDepots.ManifestId
+                  FROM builds
+                  JOIN validDepots on validDepots.Id = builds.DepotId),
+  manifests AS (-- Depots for the base game product
+                SELECT buildDepots.Loadout, buildDepots.ManifestId 
+                FROM buildDepots 
+                WHERE buildDepots.DepotProductId = buildDepots.BuildProductId
                 UNION
-                SELECT locatorIds.Loadout, validDepots.Manifest 
-                FROM validDepots 
-                INNER JOIN locatorIds ON validDepots.ProductId = LocatorIds.LocatorId),
+                -- Depots for DLC products
+                SELECT buildDepots.Loadout, buildDepots.ManifestId
+                FROM buildDepots 
+                JOIN locatorIds dlcProducts ON dlcProducts.Loadout = buildDepots.Loadout AND buildDepots.DepotProductId = dlcProducts.LocatorId),
   files AS (SELECT Loadout, unnest(manifest.Files) File
             FROM manifests
-            LEFT JOIN MDB_GOGMANIFEST(DBName=>"hashes") manifest ON manifests.Manifest = manifest.Id)
+            LEFT JOIN MDB_GOGMANIFEST(DBName=>"hashes") manifest ON manifests.ManifestId = manifest.Id)
 SELECT files.Loadout, files.File PathId FROM files;
 
 -- gets all the paths and hashes for game files in loadouts
