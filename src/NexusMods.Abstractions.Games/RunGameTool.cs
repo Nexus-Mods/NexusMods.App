@@ -207,12 +207,18 @@ public class RunGameTool<T> : IRunGameTool
     {
         Debug.Assert(OSInformation.Shared.IsLinux);
 
-        // TODO: track process
-        if (commandLineArgs.Length > 0)
-            _logger.LogError("Heroic does not currently support command line arguments: https://github.com/Nexus-Mods/NexusMods.App/issues/2264 . " +
-                             $"Args {string.Join(',', commandLineArgs)} were specified but will be ignored.");
+        var heroicUrl = $"heroic://launch?appName={productId}&runner={type}";
+        if (commandLineArgs is { Length: > 0 })
+        {
+            var encodedArgs = commandLineArgs
+                .Select(Uri.EscapeDataString)
+                .Select(arg => $"arg={arg}")
+                .Aggregate((a, b) => $"{a}&{b}");
+            heroicUrl += $"&{encodedArgs}";
+        }
 
-        _osInterop.OpenUri(new Uri($"heroic://launch/{type}/{productId}"));
+        // TODO: track process
+        _osInterop.OpenUri(new Uri(heroicUrl));
     }
 
     private async ValueTask<Process?> WaitForProcessToStart(
