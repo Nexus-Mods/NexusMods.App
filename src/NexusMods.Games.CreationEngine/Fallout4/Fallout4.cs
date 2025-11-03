@@ -63,7 +63,6 @@ public partial class Fallout4 : AGame, ISteamGame, IGogGame, ICreationEngineGame
 
     protected override ILoadoutSynchronizer MakeSynchronizer(IServiceProvider provider) => new Fallout4Synchronizer(provider, this);
 
-    public override SupportType SupportType => SupportType.Unsupported;
     public IEnumerable<uint> SteamIds => [377160];
     public IEnumerable<long> GogIds => [ 1998527297 ];
         

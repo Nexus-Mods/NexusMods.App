@@ -33,15 +33,6 @@ public class StardewValley : AGame, ISteamGame, IGogGame, IXboxGame
     public override string DisplayName => "Stardew Valley";
     public override GameId GameId => GameId.From(1303);
 
-    public override SupportType SupportType => SupportType.Official;
-
-    public override HashSet<FeatureStatus> Features { get; } =
-    [
-        new(BaseFeatures.GameLocatable, IsImplemented: true),
-        new(BaseFeatures.HasInstallers, IsImplemented: true),
-        new(BaseFeatures.HasDiagnostics, IsImplemented: true),
-    ];
-
     public StardewValley(
         IOSInformation osInformation,
         IEnumerable<IGameLocator> gameLocators,

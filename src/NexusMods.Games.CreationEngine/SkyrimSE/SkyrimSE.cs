@@ -66,7 +66,6 @@ public partial class SkyrimSE : AGame, ISteamGame, IGogGame, ICreationEngineGame
 
     protected override ILoadoutSynchronizer MakeSynchronizer(IServiceProvider provider) => new SkyrimSESynchronizer(provider, this);
 
-    public override SupportType SupportType => SupportType.Unsupported;
     public IEnumerable<uint> SteamIds => [489830];
     public IEnumerable<long> GogIds => [1711230643];
 

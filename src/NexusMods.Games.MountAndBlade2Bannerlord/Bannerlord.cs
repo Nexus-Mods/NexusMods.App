@@ -38,15 +38,6 @@ public sealed class Bannerlord : AGame, ISteamGame, IGogGame, IXboxGame//, IEpic
 
     public override string DisplayName => StaticDisplayName;
     public override GameId GameId => GameIdStatic;
-    public override SupportType SupportType => SupportType.Official;
-
-    public override HashSet<FeatureStatus> Features { get; } =
-    [
-        new(BaseFeatures.GameLocatable, IsImplemented: true),
-        new(BaseFeatures.HasInstallers, IsImplemented: true),
-        new(BaseFeatures.HasDiagnostics, IsImplemented: false),
-        new(BaseFeatures.HasLoadOrder, IsImplemented: false),
-    ];
 
     public IEnumerable<uint> SteamIds => [261550u];
     public IEnumerable<long> GogIds => [1802539526, 1564781494];
