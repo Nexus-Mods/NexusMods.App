@@ -20,8 +20,6 @@ namespace NexusMods.Abstractions.Games;
 [PublicAPI]
 public abstract class AGame : IGame
 {
-    private IReadOnlyCollection<GameInstallation>? _installations;
-    private readonly IEnumerable<IGameLocator> _gameLocators;
     private readonly Lazy<ILoadoutSynchronizer> _synchronizer;
     private readonly Lazy<ISortOrderManager> _sortOrderManager;
     private readonly IServiceProvider _provider;
@@ -33,7 +31,6 @@ public abstract class AGame : IGame
     protected AGame(IServiceProvider provider)
     {
         _provider = provider;
-        _gameLocators = provider.GetServices<IGameLocator>();
         // In a Lazy so we don't get a circular dependency
         _synchronizer = new Lazy<ILoadoutSynchronizer>(() => MakeSynchronizer(provider));
         _sortOrderManager = new Lazy<ISortOrderManager>(() => MakeSortOrderManager(provider, this));
@@ -125,35 +122,6 @@ public abstract class AGame : IGame
         {
             return Optional<Version>.None;
         }
-    }
-
-    /// <summary>
-    /// Clears the internal cache of game installations, so that the next access will re-query the system.
-    /// </summary>
-    public void ResetInstallations()
-    {
-        _installations = null;
-    }
-
-    private List<GameInstallation> GetInstallations()
-    {
-        return _gameLocators
-            .SelectMany(locator => locator.Find(this), (locator, installation) =>
-            {
-                var locations = GetLocations(installation.Path.FileSystem, installation);
-                return new GameInstallation
-                {
-                    Game = this,
-                    LocationsRegister = new GameLocationsRegister(new Dictionary<LocationId, AbsolutePath>(locations)),
-                    InstallDestinations = GetInstallDestinations(locations),
-                    Store = installation.Store,
-                    TargetOS = installation.TargetOS,
-                    LocatorResultMetadata = installation.Metadata,
-                    Locator = locator,
-                };
-            })
-            .DistinctBy(g => g.LocationsRegister[LocationId.Game])
-            .ToList();
     }
 
     /// <summary>
