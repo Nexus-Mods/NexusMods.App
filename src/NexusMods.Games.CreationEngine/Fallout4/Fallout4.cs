@@ -21,15 +21,25 @@ using NexusMods.Games.FOMOD;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.Paths;
 using NexusMods.Sdk.FileStore;
+using NexusMods.Sdk.Games;
 using NexusMods.Sdk.IO;
 
 namespace NexusMods.Games.CreationEngine.Fallout4;
 
-public partial class Fallout4 : AGame, ISteamGame, IGogGame, ICreationEngineGame
+public partial class Fallout4 : AGame, ISteamGame, IGogGame, ICreationEngineGame, IGameData<Fallout4>
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly IDiagnosticEmitter[] _emitters;
     private readonly IStreamSourceDispatcher _streamSource;
+
+    public static GameId GameId { get; } = GameId.From("CreationEngine.Fallout4");
+    protected override GameId GameIdImpl => GameId;
+
+    public static string DisplayName => "Fallout 4";
+    protected override string DisplayNameImpl => DisplayName;
+
+    public static Optional<Sdk.NexusModsApi.NexusModsGameId> NexusModsGameId => Sdk.NexusModsApi.NexusModsGameId.From(1151);
+    protected override Optional<Sdk.NexusModsApi.NexusModsGameId> NexusModsGameIdImpl => NexusModsGameId;
 
     public Fallout4(IServiceProvider provider) : base(provider)
     {
@@ -42,8 +52,6 @@ public partial class Fallout4 : AGame, ISteamGame, IGogGame, ICreationEngineGame
         ];
     }
 
-    public override string DisplayName => "Fallout 4";
-    public override Optional<Sdk.NexusModsApi.NexusModsGameId> NexusModsGameId => Sdk.NexusModsApi.NexusModsGameId.From(1151);
     public override GamePath GetPrimaryFile(GameTargetInfo targetInfo) => new(LocationId.Game, "Fallout4.exe");
 
     protected override IReadOnlyDictionary<LocationId, AbsolutePath> GetLocations(IFileSystem fileSystem, GameLocatorResult installation)
@@ -66,13 +74,9 @@ public partial class Fallout4 : AGame, ISteamGame, IGogGame, ICreationEngineGame
     public IEnumerable<uint> SteamIds => [377160];
     public IEnumerable<long> GogIds => [ 1998527297 ];
         
-    public override IStreamFactory Icon =>
-        new EmbeddedResourceStreamFactory<Fallout4>("NexusMods.Games.CreationEngine.Resources.Fallout4.thumbnail.webp");
+    public override IStreamFactory IconImage => new EmbeddedResourceStreamFactory<Fallout4>("NexusMods.Games.CreationEngine.Resources.Fallout4.thumbnail.webp");
+    public override IStreamFactory TileImage => new EmbeddedResourceStreamFactory<Fallout4>("NexusMods.Games.CreationEngine.Resources.Fallout4.tile.webp");
 
-    public override IStreamFactory GameImage =>
-        new EmbeddedResourceStreamFactory<Fallout4>("NexusMods.Games.CreationEngine.Resources.Fallout4.tile.webp");
-
-    
     public override ILibraryItemInstaller[] LibraryItemInstallers =>
     [
         FomodXmlInstaller.Create(_serviceProvider, new GamePath(LocationId.Game, "Data")),

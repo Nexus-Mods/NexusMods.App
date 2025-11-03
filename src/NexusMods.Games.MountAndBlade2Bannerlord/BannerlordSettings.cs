@@ -16,7 +16,7 @@ public class BannerlordSettings : ISettings
             new PropertyOptions<BannerlordSettings, bool>
             {
                 Section = Sections.Experimental,
-                DisplayName = $"Full game backup: {Bannerlord.StaticDisplayName}",
+                DisplayName = $"Full game backup: {Bannerlord.DisplayName}",
                 DescriptionFactory = _ => "Backup all game folders, this will greatly increase disk space usage. Should only be changed before managing the game.",
             },
             new BooleanContainerOptions()

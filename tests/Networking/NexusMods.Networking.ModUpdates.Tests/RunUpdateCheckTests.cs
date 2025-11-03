@@ -45,7 +45,7 @@ public class RunUpdateCheckTests : ACyberpunkIsolatedGameTest<RunUpdateCheckTest
         await using var tempFile = TemporaryFileManager.CreateFile();
         var downloadJob = await _nexusModsLibrary.CreateDownloadJob(
             destination: tempFile,
-            Cyberpunk2077Game.NexusModsGameIdStatic,
+            Cyberpunk2077Game.NexusModsGameId.Value,
             modId: modId,
             fileId: fileId
         );

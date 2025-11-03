@@ -47,7 +47,7 @@ public class LibraryArchiveInstallerTests(ITestOutputHelper outputHelper) : AIso
     {
         var loadout = await CreateLoadout();
         await using var tempFile = TemporaryFileManager.CreateFile();
-        var download = await NexusModsLibrary.CreateDownloadJob(tempFile.Path, Game.NexusModsGameId.Value, ModId.From(modId), FileId.From(fileId));
+        var download = await NexusModsLibrary.CreateDownloadJob(tempFile.Path, CreationEngine.Fallout4.Fallout4.NexusModsGameId.Value, ModId.From(modId), FileId.From(fileId));
         var libraryArchive = await LibraryService.AddDownload(download);
 
         var installed = await LoadoutManager.InstallItem(libraryArchive.AsLibraryItem(), loadout);

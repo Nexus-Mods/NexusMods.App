@@ -30,7 +30,7 @@ public class RedModDeployTool : ITool
         _redModSortOrderVariety = sortOrderVariety;
     }
     
-    public IEnumerable<NexusModsGameId> GameIds => [Cyberpunk2077.Cyberpunk2077Game.NexusModsGameIdStatic];
+    public IEnumerable<NexusModsGameId> GameIds => [Cyberpunk2077.Cyberpunk2077Game.NexusModsGameId.Value];
 
     public async Task Execute(Loadout.ReadOnly loadout, CancellationToken cancellationToken)
     {

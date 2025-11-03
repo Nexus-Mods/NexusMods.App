@@ -16,12 +16,13 @@ using NexusMods.Games.FOMOD;
 using NexusMods.Games.StardewValley.Emitters;
 using NexusMods.Games.StardewValley.Installers;
 using NexusMods.Paths;
+using NexusMods.Sdk.Games;
 using NexusMods.Sdk.IO;
 
 namespace NexusMods.Games.StardewValley;
 
 [UsedImplicitly]
-public class StardewValley : AGame, ISteamGame, IGogGame, IXboxGame
+public class StardewValley : AGame, ISteamGame, IGogGame, IXboxGame, IGameData<StardewValley>
 {
     public static GameDomain DomainStatic => GameDomain.From("stardewvalley");
     private readonly IServiceProvider _serviceProvider;
@@ -29,8 +30,14 @@ public class StardewValley : AGame, ISteamGame, IGogGame, IXboxGame
     public IEnumerable<long> GogIds => new long[] { 1453375253 };
     public IEnumerable<string> XboxIds => new[] { "ConcernedApe.StardewValleyPC" };
 
-    public override string DisplayName => "Stardew Valley";
-    public override Optional<Sdk.NexusModsApi.NexusModsGameId> NexusModsGameId => Sdk.NexusModsApi.NexusModsGameId.From(1303);
+    public static GameId GameId { get; } = GameId.From("StardewValley");
+    protected override GameId GameIdImpl => GameId;
+
+    public static string DisplayName => "Stardew Valley";
+    protected override string DisplayNameImpl => DisplayName;
+
+    public static Optional<Sdk.NexusModsApi.NexusModsGameId> NexusModsGameId => Sdk.NexusModsApi.NexusModsGameId.From(1303);
+    protected override Optional<Sdk.NexusModsApi.NexusModsGameId> NexusModsGameIdImpl => NexusModsGameId;
 
     public StardewValley(
         IOSInformation osInformation,
@@ -90,9 +97,8 @@ public class StardewValley : AGame, ISteamGame, IGogGame, IXboxGame
         return result;
     }
 
-    public override IStreamFactory Icon => new EmbeddedResourceStreamFactory<StardewValley>("NexusMods.Games.StardewValley.Resources.thumbnail.webp");
-
-    public override IStreamFactory GameImage => new EmbeddedResourceStreamFactory<StardewValley>("NexusMods.Games.StardewValley.Resources.tile.webp");
+    public override IStreamFactory IconImage => new EmbeddedResourceStreamFactory<StardewValley>("NexusMods.Games.StardewValley.Resources.thumbnail.webp");
+    public override IStreamFactory TileImage => new EmbeddedResourceStreamFactory<StardewValley>("NexusMods.Games.StardewValley.Resources.tile.webp");
 
     public override ILibraryItemInstaller[] LibraryItemInstallers =>
     [

@@ -9,6 +9,7 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
+using NexusMods.Sdk.Games;
 using NexusMods.Sdk.IO;
 
 namespace NexusMods.Abstractions.Games;
@@ -54,21 +55,24 @@ public abstract class AGame : IGame
         return manager;
     }
 
-    /// <inheritdoc />
-    public abstract string DisplayName { get; }
+    GameId IGameData.GameId => GameIdImpl;
+    protected abstract GameId GameIdImpl { get; }
 
-    /// <inheritdoc />
-    public abstract Optional<Sdk.NexusModsApi.NexusModsGameId> NexusModsGameId { get; }
+    string IGameData.DisplayName => DisplayNameImpl;
+    protected abstract string DisplayNameImpl { get; }
+
+    Optional<Sdk.NexusModsApi.NexusModsGameId> IGameData.NexusModsGameId => NexusModsGameIdImpl;
+    protected abstract Optional<Sdk.NexusModsApi.NexusModsGameId> NexusModsGameIdImpl { get; }
 
     /// <inheritdoc/>
     public abstract GamePath GetPrimaryFile(GameTargetInfo targetInfo);
 
     /// <inheritdoc />
-    public virtual IStreamFactory Icon => throw new NotImplementedException("No icon provided for this game.");
+    public abstract IStreamFactory IconImage { get; }
 
     /// <inheritdoc />
-    public virtual IStreamFactory GameImage => throw new NotImplementedException("No game image provided for this game.");
-    
+    public abstract IStreamFactory TileImage { get; }
+
     /// <inheritdoc />
     public virtual ILibraryItemInstaller[] LibraryItemInstallers { get; } = [];
 
@@ -173,5 +177,5 @@ public abstract class AGame : IGame
     public virtual Optional<GamePath> GetFallbackCollectionInstallDirectory(GameTargetInfo targetInfo) => Optional<GamePath>.None;
 
     /// <inheritdoc />
-    public override string ToString() => DisplayName;
+    public override string ToString() => DisplayNameImpl;
 }

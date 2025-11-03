@@ -43,7 +43,7 @@ using Xunit.DependencyInjection;
 namespace NexusMods.Games.TestFramework;
 
 [PublicAPI]
-public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGame : AGame
+public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGame : IGame
 {
     protected readonly ILogger Logger;
     protected readonly IServiceProvider ServiceProvider;

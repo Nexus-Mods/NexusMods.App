@@ -25,7 +25,7 @@ public interface IRunGameTool : ITool;
 /// </summary>
 /// <typeparam name="T"></typeparam>
 public class RunGameTool<T> : IRunGameTool
-    where T : AGame
+    where T : IGame
 {
     private readonly ILogger<RunGameTool<T>> _logger;
     private readonly T _game;

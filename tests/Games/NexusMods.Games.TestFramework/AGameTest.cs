@@ -24,7 +24,7 @@ using NexusMods.StandardGameLocators.TestHelpers;
 namespace NexusMods.Games.TestFramework;
 
 [PublicAPI]
-public abstract class AGameTest<TGame> where TGame : AGame
+public abstract class AGameTest<TGame> where TGame : IGame
 {
     protected readonly IServiceProvider ServiceProvider;
     protected readonly TGame Game;

@@ -98,7 +98,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
                     .Filter(loadout => loadout.IsVisible())
                     .TransformAsync(async loadout =>
                         {
-                            await using var iconStream = await ((IGame)loadout.InstallationInstance.Game).Icon.GetStreamAsync();
+                            await using var iconStream = await loadout.InstallationInstance.Game.IconImage.GetStreamAsync();
 
                             var vm = serviceProvider.GetRequiredService<IImageButtonViewModel>();
                             vm.Name = loadout.InstallationInstance.Game.DisplayName + " - " + loadout.Name;

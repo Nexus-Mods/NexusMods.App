@@ -10,7 +10,7 @@ public interface IGameData
     /// <summary>
     /// Gets the unique identifier for the game.
     /// </summary>
-    GameId Id { get; }
+    GameId GameId { get; }
 
     /// <summary>
     /// Gets the display name of the game.
@@ -20,7 +20,7 @@ public interface IGameData
     /// <summary>
     /// Gets the ID of the game on Nexus Mods.
     /// </summary>
-    Optional<Sdk.NexusModsApi.NexusModsGameId> NexusModsId { get; }
+    Optional<NexusModsApi.NexusModsGameId> NexusModsGameId { get; }
 
     /// <summary>
     /// Gets the stream factory for the square icon image.
@@ -37,15 +37,15 @@ public interface IGameData
 public interface IGameData<TSelf> : IGameData
     where TSelf : IGameData, IGameData<TSelf>
 {
-    /// <inheritdoc cref="IGameData.Id"/>
-    new static abstract GameId Id { get; }
-    GameId IGameData.Id => TSelf.Id;
+    /// <inheritdoc cref="IGameData.GameId"/>
+    new static abstract GameId GameId { get; }
+    GameId IGameData.GameId => TSelf.GameId;
 
     /// <inheritdoc cref="IGameData.DisplayName"/>
     new static abstract string DisplayName { get; }
     string IGameData.DisplayName => TSelf.DisplayName;
 
-    /// <inheritdoc cref="IGameData.NexusModsId"/>
-    new static abstract Optional<Sdk.NexusModsApi.NexusModsGameId> NexusModsId { get; }
-    Optional<Sdk.NexusModsApi.NexusModsGameId> IGameData.NexusModsId => TSelf.NexusModsId;
+    /// <inheritdoc cref="IGameData.NexusModsGameId"/>
+    new static abstract Optional<NexusModsApi.NexusModsGameId> NexusModsGameId { get; }
+    Optional<NexusModsApi.NexusModsGameId> IGameData.NexusModsGameId => TSelf.NexusModsGameId;
 }

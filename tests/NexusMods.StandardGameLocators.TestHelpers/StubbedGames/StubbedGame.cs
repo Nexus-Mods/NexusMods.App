@@ -14,18 +14,26 @@ using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Paths;
 using NexusMods.Sdk.FileExtractor;
+using NexusMods.Sdk.Games;
 using NexusMods.Sdk.IO;
 
 // ReSharper disable InconsistentNaming
 
 namespace NexusMods.StandardGameLocators.TestHelpers.StubbedGames;
 
-public class StubbedGame : AGame, IEADesktopGame, IEpicGame, IOriginGame, ISteamGame, IGogGame, IXboxGame
+public class StubbedGame : AGame, IEADesktopGame, IEpicGame, IOriginGame, ISteamGame, IGogGame, IXboxGame, IGameData<StubbedGame>
 {
     private readonly ILogger<StubbedGame> _logger;
     private readonly IEnumerable<IGameLocator> _locators;
-    public override string DisplayName => "Stubbed Game";
-    public override Optional<Sdk.NexusModsApi.NexusModsGameId> NexusModsGameId => Sdk.NexusModsApi.NexusModsGameId.From(uint.MaxValue);
+
+    public static GameId GameId { get; } = GameId.From("StubbedGame");
+    protected override GameId GameIdImpl => GameId;
+
+    public static string DisplayName => "Stubbed Game";
+    protected override string DisplayNameImpl => DisplayName;
+
+    public static Optional<Sdk.NexusModsApi.NexusModsGameId> NexusModsGameId => Optional<Sdk.NexusModsApi.NexusModsGameId>.None;
+    protected override Optional<Sdk.NexusModsApi.NexusModsGameId> NexusModsGameIdImpl => NexusModsGameId;
 
     private readonly IServiceProvider _serviceProvider;
     public StubbedGame(ILogger<StubbedGame> logger, IEnumerable<IGameLocator> locators,
@@ -42,11 +50,9 @@ public class StubbedGame : AGame, IEADesktopGame, IEpicGame, IOriginGame, ISteam
         // Lazy initialization to avoid circular dependencies
         new DefaultSynchronizer(_serviceProvider);
 
-    public override IStreamFactory Icon =>
-        new EmbeddedResourceStreamFactory<StubbedGame>(
-            "NexusMods.StandardGameLocators.TestHelpers.Resources.question_mark_game.png");
+    public override IStreamFactory IconImage => new EmbeddedResourceStreamFactory<StubbedGame>("NexusMods.StandardGameLocators.TestHelpers.Resources.question_mark_game.png");
+    public override IStreamFactory TileImage => throw new NotImplementedException("No game image for stubbed game.");
 
-    public override IStreamFactory GameImage => throw new NotImplementedException("No game image for stubbed game.");
     protected override IReadOnlyDictionary<LocationId, AbsolutePath> GetLocations(IFileSystem fileSystem,
         GameLocatorResult installation)
     {
@@ -59,7 +65,6 @@ public class StubbedGame : AGame, IEADesktopGame, IEpicGame, IOriginGame, ISteam
     }
 
     public override List<IModInstallDestination> GetInstallDestinations(IReadOnlyDictionary<LocationId, AbsolutePath> locations) => new();
-    
 
     public IEnumerable<uint> SteamIds => [42u];
     public IEnumerable<long> GogIds => [42];

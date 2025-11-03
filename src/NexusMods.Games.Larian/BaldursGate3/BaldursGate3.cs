@@ -8,26 +8,32 @@ using NexusMods.Abstractions.GameLocators.Stores.Steam;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
-using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Games.Generic.Installers;
 using NexusMods.Games.Larian.BaldursGate3.Emitters;
 using NexusMods.Games.Larian.BaldursGate3.Installers;
 using NexusMods.Paths;
 using NexusMods.Paths.Utilities;
+using NexusMods.Sdk.Games;
 using NexusMods.Sdk.IO;
 
 namespace NexusMods.Games.Larian.BaldursGate3;
 
-public class BaldursGate3 : AGame, ISteamGame, IGogGame
+public class BaldursGate3 : AGame, ISteamGame, IGogGame, IGameData<BaldursGate3>
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly IFileSystem _fs;
-    public override string DisplayName => "Baldur's Gate 3";
+
+    public static GameId GameId { get; } = GameId.From("Larian.BaldursGate3");
+    protected override GameId GameIdImpl => GameId;
+
+    public static string DisplayName => "Baldur's Gate 3";
+    protected override string DisplayNameImpl => DisplayName;
+
+    public static Optional<Sdk.NexusModsApi.NexusModsGameId> NexusModsGameId => Sdk.NexusModsApi.NexusModsGameId.From(3474);
+    protected override Optional<Sdk.NexusModsApi.NexusModsGameId> NexusModsGameIdImpl => NexusModsGameId;
 
     public IEnumerable<uint> SteamIds => [1086940u];
     public IEnumerable<long> GogIds => [1456460669];
-    public override Optional<Sdk.NexusModsApi.NexusModsGameId> NexusModsGameId => Sdk.NexusModsApi.NexusModsGameId.From(3474);
-    public static readonly GameDomain StaticDomain = GameDomain.From("baldursgate3");
 
     public BaldursGate3(IServiceProvider provider) : base(provider)
     {
@@ -139,9 +145,6 @@ public class BaldursGate3 : AGame, ISteamGame, IGogGame
         _serviceProvider.GetRequiredService<DependencyDiagnosticEmitter>(),
     ];
 
-    public override IStreamFactory Icon =>
-        new EmbeddedResourceStreamFactory<BaldursGate3>("NexusMods.Games.Larian.Resources.BaldursGate3.thumbnail.webp");
-
-    public override IStreamFactory GameImage =>
-        new EmbeddedResourceStreamFactory<BaldursGate3>("NexusMods.Games.Larian.Resources.BaldursGate3.tile.webp");
+    public override IStreamFactory IconImage => new EmbeddedResourceStreamFactory<BaldursGate3>("NexusMods.Games.Larian.Resources.BaldursGate3.thumbnail.webp");
+    public override IStreamFactory TileImage => new EmbeddedResourceStreamFactory<BaldursGate3>("NexusMods.Games.Larian.Resources.BaldursGate3.tile.webp");
 }
