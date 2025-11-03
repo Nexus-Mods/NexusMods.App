@@ -162,6 +162,7 @@ public sealed class DownloadsService : IDownloadsService, IDisposable
     // Note(sewer) Workaround for issue #3892: Resolve to the underlying HttpDownloadJob ID
     public void PauseAll()
     {
+        _jobMonitor.PauseDownloadQueue();
         foreach (var download in _downloadCache.Items.Where(d => d.Status.Value == JobStatus.Running))
             _jobMonitor.Pause(ResolveToHttpDownloadJobId(download));
     }
@@ -169,6 +170,7 @@ public sealed class DownloadsService : IDownloadsService, IDisposable
     // Note(sewer) Workaround for issue #3892: Resolve to the underlying HttpDownloadJob ID
     public void PauseAllForGame(GameId gameId)
     {
+        _jobMonitor.PauseDownloadQueue();
         foreach (var download in _downloadCache.Items.Where(d => 
             d.Status.Value == JobStatus.Running && d.GameId.Value.Equals(gameId)))
             _jobMonitor.Pause(ResolveToHttpDownloadJobId(download));
@@ -177,6 +179,7 @@ public sealed class DownloadsService : IDownloadsService, IDisposable
     // Note(sewer) Workaround for issue #3892: Resolve to the underlying HttpDownloadJob ID
     public void ResumeAll()
     {
+        _jobMonitor.ResumeDownloadQueue();
         foreach (var download in _downloadCache.Items.Where(d => d.Status.Value == JobStatus.Paused))
             _jobMonitor.Resume(ResolveToHttpDownloadJobId(download));
     }
@@ -184,6 +187,7 @@ public sealed class DownloadsService : IDownloadsService, IDisposable
     // Note(sewer) Workaround for issue #3892: Resolve to the underlying HttpDownloadJob ID
     public void ResumeAllForGame(GameId gameId)
     {
+        _jobMonitor.ResumeDownloadQueue();
         foreach (var download in _downloadCache.Items.Where(d => 
             d.Status.Value == JobStatus.Paused && d.GameId.Value.Equals(gameId)))
             _jobMonitor.Resume(ResolveToHttpDownloadJobId(download));

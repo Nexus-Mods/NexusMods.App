@@ -113,6 +113,10 @@ public record HttpDownloadJob : IJobDefinitionWithStart<HttpDownloadJob, Absolut
             Logger.LogInformation("Resuming download from {Bytes} bytes", _state.TotalBytesDownloaded);
         
         await FetchMetadata(context);
+        
+        // Any incoming downloads should be paused if the global download queue is paused
+        if (context.Monitor.IsDownloadQueuePaused())
+            context.Pause();
 
         await context.YieldAsync();
         await using var fileStream = Destination.Open(FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read);
