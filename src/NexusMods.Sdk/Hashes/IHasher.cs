@@ -1,4 +1,3 @@
-using System.Runtime.InteropServices;
 using JetBrains.Annotations;
 
 namespace NexusMods.Sdk.Hashes;
@@ -15,9 +14,18 @@ public interface IHasher<out THash, TSelf>
     /// Hashes the input.
     /// </summary>
     static abstract THash Hash(ReadOnlySpan<byte> input);
+}
 
+/// <summary>
+/// Represents a hash algorithm.
+/// </summary>
+[PublicAPI]
+public interface IStringHasher<out THash, TSelf> : IHasher<THash, TSelf>
+    where THash : unmanaged, IEquatable<THash>
+    where TSelf : IStringHasher<THash, TSelf>
+{
     /// <summary>
     /// Hashes the input.
     /// </summary>
-    static virtual THash Hash(ReadOnlySpan<char> input) => TSelf.Hash(MemoryMarshal.AsBytes(input));
+    static abstract THash Hash(ReadOnlySpan<char> input);
 }

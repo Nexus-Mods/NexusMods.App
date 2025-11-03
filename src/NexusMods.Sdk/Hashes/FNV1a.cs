@@ -8,7 +8,7 @@ namespace NexusMods.Sdk.Hashes;
 /// </summary>
 [PublicAPI]
 [SuppressMessage("ReSharper", "InconsistentNaming")]
-public class FNV1a16Hasher : IHasher<ushort, FNV1a16Hasher>
+public class FNV1a16Hasher : IStringHasher<ushort, FNV1a16Hasher>
 {
     public static ushort Hash(ReadOnlySpan<byte> input) => MixToShort(FNV1a32Hasher.Hash(input));
     public static ushort Hash(ReadOnlySpan<char> input) => MixToShort(FNV1a32Hasher.Hash(input));
@@ -24,7 +24,7 @@ public class FNV1a16Hasher : IHasher<ushort, FNV1a16Hasher>
 /// </summary>
 [PublicAPI]
 [SuppressMessage("ReSharper", "InconsistentNaming")]
-public class FNV1a32Hasher : IHasher<uint, FNV1a32Hasher>
+public class FNV1a32Hasher : IStringHasher<uint, FNV1a32Hasher>
 {
     // https://datatracker.ietf.org/doc/html/draft-eastlake-fnv-35#name-fnv-constants
     private const uint Prime = 0x01000193;
@@ -62,7 +62,7 @@ public class FNV1a32Hasher : IHasher<uint, FNV1a32Hasher>
 /// </summary>
 [PublicAPI]
 [SuppressMessage("ReSharper", "InconsistentNaming")]
-public class FNV1a64Hasher : IHasher<ulong, FNV1a64Hasher>
+public class FNV1a64Hasher : IStringHasher<ulong, FNV1a64Hasher>
 {
     // https://datatracker.ietf.org/doc/html/draft-eastlake-fnv-35#name-fnv-constants
     private const ulong Prime = 0x00000100_000001B3;

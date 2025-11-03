@@ -15,9 +15,6 @@ public abstract class HasherTestBase<THash, THasher>
     // https://github.com/thomhurst/TUnit/issues/3604
     public async Task Test_Hasher(string input, THash expected)
     {
-        var actual = THasher.Hash(input);
-        await Assert.That(actual).IsEqualTo(expected);
-
         var bytes = Encoding.UTF8.GetBytes(input);
         var hashFromBytes = THasher.Hash(bytes);
         await Assert.That(hashFromBytes).IsEqualTo(expected);

@@ -104,7 +104,14 @@ public readonly struct Sha1Value : IEquatable<Sha1Value>
 [PublicAPI]
 public class Sha1Hasher : IStreamingHasher<Sha1Value, SHA1, Sha1Hasher>
 {
-    public static Sha1Value Hash(ReadOnlySpan<byte> input) => Sha1Value.From(SHA1.HashData(input));
+    public static Sha1Value Hash(ReadOnlySpan<byte> input)
+    {
+        Span<byte> hashBytes = stackalloc byte[Sha1Value.Size];
+        var didHash = SHA1.TryHashData(input, hashBytes, out var bytesWritten);
+        Debug.Assert(bytesWritten == hashBytes.Length && didHash);
+
+        return Sha1Value.From(hashBytes);
+    }
 
     public static SHA1 Initialize() => SHA1.Create();
 

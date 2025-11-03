@@ -122,7 +122,14 @@ public readonly struct Md5Value : IEquatable<Md5Value>
 [PublicAPI]
 public class Md5Hasher : IStreamingHasher<Md5Value, MD5, Md5Hasher>
 {
-    public static Md5Value Hash(ReadOnlySpan<byte> input) => Md5Value.From(MD5.HashData(input));
+    public static Md5Value Hash(ReadOnlySpan<byte> input)
+    {
+        Span<byte> hashBytes = stackalloc byte[Md5Value.Size];
+        var didHash = MD5.TryHashData(input, hashBytes, out var bytesWritten);
+        Debug.Assert(bytesWritten == hashBytes.Length && didHash);
+
+        return Md5Value.From(hashBytes);
+    }
 
     public static MD5 Initialize() => MD5.Create();
 

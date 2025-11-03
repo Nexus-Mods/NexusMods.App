@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using System.Text;
 using JetBrains.Annotations;
 
 namespace NexusMods.Sdk.Hashes;
@@ -9,20 +10,22 @@ namespace NexusMods.Sdk.Hashes;
 [PublicAPI]
 public class StringHashPool<THash, THasher>
     where THash : unmanaged, IEquatable<THash>
-    where THasher : IHasher<THash, THasher>
+    where THasher : IStringHasher<THash, THasher>
 {
     private const uint MaxIterations = 100;
 
     private readonly string _name;
+    private readonly Encoding _encoding;
     private ImmutableDictionary<THash, string> _cache;
 
     /// <summary>
     /// Constructor.
     /// </summary>
-    public StringHashPool(string name)
+    public StringHashPool(string name, Encoding? encoding = null)
     {
         _name = name;
         _cache = ImmutableDictionary<THash, string>.Empty;
+        _encoding = encoding ?? Encoding.ASCII;
     }
 
     /// <summary>
