@@ -233,14 +233,14 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         var osInterop = serviceProvider.GetRequiredService<IOSInterop>();
         OpenNexusModsCommand = new ReactiveCommand<Unit>(execute: _ =>
         {
-            var gameDomain = _gameIdMappingCache[game.NexusModsGameId];
+            var gameDomain = _gameIdMappingCache[game.NexusModsGameId.Value];
             var gameUri = NexusModsUrlBuilder.GetGameUri(gameDomain);
             osInterop.OpenUri(gameUri);
         });
 
         OpenNexusModsCollectionsCommand = new ReactiveCommand<Unit>(execute: _ =>
         {
-            var gameDomain = _gameIdMappingCache[game.NexusModsGameId];
+            var gameDomain = _gameIdMappingCache[game.NexusModsGameId.Value];
             var gameUri = NexusModsUrlBuilder.GetBrowseCollectionsUri(gameDomain);
             osInterop.OpenUri(gameUri);
         });

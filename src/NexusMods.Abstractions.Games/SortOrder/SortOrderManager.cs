@@ -91,10 +91,9 @@ public class SortOrderManager : ISortOrderManager, IDisposable
         if (_sortOrderVarieties.Count > 0)
         {
             // Subscribe to changes in the sort orders
-            SubscribeToChanges(game.NexusModsGameId);
+            SubscribeToChanges(game.NexusModsGameId.Value);
         }
     }
-
 
     protected void SubscribeToChanges(GameId gameId)
     {

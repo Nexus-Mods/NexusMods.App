@@ -111,7 +111,7 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
                     .Where(game =>
                     {
                         if (experimentalSettings.EnableAllGames) return true;
-                        return experimentalSettings.SupportedGames.Contains(game.Game.NexusModsGameId);
+                        return experimentalSettings.SupportedGames.Contains(game.Game.NexusModsGameId.Value);
                     })
                     .ToReadOnlyObservableCollection()
                     .ToObservableChangeSet()
@@ -126,10 +126,10 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
                             {
                                 if (GetJobRunningForGameInstallation(installation).IsT2) return;
 
-                                var filesToDelete = libraryDataProviders.SelectMany(dataProvider => dataProvider.GetAllFiles(gameId: installation.Game.NexusModsGameId)).ToArray();
+                                var filesToDelete = libraryDataProviders.SelectMany(dataProvider => dataProvider.GetAllFiles(gameId: installation.Game.NexusModsGameId.Value)).ToArray();
                                 var totalSize = filesToDelete.Sum(static Size (file) => file.Size);
 
-                                var collections = CollectionDownloader.GetCollections(conn.Db, installation.Game.NexusModsGameId);
+                                var collections = CollectionDownloader.GetCollections(conn.Db, installation.Game.NexusModsGameId.Value);
 
                                 var overlay = new RemoveGameOverlayViewModel
                                 {
@@ -185,7 +185,7 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
                     .Where(game =>
                     {
                         if (experimentalSettings.EnableAllGames) return true;
-                        return experimentalSettings.SupportedGames.Contains(game.NexusModsGameId);
+                        return experimentalSettings.SupportedGames.Contains(game.NexusModsGameId.Value);
                     })
                     .Cast<IGame>()
                     .Where(game => _installedGames.All(install => install.Installation.GetGame().NexusModsGameId != game.NexusModsGameId)); // Exclude found games

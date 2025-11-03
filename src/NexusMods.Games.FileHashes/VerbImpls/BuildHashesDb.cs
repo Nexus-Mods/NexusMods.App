@@ -156,7 +156,7 @@ public class BuildHashesDb : IAsyncDisposable
             {
                 Name = definition.Name,
                 OperatingSystem = os,
-                GameId = gameObject.NexusModsGameId,
+                GameId = gameObject.NexusModsGameId.Value,
                 GOG = definition.GOG ?? [],
                 Steam = definition.Steam ?? [],
                 EpicBuildIds = definition.Epic ?? [],

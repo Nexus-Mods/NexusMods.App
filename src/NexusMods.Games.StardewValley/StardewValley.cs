@@ -17,7 +17,6 @@ using NexusMods.Games.StardewValley.Emitters;
 using NexusMods.Games.StardewValley.Installers;
 using NexusMods.Paths;
 using NexusMods.Sdk.IO;
-using NexusMods.Sdk.NexusModsApi;
 
 namespace NexusMods.Games.StardewValley;
 
@@ -31,7 +30,7 @@ public class StardewValley : AGame, ISteamGame, IGogGame, IXboxGame
     public IEnumerable<string> XboxIds => new[] { "ConcernedApe.StardewValleyPC" };
 
     public override string DisplayName => "Stardew Valley";
-    public override GameId NexusModsGameId => GameId.From(1303);
+    public override Optional<Sdk.NexusModsApi.GameId> NexusModsGameId => Sdk.NexusModsApi.GameId.From(1303);
 
     public StardewValley(
         IOSInformation osInformation,

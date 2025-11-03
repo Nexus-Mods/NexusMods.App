@@ -1,3 +1,4 @@
+using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using Mutagen.Bethesda;
 using Mutagen.Bethesda.Plugins;
@@ -21,7 +22,6 @@ using NexusMods.Hashing.xxHash3;
 using NexusMods.Paths;
 using NexusMods.Sdk.FileStore;
 using NexusMods.Sdk.IO;
-using NexusMods.Sdk.NexusModsApi;
 
 namespace NexusMods.Games.CreationEngine.SkyrimSE;
 
@@ -43,7 +43,7 @@ public partial class SkyrimSE : AGame, ISteamGame, IGogGame, ICreationEngineGame
     }
 
     public override string DisplayName => "Skyrim Special Edition";
-    public override GameId NexusModsGameId => GameId.From(1704);
+    public override Optional<Sdk.NexusModsApi.GameId> NexusModsGameId => Sdk.NexusModsApi.GameId.From(1704);
     public override GamePath GetPrimaryFile(GameTargetInfo targetInfo) => new(LocationId.Game, "SkyrimSE.exe");
 
     protected override IReadOnlyDictionary<LocationId, AbsolutePath> GetLocations(IFileSystem fileSystem, GameLocatorResult installation)
@@ -84,7 +84,7 @@ public partial class SkyrimSE : AGame, ISteamGame, IGogGame, ICreationEngineGame
         // Files in a Data folder
         new StopPatternInstaller(_serviceProvider)
         {
-            GameId = NexusModsGameId,
+            GameId = NexusModsGameId.Value,
             GameAliases = ["Skyrim Special Edition", "SkyrimSE", "SSE"],
             TopLevelDirs = KnownPaths.CommonTopLevelFolders,
             StopPatterns = ["(^|/)skse(/|$)"],

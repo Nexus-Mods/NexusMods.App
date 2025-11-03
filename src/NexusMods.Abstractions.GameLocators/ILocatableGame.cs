@@ -1,4 +1,4 @@
-using NexusMods.Sdk.NexusModsApi;
+using DynamicData.Kernel;
 
 namespace NexusMods.Abstractions.GameLocators;
 
@@ -15,5 +15,5 @@ public interface ILocatableGame
     /// <summary>
     /// Nexus Mods Game Id.
     /// </summary>
-    GameId NexusModsGameId { get; }
+    Optional<Sdk.NexusModsApi.GameId> NexusModsGameId { get; }
 }

@@ -28,7 +28,7 @@ public class ToolManager : IToolManager
     /// <inheritdoc />
     public IEnumerable<ITool> GetTools(Loadout.ReadOnly loadout)
     {
-        return _tools[loadout.InstallationInstance.Game.NexusModsGameId];
+        return _tools[loadout.InstallationInstance.Game.NexusModsGameId.Value];
     }
 
     /// <inheritdoc />
@@ -38,7 +38,7 @@ public class ToolManager : IToolManager
         IJobMonitor monitor,
         CancellationToken token = default)
     {
-        if (!tool.GameIds.Contains(loadout.InstallationInstance.Game.NexusModsGameId))
+        if (!tool.GameIds.Contains(loadout.InstallationInstance.Game.NexusModsGameId.Value))
             throw new Exception("Tool does not support this game");
         
         _logger.LogInformation("Applying loadout {LoadoutId} on {GameName} {GameVersion}", 

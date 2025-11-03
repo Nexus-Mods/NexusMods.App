@@ -39,7 +39,7 @@ public class ManuallyAddedLocator : IGameLocator
         using var tx = _conn.Value.BeginTransaction();
         var ent = new ManuallyAddedGame.New(tx)
         {
-            GameId = game.NexusModsGameId,
+            GameId = game.NexusModsGameId.Value,
             Version = version.ToString(),
             Path = path.ToString(),
         };
@@ -70,7 +70,7 @@ public class ManuallyAddedLocator : IGameLocator
     /// <inheritdoc />
     public IEnumerable<GameLocatorResult> Find(ILocatableGame game, bool forceRefreshCache = false)
     {
-        var games = ManuallyAddedGame.FindByGameId(_conn.Value.Db, game.NexusModsGameId)
+        var games = ManuallyAddedGame.FindByGameId(_conn.Value.Db, game.NexusModsGameId.Value)
             .Select(g => new GameLocatorResult(_fileSystem.FromUnsanitizedFullPath(g.Path), _fileSystem,
                 OSInformation.Shared, GameStore.ManuallyAdded, g, Version.Parse(g.Version)));
         return games;

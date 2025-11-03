@@ -10,7 +10,6 @@ using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using NexusMods.Sdk.IO;
-using NexusMods.Sdk.NexusModsApi;
 
 namespace NexusMods.Abstractions.Games;
 
@@ -59,7 +58,7 @@ public abstract class AGame : IGame
     public abstract string DisplayName { get; }
 
     /// <inheritdoc />
-    public abstract GameId NexusModsGameId { get; }
+    public abstract Optional<Sdk.NexusModsApi.GameId> NexusModsGameId { get; }
 
     /// <inheritdoc/>
     public abstract GamePath GetPrimaryFile(GameTargetInfo targetInfo);

@@ -1,3 +1,4 @@
+using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using Mutagen.Bethesda;
 using Mutagen.Bethesda.Fallout4;
@@ -21,7 +22,6 @@ using NexusMods.Hashing.xxHash3;
 using NexusMods.Paths;
 using NexusMods.Sdk.FileStore;
 using NexusMods.Sdk.IO;
-using NexusMods.Sdk.NexusModsApi;
 
 namespace NexusMods.Games.CreationEngine.Fallout4;
 
@@ -43,7 +43,7 @@ public partial class Fallout4 : AGame, ISteamGame, IGogGame, ICreationEngineGame
     }
 
     public override string DisplayName => "Fallout 4";
-    public override GameId NexusModsGameId => GameId.From(1151);
+    public override Optional<Sdk.NexusModsApi.GameId> NexusModsGameId => Sdk.NexusModsApi.GameId.From(1151);
     public override GamePath GetPrimaryFile(GameTargetInfo targetInfo) => new(LocationId.Game, "Fallout4.exe");
 
     protected override IReadOnlyDictionary<LocationId, AbsolutePath> GetLocations(IFileSystem fileSystem, GameLocatorResult installation)
@@ -78,7 +78,7 @@ public partial class Fallout4 : AGame, ISteamGame, IGogGame, ICreationEngineGame
         FomodXmlInstaller.Create(_serviceProvider, new GamePath(LocationId.Game, "Data")),
         new StopPatternInstaller(_serviceProvider)
         {
-            GameId = NexusModsGameId,
+            GameId = NexusModsGameId.Value,
             GameAliases = ["Fallout 4", "Fallout4", "FO4", "F4"],
             TopLevelDirs = KnownPaths.CommonTopLevelFolders,
             StopPatterns = ["(^|/)f4se(/|$)"],
