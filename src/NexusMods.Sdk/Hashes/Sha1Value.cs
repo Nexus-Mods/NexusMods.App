@@ -121,4 +121,9 @@ public class Sha1Hasher : IStreamingHasher<Sha1Value, SHA1, Sha1Hasher>
         var bytes = state.TransformFinalBlock([], inputCount: 0, inputOffset: 0);
         return Sha1Value.From(bytes);
     }
+
+    public static ValueTask<Sha1Value> HashAsync(Stream stream, int bufferSize = IStreamingHasher<Sha1Value, SHA1, Sha1Hasher>.DefaultBufferSize, CancellationToken cancellationToken = default)
+    {
+        return StreamingHasher<Sha1Value, SHA1, Sha1Hasher>.HashAsync(stream, bufferSize, cancellationToken);
+    }
 }

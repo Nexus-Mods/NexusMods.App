@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.IO.Hashing;
 using System.Security.Cryptography;
 using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
@@ -61,19 +62,33 @@ internal class AddLibraryFileJob : IJobDefinitionWithStart<AddLibraryFileJob, Li
         return topFile;
     }
 
+    private static readonly MultiHasherBuilder<Hash, XxHash3, Xx3Hasher, Md5Value, MD5, Md5Hasher> Hasher = MultiHasherBuilder.Start()
+        .AddHasher<Hash, XxHash3, Xx3Hasher>()
+        .AddHasher<Md5Value, MD5, Md5Hasher>();
+
+    private static async ValueTask<(Hash, Optional<Md5Value>)> HashAsync(Stream stream, bool isNestedFile, CancellationToken cancellationToken)
+    {
+        if (isNestedFile)
+        {
+            var hash = await Xx3Hasher.HashAsync(stream, cancellationToken: cancellationToken).ConfigureAwait(false);
+            return (hash, Optional<Md5Value>.None);
+        }
+
+        var multiHash = await Hasher.HashAsync(stream, cancellationToken: cancellationToken);
+        return (multiHash.Hash1, multiHash.Hash2);
+    }
+
     private async Task<LibraryFile.New> AnalyzeFile(IJobContext<AddLibraryFileJob> context, AbsolutePath filePath, bool isNestedFile = false)
     {
         var isArchive = isNestedFile ? await CheckIfNestedArchiveAsync(filePath) : await CheckIfArchiveAsync(filePath);
-        var hash = await filePath.XxHash3Async(token: context.CancellationToken);
 
-        // TODO: hash once with both algorithms
-        var md5 = Optional<Md5Value>.None;
-        if (!isNestedFile)
+        Hash hash;
+        Optional<Md5Value> md5;
+        await using (var fileStream = filePath.Read())
         {
-            await using var fileStream = filePath.Read();
-            using var algo = MD5.Create();
-            var rawHash = await algo.ComputeHashAsync(fileStream, cancellationToken: context.CancellationToken);
-            md5 = Md5Value.From(rawHash);
+            var tuple = await HashAsync(fileStream, isNestedFile: isNestedFile, cancellationToken: context.CancellationToken);
+            hash = tuple.Item1;
+            md5 = tuple.Item2;
         }
 
         var libraryFile = CreateLibraryFile(Transaction, filePath, hash, md5);

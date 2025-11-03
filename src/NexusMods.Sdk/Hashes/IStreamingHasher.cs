@@ -10,27 +10,12 @@ public interface IStreamingHasher<THash, TState, TSelf> : IHasher<THash, TSelf>
     where THash : unmanaged, IEquatable<THash>
     where TSelf : IStreamingHasher<THash, TState, TSelf>
 {
-    internal const int DefaultBufferSize = 1024 * 8;
+    public const int DefaultBufferSize = 1024 * 8;
 
     /// <summary>
     /// Hashes the stream contents until the end.
     /// </summary>
-    static virtual async ValueTask<THash> HashAsync(Stream stream, int bufferSize = DefaultBufferSize, CancellationToken cancellationToken = default)
-    {
-        var buffer = GC.AllocateUninitializedArray<byte>(bufferSize);
-
-        var state = TSelf.Initialize();
-        while (!cancellationToken.IsCancellationRequested)
-        {
-            var bytesRead = await stream.ReadAsync(buffer, cancellationToken);
-            if (bytesRead == 0) break;
-
-            state = TSelf.Update(state, buffer);
-        }
-
-        cancellationToken.ThrowIfCancellationRequested();
-        return TSelf.Finish(state);
-    }
+    static abstract ValueTask<THash> HashAsync(Stream stream, int bufferSize = DefaultBufferSize, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Initializes the streaming state.
@@ -59,8 +44,23 @@ public static class StreamingHasher<THash, TState, THasher>
     where THasher : IStreamingHasher<THash, TState, THasher>
 {
     /// <inheritdoc cref="IStreamingHasher{THash,TState,TSelf}.HashAsync"/>
-    public static ValueTask<THash> HashAsync(
+    public static async ValueTask<THash> HashAsync(
         Stream stream,
-        int bufferSize = IStreamingHasher<THash, TState, THasher>.DefaultBufferSize,
-        CancellationToken cancellationToken = default) => THasher.HashAsync(stream, bufferSize, cancellationToken);
+        int bufferSize,
+        CancellationToken cancellationToken)
+    {
+        var buffer = GC.AllocateUninitializedArray<byte>(bufferSize);
+
+        var state = THasher.Initialize();
+        while (!cancellationToken.IsCancellationRequested)
+        {
+            var bytesRead = await stream.ReadAsync(buffer, cancellationToken).ConfigureAwait(false);
+            if (bytesRead == 0) break;
+
+            state = THasher.Update(state, buffer);
+        }
+
+        cancellationToken.ThrowIfCancellationRequested();
+        return THasher.Finish(state);
+    }
 }

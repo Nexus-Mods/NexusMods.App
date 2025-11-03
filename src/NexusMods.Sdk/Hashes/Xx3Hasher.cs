@@ -18,4 +18,9 @@ public class Xx3Hasher : IStreamingHasher<Hash, XxHash3, Xx3Hasher>
     }
 
     public static Hash Finish(XxHash3 state) => Hashing.xxHash3.Hash.From(state.GetCurrentHashAsUInt64());
+
+    public static ValueTask<Hash> HashAsync(Stream stream, int bufferSize = IStreamingHasher<Hash, XxHash3, Xx3Hasher>.DefaultBufferSize, CancellationToken cancellationToken = default)
+    {
+        return StreamingHasher<Hash, XxHash3, Xx3Hasher>.HashAsync(stream, bufferSize, cancellationToken);
+    }
 }

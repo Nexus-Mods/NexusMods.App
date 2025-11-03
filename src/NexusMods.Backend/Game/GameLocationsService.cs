@@ -140,6 +140,6 @@ internal class GameLocationsService : IGameLocationsService
     private static async ValueTask<Hash> GetMinimalHash(AbsolutePath file, CancellationToken cancellationToken)
     {
         await using var fileStream = file.Read();
-        return await MultiHasher.MinimalHash<Hash, XxHash3, Xx3Hasher>(fileStream, cancellationToken: cancellationToken);
+        return await MinimalHash.HashAsync<Hash, XxHash3, Xx3Hasher>(fileStream, cancellationToken: cancellationToken);
     }
 }

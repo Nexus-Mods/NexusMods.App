@@ -139,4 +139,9 @@ public class Md5Hasher : IStreamingHasher<Md5Value, MD5, Md5Hasher>
         var bytes = state.TransformFinalBlock([], inputOffset: 0, inputCount: 0);
         return Md5Value.From(bytes);
     }
+
+    public static ValueTask<Md5Value> HashAsync(Stream stream, int bufferSize = IStreamingHasher<Md5Value, MD5, Md5Hasher>.DefaultBufferSize, CancellationToken cancellationToken = default)
+    {
+        return StreamingHasher<Md5Value, MD5, Md5Hasher>.HashAsync(stream, bufferSize, cancellationToken);
+    }
 }

@@ -31,4 +31,9 @@ public class Crc32Hasher : IStreamingHasher<Crc32Value, Crc32, Crc32Hasher>
     }
 
     public static Crc32Value Finish(Crc32 state) => Crc32Value.From(state.GetCurrentHashAsUInt32());
+
+    public static ValueTask<Crc32Value> HashAsync(Stream stream, int bufferSize = IStreamingHasher<Crc32Value, Crc32, Crc32Hasher>.DefaultBufferSize, CancellationToken cancellationToken = default)
+    {
+        return StreamingHasher<Crc32Value, Crc32, Crc32Hasher>.HashAsync(stream, bufferSize, cancellationToken);
+    }
 }
