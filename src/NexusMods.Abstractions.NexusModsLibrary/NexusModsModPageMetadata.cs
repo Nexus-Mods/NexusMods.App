@@ -30,7 +30,7 @@ public partial class NexusModsModPageMetadata : IModelDefinition
     /// </summary>
     /// <remarks>
     ///     This will be deprecated in the future, since V2 API only needs <see cref="Uid"/>
-    ///     which contains the <see cref="GameId"/> The <see cref="GameDomain"/> is a legacy field of the V1 API.
+    ///     which contains the <see cref="NexusModsGameId"/> The <see cref="GameDomain"/> is a legacy field of the V1 API.
     /// </remarks>
     public static readonly GameDomainAttribute GameDomain = new(Namespace, nameof(GameDomain)) { IsIndexed = true };
 

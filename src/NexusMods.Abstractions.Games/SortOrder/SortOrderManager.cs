@@ -95,7 +95,7 @@ public class SortOrderManager : ISortOrderManager, IDisposable
         }
     }
 
-    protected void SubscribeToChanges(GameId gameId)
+    protected void SubscribeToChanges(NexusModsGameId nexusModsGameId)
     {
         var compositeDisposable = new CompositeDisposable();
         var conn = _connection;
@@ -104,7 +104,7 @@ public class SortOrderManager : ISortOrderManager, IDisposable
         // Listen to Loadouts additions/removals
         Loadout.ObserveAll(_connection)
             .StartWithEmpty()
-            .FilterImmutable(l => l.Installation.GameId == gameId)
+            .FilterImmutable(l => l.Installation.GameId == nexusModsGameId)
             .ToObservable()
             .SubscribeAwait(this, static async (changes, state, token) =>
                 {
@@ -137,7 +137,7 @@ public class SortOrderManager : ISortOrderManager, IDisposable
         // Listen to collection groups additions/removals
         CollectionGroup.ObserveAll(_connection)
             .StartWithEmpty()
-            .FilterImmutable(cg => cg.AsLoadoutItemGroup().AsLoadoutItem().Loadout.Installation.GameId == gameId)
+            .FilterImmutable(cg => cg.AsLoadoutItemGroup().AsLoadoutItem().Loadout.Installation.GameId == nexusModsGameId)
             .ToObservable()
             .SubscribeAwait(this, static async (changes, state, token) =>
                 {
@@ -171,7 +171,7 @@ public class SortOrderManager : ISortOrderManager, IDisposable
         // Listen to item additions/removals
         // TODO: consider making this Variant specific, to only listen to changes for the relevant items
         // TODO: listen to changes to Game files too
-        SortOrderQueries.TrackLoadoutItemChanges(_connection, gameId)
+        SortOrderQueries.TrackLoadoutItemChanges(_connection, nexusModsGameId)
             .ToObservable()
             .SubscribeAwait(this, static async (changes, state, token) =>
             {

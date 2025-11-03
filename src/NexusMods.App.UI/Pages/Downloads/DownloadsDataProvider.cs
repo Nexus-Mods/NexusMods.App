@@ -92,10 +92,10 @@ public sealed class DownloadsDataProvider(IServiceProvider serviceProvider) : ID
         return model;
     }
 
-    public string ResolveGameName(GameId gameId)
+    public string ResolveGameName(NexusModsGameId nexusModsGameId)
     {
         return _gameRegistry.InstalledGames
-            .FirstOrDefault(g => g.Game.NexusModsGameId.Equals(gameId))?.Game.DisplayName 
+            .FirstOrDefault(g => g.Game.NexusModsGameId.Equals(nexusModsGameId))?.Game.DisplayName 
             ?? Language.Downloads_UnknownGame;
     }
 

@@ -43,7 +43,7 @@ public partial class Fallout4 : AGame, ISteamGame, IGogGame, ICreationEngineGame
     }
 
     public override string DisplayName => "Fallout 4";
-    public override Optional<Sdk.NexusModsApi.GameId> NexusModsGameId => Sdk.NexusModsApi.GameId.From(1151);
+    public override Optional<Sdk.NexusModsApi.NexusModsGameId> NexusModsGameId => Sdk.NexusModsApi.NexusModsGameId.From(1151);
     public override GamePath GetPrimaryFile(GameTargetInfo targetInfo) => new(LocationId.Game, "Fallout4.exe");
 
     protected override IReadOnlyDictionary<LocationId, AbsolutePath> GetLocations(IFileSystem fileSystem, GameLocatorResult installation)

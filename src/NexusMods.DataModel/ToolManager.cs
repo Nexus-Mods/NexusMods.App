@@ -10,7 +10,7 @@ namespace NexusMods.DataModel;
 /// </summary>
 public class ToolManager : IToolManager
 {
-    private readonly ILookup<GameId,ITool> _tools;
+    private readonly ILookup<NexusModsGameId,ITool> _tools;
     private readonly ILogger<ToolManager> _logger;
     private readonly ISynchronizerService _syncService;
 

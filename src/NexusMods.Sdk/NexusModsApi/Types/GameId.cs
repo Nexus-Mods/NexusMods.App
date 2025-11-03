@@ -9,20 +9,20 @@ namespace NexusMods.Sdk.NexusModsApi;
 /// Identifier for a game on Nexus Mods.
 /// </summary>
 [ValueObject<uint>]
-public readonly partial struct GameId : IAugmentWith<DefaultValueAugment>, IAugmentWith<JsonAugment>
+public readonly partial struct NexusModsGameId : IAugmentWith<DefaultValueAugment>, IAugmentWith<JsonAugment>
 {
     /// <inheritdoc/>
-    public static GameId DefaultValue => From(0);
+    public static NexusModsGameId DefaultValue => From(0);
 }
 
 /// <summary>
-/// Attribute for <see cref="GameId"/>.
+/// Attribute for <see cref="NexusModsGameId"/>.
 /// </summary>
-public class GameIdAttribute(string ns, string name) : ScalarAttribute<GameId, uint, UInt32Serializer>(ns, name)
+public class NexusModsGameIdAttribute(string ns, string name) : ScalarAttribute<NexusModsGameId, uint, UInt32Serializer>(ns, name)
 {
     /// <inheritdoc />
-    protected override uint ToLowLevel(GameId value) => value.Value;
+    protected override uint ToLowLevel(NexusModsGameId value) => value.Value;
 
     /// <inheritdoc />
-    protected override GameId FromLowLevel(uint value, AttributeResolver resolver) => GameId.From(value);
+    protected override NexusModsGameId FromLowLevel(uint value, AttributeResolver resolver) => NexusModsGameId.From(value);
 }

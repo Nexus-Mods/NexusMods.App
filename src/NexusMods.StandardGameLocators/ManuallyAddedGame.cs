@@ -15,7 +15,7 @@ public partial class ManuallyAddedGame : IModelDefinition
     /// <summary>
     /// The game domain this game install belongs to.
     /// </summary>
-    public static readonly GameIdAttribute GameId = new(Namespace, nameof(GameId)) { IsIndexed = true };
+    public static readonly NexusModsGameIdAttribute GameId = new(Namespace, nameof(GameId)) { IsIndexed = true };
 
     /// <summary>
     /// The version of the game.

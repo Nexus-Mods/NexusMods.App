@@ -26,7 +26,7 @@ public partial class VersionDefinition : IModelDefinition
     /// <summary>
     /// The game id this version is for
     /// </summary>
-    public static readonly GameIdAttribute GameId = new(Namespace, nameof(GameId)) { IsIndexed = true };
+    public static readonly NexusModsGameIdAttribute GameId = new(Namespace, nameof(GameId)) { IsIndexed = true };
     
     /// <summary>
     /// The gog build ids for this version

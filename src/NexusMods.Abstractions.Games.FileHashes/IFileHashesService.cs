@@ -32,7 +32,7 @@ public interface IFileHashesService
     /// <summary>
     /// Gets all known vanity versions for a given game.
     /// </summary>
-    public IEnumerable<VanityVersion> GetKnownVanityVersions(GameId gameId);
+    public IEnumerable<VanityVersion> GetKnownVanityVersions(NexusModsGameId nexusModsGameId);
 
     /// <summary>
     /// Gets all game files associated with the provided locator IDs.

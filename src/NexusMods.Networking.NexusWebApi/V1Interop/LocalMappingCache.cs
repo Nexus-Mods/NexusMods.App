@@ -12,14 +12,14 @@ namespace NexusMods.Networking.NexusWebApi.V1Interop;
 internal class LocalMappingCache : IGameDomainToGameIdMappingCache
 {
     private readonly ILogger _logger;
-    private readonly FrozenDictionary<GameId, GameDomain> _gameIdToDomain;
-    private readonly FrozenDictionary<GameDomain, GameId> _gameDomainToId;
+    private readonly FrozenDictionary<NexusModsGameId, GameDomain> _gameIdToDomain;
+    private readonly FrozenDictionary<GameDomain, NexusModsGameId> _gameDomainToId;
     private readonly IGameDomainToGameIdMappingCache _fallbackCache;
 
     public LocalMappingCache(
         ILogger<LocalMappingCache> logger,
-        FrozenDictionary<GameId, GameDomain> gameIdToDomain,
-        FrozenDictionary<GameDomain, GameId> gameDomainToId,
+        FrozenDictionary<NexusModsGameId, GameDomain> gameIdToDomain,
+        FrozenDictionary<GameDomain, NexusModsGameId> gameDomainToId,
         IGameDomainToGameIdMappingCache fallbackCache)
     {
         _logger = logger;
@@ -28,7 +28,7 @@ internal class LocalMappingCache : IGameDomainToGameIdMappingCache
         _fallbackCache = fallbackCache;
     }
 
-    public GameDomain GetDomain(GameId id)
+    public GameDomain GetDomain(NexusModsGameId id)
     {
         if (_gameIdToDomain.TryGetValue(id, out var domain)) return domain;
         _logger.LogDebug("Using fallback cache for game id {Id}", id);
@@ -36,7 +36,7 @@ internal class LocalMappingCache : IGameDomainToGameIdMappingCache
         return _fallbackCache[id];
     }
 
-    public GameId GetId(GameDomain domain)
+    public NexusModsGameId GetId(GameDomain domain)
     {
         if (_gameDomainToId.TryGetValue(domain, out var id)) return id;
         _logger.LogDebug("Using fallback cache for game id {Domain}", domain);
@@ -51,8 +51,8 @@ internal class LocalMappingCache : IGameDomainToGameIdMappingCache
 
     internal static bool TryParseJsonFile(
         ILogger logger,
-        [NotNullWhen(true)] out FrozenDictionary<GameId, GameDomain>? gameIdToDomain,
-        [NotNullWhen(true)] out FrozenDictionary<GameDomain, GameId>? gameDomainToId)
+        [NotNullWhen(true)] out FrozenDictionary<NexusModsGameId, GameDomain>? gameIdToDomain,
+        [NotNullWhen(true)] out FrozenDictionary<GameDomain, NexusModsGameId>? gameDomainToId)
     {
         gameIdToDomain = null;
         gameDomainToId = null;
@@ -66,7 +66,7 @@ internal class LocalMappingCache : IGameDomainToGameIdMappingCache
             if (results is null || results.Length == 0) return false;
 
             var pairs = results
-                .Select(x => (Id: GameId.From(x.Id), Domain: GameDomain.From(x.DomainName)))
+                .Select(x => (Id: NexusModsGameId.From(x.Id), Domain: GameDomain.From(x.DomainName)))
                 .ToArray();
 
             gameIdToDomain = pairs.DistinctBy(tuple => tuple.Id).ToFrozenDictionary(tuple => tuple.Id, tuple => tuple.Domain);

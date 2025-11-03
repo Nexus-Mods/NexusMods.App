@@ -686,9 +686,9 @@ public class CollectionDownloader
     /// <summary>
     /// Returns all collections for the given game.
     /// </summary>
-    public static CollectionMetadata.ReadOnly[] GetCollections(IDb db, GameId gameId)
+    public static CollectionMetadata.ReadOnly[] GetCollections(IDb db, NexusModsGameId nexusModsGameId)
     {
-        return CollectionMetadata.FindByGameId(db, gameId).ToArray();
+        return CollectionMetadata.FindByGameId(db, nexusModsGameId).ToArray();
     }
 }
 

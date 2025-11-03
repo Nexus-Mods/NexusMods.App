@@ -41,7 +41,7 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
         _thumbnailLoader = new Lazy<IResourceLoader<EntityId, Bitmap>>(() => ImagePipelines.GetModPageThumbnailPipeline(serviceProvider));
     }
 
-    public LibraryFile.ReadOnly[] GetAllFiles(GameId gameId, IDb? db = null)
+    public LibraryFile.ReadOnly[] GetAllFiles(NexusModsGameId nexusModsGameId, IDb? db = null)
     {
         db ??= _connection.Db;
 
@@ -53,7 +53,7 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
 
         var files = NexusModsFileMetadata
             .All(db)
-            .Where(modPage => modPage.Uid.GameId == gameId)
+            .Where(modPage => modPage.Uid.GameId == nexusModsGameId)
             .Select(fileMetadata => libraryItems.GetValueOrDefault(fileMetadata))
             .Where(static arr => arr is not null)
             .SelectMany(static x => x!)

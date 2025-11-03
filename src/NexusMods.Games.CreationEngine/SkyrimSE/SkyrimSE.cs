@@ -43,7 +43,7 @@ public partial class SkyrimSE : AGame, ISteamGame, IGogGame, ICreationEngineGame
     }
 
     public override string DisplayName => "Skyrim Special Edition";
-    public override Optional<Sdk.NexusModsApi.GameId> NexusModsGameId => Sdk.NexusModsApi.GameId.From(1704);
+    public override Optional<Sdk.NexusModsApi.NexusModsGameId> NexusModsGameId => Sdk.NexusModsApi.NexusModsGameId.From(1704);
     public override GamePath GetPrimaryFile(GameTargetInfo targetInfo) => new(LocationId.Game, "SkyrimSE.exe");
 
     protected override IReadOnlyDictionary<LocationId, AbsolutePath> GetLocations(IFileSystem fileSystem, GameLocatorResult installation)

@@ -13,7 +13,7 @@ public interface ITool : IJobDefinition<Unit>
     /// <summary>
     /// List of supported game IDs.
     /// </summary>
-    public IEnumerable<GameId> GameIds { get; }
+    public IEnumerable<NexusModsGameId> GameIds { get; }
 
     /// <summary>
     /// Human friendly name of the tool.

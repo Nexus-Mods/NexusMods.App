@@ -25,7 +25,7 @@ internal class ManuallyCreatedArchiveDataProvider : ILibraryDataProvider, ILoado
     }
 
     // TODO: update once we have game information on Local Files
-    public LibraryFile.ReadOnly[] GetAllFiles(GameId gameId, IDb? db = null) => [];
+    public LibraryFile.ReadOnly[] GetAllFiles(NexusModsGameId nexusModsGameId, IDb? db = null) => [];
 
     public IObservable<IChangeSet<CompositeItemModel<EntityId>, EntityId>> ObserveLibraryItems(LibraryFilter libraryFilter)
     {

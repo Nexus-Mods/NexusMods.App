@@ -20,10 +20,10 @@ public record ExperimentalSettings : ISettings
     public bool EnableCollectionSharing { get; [UsedImplicitly] set; }
 
     [JsonIgnore]
-    public readonly GameId[] SupportedGames =
+    public readonly NexusModsGameId[] SupportedGames =
     [
-        GameId.From(1303), // Stardew Valley 
-        GameId.From(3333) //  Cyberpunk
+        NexusModsGameId.From(1303), // Stardew Valley 
+        NexusModsGameId.From(3333) //  Cyberpunk
     ];
 
     public static ISettingsBuilder Configure(ISettingsBuilder settingsBuilder)

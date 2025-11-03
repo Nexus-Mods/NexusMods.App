@@ -15,5 +15,5 @@ public interface ILocatableGame
     /// <summary>
     /// Nexus Mods Game Id.
     /// </summary>
-    Optional<Sdk.NexusModsApi.GameId> NexusModsGameId { get; }
+    Optional<Sdk.NexusModsApi.NexusModsGameId> NexusModsGameId { get; }
 }

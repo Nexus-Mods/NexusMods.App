@@ -29,7 +29,7 @@ public interface ILibraryDataProvider
     /// <summary>
     /// Returns all library files for the given game.
     /// </summary>
-    LibraryFile.ReadOnly[] GetAllFiles(GameId gameId, IDb? db = null);
+    LibraryFile.ReadOnly[] GetAllFiles(NexusModsGameId nexusModsGameId, IDb? db = null);
 }
 
 public record LibraryFilter(LoadoutId LoadoutId, ILocatableGame Game);

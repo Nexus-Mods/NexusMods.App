@@ -41,7 +41,7 @@ public class StopPatternInstaller(IServiceProvider serviceProvider) : ALibraryAr
     /// Unique identifier for the game this installer handles (e.g. Skyrim SE = 1704).
     /// Required property that must be set when configuring the installer.
     /// </summary>
-    public required GameId GameId { get; init; }
+    public required NexusModsGameId GameId { get; init; }
     
     /// <summary>
     /// Defines where mod data files should be installed, typically in the game's "Data" folder.

@@ -22,11 +22,11 @@ internal partial class GraphQlClient : IGraphQlClient
     }
 
     public async ValueTask<GraphQlResult<ICategory[], NotFound>> QueryGameCategories(
-        GameId gameId,
+        NexusModsGameId nexusModsGameId,
         CancellationToken cancellationToken)
     {
         var operationResult = await _client.QueryGameCategories.ExecuteAsync(
-            gameId: (int)gameId.Value,
+            gameId: (int)nexusModsGameId.Value,
             cancellationToken: cancellationToken
         );
 
@@ -64,40 +64,40 @@ internal partial class GraphQlClient : IGraphQlClient
         return operationResult.Transform(static result => result.RequestMediaUploadUrl, PresignedUploadUrl.FromApi);
     }
 
-    public async ValueTask<GraphQlResult<GameDomain, NotFound>> QueryGameDomain(GameId gameId, CancellationToken cancellationToken)
+    public async ValueTask<GraphQlResult<GameDomain, NotFound>> QueryGameDomain(NexusModsGameId nexusModsGameId, CancellationToken cancellationToken)
     {
         var operationResult = await _client.QueryGameById.ExecuteAsync(
-            id: gameId.ToString(),
+            id: nexusModsGameId.ToString(),
             cancellationToken: cancellationToken
         );
 
         return operationResult.Transform(out GraphQlResult<GameDomain, NotFound> _, static result => result.Game, static game => GameDomain.From(game.DomainName));
     }
 
-    public async ValueTask<GraphQlResult<GameId, NotFound>> QueryGameId(GameDomain domain, CancellationToken cancellationToken)
+    public async ValueTask<GraphQlResult<NexusModsGameId, NotFound>> QueryGameId(GameDomain domain, CancellationToken cancellationToken)
     {
         var operationResult = await _client.QueryGameByDomain.ExecuteAsync(
             domain: domain.Value,
             cancellationToken: cancellationToken
         );
 
-        return operationResult.Transform(out GraphQlResult<GameId, NotFound> _, static result => result.Game, static game => GameId.From((uint)game.Id));
+        return operationResult.Transform(out GraphQlResult<NexusModsGameId, NotFound> _, static result => result.Game, static game => NexusModsGameId.From((uint)game.Id));
     }
 
-    public async ValueTask<GraphQlResult<IMod, NotFound>> QueryMod(ModId modId, GameId gameId, CancellationToken cancellationToken)
+    public async ValueTask<GraphQlResult<IMod, NotFound>> QueryMod(ModId modId, NexusModsGameId nexusModsGameId, CancellationToken cancellationToken)
     {
         var operationResult = await _client.QueryMod.ExecuteAsync(
             modId: (int)modId.Value,
-            gameId: (int)gameId.Value,
+            gameId: (int)nexusModsGameId.Value,
             cancellationToken: cancellationToken
         );
 
         return operationResult.Transform(out GraphQlResult<IMod, NotFound> _, static result => result, result => ExpectOne(result.LegacyMods.Nodes));
     }
 
-    public async ValueTask<GraphQlResult<IModFile, NotFound>> QueryModFile(FileId fileId, GameId gameId, CancellationToken cancellationToken)
+    public async ValueTask<GraphQlResult<IModFile, NotFound>> QueryModFile(FileId fileId, NexusModsGameId nexusModsGameId, CancellationToken cancellationToken)
     {
-        var uid = new FileUid(fileId, gameId);
+        var uid = new FileUid(fileId, nexusModsGameId);
 
         var operationResult = await _client.QueryModFile.ExecuteAsync(
             uid: uid.ToV2Api(),
@@ -107,11 +107,11 @@ internal partial class GraphQlClient : IGraphQlClient
         return operationResult.Transform(out GraphQlResult<IModFile, NotFound> _, static result => result.ModFilesByUid, result => ExpectOne(result.Nodes));
     }
 
-    public async ValueTask<GraphQlResult<IModFile[], NotFound>> QueryModFiles(ModId modId, GameId gameId, CancellationToken cancellationToken)
+    public async ValueTask<GraphQlResult<IModFile[], NotFound>> QueryModFiles(ModId modId, NexusModsGameId nexusModsGameId, CancellationToken cancellationToken)
     {
         var operationResult = await _client.QueryModFiles.ExecuteAsync(
             modId: modId.ToString(),
-            gameId: gameId.ToString(),
+            gameId: nexusModsGameId.ToString(),
             cancellationToken: cancellationToken
         );
 

@@ -25,7 +25,7 @@ namespace NexusMods.Games.RedEngine.Cyberpunk2077;
 public class Cyberpunk2077Game : AGame, ISteamGame, IGogGame //, IEpicGame
 {
     public static readonly GameDomain StaticDomain = GameDomain.From("cyberpunk2077");
-    public static Sdk.NexusModsApi.GameId GameIdStatic => Sdk.NexusModsApi.GameId.From(3333);
+    public static Sdk.NexusModsApi.NexusModsGameId NexusModsGameIdStatic => Sdk.NexusModsApi.NexusModsGameId.From(3333);
     private readonly IServiceProvider _serviceProvider;
     private readonly IConnection _connection;
     private ISortOrderVariety[] _sortOrderVarieties = [];
@@ -45,7 +45,7 @@ public class Cyberpunk2077Game : AGame, ISteamGame, IGogGame //, IEpicGame
         => new Cyberpunk2077Synchronizer(provider);
 
     public override string DisplayName => "Cyberpunk 2077";
-    public override Optional<Sdk.NexusModsApi.GameId> NexusModsGameId => GameIdStatic;
+    public override Optional<Sdk.NexusModsApi.NexusModsGameId> NexusModsGameId => NexusModsGameIdStatic;
 
     public override GamePath GetPrimaryFile(GameTargetInfo targetInfo) => new(LocationId.Game, "bin/x64/Cyberpunk2077.exe");
     protected override IReadOnlyDictionary<LocationId, AbsolutePath> GetLocations(IFileSystem fileSystem,

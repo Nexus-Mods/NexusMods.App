@@ -15,7 +15,7 @@ public class ModUidTests
             // This test ensures nobody tampers with the size of the struct
             // or its components; ensuring those unsafe casts are safe.
             sizeof(ModUid).Should().Be(8);
-            sizeof(GameId).Should().Be(4);
+            sizeof(NexusModsGameId).Should().Be(4);
             sizeof(FileId).Should().Be(4);
         }
     }
@@ -67,7 +67,7 @@ public class ModUidTests
         var result = ModUid.FromV2Api(uidString);
 
         // Assert
-        result.GameId.Should().Be((GameId)expectedGameId);
+        result.GameId.Should().Be((NexusModsGameId)expectedGameId);
         result.ModId.Should().Be((ModId)expectedModId);
         
         // Assert round trip
@@ -100,7 +100,7 @@ public class ModUidTests
     public void AsUlong_ReturnsCorrectValue(uint gameId, uint modId, ulong expectedUlong)
     {
         // Arrange
-        var uidForMod = new ModUid(ModId.From(modId), GameId.From(gameId));
+        var uidForMod = new ModUid(ModId.From(modId), NexusModsGameId.From(gameId));
 
         // Act
         var result = uidForMod.AsUlong;
@@ -126,7 +126,7 @@ public class ModUidTests
         var result = ModUid.FromUlong(input);
 
         // Assert
-        result.GameId.Should().Be((GameId)expectedGameId);
+        result.GameId.Should().Be((NexusModsGameId)expectedGameId);
         result.ModId.Should().Be((ModId)expectedModId);
     }
 
@@ -136,7 +136,7 @@ public class ModUidTests
     public void RoundTrip_UlongConversion_PreservesValues(uint gameId, uint modId)
     {
         // Arrange
-        var original = new ModUid(ModId.From(modId), GameId.From(gameId));
+        var original = new ModUid(ModId.From(modId), NexusModsGameId.From(gameId));
 
         // Act
         var asUlong = original.AsUlong;

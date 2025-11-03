@@ -16,7 +16,7 @@ public class FileUidTests
             // or its components; ensuring those unsafe casts are safe.
             sizeof(FileUid).Should().Be(8);
             sizeof(FileId).Should().Be(4);
-            sizeof(GameId).Should().Be(4);
+            sizeof(NexusModsGameId).Should().Be(4);
         }
     }
     
@@ -40,7 +40,7 @@ public class FileUidTests
         var result = FileUid.FromV2Api(uidString);
 
         // Assert
-        result.GameId.Should().Be((GameId)expectedGameId);
+        result.GameId.Should().Be((NexusModsGameId)expectedGameId);
         result.FileId.Should().Be((FileId)expectedFileId);
     }
 
@@ -64,7 +64,7 @@ public class FileUidTests
     public void AsUlong_ReturnsCorrectValue(uint gameId, uint fileId, ulong expectedUlong)
     {
         // Arrange
-        var uidForFile = new FileUid((FileId)fileId, (GameId)gameId);
+        var uidForFile = new FileUid((FileId)fileId, (NexusModsGameId)gameId);
 
         // Act
         var result = uidForFile.AsUlong;
@@ -85,7 +85,7 @@ public class FileUidTests
         var result = FileUid.FromUlong(input);
 
         // Assert
-        result.GameId.Should().Be((GameId)expectedGameId);
+        result.GameId.Should().Be((NexusModsGameId)expectedGameId);
         result.FileId.Should().Be((FileId)expectedFileId);
     }
 
@@ -95,7 +95,7 @@ public class FileUidTests
     public void RoundTrip_UlongConversion_PreservesValues(uint gameId, uint fileId)
     {
         // Arrange
-        var original = new FileUid((FileId)fileId, (GameId)gameId);
+        var original = new FileUid((FileId)fileId, (NexusModsGameId)gameId);
 
         // Act
         var asUlong = original.AsUlong;

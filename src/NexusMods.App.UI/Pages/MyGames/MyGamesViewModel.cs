@@ -126,7 +126,7 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
                             {
                                 if (GetJobRunningForGameInstallation(installation).IsT2) return;
 
-                                var filesToDelete = libraryDataProviders.SelectMany(dataProvider => dataProvider.GetAllFiles(gameId: installation.Game.NexusModsGameId.Value)).ToArray();
+                                var filesToDelete = libraryDataProviders.SelectMany(dataProvider => dataProvider.GetAllFiles(nexusModsGameId: installation.Game.NexusModsGameId.Value)).ToArray();
                                 var totalSize = filesToDelete.Sum(static Size (file) => file.Size);
 
                                 var collections = CollectionDownloader.GetCollections(conn.Db, installation.Game.NexusModsGameId.Value);

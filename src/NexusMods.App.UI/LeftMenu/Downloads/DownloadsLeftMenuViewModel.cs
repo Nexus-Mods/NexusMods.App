@@ -48,7 +48,7 @@ public class DownloadsLeftMenuViewModel : AViewModel<IDownloadsLeftMenuViewModel
             new PageData
             {
                 FactoryId = DownloadsPageFactory.StaticId,
-                Context = new DownloadsPageContext { GameScope = Optional<GameId>.None },
+                Context = new DownloadsPageContext { GameScope = Optional<NexusModsGameId>.None },
             }
         )
         {

@@ -122,17 +122,17 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable, IHost
     }
 
     /// <inheritdoc />
-    public IEnumerable<VanityVersion> GetKnownVanityVersions(GameId gameId)
+    public IEnumerable<VanityVersion> GetKnownVanityVersions(NexusModsGameId nexusModsGameId)
     {
-        return GetVersionDefinitions(gameId)
+        return GetVersionDefinitions(nexusModsGameId)
             .Select(v => VanityVersion.From(v.Name))
             .ToList();
     }
 
-    private List<VersionDefinition.ReadOnly> GetVersionDefinitions(GameId gameId)
+    private List<VersionDefinition.ReadOnly> GetVersionDefinitions(NexusModsGameId nexusModsGameId)
     {
         return VersionDefinition.All(Current)
-            .Where(v => v.GameId == gameId)
+            .Where(v => v.GameId == nexusModsGameId)
             .ToList();
     }
 

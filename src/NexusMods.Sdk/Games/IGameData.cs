@@ -20,7 +20,7 @@ public interface IGameData
     /// <summary>
     /// Gets the ID of the game on Nexus Mods.
     /// </summary>
-    Optional<Sdk.NexusModsApi.GameId> NexusModsId { get; }
+    Optional<Sdk.NexusModsApi.NexusModsGameId> NexusModsId { get; }
 
     /// <summary>
     /// Gets the stream factory for the square icon image.
@@ -46,6 +46,6 @@ public interface IGameData<TSelf> : IGameData
     string IGameData.DisplayName => TSelf.DisplayName;
 
     /// <inheritdoc cref="IGameData.NexusModsId"/>
-    new static abstract Optional<Sdk.NexusModsApi.GameId> NexusModsId { get; }
-    Optional<Sdk.NexusModsApi.GameId> IGameData.NexusModsId => TSelf.NexusModsId;
+    new static abstract Optional<Sdk.NexusModsApi.NexusModsGameId> NexusModsId { get; }
+    Optional<Sdk.NexusModsApi.NexusModsGameId> IGameData.NexusModsId => TSelf.NexusModsId;
 }

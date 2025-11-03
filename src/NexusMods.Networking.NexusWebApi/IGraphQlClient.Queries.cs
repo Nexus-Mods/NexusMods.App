@@ -13,7 +13,7 @@ public partial interface IGraphQlClient
     /// Queries all categories, including global categories, for a game.
     /// </summary>
     ValueTask<GraphQlResult<ICategory[], NotFound>> QueryGameCategories(
-        GameId gameId,
+        NexusModsGameId nexusModsGameId,
         CancellationToken cancellationToken = default);
 
     /// <summary>
@@ -37,13 +37,13 @@ public partial interface IGraphQlClient
     /// Queries the domain of a game by id.
     /// </summary>
     ValueTask<GraphQlResult<GameDomain, NotFound>> QueryGameDomain(
-        GameId gameId,
+        NexusModsGameId nexusModsGameId,
         CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Queries the id of a game by domain.
     /// </summary>
-    ValueTask<GraphQlResult<GameId, NotFound>> QueryGameId(
+    ValueTask<GraphQlResult<NexusModsGameId, NotFound>> QueryGameId(
         GameDomain domain,
         CancellationToken cancellationToken = default);
 
@@ -52,7 +52,7 @@ public partial interface IGraphQlClient
     /// </summary>
     ValueTask<GraphQlResult<IMod, NotFound>> QueryMod(
         ModId modId,
-        GameId gameId,
+        NexusModsGameId nexusModsGameId,
         CancellationToken cancellationToken = default);
 
     /// <summary>
@@ -60,7 +60,7 @@ public partial interface IGraphQlClient
     /// </summary>
     ValueTask<GraphQlResult<IModFile, NotFound>> QueryModFile(
         FileId fileId,
-        GameId gameId,
+        NexusModsGameId nexusModsGameId,
         CancellationToken cancellationToken = default);
 
     /// <summary>
@@ -68,7 +68,7 @@ public partial interface IGraphQlClient
     /// </summary>
     ValueTask<GraphQlResult<IModFile[], NotFound>> QueryModFiles(
         ModId modId,
-        GameId gameId,
+        NexusModsGameId nexusModsGameId,
         CancellationToken cancellationToken = default);
 
     /// <summary>

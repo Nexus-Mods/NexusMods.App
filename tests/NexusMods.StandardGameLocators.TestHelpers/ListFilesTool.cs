@@ -29,7 +29,7 @@ public class ListFilesTool : ITool
         });
     }
 
-    public IEnumerable<GameId> GameIds => [ GameId.From(uint.MaxValue) ];
+    public IEnumerable<NexusModsGameId> GameIds => [ NexusModsGameId.From(uint.MaxValue) ];
 
     public string Name => "List Files";
 

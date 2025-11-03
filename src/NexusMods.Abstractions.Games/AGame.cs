@@ -58,7 +58,7 @@ public abstract class AGame : IGame
     public abstract string DisplayName { get; }
 
     /// <inheritdoc />
-    public abstract Optional<Sdk.NexusModsApi.GameId> NexusModsGameId { get; }
+    public abstract Optional<Sdk.NexusModsApi.NexusModsGameId> NexusModsGameId { get; }
 
     /// <inheritdoc/>
     public abstract GamePath GetPrimaryFile(GameTargetInfo targetInfo);
