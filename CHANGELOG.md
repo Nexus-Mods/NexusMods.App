@@ -1,4 +1,4 @@
-# v0.20.1 2025-11-03
+# v0.20.2 2025-11-03
 
 This update introduces a powerful new view for managing file conflicts, adds convenient right-click context menus to the navigation pane, and resolves several key bugs for a more stable experience.
 
