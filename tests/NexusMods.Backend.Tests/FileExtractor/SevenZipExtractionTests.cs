@@ -20,7 +20,7 @@ public class SevenZipExtractionTests : AFileExtractorTest
         await FileExtractor.ExtractAllAsync(archivePath, destination);
 
         var files = destination.Path.EnumerateFiles().ToArray();
-        await Assert.That(files).All().Satisfy(p => p.FileExists, fileExists => fileExists.IsTrue());
+        await Assert.That(files).All(x => x.FileExists);
     }
 
     [Test]

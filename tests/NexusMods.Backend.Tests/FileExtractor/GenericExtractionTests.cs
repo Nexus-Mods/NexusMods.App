@@ -25,7 +25,7 @@ public class GenericExtractionTests : AFileExtractorTest
             ("rootFile.txt", (Hash)0x818A82701BC1CC30),
         ];
 
-        await Assert.That(actual).IsEquivalentTo(expected, CollectionOrdering.Any);
+        await Assert.That(actual).IsEquivalentTo(expected, ordering: CollectionOrdering.Any, comparer: EqualityComparer<(RelativePath, Hash)>.Default);
     }
 }
 
