@@ -59,11 +59,11 @@ public class MultiHasher<
         return state;
     }
 
-    public static MultiHashState<TState1, TState2, TState3> Update(MultiHashState<TState1, TState2, TState3> state, byte[] input)
+    public static MultiHashState<TState1, TState2, TState3> Update(MultiHashState<TState1, TState2, TState3> state, byte[] input, int offset, int count)
     {
-        state.State1 = THasher1.Update(state.State1, input);
-        state.State2 = THasher2.Update(state.State2, input);
-        state.State3 = THasher3.Update(state.State3, input);
+        state.State1 = THasher1.Update(state.State1, input, offset, count);
+        state.State2 = THasher2.Update(state.State2, input, offset, count);
+        state.State3 = THasher3.Update(state.State3, input, offset, count);
         return state;
     }
 
