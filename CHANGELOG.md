@@ -1,3 +1,26 @@
+# v0.20.2 2025-11-03
+
+This update introduces a powerful new view for managing file conflicts, adds convenient right-click context menus to the navigation pane, and resolves several key bugs for a more stable experience.
+
+---
+### File Conflicts Management:
+
+File conflicts—a common occurrence in modding games like **Skyrim** and **Fallout 4**—happen when multiple mods try to install different versions of the same file.
+
+With this release, we've added a new priority-based system that allows you to see and easily edit **file conflict winners and losers** using intuitive **Drag & Drop** controls. This gives you visual control over which mods and files take priority.
+### More Context Menus:
+
+To streamline collection management, you can now **right-click** items in the **Left Navigation Menu**. This new context menu provides quick access to essential actions like **Remove/Uninstall Collection**.
+
+---
+## Bug Fixes and Performance:
+
+- Fixed a download corruption bug that could occur when **quickly pausing and resuming** a download.
+    
+- Fixed an issue preventing **SMAPI** from installing correctly on **Linux** systems.
+    
+- Fixed an exception that occurred when trying to open the **logs folder** from the App help menu.
+
 # v0.19.4 2025-10-20
 This update focuses on quality-of-life improvements, including the addition of right-click context menus, and several critical bug fixes for a smoother experience.
 
