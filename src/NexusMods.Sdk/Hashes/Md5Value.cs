@@ -128,16 +128,16 @@ public class Md5Hasher : IStreamingHasher<Md5Value, MD5, Md5Hasher>
 
     public static MD5 Update(MD5 state, ReadOnlySpan<byte> input) => throw new NotSupportedException("MD5 hasher doesn't support updates with spans");
 
-    public static MD5 Update(MD5 state, byte[] input)
+    public static MD5 Update(MD5 state, byte[] input, int offset, int count)
     {
-        state.TransformBlock(input, inputOffset: 0, inputCount: input.Length, input, outputOffset: 0);
+        state.TransformBlock(input, inputOffset: offset, inputCount: count, input, outputOffset: 0);
         return state;
     }
 
     public static Md5Value Finish(MD5 state)
     {
-        var bytes = state.TransformFinalBlock([], inputOffset: 0, inputCount: 0);
-        return Md5Value.From(bytes);
+        _ = state.TransformFinalBlock([], inputOffset: 0, inputCount: 0);
+        return Md5Value.From(state.Hash);
     }
 
     public static ValueTask<Md5Value> HashAsync(Stream stream, int bufferSize = IStreamingHasher<Md5Value, MD5, Md5Hasher>.DefaultBufferSize, CancellationToken cancellationToken = default)

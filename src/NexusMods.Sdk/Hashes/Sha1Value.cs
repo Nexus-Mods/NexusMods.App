@@ -110,16 +110,16 @@ public class Sha1Hasher : IStreamingHasher<Sha1Value, SHA1, Sha1Hasher>
 
     public static SHA1 Update(SHA1 state, ReadOnlySpan<byte> input) => throw new NotSupportedException("SHA1 hasher doesn't support updates with spans");
 
-    public static SHA1 Update(SHA1 state, byte[] input)
+    public static SHA1 Update(SHA1 state, byte[] input, int offset, int count)
     {
-        state.TransformBlock(input, inputOffset: 0, inputCount: input.Length, input, outputOffset: 0);
+        state.TransformBlock(input, inputOffset: offset, inputCount: count, input, outputOffset: 0);
         return state;
     }
 
     public static Sha1Value Finish(SHA1 state)
     {
-        var bytes = state.TransformFinalBlock([], inputCount: 0, inputOffset: 0);
-        return Sha1Value.From(bytes);
+        _ = state.TransformFinalBlock([], inputCount: 0, inputOffset: 0);
+        return Sha1Value.From(state.Hash);
     }
 
     public static ValueTask<Sha1Value> HashAsync(Stream stream, int bufferSize = IStreamingHasher<Sha1Value, SHA1, Sha1Hasher>.DefaultBufferSize, CancellationToken cancellationToken = default)

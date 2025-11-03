@@ -30,7 +30,7 @@ public interface IStreamingHasher<THash, TState, TSelf> : IHasher<THash, TSelf>
     /// <summary>
     /// Updates the streaming state.
     /// </summary>
-    static virtual TState Update(TState state, byte[] input) => TSelf.Update(state, input.AsSpan());
+    static virtual TState Update(TState state, byte[] input, int offset, int count) => TSelf.Update(state, input.AsSpan(start: offset, length: count));
 
     /// <summary>
     /// Finalizes the streaming state.
@@ -57,7 +57,7 @@ public static class StreamingHasher<THash, TState, THasher>
             var bytesRead = await stream.ReadAsync(buffer, cancellationToken).ConfigureAwait(false);
             if (bytesRead == 0) break;
 
-            state = THasher.Update(state, buffer);
+            state = THasher.Update(state, buffer, offset: 0, count: bytesRead);
         }
 
         cancellationToken.ThrowIfCancellationRequested();
