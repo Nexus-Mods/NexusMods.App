@@ -59,7 +59,7 @@ public abstract class AGame : IGame
     public abstract string DisplayName { get; }
 
     /// <inheritdoc />
-    public abstract GameId GameId { get; }
+    public abstract GameId NexusModsGameId { get; }
 
     /// <inheritdoc/>
     public abstract GamePath GetPrimaryFile(GameTargetInfo targetInfo);

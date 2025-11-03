@@ -68,7 +68,7 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
         return NexusModsModPageMetadata
             .ObserveAll(_connection)
             // only show mod pages for the currently selected game
-            .FilterImmutable(modPage => modPage.Uid.GameId.Equals(libraryFilter.Game.GameId))
+            .FilterImmutable(modPage => modPage.Uid.GameId.Equals(libraryFilter.Game.NexusModsGameId))
             // only show mod pages that have library files
             .FilterOnObservable(modPage => _connection
                 .ObserveDatoms(NexusModsLibraryItem.ModPageMetadata, modPage)

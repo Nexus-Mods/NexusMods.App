@@ -44,7 +44,7 @@ public static class IndexEpicGame
         var castedGame = (IGame)game;
 
         var installation = gameRegistry.Installations
-            .Where(g => g.Value.Game.GameId == game.GameId)
+            .Where(g => g.Value.Game.NexusModsGameId == game.NexusModsGameId)
             .FirstOrDefault(g => g.Value.Game is IEpicGame); 
         
         if (installation.Value == null)

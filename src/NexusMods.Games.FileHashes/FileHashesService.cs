@@ -604,7 +604,7 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable, IHost
         var filesSet = files.ToHashSet();
 
         List<(VersionData VersionData, int Matches)> versionMatches = [];
-        foreach (var versionDefinition in GetVersionDefinitions(gameInstallation.Game.GameId))
+        foreach (var versionDefinition in GetVersionDefinitions(gameInstallation.Game.NexusModsGameId))
         {
             var locatorIds = GetLocatorIdsForVersionDefinition(gameInstallation.Store, versionDefinition);
 

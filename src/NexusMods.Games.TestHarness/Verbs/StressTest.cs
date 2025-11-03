@@ -40,7 +40,7 @@ public class StressTest
         var manualLocator = gameLocators.OfType<ManuallyAddedLocator>().First();
         AdvancedManualInstallerUI.Headless = true;
 
-        var domain = domainToIdCache[game.GameId].Value;
+        var domain = domainToIdCache[game.NexusModsGameId].Value;
         var mods = await nexusApiClient.ModUpdatesAsync(domain, PastTime.Day, token);
         var results = new List<(string FileName, Sdk.NexusModsApi.ModId ModId, Sdk.NexusModsApi.FileId FileId, Hash Hash, bool Passed, Exception? exception)>();
 
@@ -56,7 +56,7 @@ public class StressTest
                 IOperationResult<IQueryModFilesResult> files;
                 try
                 {
-                    files = await nexusGqlClient.QueryModFiles.ExecuteAsync(mod.ModId.ToString(), game.GameId.ToString(), token);
+                    files = await nexusGqlClient.QueryModFiles.ExecuteAsync(mod.ModId.ToString(), game.NexusModsGameId.ToString(), token);
                     files.EnsureNoErrors();
                 }
                 catch (HttpRequestException ex)
@@ -80,7 +80,7 @@ public class StressTest
 
                         await using var tmpPath = temporaryFileManager.CreateFile();
 
-                        var downloadJob = await nexusModsLibrary.CreateDownloadJob(tmpPath, game.GameId, mod.ModId, uid.FileId, cancellationToken: CancellationToken.None);
+                        var downloadJob = await nexusModsLibrary.CreateDownloadJob(tmpPath, game.NexusModsGameId, mod.ModId, uid.FileId, cancellationToken: CancellationToken.None);
                         var libraryFile = await libraryService.AddDownload(downloadJob);
 
                         await renderer.Text("Installing {0} {1} {2} - {3}", mod.ModId,

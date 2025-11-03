@@ -294,13 +294,13 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
     private bool IsCorrectLoadoutForGame(LoadoutId loadoutId, GameId gameId)
     {
         var loadout = Loadout.Load(_connection.Db, loadoutId);
-        return loadout.IsValid() && loadout.InstallationInstance.Game.GameId == gameId;
+        return loadout.IsValid() && loadout.InstallationInstance.Game.NexusModsGameId == gameId;
     }
 
     private Optional<LoadoutId> GetActiveLoadoutForGame(GameId gameId)
     {
         var gameRegistry = _serviceProvider.GetRequiredService<IGameRegistry>();
-        if (!gameRegistry.InstalledGames.TryGetFirst(x => x.Game.GameId == gameId, out var gameInstallation)) return Optional<LoadoutId>.None;
+        if (!gameRegistry.InstalledGames.TryGetFirst(x => x.Game.NexusModsGameId == gameId, out var gameInstallation)) return Optional<LoadoutId>.None;
 
         if (gameInstallation.Game is not IGame game) return Optional<LoadoutId>.None;
         return _serviceProvider.GetRequiredService<ILoadoutManager>().GetCurrentlyActiveLoadout(gameInstallation);

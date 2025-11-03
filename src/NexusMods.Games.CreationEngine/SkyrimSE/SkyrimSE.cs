@@ -43,7 +43,7 @@ public partial class SkyrimSE : AGame, ISteamGame, IGogGame, ICreationEngineGame
     }
 
     public override string DisplayName => "Skyrim Special Edition";
-    public override GameId GameId => GameId.From(1704);
+    public override GameId NexusModsGameId => GameId.From(1704);
     public override GamePath GetPrimaryFile(GameTargetInfo targetInfo) => new(LocationId.Game, "SkyrimSE.exe");
 
     protected override IReadOnlyDictionary<LocationId, AbsolutePath> GetLocations(IFileSystem fileSystem, GameLocatorResult installation)
@@ -84,7 +84,7 @@ public partial class SkyrimSE : AGame, ISteamGame, IGogGame, ICreationEngineGame
         // Files in a Data folder
         new StopPatternInstaller(_serviceProvider)
         {
-            GameId = GameId,
+            GameId = NexusModsGameId,
             GameAliases = ["Skyrim Special Edition", "SkyrimSE", "SSE"],
             TopLevelDirs = KnownPaths.CommonTopLevelFolders,
             StopPatterns = ["(^|/)skse(/|$)"],

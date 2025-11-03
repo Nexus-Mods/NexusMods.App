@@ -37,7 +37,7 @@ public sealed class Bannerlord : AGame, ISteamGame, IGogGame, IXboxGame//, IEpic
     private readonly LauncherManagerFactory _launcherManagerFactory;
 
     public override string DisplayName => StaticDisplayName;
-    public override GameId GameId => GameIdStatic;
+    public override GameId NexusModsGameId => GameIdStatic;
 
     public IEnumerable<uint> SteamIds => [261550u];
     public IEnumerable<long> GogIds => [1802539526, 1564781494];

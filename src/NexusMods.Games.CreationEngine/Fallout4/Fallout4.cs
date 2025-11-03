@@ -43,7 +43,7 @@ public partial class Fallout4 : AGame, ISteamGame, IGogGame, ICreationEngineGame
     }
 
     public override string DisplayName => "Fallout 4";
-    public override GameId GameId => GameId.From(1151);
+    public override GameId NexusModsGameId => GameId.From(1151);
     public override GamePath GetPrimaryFile(GameTargetInfo targetInfo) => new(LocationId.Game, "Fallout4.exe");
 
     protected override IReadOnlyDictionary<LocationId, AbsolutePath> GetLocations(IFileSystem fileSystem, GameLocatorResult installation)
@@ -78,7 +78,7 @@ public partial class Fallout4 : AGame, ISteamGame, IGogGame, ICreationEngineGame
         FomodXmlInstaller.Create(_serviceProvider, new GamePath(LocationId.Game, "Data")),
         new StopPatternInstaller(_serviceProvider)
         {
-            GameId = GameId,
+            GameId = NexusModsGameId,
             GameAliases = ["Fallout 4", "Fallout4", "FO4", "F4"],
             TopLevelDirs = KnownPaths.CommonTopLevelFolders,
             StopPatterns = ["(^|/)f4se(/|$)"],

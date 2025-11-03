@@ -50,7 +50,7 @@ public class RunGameTool<T> : IRunGameTool
     }
 
     /// <inheritdoc />
-    public IEnumerable<GameId> GameIds => [_game.GameId];
+    public IEnumerable<GameId> GameIds => [_game.NexusModsGameId];
 
     /// <inheritdoc />
     public string Name => $"Run {_game.DisplayName}";

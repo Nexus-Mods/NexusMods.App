@@ -95,7 +95,7 @@ public class GameRegistry : IGameRegistry, IHostedService
     /// </summary>
     private static bool TryGetLocatorResultId(IDb db, ILocatableGame locatableGame, GameLocatorResult result, [NotNullWhen(true)] out EntityId? id)
     {
-        var wasFound = GameInstallMetadata.FindByGameId(db, locatableGame.GameId)
+        var wasFound = GameInstallMetadata.FindByGameId(db, locatableGame.NexusModsGameId)
             .TryGetFirst(m => m.Store == result.Store, out var found);
         if (!wasFound)
         {
@@ -124,7 +124,7 @@ public class GameRegistry : IGameRegistry, IHostedService
             // TX Functions don't yet support the .New() syntax, so we'll have to do it manually.
             var id = tx.TempId();
             tx.Add(id, GameInstallMetadata.Store, result.Store);
-            tx.Add(id, GameInstallMetadata.GameId, game.GameId);
+            tx.Add(id, GameInstallMetadata.GameId, game.NexusModsGameId);
             tx.Add(id, GameInstallMetadata.Name, game.DisplayName);
             tx.Add(id, GameInstallMetadata.Path, result.Path.ToString());
         });

@@ -233,14 +233,14 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         var osInterop = serviceProvider.GetRequiredService<IOSInterop>();
         OpenNexusModsCommand = new ReactiveCommand<Unit>(execute: _ =>
         {
-            var gameDomain = _gameIdMappingCache[game.GameId];
+            var gameDomain = _gameIdMappingCache[game.NexusModsGameId];
             var gameUri = NexusModsUrlBuilder.GetGameUri(gameDomain);
             osInterop.OpenUri(gameUri);
         });
 
         OpenNexusModsCollectionsCommand = new ReactiveCommand<Unit>(execute: _ =>
         {
-            var gameDomain = _gameIdMappingCache[game.GameId];
+            var gameDomain = _gameIdMappingCache[game.NexusModsGameId];
             var gameUri = NexusModsUrlBuilder.GetBrowseCollectionsUri(gameDomain);
             osInterop.OpenUri(gameUri);
         });
@@ -285,7 +285,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
                 .AddTo(disposables);
 
             CollectionRevisionMetadata.ObserveAll(_connection)
-                .FilterImmutable(revision => revision.Collection.GameId == game.GameId)
+                .FilterImmutable(revision => revision.Collection.GameId == game.NexusModsGameId)
                 .OnUI()
                 .Transform(ICollectionCardViewModel (revision) => new CollectionCardViewModel(
                     collectionDownloader: collectionDownloader,
@@ -1008,7 +1008,7 @@ After asking design, we're choosing to simply open the mod page for now.
             }
 
             // Filter mod pages to only those for the current game
-            var currentGameId = _loadout.InstallationInstance.Game.GameId;
+            var currentGameId = _loadout.InstallationInstance.Game.NexusModsGameId;
             var modPagesWithUpdates = _modUpdateService.GetAllModPagesWithUpdates()
                 .Where(pair => 
                 {

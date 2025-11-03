@@ -31,7 +31,7 @@ public class StardewValley : AGame, ISteamGame, IGogGame, IXboxGame
     public IEnumerable<string> XboxIds => new[] { "ConcernedApe.StardewValleyPC" };
 
     public override string DisplayName => "Stardew Valley";
-    public override GameId GameId => GameId.From(1303);
+    public override GameId NexusModsGameId => GameId.From(1303);
 
     public StardewValley(
         IOSInformation osInformation,

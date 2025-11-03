@@ -228,13 +228,13 @@ public class NxmIpcProtocolHandler : IIpcProtocolHandler
         var gameId = _cache[domain];
         foreach (var installedGame in gameRegistry.InstalledGames)
         {
-            if (installedGame.Game.GameId != gameId) continue;
+            if (installedGame.Game.NexusModsGameId != gameId) continue;
             
             if (syncService.TryGetLastAppliedLoadout(installedGame, out _))
                 return installedGame;
 
             var activeLoadouts = Loadout.All(connection.Db)
-                .Where(ld => ld.InstallationInstance.Game.GameId == installedGame.Game.GameId);
+                .Where(ld => ld.InstallationInstance.Game.NexusModsGameId == installedGame.Game.NexusModsGameId);
 
             if (!activeLoadouts.Any()) continue;
             

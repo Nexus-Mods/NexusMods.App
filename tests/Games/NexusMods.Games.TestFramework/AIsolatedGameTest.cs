@@ -114,7 +114,7 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
     {
         await using var destination = TemporaryFileManager.CreateFile();
 
-        var downloadJob = await NexusModsLibrary.CreateDownloadJob(destination.Path, Game.GameId, modId, fileId);
+        var downloadJob = await NexusModsLibrary.CreateDownloadJob(destination.Path, Game.NexusModsGameId, modId, fileId);
         return await LibraryService.AddDownload(downloadJob);
     }
 

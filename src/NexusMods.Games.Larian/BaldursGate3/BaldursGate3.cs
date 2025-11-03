@@ -27,7 +27,7 @@ public class BaldursGate3 : AGame, ISteamGame, IGogGame
 
     public IEnumerable<uint> SteamIds => [1086940u];
     public IEnumerable<long> GogIds => [1456460669];
-    public override GameId GameId => GameId.From(3474);
+    public override GameId NexusModsGameId => GameId.From(3474);
     public static readonly GameDomain StaticDomain = GameDomain.From("baldursgate3");
 
     public BaldursGate3(IServiceProvider provider) : base(provider)
