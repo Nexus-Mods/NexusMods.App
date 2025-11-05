@@ -1,3 +1,4 @@
+using System.Security.Cryptography;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using NexusMods.Sdk.Hashes;
@@ -23,10 +24,10 @@ public class BasicApiTests(ILogger<BasicApiTests> logger, ISteamSession session)
         var largestFile = manifest.Files.OrderByDescending(f => f.Size).First();
         await using var stream = session.GetFileStream(SdvAppId, manifest, largestFile.Path);
 
-        var result = await MultiHasher.HashStream(stream, cancellationToken: CancellationToken.None);
-
+        var result = await Sha1Hasher.HashAsync(stream);
         stream.Length.Should().Be((long)largestFile.Size.Value);
-        result.Sha1.Should().Be(largestFile.Hash);
+
+        result.Should().Be(largestFile.Hash);
     }
     
 }

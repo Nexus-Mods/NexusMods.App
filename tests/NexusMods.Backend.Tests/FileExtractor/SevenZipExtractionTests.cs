@@ -3,7 +3,6 @@ using NexusMods.Backend.FileExtractor.Extractors;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.Hashing.xxHash3.Paths;
 using NexusMods.Paths;
-using NexusMods.Sdk.FileExtractor;
 using Reloaded.Memory.Extensions;
 
 namespace NexusMods.Backend.Tests.FileExtractor;
@@ -21,9 +20,7 @@ public class SevenZipExtractionTests : AFileExtractorTest
         await FileExtractor.ExtractAllAsync(archivePath, destination);
 
         var files = destination.Path.EnumerateFiles().ToArray();
-        await Assert.That(files)
-            .All()
-            .Satisfy(f => f.HasMember(f => f.FileExists).EqualTo(true));
+        await Assert.That(files).All(x => x.FileExists);
     }
 
     [Test]

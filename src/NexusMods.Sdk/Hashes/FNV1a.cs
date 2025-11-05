@@ -4,48 +4,15 @@ using JetBrains.Annotations;
 namespace NexusMods.Sdk.Hashes;
 
 /// <summary>
-/// FNV Non-Cryptographic Hash Algorithm.
+/// Hasher using 16-bit FNV1a algorithm.
 /// </summary>
 [PublicAPI]
 [SuppressMessage("ReSharper", "InconsistentNaming")]
-public static class FNV1a
+public class FNV1a16Hasher : IStringHasher<ushort, FNV1a16Hasher>
 {
-    // https://datatracker.ietf.org/doc/html/draft-eastlake-fnv-35#name-fnv-constants
-    private const uint Prime32 = 0x01000193;
-    private const uint Offset32 = 0x811C9DC5;
+    public static ushort Hash(ReadOnlySpan<byte> input) => MixToShort(FNV1a32Hasher.Hash(input));
+    public static ushort Hash(ReadOnlySpan<char> input) => MixToShort(FNV1a32Hasher.Hash(input));
 
-    public static uint Hash32(ReadOnlySpan<char> input)
-    {
-        var hash = Offset32;
-        for (var i = 0; i < input.Length; i++)
-        {
-            var current = input[i];
-            hash ^= current;
-            hash *= Prime32;
-        }
-
-        return hash;
-    }
-
-    public static uint Hash32(ReadOnlySpan<byte> input)
-    {
-        var hash = Offset32;
-        for (var i = 0; i < input.Length; i++)
-        {
-            var current = input[i];
-            hash ^= current;
-            hash *= Prime32;
-        }
-
-        return hash;
-    }
-
-    public static ushort Hash16(ReadOnlySpan<char> input) => MixToShort(Hash32(input));
-    public static ushort Hash16(ReadOnlySpan<byte> input) => MixToShort(Hash32(input));
-
-    /// <summary>
-    /// Mixes a 32-bit hash into a 16-bit unsigned short by XOR-ing the higher and lower 16 bits.
-    /// </summary>
     private static ushort MixToShort(uint hash)
     {
         return (ushort) ((hash >> 16) ^ (hash & 0xFFFF));
@@ -53,25 +20,77 @@ public static class FNV1a
 }
 
 /// <summary>
-/// String hash pool using 32-bit FNV1a hashes.
+/// Hasher using 32-bit FNV1a algorithm.
 /// </summary>
 [PublicAPI]
 [SuppressMessage("ReSharper", "InconsistentNaming")]
-public class FNV1a32Pool : AStringHashPool<uint>
+public class FNV1a32Hasher : IStringHasher<uint, FNV1a32Hasher>
 {
-    public FNV1a32Pool(string name) : base(name) { }
+    // https://datatracker.ietf.org/doc/html/draft-eastlake-fnv-35#name-fnv-constants
+    private const uint Prime = 0x01000193;
+    private const uint Offset = 0x811C9DC5;
 
-    protected override uint Hash(string input) => FNV1a.Hash32(input);
+    public static uint Hash(ReadOnlySpan<byte> input)
+    {
+        var hash = Offset;
+        for (var i = 0; i < input.Length; i++)
+        {
+            var current = input[i];
+            hash ^= current;
+            hash *= Prime;
+        }
+
+        return hash;
+    }
+
+    public static uint Hash(ReadOnlySpan<char> input)
+    {
+        var hash = Offset;
+        for (var i = 0; i < input.Length; i++)
+        {
+            var current = input[i];
+            hash ^= current;
+            hash *= Prime;
+        }
+
+        return hash;
+    }
 }
 
 /// <summary>
-/// String hash pool using 16-bit FNV1a hashes.
+/// Hasher using 64-bit FNV1a algorithm.
 /// </summary>
 [PublicAPI]
 [SuppressMessage("ReSharper", "InconsistentNaming")]
-public class FNV1a16Pool : AStringHashPool<ushort>
+public class FNV1a64Hasher : IStringHasher<ulong, FNV1a64Hasher>
 {
-    public FNV1a16Pool(string name) : base(name) { }
+    // https://datatracker.ietf.org/doc/html/draft-eastlake-fnv-35#name-fnv-constants
+    private const ulong Prime = 0x00000100_000001B3;
+    private const ulong Offset = 0xCBF29CE4_84222325;
 
-    protected override ushort Hash(string input) => FNV1a.Hash16(input);
+    public static ulong Hash(ReadOnlySpan<byte> input)
+    {
+        var hash = Offset;
+        for (var i = 0; i < input.Length; i++)
+        {
+            var current = input[i];
+            hash ^= current;
+            hash *= Prime;
+        }
+
+        return hash;
+    }
+
+    public static ulong Hash(ReadOnlySpan<char> input)
+    {
+        var hash = Offset;
+        for (var i = 0; i < input.Length; i++)
+        {
+            var current = input[i];
+            hash ^= current;
+            hash *= Prime;
+        }
+
+        return hash;
+    }
 }

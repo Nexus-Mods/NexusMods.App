@@ -9,7 +9,7 @@ namespace NexusMods.Abstractions.GameLocators;
 [ValueObject<ushort>]
 public readonly partial struct LocationId
 {
-    private static readonly FNV1a16Pool HashPool = new(name: nameof(LocationId));
+    private static readonly StringHashPool<ushort, FNV1a16Hasher> HashPool = new(name: nameof(LocationId));
 
     /// <summary>
     /// Converts the string to a LocationId.

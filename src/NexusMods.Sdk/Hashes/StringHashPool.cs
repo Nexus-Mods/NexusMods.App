@@ -1,52 +1,51 @@
 using System.Collections.Immutable;
-using System.Numerics;
+using System.Text;
 using JetBrains.Annotations;
 
 namespace NexusMods.Sdk.Hashes;
 
 /// <summary>
-/// Thread-safe string hash pool.
+/// Thread-safe string hash pool using provided hasher.
 /// </summary>
 [PublicAPI]
-public abstract class AStringHashPool<TNumber> where TNumber : unmanaged, IBinaryInteger<TNumber>, IUnsignedNumber<TNumber>
+public class StringHashPool<THash, THasher>
+    where THash : unmanaged, IEquatable<THash>
+    where THasher : IStringHasher<THash, THasher>
 {
     private const uint MaxIterations = 100;
 
     private readonly string _name;
-    private ImmutableDictionary<TNumber, string> _cache;
+    private readonly Encoding _encoding;
+    private ImmutableDictionary<THash, string> _cache;
 
     /// <summary>
     /// Constructor.
     /// </summary>
-    protected AStringHashPool(string name)
+    public StringHashPool(string name, Encoding? encoding = null)
     {
         _name = name;
-        _cache = ImmutableDictionary<TNumber, string>.Empty;
+        _cache = ImmutableDictionary<THash, string>.Empty;
+        _encoding = encoding ?? Encoding.ASCII;
     }
-
-    /// <summary>
-    /// Computes the hash for the input.
-    /// </summary>
-    protected abstract TNumber Hash(string input);
 
     /// <summary>
     /// Hashes the input and adds the result to the pool.
     /// </summary>
     /// <exception cref="HashCollisionException">Thrown when a hash collision is detected.</exception>
     /// <exception cref="BoundedAtomicUpdateException">Thrown when the atomic update failed within the provided bounds</exception>
-    public TNumber GetOrAdd(string input)
+    public THash GetOrAdd(string input)
     {
-        var hash = Hash(input);
+        var hash = THasher.Hash(input);
 
         if (_cache.TryGetValue(hash, out var existing))
         {
             if (!StringComparer.Ordinal.Equals(input, existing))
-                throw new HashCollisionException($"Hash collision detected in pool '{_name}' for {hash:X} between '{input}' and '{existing}'");
+                throw new HashCollisionException($"Hash collision detected in pool '{_name}' for {hash} between '{input}' and '{existing}'");
             return hash;
         }
 
         uint iteration = 0;
-        ImmutableDictionary<TNumber, string> currentCache, updatedCache;
+        ImmutableDictionary<THash, string> currentCache, updatedCache;
 
         do
         {
@@ -62,12 +61,12 @@ public abstract class AStringHashPool<TNumber> where TNumber : unmanaged, IBinar
     /// <summary>
     /// Reverse lookup of the value based on the hash.
     /// </summary>
-    public bool TryGet(TNumber hash, out string? value) => _cache.TryGetValue(hash, out value);
+    public bool TryGet(THash hash, out string? value) => _cache.TryGetValue(hash, out value);
 
     /// <summary>
     /// Reverse lookup of the value based on the hash.
     /// </summary>
-    public string this[TNumber hash] => _cache[hash];
+    public string this[THash hash] => _cache[hash];
 
     /// <inheritdoc/>
     public override string ToString() => $"Name = {_name}, Count = {_cache.Count}";
