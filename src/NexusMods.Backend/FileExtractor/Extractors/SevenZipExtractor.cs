@@ -53,7 +53,7 @@ public class SevenZipExtractor : IExtractor
         _temporaryFileManager = fileTemporaryFileManager;
         _processRunner = processRunner;
         _osInformation = osInformation;
-
+        
         _exePath = GetExtractorExecutable(fileSystem, osInformation);
         logger.LogDebug("Using extractor at {ExtractorExecutable}", _exePath);
     }
@@ -182,6 +182,7 @@ public class SevenZipExtractor : IExtractor
     {
         var pathsWithInvalidCharacters = new List<(string fileName, bool isDirectory)>();
 
+        source = source.FileSystem.Map(source);
         // NOTE(erri120): "l -ba" is an undocumented command that skips the table header and footer
         var process = Cli
             .Wrap(_exePath)
@@ -242,6 +243,8 @@ public class SevenZipExtractor : IExtractor
 
     private async ValueTask ExtractArchive(AbsolutePath source, AbsolutePath destination, CancellationToken cancellationToken)
     {
+        destination = destination.FileSystem.Map(destination);
+        source = source.FileSystem.Map(source);
         // NOTE(erri120): Using "-bsp1" to redirect the progress line to stdout
         var process = Cli
             .Wrap(_exePath)

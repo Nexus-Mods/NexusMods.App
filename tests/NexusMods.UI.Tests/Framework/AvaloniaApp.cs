@@ -64,7 +64,9 @@ public class AvaloniaApp : IDisposable
                 Dispatcher.UIThread.CheckAccess();
                 
                 tcs.SetResult();
-                Dispatcher.UIThread.MainLoop(CancellationToken.None);
+                
+                // Main loop is not supported on this platform, so it's disabled
+                // Dispatcher.UIThread.MainLoop(CancellationToken.None);
             }
             catch (Exception e)
             {

@@ -29,9 +29,30 @@ jobs:
         run: exit 1
 
   build-and-test:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os_name: linux
+            runs_on: [ self-hosted, Linux, x64 ]
+            shell: bash
+          - os_name: windows
+            runs_on: [ self-hosted, Windows, x64 ]
+            shell: powershell
+    runs-on: ${{ matrix.runs_on }}
     if: github.event_name == 'push' || github.event.pull_request.draft == false
-    uses: Nexus-Mods/NexusMods.App.Meta/.github/workflows/dotnet-build-and-test-with-osx.yaml@main
-    with:
-      extra-test-args: "--blame-hang-timeout 20m"
-      test-filter: "RequiresNetworking!=True&FlakeyTest!=True"
-      codecov-flags: ",clean_environment_tests"
+    
+    env:
+      NEXUS_API_KEY: ${{ secrets.NEXUS_API_KEY }}
+    
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Restore
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
+
+      - name: Test
+        run: dotnet test --configuration Release --no-build --verbosity normal
