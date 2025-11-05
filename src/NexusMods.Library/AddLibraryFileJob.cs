@@ -66,8 +66,10 @@ internal class AddLibraryFileJob : IJobDefinitionWithStart<AddLibraryFileJob, Li
         .AddHasher<Hash, XxHash3, Xx3Hasher>()
         .AddHasher<Md5Value, MD5, Md5Hasher>();
 
-    private static async ValueTask<(Hash, Optional<Md5Value>)> HashAsync(Stream stream, bool isNestedFile, CancellationToken cancellationToken)
+    private static async ValueTask<(Hash, Optional<Md5Value>)> HashAsync(AbsolutePath filePath, bool isNestedFile, CancellationToken cancellationToken)
     {
+        await using var stream = filePath.Read();
+
         if (isNestedFile)
         {
             var hash = await Xx3Hasher.HashAsync(stream, cancellationToken: cancellationToken).ConfigureAwait(false);
@@ -82,15 +84,7 @@ internal class AddLibraryFileJob : IJobDefinitionWithStart<AddLibraryFileJob, Li
     {
         var isArchive = isNestedFile ? await CheckIfNestedArchiveAsync(filePath) : await CheckIfArchiveAsync(filePath);
 
-        Hash hash;
-        Optional<Md5Value> md5;
-        await using (var fileStream = filePath.Read())
-        {
-            var tuple = await HashAsync(fileStream, isNestedFile: isNestedFile, cancellationToken: context.CancellationToken);
-            hash = tuple.Item1;
-            md5 = tuple.Item2;
-        }
-
+        var (hash, md5) = await HashAsync(filePath, isNestedFile: isNestedFile, cancellationToken: context.CancellationToken);
         var libraryFile = CreateLibraryFile(Transaction, filePath, hash, md5);
 
         if (isArchive)
