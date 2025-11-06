@@ -283,9 +283,7 @@ public class InstallCollectionDownloadJob : IJobDefinitionWithStart<InstallColle
         await Parallel.ForEachAsync(libraryArchive.Children, async (child, token) =>
         {
             await using var stream = await FileStore.GetFileStream(child.AsLibraryFile().Hash, token);
-            using var hasher = MD5.Create();
-            var hash = await hasher.ComputeHashAsync(stream, token);
-            var md5 = Md5Value.From(hash);
+            var md5 = await Md5Hasher.HashAsync(stream, cancellationToken: token);
 
             var file = child.AsLibraryFile();
             hashes[md5] = new HashMapping()

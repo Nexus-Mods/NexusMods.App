@@ -98,7 +98,7 @@ public class ChunkedStreamTests
         await Assert.That(bytesRead).IsEqualTo(16);
 
         bytesRead = await chunked.ReadAsync(buffer);
-        await Assert.That(bytesRead).IsZero().Because("Reached end of stream");
+        await Assert.That(bytesRead).IsEqualTo(0) .Because("Reached end of stream");
     }
     
     private class ChunkedMemoryStream : IChunkedStreamSource

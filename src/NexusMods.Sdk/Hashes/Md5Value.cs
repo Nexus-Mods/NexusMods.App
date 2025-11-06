@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography;
 using System.Text.Json.Serialization;
 using JetBrains.Annotations;
 
@@ -116,4 +117,38 @@ public readonly struct Md5Value : IEquatable<Md5Value>
     public static bool operator ==(Md5Value left, Md5Value right) => left.Equals(right);
     /// <summary/>
     public static bool operator !=(Md5Value left, Md5Value right) => !(left == right);
+}
+
+[PublicAPI]
+public class Md5Hasher : IStreamingHasher<Md5Value, MD5, Md5Hasher>
+{
+    public static Md5Value Hash(ReadOnlySpan<byte> input)
+    {
+        Span<byte> hashBytes = stackalloc byte[Md5Value.Size];
+        var didHash = MD5.TryHashData(input, hashBytes, out var bytesWritten);
+        Debug.Assert(bytesWritten == hashBytes.Length && didHash);
+
+        return Md5Value.From(hashBytes);
+    }
+
+    public static MD5 Initialize() => MD5.Create();
+
+    public static MD5 Update(MD5 state, ReadOnlySpan<byte> input) => throw new NotSupportedException("MD5 hasher doesn't support updates with spans");
+
+    public static MD5 Update(MD5 state, byte[] input, int offset, int count)
+    {
+        state.TransformBlock(input, inputOffset: offset, inputCount: count, input, outputOffset: 0);
+        return state;
+    }
+
+    public static Md5Value Finish(MD5 state)
+    {
+        _ = state.TransformFinalBlock([], inputOffset: 0, inputCount: 0);
+        return Md5Value.From(state.Hash);
+    }
+
+    public static ValueTask<Md5Value> HashAsync(Stream stream, int bufferSize = IStreamingHasher<Md5Value, MD5, Md5Hasher>.DefaultBufferSize, CancellationToken cancellationToken = default)
+    {
+        return StreamingHasher<Md5Value, MD5, Md5Hasher>.HashAsync(stream, bufferSize, cancellationToken);
+    }
 }
