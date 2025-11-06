@@ -1013,7 +1013,7 @@ After asking design, we're choosing to simply open the mod page for now.
                 .Where(pair => 
                 {
                     var modPage = NexusModsModPageMetadata.Load(_connection.Db, pair.modPageId);
-                    return modPage.IsValid() && modPage.Uid.GameId.Equals(currentGameId);
+                    return modPage.IsValid() && modPage.Uid.GameId == currentGameId;
                 });
             var allUpdates = modPagesWithUpdates.Select(pair => pair.updates).ToArray();
             

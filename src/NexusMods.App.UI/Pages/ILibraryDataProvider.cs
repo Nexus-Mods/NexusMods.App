@@ -14,7 +14,7 @@ using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Query;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Networking.NexusWebApi.UpdateFilters;
-using NexusMods.Sdk.NexusModsApi;
+using NexusMods.Sdk.Games;
 using R3;
 using Observable = R3.Observable;
 
@@ -29,7 +29,7 @@ public interface ILibraryDataProvider
     /// <summary>
     /// Returns all library files for the given game.
     /// </summary>
-    LibraryFile.ReadOnly[] GetAllFiles(NexusModsGameId nexusModsGameId, IDb? db = null);
+    LibraryFile.ReadOnly[] GetAllFiles(GameId gameId, IDb? db = null);
 }
 
 public record LibraryFilter(LoadoutId LoadoutId, ILocatableGame Game);

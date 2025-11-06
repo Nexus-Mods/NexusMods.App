@@ -11,8 +11,8 @@ using NexusMods.App.UI.Pages.LibraryPage;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Query;
 using NexusMods.MnemonicDB.Abstractions.ValueSerializers;
+using NexusMods.Sdk.Games;
 using NexusMods.Sdk.Hashes;
-using NexusMods.Sdk.NexusModsApi;
 using UIObservableExtensions = NexusMods.App.UI.Extensions.ObservableExtensions;
 
 namespace NexusMods.App.UI.Pages;
@@ -28,7 +28,7 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
     }
 
     // TODO: update once we have game information on Local Files
-    public LibraryFile.ReadOnly[] GetAllFiles(NexusModsGameId nexusModsGameId, IDb? db = null) => [];
+    public LibraryFile.ReadOnly[] GetAllFiles(GameId gameId, IDb? db = null) => [];
 
     public IObservable<IChangeSet<CompositeItemModel<EntityId>, EntityId>> ObserveLibraryItems(LibraryFilter libraryFilter)
     {

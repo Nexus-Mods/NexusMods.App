@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 using JetBrains.Annotations;
 using NexusMods.Sdk.Settings;
 using NexusMods.Sdk;
-using NexusMods.Sdk.NexusModsApi;
+using NexusMods.Sdk.Games;
 
 namespace NexusMods.App.UI.Settings;
 
@@ -20,10 +20,10 @@ public record ExperimentalSettings : ISettings
     public bool EnableCollectionSharing { get; [UsedImplicitly] set; }
 
     [JsonIgnore]
-    public readonly NexusModsGameId[] SupportedGames =
+    public readonly GameId[] SupportedGames =
     [
-        NexusModsGameId.From(1303), // Stardew Valley 
-        NexusModsGameId.From(3333) //  Cyberpunk
+        GameId.From("StardewValley"),
+        GameId.From("RedEngine.Cyberpunk2077"),
     ];
 
     public static ISettingsBuilder Configure(ISettingsBuilder settingsBuilder)

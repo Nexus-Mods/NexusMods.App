@@ -1,5 +1,5 @@
+using NexusMods.Sdk.Games;
 using NexusMods.Sdk.Jobs;
-using NexusMods.Sdk.NexusModsApi;
 using R3;
 
 namespace NexusMods.Abstractions.Loadouts;
@@ -13,7 +13,7 @@ public interface ITool : IJobDefinition<Unit>
     /// <summary>
     /// List of supported game IDs.
     /// </summary>
-    public IEnumerable<NexusModsGameId> GameIds { get; }
+    public IEnumerable<GameId> GameIds { get; }
 
     /// <summary>
     /// Human friendly name of the tool.

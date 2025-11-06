@@ -28,6 +28,7 @@ using NexusMods.CLI;
 using NexusMods.CrossPlatform;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Sdk;
+using NexusMods.Sdk.Games;
 using NexusMods.Sdk.NexusModsApi;
 using NexusMods.UI.Sdk;
 using R3;
@@ -273,10 +274,16 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
 
     private Optional<(LoadoutId, WorkspaceId)> GetWorkspaceIdForGame(IWorkspaceController workspaceController, NexusModsGameId nexusModsGameId)
     {
-        if (workspaceController.ActiveWorkspace.Context is LoadoutContext existingLoadoutContext && IsCorrectLoadoutForGame(existingLoadoutContext.LoadoutId, nexusModsGameId))
+        if (!_serviceProvider.GetServices<ILocatableGame>().TryGetFirst(x => x.NexusModsGameId == nexusModsGameId, out var game)) return Optional<(LoadoutId, WorkspaceId)>.None;
+        return GetWorkspaceIdForGame(workspaceController, game.GameId);
+    }
+
+    private Optional<(LoadoutId, WorkspaceId)> GetWorkspaceIdForGame(IWorkspaceController workspaceController, GameId gameId)
+    {
+        if (workspaceController.ActiveWorkspace.Context is LoadoutContext existingLoadoutContext && IsCorrectLoadoutForGame(existingLoadoutContext.LoadoutId, gameId))
             return (existingLoadoutContext.LoadoutId, workspaceController.ActiveWorkspaceId);
 
-        var loadoutId = GetActiveLoadoutForGame(nexusModsGameId);
+        var loadoutId = GetActiveLoadoutForGame(gameId);
         if (!loadoutId.HasValue) return Optional<(LoadoutId, WorkspaceId)>.None;
 
         var workspaceViewModel = workspaceController.ChangeOrCreateWorkspaceByContext(
@@ -291,16 +298,16 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
         return (loadoutId.Value, workspaceViewModel.Id);
     }
 
-    private bool IsCorrectLoadoutForGame(LoadoutId loadoutId, NexusModsGameId nexusModsGameId)
+    private bool IsCorrectLoadoutForGame(LoadoutId loadoutId, GameId gameId)
     {
         var loadout = Loadout.Load(_connection.Db, loadoutId);
-        return loadout.IsValid() && loadout.InstallationInstance.Game.NexusModsGameId == nexusModsGameId;
+        return loadout.IsValid() && loadout.LocatableGame.GameId == gameId;
     }
 
-    private Optional<LoadoutId> GetActiveLoadoutForGame(NexusModsGameId nexusModsGameId)
+    private Optional<LoadoutId> GetActiveLoadoutForGame(GameId gameId)
     {
         var gameRegistry = _serviceProvider.GetRequiredService<IGameRegistry>();
-        if (!gameRegistry.InstalledGames.TryGetFirst(x => x.Game.NexusModsGameId == nexusModsGameId, out var gameInstallation)) return Optional<LoadoutId>.None;
+        if (!gameRegistry.InstalledGames.TryGetFirst(x => x.Game.GameId == gameId, out var gameInstallation)) return Optional<LoadoutId>.None;
 
         if (gameInstallation.Game is not IGame game) return Optional<LoadoutId>.None;
         return _serviceProvider.GetRequiredService<ILoadoutManager>().GetCurrentlyActiveLoadout(gameInstallation);

@@ -9,8 +9,8 @@ using NexusMods.Abstractions.GameLocators.Stores.Steam;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Paths;
 using NexusMods.Sdk;
+using NexusMods.Sdk.Games;
 using NexusMods.Sdk.Jobs;
-using NexusMods.Sdk.NexusModsApi;
 using R3;
 
 namespace NexusMods.Abstractions.Games;
@@ -50,7 +50,7 @@ public class RunGameTool<T> : IRunGameTool
     }
 
     /// <inheritdoc />
-    public IEnumerable<NexusModsGameId> GameIds => [_game.NexusModsGameId.Value];
+    public IEnumerable<GameId> GameIds => [_game.GameId];
 
     /// <inheritdoc />
     public string Name => $"Run {_game.DisplayName}";
