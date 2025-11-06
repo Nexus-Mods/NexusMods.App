@@ -48,7 +48,7 @@ public static class Services
         services
             .AddSettings<GameLocatorSettings>()
             .AddGameLocatorCliVerbs()
-            .AddAttributeCollection(typeof(ManuallyAddedGame));
+            .AddManuallyAddedGameModel();
 
         // TODO: figure out the Proton-Wine situation
 
