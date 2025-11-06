@@ -41,6 +41,15 @@ public partial class SkyrimSE : AGame, ISteamGame, IGogGame, ICreationEngineGame
     public static Optional<Sdk.NexusModsApi.NexusModsGameId> NexusModsGameId => Sdk.NexusModsApi.NexusModsGameId.From(1704);
     protected override Optional<Sdk.NexusModsApi.NexusModsGameId> NexusModsGameIdImpl => NexusModsGameId;
 
+    public override StoreIdentifiers StoreIdentifiers { get; } = new(GameId)
+    {
+        SteamAppIds = [489830u],
+        GOGProductIds = [1711230643L],
+    };
+
+    public IEnumerable<uint> SteamIds => StoreIdentifiers.SteamAppIds;
+    public IEnumerable<long> GogIds => StoreIdentifiers.GOGProductIds;
+
     public SkyrimSE(IServiceProvider provider) : base(provider)
     {
         _serviceProvider = provider;
@@ -74,8 +83,7 @@ public partial class SkyrimSE : AGame, ISteamGame, IGogGame, ICreationEngineGame
 
     protected override ILoadoutSynchronizer MakeSynchronizer(IServiceProvider provider) => new SkyrimSESynchronizer(provider, this);
 
-    public IEnumerable<uint> SteamIds => [489830];
-    public IEnumerable<long> GogIds => [1711230643];
+
 
     public override IStreamFactory IconImage => new EmbeddedResourceStreamFactory<SkyrimSE>("NexusMods.Games.CreationEngine.Resources.SkyrimSE.thumbnail.webp");
     public override IStreamFactory TileImage => new EmbeddedResourceStreamFactory<SkyrimSE>("NexusMods.Games.CreationEngine.Resources.SkyrimSE.tile.webp");

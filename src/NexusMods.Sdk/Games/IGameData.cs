@@ -13,6 +13,11 @@ public interface IGameData
     GameId GameId { get; }
 
     /// <summary>
+    /// Gets the store identifiers for the game.
+    /// </summary>
+    StoreIdentifiers StoreIdentifiers { get; }
+
+    /// <summary>
     /// Gets the display name of the game.
     /// </summary>
     string DisplayName { get; }

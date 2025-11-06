@@ -8,6 +8,7 @@ namespace NexusMods.Abstractions.GameLocators.Stores.Xbox;
 /// Game detection is automatic provided the correct <see cref="XboxIds"/>
 /// is applied.
 /// </remarks>
+[Obsolete("Use IGameData.StoreIdentifiers instead")]
 public interface IXboxGame : ILocatableGame
 {
     /// <summary>

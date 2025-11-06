@@ -8,6 +8,7 @@ namespace NexusMods.Abstractions.GameLocators.Stores.Steam;
 /// Game detection is automatic provided the correct <see cref="SteamIds"/>
 /// is applied.
 /// </remarks>
+[Obsolete("Use IGameData.StoreIdentifiers instead")]
 public interface ISteamGame : ILocatableGame
 {
     /// <summary>

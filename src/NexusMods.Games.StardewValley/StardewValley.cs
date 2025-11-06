@@ -26,9 +26,6 @@ public class StardewValley : AGame, ISteamGame, IGogGame, IXboxGame, IGameData<S
 {
     public static GameDomain DomainStatic => GameDomain.From("stardewvalley");
     private readonly IServiceProvider _serviceProvider;
-    public IEnumerable<uint> SteamIds => new[] { 413150u };
-    public IEnumerable<long> GogIds => new long[] { 1453375253 };
-    public IEnumerable<string> XboxIds => new[] { "ConcernedApe.StardewValleyPC" };
 
     public static GameId GameId { get; } = GameId.From("StardewValley");
     protected override GameId GameIdImpl => GameId;
@@ -38,6 +35,17 @@ public class StardewValley : AGame, ISteamGame, IGogGame, IXboxGame, IGameData<S
 
     public static Optional<Sdk.NexusModsApi.NexusModsGameId> NexusModsGameId => Sdk.NexusModsApi.NexusModsGameId.From(1303);
     protected override Optional<Sdk.NexusModsApi.NexusModsGameId> NexusModsGameIdImpl => NexusModsGameId;
+
+    public override StoreIdentifiers StoreIdentifiers { get; } = new(GameId)
+    {
+        SteamAppIds = [413150u],
+        GOGProductIds = [1453375253L],
+        XboxPackageIdentifiers = ["ConcernedApe.StardewValleyPC"],
+    };
+
+    public IEnumerable<uint> SteamIds => StoreIdentifiers.SteamAppIds;
+    public IEnumerable<long> GogIds => StoreIdentifiers.GOGProductIds;
+    public IEnumerable<string> XboxIds => StoreIdentifiers.XboxPackageIdentifiers;
 
     public StardewValley(
         IOSInformation osInformation,

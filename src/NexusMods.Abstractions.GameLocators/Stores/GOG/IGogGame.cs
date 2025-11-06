@@ -8,6 +8,7 @@ namespace NexusMods.Abstractions.GameLocators.Stores.GOG;
 /// Game detection is automatic provided the correct <see cref="GogIds"/>
 /// is applied.
 /// </remarks>
+[Obsolete("Use IGameData.StoreIdentifiers instead")]
 public interface IGogGame : ILocatableGame
 {
     /// <summary>

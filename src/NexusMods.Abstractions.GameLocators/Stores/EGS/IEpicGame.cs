@@ -8,6 +8,7 @@ namespace NexusMods.Abstractions.GameLocators.Stores.EGS;
 /// Game detection is automatic provided the correct <see cref="EpicCatalogItemId"/>
 /// is applied.
 /// </remarks>
+[Obsolete("Use IGameData.StoreIdentifiers instead")]
 public interface IEpicGame : ILocatableGame
 {
     /// <summary>

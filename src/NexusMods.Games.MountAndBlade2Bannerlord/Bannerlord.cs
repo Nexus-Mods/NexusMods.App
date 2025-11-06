@@ -38,12 +38,18 @@ public sealed class Bannerlord : AGame, ISteamGame, IGogGame, IXboxGame, IGameDa
     public static Optional<Sdk.NexusModsApi.NexusModsGameId> NexusModsGameId => Sdk.NexusModsApi.NexusModsGameId.From(3174);
     protected override Optional<Sdk.NexusModsApi.NexusModsGameId> NexusModsGameIdImpl => NexusModsGameId;
 
-    public IEnumerable<uint> SteamIds => [261550u];
-    public IEnumerable<long> GogIds => [1802539526, 1564781494];
+    public override StoreIdentifiers StoreIdentifiers { get; } = new(GameId)
+    {
+        SteamAppIds = [261550u],
+        GOGProductIds = [1802539526L, 1564781494L],
+        EGSCatalogItemId = ["Chickadee"],
+        XboxPackageIdentifiers = ["TaleWorldsEntertainment.MountBladeIIBannerlord"],
+    };
 
-    // The Epic Games Store is not supported yet, managing the game will put the user into a state where they cannot apply a loadout. 
-    // public IEnumerable<string> EpicCatalogItemId => ["Chickadee"];
-    public IEnumerable<string> XboxIds => ["TaleWorldsEntertainment.MountBladeIIBannerlord"];
+    public IEnumerable<uint> SteamIds => StoreIdentifiers.SteamAppIds;
+    public IEnumerable<long> GogIds => StoreIdentifiers.GOGProductIds;
+    public IEnumerable<string> EpicCatalogItemId => StoreIdentifiers.EGSCatalogItemId;
+    public IEnumerable<string> XboxIds => StoreIdentifiers.XboxPackageIdentifiers;
 
     public override IStreamFactory IconImage => new EmbeddedResourceStreamFactory<Bannerlord>("NexusMods.Games.MountAndBlade2Bannerlord.Resources.thumbnail.webp");
     public override IStreamFactory TileImage => new EmbeddedResourceStreamFactory<Bannerlord>("NexusMods.Games.MountAndBlade2Bannerlord.Resources.tile.webp");

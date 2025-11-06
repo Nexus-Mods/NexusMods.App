@@ -62,6 +62,9 @@ public abstract class AGame : IGame
     protected abstract Optional<Sdk.NexusModsApi.NexusModsGameId> NexusModsGameIdImpl { get; }
 
     /// <inheritdoc/>
+    public abstract StoreIdentifiers StoreIdentifiers { get; }
+
+    /// <inheritdoc/>
     public abstract GamePath GetPrimaryFile(GameTargetInfo targetInfo);
 
     /// <inheritdoc />

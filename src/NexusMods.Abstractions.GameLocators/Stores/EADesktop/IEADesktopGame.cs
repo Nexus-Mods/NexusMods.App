@@ -9,6 +9,7 @@ namespace NexusMods.Abstractions.GameLocators.Stores.EADesktop;
 /// is applied.
 /// </remarks>
 // ReSharper disable once InconsistentNaming
+[Obsolete("Use IGameData.StoreIdentifiers instead")]
 public interface IEADesktopGame : ILocatableGame
 {
     /// <summary>

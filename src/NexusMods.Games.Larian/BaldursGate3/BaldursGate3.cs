@@ -32,8 +32,14 @@ public class BaldursGate3 : AGame, ISteamGame, IGogGame, IGameData<BaldursGate3>
     public static Optional<Sdk.NexusModsApi.NexusModsGameId> NexusModsGameId => Sdk.NexusModsApi.NexusModsGameId.From(3474);
     protected override Optional<Sdk.NexusModsApi.NexusModsGameId> NexusModsGameIdImpl => NexusModsGameId;
 
-    public IEnumerable<uint> SteamIds => [1086940u];
-    public IEnumerable<long> GogIds => [1456460669];
+    public override StoreIdentifiers StoreIdentifiers { get; } = new(GameId)
+    {
+        SteamAppIds = [1086940u],
+        GOGProductIds = [1456460669L],
+    };
+
+    public IEnumerable<uint> SteamIds => StoreIdentifiers.SteamAppIds;
+    public IEnumerable<long> GogIds => StoreIdentifiers.GOGProductIds;
 
     public BaldursGate3(IServiceProvider provider) : base(provider)
     {

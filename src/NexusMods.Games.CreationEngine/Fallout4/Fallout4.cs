@@ -41,6 +41,15 @@ public partial class Fallout4 : AGame, ISteamGame, IGogGame, ICreationEngineGame
     public static Optional<Sdk.NexusModsApi.NexusModsGameId> NexusModsGameId => Sdk.NexusModsApi.NexusModsGameId.From(1151);
     protected override Optional<Sdk.NexusModsApi.NexusModsGameId> NexusModsGameIdImpl => NexusModsGameId;
 
+    public override StoreIdentifiers StoreIdentifiers { get; } = new(GameId)
+    {
+        SteamAppIds = [377160u],
+        GOGProductIds = [1998527297L],
+    };
+
+    public IEnumerable<uint> SteamIds => StoreIdentifiers.SteamAppIds;
+    public IEnumerable<long> GogIds => StoreIdentifiers.GOGProductIds;
+
     public Fallout4(IServiceProvider provider) : base(provider)
     {
         _serviceProvider = provider;
@@ -71,8 +80,7 @@ public partial class Fallout4 : AGame, ISteamGame, IGogGame, ICreationEngineGame
 
     protected override ILoadoutSynchronizer MakeSynchronizer(IServiceProvider provider) => new Fallout4Synchronizer(provider, this);
 
-    public IEnumerable<uint> SteamIds => [377160];
-    public IEnumerable<long> GogIds => [ 1998527297 ];
+
         
     public override IStreamFactory IconImage => new EmbeddedResourceStreamFactory<Fallout4>("NexusMods.Games.CreationEngine.Resources.Fallout4.thumbnail.webp");
     public override IStreamFactory TileImage => new EmbeddedResourceStreamFactory<Fallout4>("NexusMods.Games.CreationEngine.Resources.Fallout4.tile.webp");

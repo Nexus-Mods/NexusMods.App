@@ -36,6 +36,23 @@ public class StubbedGame : AGame, IEADesktopGame, IEpicGame, IOriginGame, ISteam
     public static Optional<Sdk.NexusModsApi.NexusModsGameId> NexusModsGameId => Sdk.NexusModsApi.NexusModsGameId.From(uint.MaxValue);
     protected override Optional<Sdk.NexusModsApi.NexusModsGameId> NexusModsGameIdImpl => NexusModsGameId;
 
+    public override StoreIdentifiers StoreIdentifiers { get; } = new(GameId)
+    {
+        SteamAppIds = [42u],
+        GOGProductIds = [42L],
+        EADesktopSoftwareIds = ["ea-game-id"],
+        EGSCatalogItemId = ["epic-game-id"],
+        OriginManifestIds = ["origin-game-id"],
+        XboxPackageIdentifiers = ["xbox-game-id"],
+    };
+
+    public IEnumerable<uint> SteamIds => StoreIdentifiers.SteamAppIds;
+    public IEnumerable<long> GogIds => StoreIdentifiers.GOGProductIds;
+    public IEnumerable<string> EADesktopSoftwareIDs => StoreIdentifiers.EADesktopSoftwareIds;
+    public IEnumerable<string> EpicCatalogItemId => StoreIdentifiers.EGSCatalogItemId;
+    public IEnumerable<string> OriginGameIds => StoreIdentifiers.OriginManifestIds;
+    public IEnumerable<string> XboxIds => StoreIdentifiers.XboxPackageIdentifiers;
+
     private readonly IServiceProvider _serviceProvider;
     public StubbedGame(ILogger<StubbedGame> logger, IEnumerable<IGameLocator> locators,
         IFileSystem fileSystem, IServiceProvider provider) : base(provider)
@@ -67,13 +84,6 @@ public class StubbedGame : AGame, IEADesktopGame, IEpicGame, IOriginGame, ISteam
 
     public override List<IModInstallDestination> GetInstallDestinations(IReadOnlyDictionary<LocationId, AbsolutePath> locations) => new();
 
-    public IEnumerable<uint> SteamIds => [42u];
-    public IEnumerable<long> GogIds => [42];
-    public IEnumerable<string> EADesktopSoftwareIDs => ["ea-game-id"];
-    public IEnumerable<string> EpicCatalogItemId => ["epic-game-id"];
-    public IEnumerable<string> OriginGameIds => ["origin-game-id"];
-    public IEnumerable<string> XboxIds => ["xbox-game-id"];
-    
     public override ILibraryItemInstaller[] LibraryItemInstallers =>
     [
         new StubbedGameInstaller(_serviceProvider),

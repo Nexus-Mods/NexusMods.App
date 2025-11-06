@@ -8,6 +8,7 @@ namespace NexusMods.Abstractions.GameLocators.Stores.Origin;
 /// Game detection is automatic provided the correct <see cref="OriginGameIds"/>
 /// is applied.
 /// </remarks>
+[Obsolete("Use IGameData.StoreIdentifiers instead")]
 public interface IOriginGame : ILocatableGame
 {
     /// <summary>

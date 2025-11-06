@@ -35,6 +35,17 @@ public class Cyberpunk2077Game : AGame, ISteamGame, IGogGame, IGameData<Cyberpun
     public static Optional<Sdk.NexusModsApi.NexusModsGameId> NexusModsGameId => Sdk.NexusModsApi.NexusModsGameId.From(3333);
     protected override Optional<Sdk.NexusModsApi.NexusModsGameId> NexusModsGameIdImpl => NexusModsGameId;
 
+    public override StoreIdentifiers StoreIdentifiers { get; } = new(GameId)
+    {
+        SteamAppIds = [1091500u],
+        GOGProductIds = [2093619782L, 1423049311L],
+        EGSCatalogItemId = ["5beededaad9743df90e8f07d92df153f"],
+    };
+
+    public IEnumerable<uint> SteamIds => StoreIdentifiers.SteamAppIds;
+    public IEnumerable<long> GogIds => StoreIdentifiers.GOGProductIds;
+    public IEnumerable<string> EpicCatalogItemId => StoreIdentifiers.EGSCatalogItemId;
+
     public Cyberpunk2077Game(IServiceProvider provider) : base(provider)
     {
         _serviceProvider = provider;
@@ -69,12 +80,6 @@ public class Cyberpunk2077Game : AGame, ISteamGame, IGogGame, IGameData<Cyberpun
 
         return result;
     }
-
-    public IEnumerable<uint> SteamIds => new[] { 1091500u };
-    public IEnumerable<long> GogIds => new[] { 2093619782L, 1423049311 };
-
-    // The Epic Games Store is not supported yet, managing the game will put the user into a state where they cannot apply a loadout. 
-    public IEnumerable<string> EpicCatalogItemId => new[] { "5beededaad9743df90e8f07d92df153f" };
 
     public override IStreamFactory IconImage => new EmbeddedResourceStreamFactory<Cyberpunk2077Game>("NexusMods.Games.RedEngine.Resources.Cyberpunk2077.thumbnail.webp");
     public override IStreamFactory TileImage => new EmbeddedResourceStreamFactory<Cyberpunk2077Game>("NexusMods.Games.RedEngine.Resources.Cyberpunk2077.tile.webp");
