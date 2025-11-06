@@ -114,7 +114,7 @@ public class StardewValley : AGame, ISteamGame, IGogGame, IXboxGame
     public override IDiagnosticEmitter[] DiagnosticEmitters =>
     [
         new NoWayToSourceFilesOnDisk(),
-        new UndeployableLoadoutDueToMissingGameFiles(),
+        new UndeployableLoadoutDueToMissingGameFiles(_serviceProvider),
         _serviceProvider.GetRequiredService<SMAPIGameVersionDiagnosticEmitter>(),
         _serviceProvider.GetRequiredService<DependencyDiagnosticEmitter>(),
         _serviceProvider.GetRequiredService<MissingSMAPIEmitter>(),

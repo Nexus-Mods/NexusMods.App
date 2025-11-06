@@ -94,7 +94,7 @@ public class Cyberpunk2077Game : AGame, ISteamGame, IGogGame //, IEpicGame
     public override IDiagnosticEmitter[] DiagnosticEmitters =>
     [
         new NoWayToSourceFilesOnDisk(),
-        new UndeployableLoadoutDueToMissingGameFiles(),
+        new UndeployableLoadoutDueToMissingGameFiles(_serviceProvider),
         new PatternBasedDependencyEmitter(PatternDefinitions.Definitions, _serviceProvider),
         new MissingProtontricksForRedModEmitter(_serviceProvider),
         new MissingRedModEmitter(),
