@@ -95,13 +95,21 @@ public class GameRegistry : IGameRegistry, IHostedService
     /// </summary>
     private static bool TryGetLocatorResultId(IDb db, ILocatableGame locatableGame, GameLocatorResult result, [NotNullWhen(true)] out EntityId? id)
     {
-        var wasFound = GameInstallMetadata.FindByGameId(db, locatableGame.NexusModsGameId.Value)
-            .TryGetFirst(m => m.Store == result.Store, out var found);
+        // TODO: use game ID
+        var nexusModsGameId = locatableGame.NexusModsGameId;
+        if (!nexusModsGameId.HasValue)
+        {
+            id = null;
+            return false;
+        }
+
+        var wasFound = GameInstallMetadata.FindByGameId(db, nexusModsGameId.Value).TryGetFirst(m => m.Store == result.Store, out var found);
         if (!wasFound)
         {
             id = null;
             return false;
         }
+
         id = found.Id;
         return true;
     }
