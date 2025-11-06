@@ -88,7 +88,7 @@ public partial class SkyrimSE : AGame, ISteamGame, IGogGame, ICreationEngineGame
         // Files in a Data folder
         new StopPatternInstaller(_serviceProvider)
         {
-            GameId = NexusModsGameId.Value,
+            GameId = GameId,
             GameAliases = ["Skyrim Special Edition", "SkyrimSE", "SSE"],
             TopLevelDirs = KnownPaths.CommonTopLevelFolders,
             StopPatterns = ["(^|/)skse(/|$)"],

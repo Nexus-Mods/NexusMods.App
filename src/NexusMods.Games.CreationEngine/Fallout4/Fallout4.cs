@@ -82,7 +82,7 @@ public partial class Fallout4 : AGame, ISteamGame, IGogGame, ICreationEngineGame
         FomodXmlInstaller.Create(_serviceProvider, new GamePath(LocationId.Game, "Data")),
         new StopPatternInstaller(_serviceProvider)
         {
-            GameId = NexusModsGameId.Value,
+            GameId = GameId,
             GameAliases = ["Fallout 4", "Fallout4", "FO4", "F4"],
             TopLevelDirs = KnownPaths.CommonTopLevelFolders,
             StopPatterns = ["(^|/)f4se(/|$)"],

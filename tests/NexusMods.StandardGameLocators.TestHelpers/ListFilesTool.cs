@@ -29,7 +29,7 @@ public class ListFilesTool : ITool
         });
     }
 
-    public IEnumerable<GameId> GameIds => [];
+    public IEnumerable<GameId> GameIds => [GameId.From("StubbedGame")];
 
     public string Name => "List Files";
 
