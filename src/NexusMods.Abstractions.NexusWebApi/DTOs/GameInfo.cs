@@ -30,9 +30,9 @@ public class GameInfo : IJsonArraySerializable<GameInfo>
     public uint _Id { get; set; }
 
     /// <summary>
-    /// Returns the ID as typed ValueObject <see cref="GameId"/>.
+    /// Returns the ID as typed ValueObject <see cref="NexusModsGameId"/>.
     /// </summary>
-    public GameId Id => GameId.From(_Id);
+    public NexusModsGameId Id => NexusModsGameId.From(_Id);
 
     /// <summary>
     /// Name of the game.

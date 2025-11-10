@@ -31,7 +31,7 @@ public partial class CollectionMetadata : IModelDefinition
     /// <summary>
     /// The id of the game.
     /// </summary>
-    public static readonly GameIdAttribute GameId = new(Namespace, nameof(GameId)) { IsIndexed = true };
+    public static readonly NexusModsGameIdAttribute GameId = new(Namespace, nameof(GameId)) { IsIndexed = true };
 
     /// <summary>
     /// The short description of the collection

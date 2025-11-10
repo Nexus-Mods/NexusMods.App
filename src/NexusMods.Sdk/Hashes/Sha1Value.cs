@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography;
 using System.Text.Json.Serialization;
 using JetBrains.Annotations;
 
@@ -98,4 +99,38 @@ public readonly struct Sha1Value : IEquatable<Sha1Value>
     public static bool operator ==(Sha1Value left, Sha1Value right) => left.Equals(right);
     /// <summary/>
     public static bool operator !=(Sha1Value left, Sha1Value right) => !(left == right);
+}
+
+[PublicAPI]
+public class Sha1Hasher : IStreamingHasher<Sha1Value, SHA1, Sha1Hasher>
+{
+    public static Sha1Value Hash(ReadOnlySpan<byte> input)
+    {
+        Span<byte> hashBytes = stackalloc byte[Sha1Value.Size];
+        var didHash = SHA1.TryHashData(input, hashBytes, out var bytesWritten);
+        Debug.Assert(bytesWritten == hashBytes.Length && didHash);
+
+        return Sha1Value.From(hashBytes);
+    }
+
+    public static SHA1 Initialize() => SHA1.Create();
+
+    public static SHA1 Update(SHA1 state, ReadOnlySpan<byte> input) => throw new NotSupportedException("SHA1 hasher doesn't support updates with spans");
+
+    public static SHA1 Update(SHA1 state, byte[] input, int offset, int count)
+    {
+        state.TransformBlock(input, inputOffset: offset, inputCount: count, input, outputOffset: 0);
+        return state;
+    }
+
+    public static Sha1Value Finish(SHA1 state)
+    {
+        _ = state.TransformFinalBlock([], inputCount: 0, inputOffset: 0);
+        return Sha1Value.From(state.Hash);
+    }
+
+    public static ValueTask<Sha1Value> HashAsync(Stream stream, int bufferSize = IStreamingHasher<Sha1Value, SHA1, Sha1Hasher>.DefaultBufferSize, CancellationToken cancellationToken = default)
+    {
+        return StreamingHasher<Sha1Value, SHA1, Sha1Hasher>.HashAsync(stream, bufferSize, cancellationToken);
+    }
 }

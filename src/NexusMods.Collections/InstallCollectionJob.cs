@@ -162,6 +162,8 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
             .GetStatus(item, collectionGroup.AsCollectionGroup(), db: Connection.Db)
             .IsInstalled(out _));
         {
+            await LoadoutManager.ApplyCollectionDownloadRules(collectionGroup);
+
             using var tx = Connection.BeginTransaction();
 
             if (allRequiredItemsInstalled)

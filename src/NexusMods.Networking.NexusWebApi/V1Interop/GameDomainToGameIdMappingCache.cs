@@ -10,7 +10,7 @@ using StrawberryShake;
 namespace NexusMods.Networking.NexusWebApi.V1Interop;
 
 /// <summary>
-/// Caches the mapping between <see cref="GameDomain"/> and <see cref="GameId"/> values for fast lookup.
+/// Caches the mapping between <see cref="GameDomain"/> and <see cref="NexusModsGameId"/> values for fast lookup.
 /// Queries the API to populate missing values.
 /// </summary>
 public sealed class GameDomainToGameIdMappingCache : IGameDomainToGameIdMappingCache
@@ -30,44 +30,44 @@ public sealed class GameDomainToGameIdMappingCache : IGameDomainToGameIdMappingC
         _logger = logger;
     }
 
-    public GameDomain GetDomain(GameId id)
+    public GameDomain GetDomain(NexusModsGameId id)
     {
         var domain = TryGetDomain(id, CancellationToken.None);
         return domain.Value;
     }
 
-    public GameId GetId(GameDomain domain)
+    public NexusModsGameId GetId(GameDomain domain)
     {
         var id = TryGetId(domain, CancellationToken.None);
         return id.Value;
     }
 
-    public ValueTask<Optional<GameId>> TryGetIdAsync(GameDomain gameDomain, CancellationToken cancellationToken)
+    public ValueTask<Optional<NexusModsGameId>> TryGetIdAsync(GameDomain gameDomain, CancellationToken cancellationToken)
     {
         // Check if we have a value in the DB
         var found = GameDomainToGameIdMapping.FindByDomain(_conn.Db, gameDomain);
-        return found.TryGetFirst(out var mapping) ? ValueTask.FromResult<Optional<GameId>>(mapping.GameId) : ImplAsync();
+        return found.TryGetFirst(out var mapping) ? ValueTask.FromResult<Optional<NexusModsGameId>>(mapping.GameId) : ImplAsync();
 
-        async ValueTask<Optional<GameId>> ImplAsync()
+        async ValueTask<Optional<NexusModsGameId>> ImplAsync()
         {
             var gameId = await QueryIdFromDomainAsync(gameDomain, cancellationToken).ConfigureAwait(false);
-            return !gameId.Equals(GameId.DefaultValue) ? gameId : Optional<GameId>.None;
+            return !gameId.Equals(NexusModsGameId.DefaultValue) ? gameId : Optional<NexusModsGameId>.None;
         }
     }
 
-    public ValueTask<Optional<GameDomain>> TryGetDomainAsync(GameId gameId, CancellationToken cancellationToken)
+    public ValueTask<Optional<GameDomain>> TryGetDomainAsync(NexusModsGameId nexusModsGameId, CancellationToken cancellationToken)
     {
-        var found = GameDomainToGameIdMapping.FindByGameId(_conn.Db, gameId);
+        var found = GameDomainToGameIdMapping.FindByGameId(_conn.Db, nexusModsGameId);
         return found.TryGetFirst(out var mapping) ? ValueTask.FromResult<Optional<GameDomain>>(mapping.Domain) : ImplAsync();
 
         async ValueTask<Optional<GameDomain>> ImplAsync()
         {
-            var gameDomain = await QueryDomainFromIdAsync(gameId, cancellationToken).ConfigureAwait(false);
+            var gameDomain = await QueryDomainFromIdAsync(nexusModsGameId, cancellationToken).ConfigureAwait(false);
             return !gameDomain.Equals(GameDomain.DefaultValue) ? gameDomain : Optional<GameDomain>.None;
         }
     }
 
-    public Optional<GameId> TryGetId(GameDomain gameDomain, CancellationToken cancellationToken)
+    public Optional<NexusModsGameId> TryGetId(GameDomain gameDomain, CancellationToken cancellationToken)
     {
         // Check cache synchronously
         var found = GameDomainToGameIdMapping.FindByDomain(_conn.Db, gameDomain);
@@ -88,17 +88,17 @@ public sealed class GameDomainToGameIdMappingCache : IGameDomainToGameIdMappingC
         }
     }
 
-    public Optional<GameDomain> TryGetDomain(GameId gameId, CancellationToken cancellationToken)
+    public Optional<GameDomain> TryGetDomain(NexusModsGameId nexusModsGameId, CancellationToken cancellationToken)
     {
         // Check cache synchronously
-        var found = GameDomainToGameIdMapping.FindByGameId(_conn.Db, gameId);
+        var found = GameDomainToGameIdMapping.FindByGameId(_conn.Db, nexusModsGameId);
         if (found.TryGetFirst(out var mapping))
             return mapping.Domain;
 
         // Cache miss: Perform the async operation within Task.Run to avoid deadlocks
         try
         {
-            return Task.Run(async () => await TryGetDomainAsync(gameId, cancellationToken), cancellationToken)
+            return Task.Run(async () => await TryGetDomainAsync(nexusModsGameId, cancellationToken), cancellationToken)
                        .GetAwaiter()
                        .GetResult();
         }
@@ -109,7 +109,7 @@ public sealed class GameDomainToGameIdMappingCache : IGameDomainToGameIdMappingC
         }
     }
 
-    private async Task<GameId> QueryIdFromDomainAsync(GameDomain gameDomain, CancellationToken cancellationToken)
+    private async Task<NexusModsGameId> QueryIdFromDomainAsync(GameDomain gameDomain, CancellationToken cancellationToken)
     {
         try
         {
@@ -122,29 +122,29 @@ public sealed class GameDomainToGameIdMappingCache : IGameDomainToGameIdMappingC
         catch (Exception e)
         {
             _logger.LogError(e, "Exception while querying ID from domain {DomainName}", gameDomain.Value);
-            return GameId.DefaultValue;
+            return NexusModsGameId.DefaultValue;
         }
     }
 
-    private async Task<GameDomain> QueryDomainFromIdAsync(GameId gameId, CancellationToken cancellationToken)
+    private async Task<GameDomain> QueryDomainFromIdAsync(NexusModsGameId nexusModsGameId, CancellationToken cancellationToken)
     {
         try
         {
-            var result = await _client.QueryGameDomain(gameId, cancellationToken);
+            var result = await _client.QueryGameDomain(nexusModsGameId, cancellationToken);
             var domain = result.AssertHasData();
 
-            await InsertAsync(domain, gameId).ConfigureAwait(false);
+            await InsertAsync(domain, nexusModsGameId).ConfigureAwait(false);
             return domain;
         }
         catch (Exception e)
         {
             // ReSharper disable once InconsistentLogPropertyNaming
-            _logger.LogError(e, "Exception while querying domain from ID {GameID}", gameId);
+            _logger.LogError(e, "Exception while querying domain from ID {GameID}", nexusModsGameId);
             return GameDomain.DefaultValue;
         }
     }
 
-    private async ValueTask InsertAsync(GameDomain gameDomain, GameId gameId)
+    private async ValueTask InsertAsync(GameDomain gameDomain, NexusModsGameId nexusModsGameId)
     {
         // Note(sewer): In theory, there's a race condition in here if multiple threads
         //              try to insert at once. However that should not be a concern here,
@@ -153,7 +153,7 @@ public sealed class GameDomainToGameIdMappingCache : IGameDomainToGameIdMappingC
         _ = new GameDomainToGameIdMapping.New(tx)
         {
             Domain = gameDomain,
-            GameId = gameId,
+            GameId = nexusModsGameId,
         };
         await tx.Commit().ConfigureAwait(false);
     }

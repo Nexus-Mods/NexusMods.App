@@ -2,6 +2,7 @@ using System.Collections.Frozen;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Reactive.Concurrency;
+using System.Runtime.ExceptionServices;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Sdk.Settings;
@@ -136,13 +137,13 @@ internal class SettingsManager : ISettingsManager
             return true;
         }
         
-        var overrideVal = GetDefault<T>();
-        overrideVal = GetOverride(settingKey, overrideVal, out var didOverride);
+        var defaultValue = GetDefault<T>();
+        defaultValue = GetOverride(settingKey, defaultValue, out var didOverride);
 
         if (!didOverride) return false;
         
-        CoreSet(overrideVal, settingKey, notify: !didOverride);
-        value = overrideVal;
+        CoreSet(defaultValue, settingKey, notify: !didOverride);
+        value = defaultValue;
         return true;
     }
     
@@ -263,6 +264,7 @@ internal class SettingsManager : ISettingsManager
                 catch (Exception e)
                 {
                     _logger.LogError(e, "Exception while loading settings type `{Type}` with async storage backend `{AsyncStorageBackendType}`", type, asyncStorageBackend.GetType());
+                    waitHandle.Set();
                 }
             }, cts.Token);
 

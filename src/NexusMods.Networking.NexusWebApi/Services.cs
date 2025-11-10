@@ -64,7 +64,7 @@ public static class Services
             }
 
             var fallbackCache = serviceProvider.GetRequiredService<GameDomainToGameIdMappingCache>();
-            return new LocalMappingCache(logger, gameIdToDomain ?? FrozenDictionary<GameId, GameDomain>.Empty, gameDomainToId ?? FrozenDictionary<GameDomain, GameId>.Empty, fallbackCache);
+            return new LocalMappingCache(logger, gameIdToDomain ?? FrozenDictionary<NexusModsGameId, GameDomain>.Empty, gameDomainToId ?? FrozenDictionary<GameDomain, NexusModsGameId>.Empty, fallbackCache);
         });
 
         collection

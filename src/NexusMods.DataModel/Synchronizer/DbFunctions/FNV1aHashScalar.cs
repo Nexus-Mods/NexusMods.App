@@ -1,11 +1,8 @@
-using NexusMods.Abstractions.GameLocators;
 using NexusMods.HyperDuck;
+using NexusMods.Sdk.Hashes;
 
 namespace NexusMods.DataModel.Synchronizer.DbFunctions;
 
-/// <summary>
-/// 
-/// </summary>
 public class FNV1aHashScalar : AScalarFunction
 {
     public override void Setup()
@@ -17,14 +14,14 @@ public class FNV1aHashScalar : AScalarFunction
 
     public override void Execute(ReadOnlyChunk chunk, WritableVector vector)
     {
-        var strsVector = chunk.GetVector(0);
-        var strsElements = strsVector.GetData<StringElement>();
-        var mask = strsVector.GetValidityMask();
-        
+        var readVector = chunk.GetVector(0);
+        var elements = readVector.GetData<StringElement>();
+        var mask = readVector.GetValidityMask();
+
         var output = vector.GetData<ushort>();
         var outputMask = vector.GetValidityMask();
 
-        for (ulong row = 0; row < (ulong)strsElements.Length; row++)
+        for (ulong row = 0; row < (ulong)elements.Length; row++)
         {
             if (!mask.IsValid(row))
             {
@@ -32,7 +29,8 @@ public class FNV1aHashScalar : AScalarFunction
                 continue;
             }
 
-            var hash = FNV1aHash.MixToShort(FNV1aHash.Hash(strsElements[(int)row].GetSpan()));
+            var element = elements[(int)row];
+            var hash = FNV1a16Hasher.Hash(element.GetSpan());
             output[(int)row] = hash;
             outputMask[row] = true;
         }

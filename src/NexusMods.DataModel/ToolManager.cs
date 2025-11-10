@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Sdk.Games;
 using NexusMods.Sdk.Jobs;
-using NexusMods.Sdk.NexusModsApi;
 
 namespace NexusMods.DataModel;
 
@@ -10,7 +10,7 @@ namespace NexusMods.DataModel;
 /// </summary>
 public class ToolManager : IToolManager
 {
-    private readonly ILookup<GameId,ITool> _tools;
+    private readonly ILookup<GameId, ITool> _tools;
     private readonly ILogger<ToolManager> _logger;
     private readonly ISynchronizerService _syncService;
 
@@ -28,7 +28,7 @@ public class ToolManager : IToolManager
     /// <inheritdoc />
     public IEnumerable<ITool> GetTools(Loadout.ReadOnly loadout)
     {
-        return _tools[loadout.InstallationInstance.Game.GameId];
+        return _tools[loadout.LocatableGame.GameId];
     }
 
     /// <inheritdoc />
@@ -38,20 +38,19 @@ public class ToolManager : IToolManager
         IJobMonitor monitor,
         CancellationToken token = default)
     {
-        if (!tool.GameIds.Contains(loadout.InstallationInstance.Game.GameId))
-            throw new Exception("Tool does not support this game");
-        
+        if (!tool.GameIds.Contains(loadout.LocatableGame.GameId)) throw new NotSupportedException("Tool does not support this game");
+
         _logger.LogInformation("Applying loadout {LoadoutId} on {GameName} {GameVersion}", 
-            loadout.Id, loadout.InstallationInstance.Game.Name, loadout.GameVersion);
+            loadout.Id, loadout.InstallationInstance.Game.DisplayName, loadout.GameVersion);
         await _syncService.Synchronize(loadout);
         var appliedLoadout = loadout.Rebase();
 
         _logger.LogInformation("Running tool {ToolName} for loadout {LoadoutId} on {GameName} {GameVersion}", 
-            tool.Name, appliedLoadout.Id, appliedLoadout.InstallationInstance.Game.Name, appliedLoadout.GameVersion);
+            tool.Name, appliedLoadout.Id, appliedLoadout.InstallationInstance.Game.DisplayName, appliedLoadout.GameVersion);
         await tool.StartJob(appliedLoadout, monitor, token);
 
         _logger.LogInformation("Ingesting loadout {LoadoutId} from {GameName} {GameVersion}", 
-            appliedLoadout.Id, appliedLoadout.InstallationInstance.Game.Name, appliedLoadout.GameVersion);
+            appliedLoadout.Id, appliedLoadout.InstallationInstance.Game.DisplayName, appliedLoadout.GameVersion);
         await _syncService.Synchronize(appliedLoadout);
 
         return appliedLoadout.Rebase();

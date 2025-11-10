@@ -103,7 +103,7 @@ public record struct LibraryItemDeleteWarningDetector
                 gameToLoadoutRefCount.TryGetValue(installation.GameMetadataId, out var refCount);
                 usedLoadouts[loadout.LoadoutId] = new LibraryItemUsedLoadoutInfo()
                 {
-                    GameName = installation.Game.Name,
+                    GameName = installation.Game.DisplayName,
                     LoadoutName = loadout.Name,
                     IsOnlyLoadoutForGame = refCount <= 1,
                 };

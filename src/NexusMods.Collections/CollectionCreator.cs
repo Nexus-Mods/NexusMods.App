@@ -199,7 +199,7 @@ public static class CollectionCreator
 
         var result = await tx.Commit();
 
-        Tracking.AddEvent(Events.Collections.CreateLocalCollection, new EventMetadata(name: $"{loadout.LocatableGame.Name} - {newName}"));
+        Tracking.AddEvent(Events.Collections.CreateLocalCollection, new EventMetadata(name: $"{loadout.LocatableGame.DisplayName} - {newName}"));
         return result.Remap(group);
     }
 

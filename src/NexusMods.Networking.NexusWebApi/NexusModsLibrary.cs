@@ -56,12 +56,12 @@ public partial class NexusModsLibrary
 
     public async Task<NexusModsModPageMetadata.ReadOnly> GetOrAddModPage(
         ModId modId,
-        GameId gameId,
+        NexusModsGameId nexusModsGameId,
         CancellationToken cancellationToken = default)
     {
-        var uid = new ModUid(modId, gameId);
+        var uid = new ModUid(modId, nexusModsGameId);
         var modPageEntities = NexusModsModPageMetadata.FindByUid(_connection.Db, uid);
-        if (modPageEntities.TryGetFirst(x => x.Uid.GameId == gameId, out var modPage)) return modPage;
+        if (modPageEntities.TryGetFirst(x => x.Uid.GameId == nexusModsGameId, out var modPage)) return modPage;
 
         using var tx = _connection.BeginTransaction();
 
@@ -195,18 +195,18 @@ public partial class NexusModsLibrary
     /// </summary>
     public async Task<IJobTask<NexusModsDownloadJob, AbsolutePath>> CreateDownloadJob(
         AbsolutePath destination,
-        GameId gameId,
+        NexusModsGameId nexusModsGameId,
         ModId modId,
         FileId fileId,
         Optional<(NXMKey, DateTime)> nxmData = default,
         CancellationToken cancellationToken = default)
     {
-        var modPage = await GetOrAddModPage(modId, gameId, cancellationToken);
+        var modPage = await GetOrAddModPage(modId, nexusModsGameId, cancellationToken);
         var file = await GetOrAddFile(fileId, modPage, cancellationToken);
 
         var uri = await GetDownloadUri(file, nxmData, cancellationToken: cancellationToken);
 
-        var domain = _mappingCache[gameId];
+        var domain = _mappingCache[nexusModsGameId];
         var httpJob = HttpDownloadJob.Create(_serviceProvider, uri, NexusModsUrlBuilder.GetModUri(domain, modId), destination);
         var nexusJob = NexusModsDownloadJob.Create(_serviceProvider, httpJob, file);
 

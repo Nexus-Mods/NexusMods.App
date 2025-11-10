@@ -9,8 +9,8 @@ using NexusMods.Abstractions.GameLocators.Stores.Steam;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Paths;
 using NexusMods.Sdk;
+using NexusMods.Sdk.Games;
 using NexusMods.Sdk.Jobs;
-using NexusMods.Sdk.NexusModsApi;
 using R3;
 
 namespace NexusMods.Abstractions.Games;
@@ -25,7 +25,7 @@ public interface IRunGameTool : ITool;
 /// </summary>
 /// <typeparam name="T"></typeparam>
 public class RunGameTool<T> : IRunGameTool
-    where T : AGame
+    where T : IGame
 {
     private readonly ILogger<RunGameTool<T>> _logger;
     private readonly T _game;
@@ -53,7 +53,7 @@ public class RunGameTool<T> : IRunGameTool
     public IEnumerable<GameId> GameIds => [_game.GameId];
 
     /// <inheritdoc />
-    public string Name => $"Run {_game.Name}";
+    public string Name => $"Run {_game.DisplayName}";
 
     /// <summary/>
     public virtual async Task Execute(Loadout.ReadOnly loadout, CancellationToken cancellationToken, string[]? commandLineArgs)

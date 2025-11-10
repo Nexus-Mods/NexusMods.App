@@ -28,6 +28,7 @@ using NexusMods.CLI;
 using NexusMods.CrossPlatform;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Sdk;
+using NexusMods.Sdk.Games;
 using NexusMods.Sdk.NexusModsApi;
 using NexusMods.UI.Sdk;
 using R3;
@@ -271,6 +272,12 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
         });
     }
 
+    private Optional<(LoadoutId, WorkspaceId)> GetWorkspaceIdForGame(IWorkspaceController workspaceController, NexusModsGameId nexusModsGameId)
+    {
+        if (!_serviceProvider.GetServices<ILocatableGame>().TryGetFirst(x => x.NexusModsGameId == nexusModsGameId, out var game)) return Optional<(LoadoutId, WorkspaceId)>.None;
+        return GetWorkspaceIdForGame(workspaceController, game.GameId);
+    }
+
     private Optional<(LoadoutId, WorkspaceId)> GetWorkspaceIdForGame(IWorkspaceController workspaceController, GameId gameId)
     {
         if (workspaceController.ActiveWorkspace.Context is LoadoutContext existingLoadoutContext && IsCorrectLoadoutForGame(existingLoadoutContext.LoadoutId, gameId))
@@ -294,7 +301,7 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
     private bool IsCorrectLoadoutForGame(LoadoutId loadoutId, GameId gameId)
     {
         var loadout = Loadout.Load(_connection.Db, loadoutId);
-        return loadout.IsValid() && loadout.InstallationInstance.Game.GameId == gameId;
+        return loadout.IsValid() && loadout.LocatableGame.GameId == gameId;
     }
 
     private Optional<LoadoutId> GetActiveLoadoutForGame(GameId gameId)

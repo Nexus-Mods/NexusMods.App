@@ -98,10 +98,10 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
                     .Filter(loadout => loadout.IsVisible())
                     .TransformAsync(async loadout =>
                         {
-                            await using var iconStream = await ((IGame)loadout.InstallationInstance.Game).Icon.GetStreamAsync();
+                            await using var iconStream = await loadout.InstallationInstance.Game.IconImage.GetStreamAsync();
 
                             var vm = serviceProvider.GetRequiredService<IImageButtonViewModel>();
-                            vm.Name = loadout.InstallationInstance.Game.Name + " - " + loadout.Name;
+                            vm.Name = loadout.InstallationInstance.Game.DisplayName + " - " + loadout.Name;
                             vm.Image = LoadImageFromStream(iconStream);
                             vm.LoadoutBadgeViewModel = new LoadoutBadgeViewModel(_conn, _syncService, hideOnSingleLoadout: true);
                             vm.LoadoutBadgeViewModel.LoadoutValue = loadout;
@@ -291,7 +291,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
         workspaceController.ChangeOrCreateWorkspaceByContext<DownloadsContext>(() => new PageData
             {
                 FactoryId = DownloadsPageFactory.StaticId,
-                Context = new DownloadsPageContext { GameScope = Optional<GameId>.None }
+                Context = new DownloadsPageContext { GameScope = Optional<NexusModsGameId>.None }
             }
         );
     }

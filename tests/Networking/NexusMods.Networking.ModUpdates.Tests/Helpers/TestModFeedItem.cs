@@ -16,7 +16,7 @@ public class TestModFeedItem : IModFeedItem
     {
         return new TestModFeedItem
         {
-            Uid = new ModUid(ModId.From(modId), GameId.From(gameId)),
+            Uid = new ModUid(ModId.From(modId), NexusModsGameId.From(gameId)),
             LastUpdated = lastUpdated,
         };
     }

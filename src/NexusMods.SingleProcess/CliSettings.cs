@@ -12,7 +12,7 @@ public class CliSettings() : ISettings
     /// <inheritdoc />
     public static ISettingsBuilder Configure(ISettingsBuilder settingsBuilder)
     {
-        return settingsBuilder.ConfigureDefault(CreateDefault).ConfigureProperty(
+        return settingsBuilder.ConfigureDefault(CreateDefault).ConfigureBackend(StorageBackendOptions.Use(StorageBackends.Json)).ConfigureProperty(
             x => x.StartCliBackend,
             new PropertyOptions<CliSettings, bool>
             {

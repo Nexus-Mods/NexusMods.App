@@ -1,8 +1,11 @@
+using System.Collections.Frozen;
+using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.Collections;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Games.FileHashes;
@@ -10,8 +13,11 @@ using NexusMods.Abstractions.GC;
 using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Sorting;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.Loadouts.Synchronizers.Conflicts;
+using NexusMods.Abstractions.NexusModsLibrary.Models;
+using NexusMods.DataModel.Sorting;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.DatomIterators;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
@@ -62,7 +68,7 @@ internal partial class LoadoutManager : ILoadoutManager
                     
                 if (distinctLocatorIds.Length != metadataLocatorIds.Length)
                 {
-                    _logger.LogWarning("Duplicate locator ids `{LocatorIds}` found in LocatorResultMetadata for {Game} when creating new loadout", metadataLocatorIds, installation.Game.Name);
+                    _logger.LogWarning("Duplicate locator ids `{LocatorIds}` found in LocatorResultMetadata for {Game} when creating new loadout", metadataLocatorIds, installation.Game.DisplayName);
                 }
 
                 locatorIds.AddRange(distinctLocatorIds);
@@ -262,7 +268,7 @@ internal partial class LoadoutManager : ILoadoutManager
         
         if (locatorIds.Length != metadataLocatorIds.Length)
         {
-            _logger.LogWarning("Duplicate locator ids `{LocatorIds}` found in LocatorResultMetadata for {Game} when deactivating loadout", metadataLocatorIds, installation.Game.Name);
+            _logger.LogWarning("Duplicate locator ids `{LocatorIds}` found in LocatorResultMetadata for {Game} when deactivating loadout", metadataLocatorIds, installation.Game.DisplayName);
         }
 
         await synchronizer.ResetToOriginalGameState(installation, locatorIds);
@@ -335,6 +341,17 @@ internal partial class LoadoutManager : ILoadoutManager
             if (runGc) _garbageCollectorRunner.Run();
             return installation;
         });
+    }
+
+    public async Task<LoadoutItemGroup.ReadOnly> InstallItemWrapper(LoadoutId targetLoadout, Func<ITransaction, Task<LoadoutItemGroupId>> func)
+    {
+        using var tx = _connection.BeginTransaction();
+
+        var groupId = await func(tx);
+        tx.Add(new AddPriorityTxFunc(targetLoadout, groupId));
+
+        var result = await tx.Commit();
+        return LoadoutItemGroup.Load(result.Db, groupId);
     }
 
     public IJobTask<IInstallLoadoutItemJob, InstallLoadoutItemJobResult> InstallItem(
@@ -533,6 +550,43 @@ internal partial class LoadoutManager : ILoadoutManager
             loserId: loserId
         ));
 
+        await tx.Commit();
+    }
+
+    public async ValueTask ApplyCollectionDownloadRules(NexusCollectionLoadoutGroupId collectionId)
+    {
+        var items = _connection.Query<EntityId>($"SELECT Id FROM MDB_NexusCollectionItemLoadoutGroup(Db => {_connection}) WHERE Parent = {collectionId.Value}").ToList();
+
+        var rulesQuery = _connection.Query<(EntityId SourceId, EntityId OtherId, int RuleType)>(
+            $"""
+              SELECT Source, Other, RuleType FROM loadouts.CollectionRulesOnItems({_connection})
+              WHERE Parent = {collectionId.Value};
+              """
+        );
+
+        var rules = rulesQuery
+            .GroupBy(tuple => tuple.SourceId, tuple => (tuple.OtherId, tuple.RuleType))
+            .ToFrozenDictionary(group => group.Key, group => group.ToArray());
+
+        var sortedItems = new Sorter().Sort(
+            items: items,
+            idSelector: static x => x,
+            ruleFn: id =>
+            {
+                if (!rules.TryGetValue(id, out var itemRules)) return [];
+                return itemRules.Select(ISortRule<EntityId, EntityId> (rule) => (CollectionDownloadRuleType)rule.RuleType switch
+                {
+                    CollectionDownloadRuleType.Before => new Before<EntityId, EntityId>() { Other = rule.OtherId },
+                    CollectionDownloadRuleType.After => new After<EntityId, EntityId>() { Other = rule.OtherId },
+                    _ => throw new UnreachableException(),
+                }).ToArray();
+            }
+        ).ToImmutableArray();
+
+        using var tx = _connection.BeginTransaction();
+
+        var loadoutId = LoadoutItem.Load(_connection.Db, collectionId).LoadoutId;
+        tx.Add(new ApplyCollectionRulesTxFunc(loadoutId, sortedItems));
         await tx.Commit();
     }
 

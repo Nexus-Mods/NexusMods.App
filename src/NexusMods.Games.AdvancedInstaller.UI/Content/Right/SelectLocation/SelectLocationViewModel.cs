@@ -30,7 +30,7 @@ public class SelectLocationViewModel : AViewModel<ISelectLocationViewModel>,
     public SelectLocationViewModel(Loadout.ReadOnly loadout)
     {
         var installation = loadout.InstallationInstance;
-        var gameName = installation.Game.Name;
+        var gameName = installation.Game.DisplayName;
         var register = installation.LocationsRegister;
 
         SuggestedAreaSubtitle = string.Format(Language.SelectLocationViewModel_SuggestedLocationsSubtitle, gameName);

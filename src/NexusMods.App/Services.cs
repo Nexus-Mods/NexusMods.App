@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NexusMods.Abstractions.Games;
@@ -13,6 +14,7 @@ using NexusMods.CLI;
 using NexusMods.Collections;
 using NexusMods.CrossPlatform;
 using NexusMods.DataModel;
+using NexusMods.DataModel.JsonConverters;
 using NexusMods.FileExtractor;
 using NexusMods.Games.AdvancedInstaller;
 using NexusMods.Games.AdvancedInstaller.UI;
@@ -125,8 +127,10 @@ public static class Services
                 .AddRuntimeDependencies()
                 .AddDefaultRenderers()
                 .AddSettingsManager()
+                .AddSingleton<JsonConverter, AbsolutePathConverter>()
+                .AddSerializationAbstractions()
                 .AddSettings<LoggingSettings>();
-            
+
             if (!startupMode.IsAvaloniaDesigner)
                 services.AddSingleProcess(Mode.Client);
         }

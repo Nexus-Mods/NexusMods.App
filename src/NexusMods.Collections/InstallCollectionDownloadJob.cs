@@ -158,13 +158,11 @@ public class InstallCollectionDownloadJob : IJobDefinitionWithStart<InstallColle
         return (result.LoadoutItemGroup!.Value, patchedFiles);
     }
 
-    private async Task<LoadoutItemGroup.ReadOnly> InstallBundledMod(CollectionDownloadBundled.ReadOnly download)
+    private Task<LoadoutItemGroup.ReadOnly> InstallBundledMod(CollectionDownloadBundled.ReadOnly download) => LoadoutManager.InstallItemWrapper(TargetLoadout, tx =>
     {
         // Bundled mods are found inside the collection archive, so we'll have to find the files that are prefixed with the mod's source file expression.
         var prefixPath = RelativePath.FromUnsanitizedInput("bundled").Join(download.BundledPath);
         var prefixFiles = SourceCollectionArchive.Children.Where(f => f.Path.InFolder(prefixPath)).ToArray();
-
-        using var tx = Connection.BeginTransaction();
 
         var modGroup = new NexusCollectionBundledLoadoutGroup.New(tx, out var id)
         {
@@ -213,9 +211,8 @@ public class InstallCollectionDownloadJob : IJobDefinitionWithStart<InstallColle
             };
         }
 
-        var result = await tx.Commit();
-        return result.Remap(modGroup).AsNexusCollectionItemLoadoutGroup().AsLoadoutItemGroup();
-    }
+        return Task.FromResult(LoadoutItemGroupId.From(id.Value));
+    });
 
     /// <summary>
     /// This is how we should get a fomod installer. We don't want to get it from DI or new it up, because
@@ -234,16 +231,14 @@ public class InstallCollectionDownloadJob : IJobDefinitionWithStart<InstallColle
     /// <summary>
     /// Install a fomod with predefined choices.
     /// </summary>
-    private async Task<LoadoutItemGroup.ReadOnly> InstallFomodWithPredefinedChoices(CancellationToken cancellationToken)
+    private Task<LoadoutItemGroup.ReadOnly> InstallFomodWithPredefinedChoices(CancellationToken cancellationToken) => LoadoutManager.InstallItemWrapper(TargetLoadout, async tx =>
     {
         var libraryFile = GetLibraryFile(Item, Connection.Db);
-        if (!libraryFile.TryGetAsLibraryArchive(out var libraryArchive))
-            throw new NotImplementedException();
+        if (!libraryFile.TryGetAsLibraryArchive(out var libraryArchive)) throw new NotSupportedException();
 
         var fomodInstaller = GetFomodXmlInstaller(cancellationToken);
 
-        using var tx = Connection.BeginTransaction();
-        var group = new LoadoutItemGroup.New(tx, out var id)
+        var loadoutItemGroup = new LoadoutItemGroup.New(tx, out var id)
         {
             IsGroup = true,
             LoadoutItem = new LoadoutItem.New(tx, id)
@@ -254,20 +249,20 @@ public class InstallCollectionDownloadJob : IJobDefinitionWithStart<InstallColle
             },
         };
 
-        _ = new LibraryLinkedLoadoutItem.New(tx, id)
+        _ = new NexusCollectionItemLoadoutGroup.New(tx, id)
         {
-            LibraryItemId = libraryFile.AsLibraryItem(),
-            LoadoutItemGroup = group,
+            DownloadId = Item,
+            IsRequired = Item.IsRequired,
+            LoadoutItemGroup = loadoutItemGroup,
         };
 
         var loadout = new Loadout.ReadOnly(Connection.Db, TargetLoadout);
 
         var options = CollectionMod.Choices!.Options;
-        await fomodInstaller.ExecuteAsync(libraryArchive, group, tx, loadout, options, cancellationToken: cancellationToken);
+        await fomodInstaller.ExecuteAsync(libraryArchive, loadoutItemGroup, tx, loadout, options, cancellationToken: cancellationToken);
 
-        var result = await tx.Commit();
-        return result.Remap(group);
-    }
+        return loadoutItemGroup;
+    });
 
     /// <summary>
     /// This sort of install is a bit strange. The Hashes field contains pairs of MD5 hashes and paths. The paths are
@@ -275,7 +270,7 @@ public class InstallCollectionDownloadJob : IJobDefinitionWithStart<InstallColle
     /// situation. We don't store the MD5 hashes in the database, so we'll have to calculate them on the fly.
     /// </summary>
     /// <param name="patchedFiles"></param>
-    private async Task<LoadoutItemGroup.ReadOnly> InstallReplicatedMod(PatchedFile[] patchedFiles)
+    private Task<LoadoutItemGroup.ReadOnly> InstallReplicatedMod(PatchedFile[] patchedFiles) => LoadoutManager.InstallItemWrapper(TargetLoadout, async tx =>
     {
         // So collections hash everything by MD5, so we'll have to collect MD5 information for the files in the archive.
         // We don't do this during indexing into the library because this is the only case where we need MD5 hashes.
@@ -288,9 +283,7 @@ public class InstallCollectionDownloadJob : IJobDefinitionWithStart<InstallColle
         await Parallel.ForEachAsync(libraryArchive.Children, async (child, token) =>
         {
             await using var stream = await FileStore.GetFileStream(child.AsLibraryFile().Hash, token);
-            using var hasher = MD5.Create();
-            var hash = await hasher.ComputeHashAsync(stream, token);
-            var md5 = Md5Value.From(hash);
+            var md5 = await Md5Hasher.HashAsync(stream, cancellationToken: token);
 
             var file = child.AsLibraryFile();
             hashes[md5] = new HashMapping()
@@ -316,8 +309,6 @@ public class InstallCollectionDownloadJob : IJobDefinitionWithStart<InstallColle
 
             hashes[patchedFile.PatchedFileHashes.Md5] = hashMapping;
         }
-
-        using var tx = Connection.BeginTransaction();
 
         var group = new NexusCollectionReplicatedLoadoutGroup.New(tx, out var id)
         {
@@ -370,9 +361,8 @@ public class InstallCollectionDownloadJob : IJobDefinitionWithStart<InstallColle
             };
         }
 
-        var result = await tx.Commit();
-        return new LoadoutItemGroup.ReadOnly(result.Db, result[group.Id]);
-    }
+        return group.Id;
+    });
 
     private async ValueTask<PatchedFile[]> PatchFiles(LibraryArchive.ReadOnly srcArchive, CancellationToken cancellationToken)
     {

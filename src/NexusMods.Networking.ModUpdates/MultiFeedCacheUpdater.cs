@@ -14,7 +14,7 @@ namespace NexusMods.Networking.ModUpdates;
 /// </summary>
 public class MultiFeedCacheUpdater<TUpdateableItem> where TUpdateableItem : IModFeedItem
 {
-    private readonly Dictionary<GameId, PerFeedCacheUpdater<TUpdateableItem>> _updaters;
+    private readonly Dictionary<NexusModsGameId, PerFeedCacheUpdater<TUpdateableItem>> _updaters;
 
     /// <summary>
     /// Creates a cache updater from a given list of items for which we want to
@@ -33,12 +33,12 @@ public class MultiFeedCacheUpdater<TUpdateableItem> where TUpdateableItem : IMod
     /// </remarks>
     public MultiFeedCacheUpdater(TUpdateableItem[] items, TimeSpan expiry)
     {
-        _updaters = new Dictionary<GameId, PerFeedCacheUpdater<TUpdateableItem>>();
+        _updaters = new Dictionary<NexusModsGameId, PerFeedCacheUpdater<TUpdateableItem>>();
         
         // First group the items by their GameId
         // We will use a list of groups, the assumption being that the number
         // of feeds is low (usually less than 5)
-        var groupedList = new List<(GameId, List<TUpdateableItem>)>();
+        var groupedList = new List<(NexusModsGameId, List<TUpdateableItem>)>();
         foreach (var item in items)
         {
             var gameId = item.GetModPageId().GameId;

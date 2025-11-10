@@ -1,3 +1,4 @@
+using System.Collections.Frozen;
 using System.Diagnostics;
 using System.Globalization;
 using System.Net.Http.Headers;
@@ -21,7 +22,7 @@ using NexusMods.Sdk.NexusModsApi;
 
 namespace NexusMods.Networking.NexusWebApi;
 
-using GameIdCache = Dictionary<GameDomain, GameId>;
+using GameIdCache = Dictionary<GameDomain, NexusModsGameId>;
 using ResolvedEntitiesLookup = Dictionary<FileUid, ValueTuple<NexusModsModPageMetadataId, NexusModsFileMetadataId>>;
 using ModAndDownload = (Mod Mod, CollectionDownload.ReadOnly Download);
 
@@ -161,12 +162,12 @@ public partial class NexusModsLibrary
         return (collectionMetadata, revisionId);
     }
 
-    private async ValueTask<GraphQlResult<Optional<ICategory>, NotFound>> GetDefaultCategoryForCollections(GameId gameId, CancellationToken cancellationToken)
+    private async ValueTask<GraphQlResult<Optional<ICategory>, NotFound>> GetDefaultCategoryForCollections(NexusModsGameId nexusModsGameId, CancellationToken cancellationToken)
     {
         // NOTE(erri120): Default category until the user can select it, or we remove validation on the backend.
         const string defaultCategoryName = "Miscellaneous";
 
-        var result = await _graphQlClient.QueryGameCategories(gameId, cancellationToken);
+        var result = await _graphQlClient.QueryGameCategories(nexusModsGameId, cancellationToken);
         return result.Map<Optional<ICategory>>(static categories =>
         {
             var found = categories
@@ -390,20 +391,20 @@ public partial class NexusModsLibrary
             .Select(static tuple => (tuple.Mod.Source.Md5, tuple.Download))
             .Where(static tuple => tuple.Md5 != default(Md5Value))
             .DistinctBy(static tuple => tuple.Md5)
-            .ToDictionary(static tuple => tuple.Md5, static tuple => tuple.Download);
+            .ToFrozenDictionary(static tuple => tuple.Md5, static tuple => tuple.Download);
 
         var tagToDownload = modsAndDownloads
             .Select(static tuple => (tuple.Mod.Source.Tag, tuple.Download))
             .Where(static tuple => !string.IsNullOrWhiteSpace(tuple.Tag))
             .DistinctBy(static tuple => tuple.Tag, StringComparer.Ordinal)
-            .ToDictionary(static tuple => tuple.Tag!, static tuple => tuple.Download, StringComparer.Ordinal);
+            .ToFrozenDictionary(static tuple => tuple.Tag!, static tuple => tuple.Download, StringComparer.Ordinal);
 
         var fileExpressionToDownload = modsAndDownloads
             .Select(static tuple => (tuple.Mod.Source.FileExpression, tuple.Download))
             .Where(static tuple => tuple.FileExpression != default(RelativePath))
             .Select(static tuple => (FileExpression: tuple.FileExpression.ToString(), tuple.Download))
             .DistinctBy(static tuple => tuple.FileExpression, StringComparer.Ordinal)
-            .ToDictionary(static tuple => tuple.FileExpression, static tuple => tuple.Download, StringComparer.Ordinal);
+            .ToFrozenDictionary(static tuple => tuple.FileExpression, static tuple => tuple.Download, StringComparer.Ordinal);
 
         for (var i = 0; i < collectionRoot.ModRules.Length; i++)
         {
@@ -436,9 +437,9 @@ public partial class NexusModsLibrary
 
     private static Optional<CollectionDownload.ReadOnly> VortexModReferenceToCollectionDownload(
         VortexModReference reference,
-        Dictionary<Md5Value, CollectionDownload.ReadOnly> md5ToDownload,
-        Dictionary<string, CollectionDownload.ReadOnly> tagToDownload,
-        Dictionary<string, CollectionDownload.ReadOnly> fileExpressionToDownload)
+        FrozenDictionary<Md5Value, CollectionDownload.ReadOnly> md5ToDownload,
+        FrozenDictionary<string, CollectionDownload.ReadOnly> tagToDownload,
+        FrozenDictionary<string, CollectionDownload.ReadOnly> fileExpressionToDownload)
     {
         // https://github.com/Nexus-Mods/Vortex/blob/1bc2a0bca27353df617f5a0b0f331cf9d23eea9c/src/extensions/mod_management/util/dependencies.ts#L28-L62
         // https://github.com/Nexus-Mods/Vortex/blob/1bc2a0bca27353df617f5a0b0f331cf9d23eea9c/src/extensions/mod_management/util/testModReference.ts#L285-L299
@@ -501,7 +502,7 @@ public partial class NexusModsLibrary
 
             var id = new FileUid(
                 fileId: FileId.From((uint)modFile.FileId),
-                gameId: GameId.From((uint)modFile.GameId)
+                nexusModsGameId: NexusModsGameId.From((uint)modFile.GameId)
             );
 
             res[id] = (modEntityId, fileEntityId);
@@ -510,7 +511,7 @@ public partial class NexusModsLibrary
         foreach (var collectionMod in collectionRoot.Mods)
         {
             if (collectionMod.Source.Type != ModSourceType.NexusMods) continue;
-            var fileId = new FileUid(fileId: collectionMod.Source.FileId, gameId: gameIds[collectionMod.DomainName]);
+            var fileId = new FileUid(fileId: collectionMod.Source.FileId, nexusModsGameId: gameIds[collectionMod.DomainName]);
             if (res.ContainsKey(fileId)) continue;
 
             // TODO: use normal API to query information about this file
@@ -590,7 +591,7 @@ public partial class NexusModsLibrary
     {
         var modId = new ModUid(collectionMod.Source.ModId, gameIds[collectionMod.DomainName]);
 
-        var fileId = new FileUid(fileId: collectionMod.Source.FileId, gameId: gameIds[collectionMod.DomainName]);
+        var fileId = new FileUid(fileId: collectionMod.Source.FileId, nexusModsGameId: gameIds[collectionMod.DomainName]);
 
         Debug.Assert(resolvedEntitiesLookup.ContainsKey(fileId), message: "Should've resolved all mod files earlier");
         var (_, fileMetadataId) = resolvedEntitiesLookup[fileId];
@@ -700,7 +701,7 @@ public partial class NexusModsLibrary
 
         resolver.Add(CollectionMetadata.CollectionId, id);
         resolver.Add(CollectionMetadata.Name, collectionInfo.Name);
-        resolver.Add(CollectionMetadata.GameId, GameId.From((uint)collectionInfo.Game.Id));
+        resolver.Add(CollectionMetadata.GameId, NexusModsGameId.From((uint)collectionInfo.Game.Id));
         resolver.Add(CollectionMetadata.Summary, collectionInfo.Summary);
         resolver.Add(CollectionMetadata.Endorsements, (ulong)collectionInfo.Endorsements);
         resolver.Add(CollectionMetadata.TotalDownloads, (ulong)collectionInfo.TotalDownloads);
