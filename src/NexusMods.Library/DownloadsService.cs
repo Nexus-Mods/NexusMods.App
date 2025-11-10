@@ -119,13 +119,13 @@ public sealed class DownloadsService : IDownloadsService, IDisposable
     public IObservable<IChangeSet<DownloadInfo, DownloadId>> AllDownloads =>
         _downloadCache.Connect();
     
-    public IObservable<IChangeSet<DownloadInfo, DownloadId>> GetDownloadsForGame(GameId gameId) =>
+    public IObservable<IChangeSet<DownloadInfo, DownloadId>> GetDownloadsForGame(NexusModsGameId nexusModsGameId) =>
         _downloadCache.Connect()
-            .Filter(x => x.GameId.Value.Equals(gameId));
+            .Filter(x => x.GameId.Value.Equals(nexusModsGameId));
     
-    public IObservable<IChangeSet<DownloadInfo, DownloadId>> GetActiveDownloadsForGame(GameId gameId) =>
+    public IObservable<IChangeSet<DownloadInfo, DownloadId>> GetActiveDownloadsForGame(NexusModsGameId nexusModsGameId) =>
         _downloadCache.Connect()
-            .FilterOnObservable(x => x.Status.AsObservable().Select(status => x.GameId.Value.Equals(gameId) && status.IsActive()).AsSystemObservable())
+            .FilterOnObservable(x => x.Status.AsObservable().Select(status => x.GameId.Value.Equals(nexusModsGameId) && status.IsActive()).AsSystemObservable())
             .RefCount();
     
     /// <summary>
@@ -167,10 +167,10 @@ public sealed class DownloadsService : IDownloadsService, IDisposable
     }
 
     // Note(sewer) Workaround for issue #3892: Resolve to the underlying HttpDownloadJob ID
-    public void PauseAllForGame(GameId gameId)
+    public void PauseAllForGame(NexusModsGameId nexusModsGameId)
     {
         foreach (var download in _downloadCache.Items.Where(d => 
-            d.Status.Value == JobStatus.Running && d.GameId.Value.Equals(gameId)))
+            d.Status.Value == JobStatus.Running && d.GameId.Value.Equals(nexusModsGameId)))
             _jobMonitor.Pause(ResolveToHttpDownloadJobId(download));
     }
 
@@ -182,10 +182,10 @@ public sealed class DownloadsService : IDownloadsService, IDisposable
     }
 
     // Note(sewer) Workaround for issue #3892: Resolve to the underlying HttpDownloadJob ID
-    public void ResumeAllForGame(GameId gameId)
+    public void ResumeAllForGame(NexusModsGameId nexusModsGameId)
     {
         foreach (var download in _downloadCache.Items.Where(d => 
-            d.Status.Value == JobStatus.Paused && d.GameId.Value.Equals(gameId)))
+            d.Status.Value == JobStatus.Paused && d.GameId.Value.Equals(nexusModsGameId)))
             _jobMonitor.Resume(ResolveToHttpDownloadJobId(download));
     }
     

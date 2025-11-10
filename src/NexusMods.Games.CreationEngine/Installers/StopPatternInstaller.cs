@@ -8,7 +8,7 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using NexusMods.Sdk;
-using NexusMods.Sdk.NexusModsApi;
+using NexusMods.Sdk.Games;
 
 namespace NexusMods.Games.CreationEngine.Installers;
 
@@ -38,7 +38,7 @@ public class StopPatternInstaller(IServiceProvider serviceProvider) : ALibraryAr
 #region Customizable Properties
 
     /// <summary>
-    /// Unique identifier for the game this installer handles (e.g. Skyrim SE = 1704).
+    /// Unique identifier for the game this installer handles.
     /// Required property that must be set when configuring the installer.
     /// </summary>
     public required GameId GameId { get; init; }

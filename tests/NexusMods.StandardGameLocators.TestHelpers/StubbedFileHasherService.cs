@@ -105,7 +105,7 @@ public class StubbedFileHasherService : IFileHashesService
         return Task.CompletedTask;
     }
 
-    public IEnumerable<VanityVersion> GetKnownVanityVersions(GameId gameId)
+    public IEnumerable<VanityVersion> GetKnownVanityVersions(NexusModsGameId nexusModsGameId)
     {
         return [VanityVersion.From("1.0.Stubbed"), VanityVersion.From("1.1.Stubbed")];
     }

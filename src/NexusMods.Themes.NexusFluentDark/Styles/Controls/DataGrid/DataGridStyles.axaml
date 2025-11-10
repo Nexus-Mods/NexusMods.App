@@ -9,7 +9,7 @@
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Name"
                                         Width="SizeToCells"
-                                        Binding="{Binding Name}" />
+                                        Binding="{Binding DisplayName}" />
                     <DataGridTextColumn Header="Age"
                                         Width="SizeToCells"
                                         Binding="{Binding Age}" />

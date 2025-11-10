@@ -68,7 +68,7 @@ public class DesignTimeDownloadsDataProvider : IDownloadsDataProvider
             .Prepend(0);
     }
     
-    public string ResolveGameName(GameId gameId)
+    public string ResolveGameName(NexusModsGameId nexusModsGameId)
     {
         return "Design Game";
     }

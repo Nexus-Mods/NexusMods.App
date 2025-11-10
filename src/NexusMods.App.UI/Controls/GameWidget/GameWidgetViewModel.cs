@@ -38,7 +38,7 @@ public class GameWidgetViewModel : AViewModel<IGameWidgetViewModel>, IGameWidget
         this.WhenActivated(disposables =>
             {
                 this.WhenAnyValue(vm => vm.Installation)
-                    .Select(inst => $"{inst.Game.Name}")
+                    .Select(inst => $"{inst.Game.DisplayName}")
                     .BindToVM(this, vm => vm.Name)
                     .DisposeWith(disposables);
 
@@ -79,12 +79,12 @@ public class GameWidgetViewModel : AViewModel<IGameWidgetViewModel>, IGameWidget
     {
         try
         {
-            var stream = await ((IGame)source.Game).GameImage.GetStreamAsync();
+            var stream = await source.Game.TileImage.GetStreamAsync();
             return Bitmap.DecodeToWidth(stream, (int) ImageSizes.GameTile.Width);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "While loading game image for {GameName}", source.Game.Name);
+            _logger.LogError(ex, "While loading game image for {GameName}", source.Game.DisplayName);
             return null;
         }
     }

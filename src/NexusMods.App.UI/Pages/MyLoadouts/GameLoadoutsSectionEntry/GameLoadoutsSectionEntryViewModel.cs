@@ -41,7 +41,7 @@ public class GameLoadoutsSectionEntryViewModel : AViewModel<IGameLoadoutsSection
         _windowManager = windowManager;
 
         var loadoutManager = serviceProvider.GetRequiredService<ILoadoutManager>();
-        HeadingText = string.Format(Language.MyLoadoutsGameSectionHeading, _gameInstallation.Game.Name);
+        HeadingText = string.Format(Language.MyLoadoutsGameSectionHeading, _gameInstallation.Game.DisplayName);
 
         Loadout.ObserveAll(conn)
             .Filter(l => l.IsVisible() && l.InstallationInstance.LocationsRegister[LocationId.Game] == _gameInstallation.LocationsRegister[LocationId.Game])

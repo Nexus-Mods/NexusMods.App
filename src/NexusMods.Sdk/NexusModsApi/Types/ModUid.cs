@@ -31,15 +31,15 @@ public readonly struct ModUid : IEquatable<ModUid>
     /// <summary>
     /// Unique identifier for the game.
     /// </summary>
-    public readonly GameId GameId;
+    public readonly NexusModsGameId GameId;
 
     /// <summary>
     /// Constructor.
     /// </summary>
-    public ModUid(ModId modId, GameId gameId)
+    public ModUid(ModId modId, NexusModsGameId nexusModsGameId)
     {
         ModId = modId;
-        GameId = gameId;
+        GameId = nexusModsGameId;
     }
 
     /// <summary>

@@ -4,24 +4,24 @@ using GameDomain = NexusMods.Abstractions.NexusWebApi.Types.GameDomain;
 namespace NexusMods.Abstractions.NexusWebApi;
 
 /// <summary>
-/// Caches the mapping between <see cref="GameDomain"/> and <see cref="GameId"/> values for fast lookup.
+/// Caches the mapping between <see cref="GameDomain"/> and <see cref="NexusModsGameId"/> values for fast lookup.
 /// Queries the API to populate missing values.
 /// </summary>
 public interface IGameDomainToGameIdMappingCache
 {
     /// <summary>
-    /// Gets the <see cref="GameDomain"/> for the <see cref="GameId"/>.
+    /// Gets the <see cref="GameDomain"/> for the <see cref="NexusModsGameId"/>.
     /// </summary>
-    GameDomain GetDomain(GameId id);
+    GameDomain GetDomain(NexusModsGameId id);
 
     /// <summary>
-    /// Gets the <see cref="GameId"/> for the <see cref="GameDomain"/>.
+    /// Gets the <see cref="NexusModsGameId"/> for the <see cref="GameDomain"/>.
     /// </summary>
-    GameId GetId(GameDomain domain);
+    NexusModsGameId GetId(GameDomain domain);
 
     /// <inheritdoc cref="GetDomain"/>
-    GameDomain this[GameId id] => GetDomain(id);
+    GameDomain this[NexusModsGameId id] => GetDomain(id);
 
     /// <inheritdoc cref="GetId"/>
-    GameId this[GameDomain domain] => GetId(domain);
+    NexusModsGameId this[GameDomain domain] => GetId(domain);
 }

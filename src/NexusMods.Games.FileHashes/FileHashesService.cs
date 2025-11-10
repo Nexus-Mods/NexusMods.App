@@ -122,17 +122,17 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable, IHost
     }
 
     /// <inheritdoc />
-    public IEnumerable<VanityVersion> GetKnownVanityVersions(GameId gameId)
+    public IEnumerable<VanityVersion> GetKnownVanityVersions(NexusModsGameId nexusModsGameId)
     {
-        return GetVersionDefinitions(gameId)
+        return GetVersionDefinitions(nexusModsGameId)
             .Select(v => VanityVersion.From(v.Name))
             .ToList();
     }
 
-    private List<VersionDefinition.ReadOnly> GetVersionDefinitions(GameId gameId)
+    private List<VersionDefinition.ReadOnly> GetVersionDefinitions(NexusModsGameId nexusModsGameId)
     {
         return VersionDefinition.All(Current)
-            .Where(v => v.GameId == gameId)
+            .Where(v => v.GameId == nexusModsGameId)
             .ToList();
     }
 
@@ -604,7 +604,7 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable, IHost
         var filesSet = files.ToHashSet();
 
         List<(VersionData VersionData, int Matches)> versionMatches = [];
-        foreach (var versionDefinition in GetVersionDefinitions(gameInstallation.Game.GameId))
+        foreach (var versionDefinition in GetVersionDefinitions(gameInstallation.Game.NexusModsGameId.Value))
         {
             var locatorIds = GetLocatorIdsForVersionDefinition(gameInstallation.Store, versionDefinition);
 

@@ -126,14 +126,14 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
                             {
                                 if (GetJobRunningForGameInstallation(installation).IsT2) return;
 
-                                var filesToDelete = libraryDataProviders.SelectMany(dataProvider => dataProvider.GetAllFiles(gameId: installation.Game.GameId)).ToArray();
+                                var filesToDelete = libraryDataProviders.SelectMany(dataProvider => dataProvider.GetAllFiles(installation.Game.GameId)).ToArray();
                                 var totalSize = filesToDelete.Sum(static Size (file) => file.Size);
 
-                                var collections = CollectionDownloader.GetCollections(conn.Db, installation.Game.GameId);
+                                var collections = CollectionDownloader.GetCollections(conn.Db, installation.Game.NexusModsGameId.Value);
 
                                 var overlay = new RemoveGameOverlayViewModel
                                 {
-                                    GameName = installation.Game.Name,
+                                    GameName = installation.Game.DisplayName,
                                     NumDownloads = filesToDelete.Length,
                                     SumDownloadsSize = totalSize,
                                     NumCollections = collections.Length,
@@ -146,13 +146,13 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
                                 await Task.Run(async () => await RemoveGame(installation, shouldDeleteDownloads: result.ShouldDeleteDownloads, filesToDelete, collections));
                                 vm.State = GameWidgetState.DetectedGame;
 
-                                Tracking.AddEvent(Events.Game.RemoveGame, new EventMetadata(name: $"{installation.Game.Name} - {installation.Store}"));
+                                Tracking.AddEvent(Events.Game.RemoveGame, new EventMetadata(name: $"{installation.Game.DisplayName} - {installation.Store}"));
                             });
 
                             vm.ViewGameCommand = ReactiveCommand.Create(() =>
                             {
                                 NavigateToLoadoutLibrary(conn, installation);
-                                Tracking.AddEvent(Events.Game.ViewGame, new EventMetadata(name: $"{installation.Game.Name} - {installation.Store}"));
+                                Tracking.AddEvent(Events.Game.ViewGame, new EventMetadata(name: $"{installation.Game.DisplayName} - {installation.Store}"));
                             });
 
                             vm.IsManagedObservable = Loadout.ObserveAll(conn)
@@ -189,14 +189,13 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
                     })
                     .Cast<IGame>()
                     .Where(game => _installedGames.All(install => install.Installation.GetGame().GameId != game.GameId)); // Exclude found games
-                
-                
+
                 var miniGameWidgetViewModels = supportedGamesAsIGame
                     .Select(game =>
                         {
                             var vm = _serviceProvider.GetRequiredService<IMiniGameWidgetViewModel>();
                             vm.Game = game;
-                            vm.Name = game.Name;
+                            vm.Name = game.DisplayName;
                             // is this supported game installed?
                             vm.IsFound = _installedGames.Any(install => install.Installation.GetGame().GameId == game.GameId);
                             vm.GameInstallations = _installedGames
@@ -276,7 +275,7 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
                 await Task.Run(async () => await _syncService.UnManage(installation, cleanGameFolder: false));
                 vm.State = GameWidgetState.DetectedGame;
                 
-                Tracking.AddEvent(Events.Game.RevertManageOnDirty, new EventMetadata(name: $"{installation.Game.Name} - {installation.Store}"));
+                Tracking.AddEvent(Events.Game.RevertManageOnDirty, new EventMetadata(name: $"{installation.Game.DisplayName} - {installation.Store}"));
                 return;
             }
             if (result == clean)
@@ -285,14 +284,14 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
                 await CleanGameFolder(installation, loadout);
                 vm.State = GameWidgetState.ManagedGame;
                 
-                Tracking.AddEvent(Events.Game.CleanGameOnManage, new EventMetadata(name: $"{installation.Game.Name} - {installation.Store}"));
+                Tracking.AddEvent(Events.Game.CleanGameOnManage, new EventMetadata(name: $"{installation.Game.DisplayName} - {installation.Store}"));
             }
             
             // do nothing, so keep the files
-            Tracking.AddEvent(Events.Game.KeepDirtyOnManage, new EventMetadata(name: $"{installation.Game.Name} - {installation.Store}"));
+            Tracking.AddEvent(Events.Game.KeepDirtyOnManage, new EventMetadata(name: $"{installation.Game.DisplayName} - {installation.Store}"));
         }
         
-        Tracking.AddEvent(Events.Game.AddGame, new EventMetadata(name: $"{installation.Game.Name} - {installation.Store}"));
+        Tracking.AddEvent(Events.Game.AddGame, new EventMetadata(name: $"{installation.Game.DisplayName} - {installation.Store}"));
         NavigateToLoadoutLibrary(_connection, installation);
     }
     
@@ -323,7 +322,7 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
             """;
         
         var dialog = DialogFactory.CreateStandardDialog(
-            title: $"Your {installation.Game.Name} folder isn't a clean install",
+            title: $"Your {installation.Game.DisplayName} folder isn't a clean install",
             new StandardDialogParameters()
             {
                 Markdown = markdownVm,

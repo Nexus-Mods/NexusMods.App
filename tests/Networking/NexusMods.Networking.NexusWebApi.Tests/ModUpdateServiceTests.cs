@@ -156,7 +156,7 @@ public class ModUpdateServiceTests : ACyberpunkIsolatedGameTest<ModUpdateService
         await using var tempFile = _temporaryFileManager.CreateFile();
         var downloadJob = await _nexusModsLibrary.CreateDownloadJob(
             destination: tempFile,
-            gameId: (GameId)spaceCoreData.GameId,
+            nexusModsGameId: (NexusModsGameId)spaceCoreData.GameId,
             modId: (ModId)spaceCoreData.ModId,
             fileId: (FileId)spaceCoreData.FileId
         );
@@ -197,7 +197,7 @@ public class ModUpdateServiceTests : ACyberpunkIsolatedGameTest<ModUpdateService
         await using var tempFile = _temporaryFileManager.CreateFile();
         var downloadJob = await _nexusModsLibrary.CreateDownloadJob(
             destination: tempFile,
-            gameId: (GameId)spaceCoreData.GameId,
+            nexusModsGameId: (NexusModsGameId)spaceCoreData.GameId,
             modId: (ModId)spaceCoreData.ModId,
             fileId: (FileId)spaceCoreData.FileId
         );
@@ -239,7 +239,7 @@ public class ModUpdateServiceTests : ACyberpunkIsolatedGameTest<ModUpdateService
         await using var tempFile = _temporaryFileManager.CreateFile();
         var downloadJob = await _nexusModsLibrary.CreateDownloadJob(
             destination: tempFile,
-            gameId: (GameId)spaceCoreData.GameId,
+            nexusModsGameId: (NexusModsGameId)spaceCoreData.GameId,
             modId: (ModId)spaceCoreData.ModId,
             fileId: (FileId)spaceCoreData.FileId
         );
@@ -264,7 +264,7 @@ public class ModUpdateServiceTests : ACyberpunkIsolatedGameTest<ModUpdateService
         var newestFile = updatesOnModPage.NewestFile();
 
         // Check the returned file is 'sensible'
-        newestFile.Uid.GameId.Should().Be((GameId)spaceCoreData.GameId);
+        newestFile.Uid.GameId.Should().Be((NexusModsGameId)spaceCoreData.GameId);
         newestFile.ModPage.Uid.ModId.Should().Be((ModId)spaceCoreData.ModId);
         
         // And check for all expected update files.
@@ -287,7 +287,7 @@ public class ModUpdateServiceTests : ACyberpunkIsolatedGameTest<ModUpdateService
         await using var tempFile = _temporaryFileManager.CreateFile();
         var downloadJob = await _nexusModsLibrary.CreateDownloadJob(
             destination: tempFile,
-            gameId: (GameId)spaceCoreData.GameId,
+            nexusModsGameId: (NexusModsGameId)spaceCoreData.GameId,
             modId: (ModId)spaceCoreData.ModId,
             fileId: (FileId)spaceCoreData.FileId
         );
@@ -336,7 +336,7 @@ public class ModUpdateServiceTests : ACyberpunkIsolatedGameTest<ModUpdateService
         await using var tempSpaceCoreFile = _temporaryFileManager.CreateFile();
         var spaceCoreDownloadJob = await _nexusModsLibrary.CreateDownloadJob(
             destination: tempSpaceCoreFile,
-            gameId: (GameId)spaceCoreData.GameId,
+            nexusModsGameId: (NexusModsGameId)spaceCoreData.GameId,
             modId: (ModId)spaceCoreData.ModId,
             fileId: (FileId)spaceCoreData.FileId
         );
@@ -345,7 +345,7 @@ public class ModUpdateServiceTests : ACyberpunkIsolatedGameTest<ModUpdateService
         await using var tempSmapiFile = _temporaryFileManager.CreateFile();
         var smapiDownloadJob = await _nexusModsLibrary.CreateDownloadJob(
             destination: tempSmapiFile,
-            gameId: (GameId)smapiData.GameId,
+            nexusModsGameId: (NexusModsGameId)smapiData.GameId,
             modId: (ModId)smapiData.ModId,
             fileId: (FileId)smapiData.FileId
         );
@@ -371,7 +371,7 @@ public class ModUpdateServiceTests : ACyberpunkIsolatedGameTest<ModUpdateService
         await using var tempSpaceCoreUpdateFile = _temporaryFileManager.CreateFile();
         var spaceCoreUpdateDownloadJob = await _nexusModsLibrary.CreateDownloadJob(
             destination: tempSpaceCoreUpdateFile,
-            gameId: (GameId)spaceCoreUpdate.GameId,
+            nexusModsGameId: (NexusModsGameId)spaceCoreUpdate.GameId,
             modId: (ModId)spaceCoreUpdate.ModId,
             fileId: (FileId)spaceCoreUpdate.FileId
         );
@@ -400,7 +400,7 @@ public class ModUpdateServiceTests : ACyberpunkIsolatedGameTest<ModUpdateService
         await using var tempOldFile = _temporaryFileManager.CreateFile();
         var oldVersionDownloadJob = await _nexusModsLibrary.CreateDownloadJob(
             destination: tempOldFile,
-            gameId: (GameId)spaceCoreData.GameId,
+            nexusModsGameId: (NexusModsGameId)spaceCoreData.GameId,
             modId: (ModId)spaceCoreData.ModId,
             fileId: (FileId)spaceCoreData.FileId
         );
@@ -409,7 +409,7 @@ public class ModUpdateServiceTests : ACyberpunkIsolatedGameTest<ModUpdateService
         await using var tempCurrentFile = _temporaryFileManager.CreateFile();
         var currentVersionDownloadJob = await _nexusModsLibrary.CreateDownloadJob(
             destination: tempCurrentFile,
-            gameId: (GameId)spaceCoreUpdate.GameId,
+            nexusModsGameId: (NexusModsGameId)spaceCoreUpdate.GameId,
             modId: (ModId)spaceCoreUpdate.ModId,
             fileId: (FileId)spaceCoreUpdate.FileId
         );
@@ -456,7 +456,7 @@ public class ModUpdateServiceTests : ACyberpunkIsolatedGameTest<ModUpdateService
         await using var tempFile = _temporaryFileManager.CreateFile();
         var downloadJob = await _nexusModsLibrary.CreateDownloadJob(
             destination: tempFile,
-            gameId: (GameId)spaceCoreData.GameId,
+            nexusModsGameId: (NexusModsGameId)spaceCoreData.GameId,
             modId: (ModId)spaceCoreData.ModId,
             fileId: (FileId)spaceCoreData.FileId
         );
@@ -483,7 +483,7 @@ public class ModUpdateServiceTests : ACyberpunkIsolatedGameTest<ModUpdateService
         var newestFile = spaceCoreData.Updates[^1]; // Get the latest update
         var newestFileUid = new FileUid(
             (FileId)newestFile.FileId,
-            (GameId)newestFile.GameId
+            (NexusModsGameId)newestFile.GameId
         );
         
         await _filterService.HideFileAsync(newestFileUid);
@@ -514,7 +514,7 @@ public class ModUpdateServiceTests : ACyberpunkIsolatedGameTest<ModUpdateService
         await using var tempFile = _temporaryFileManager.CreateFile();
         var downloadJob = await _nexusModsLibrary.CreateDownloadJob(
             destination: tempFile,
-            gameId: (GameId)spaceCoreData.GameId,
+            nexusModsGameId: (NexusModsGameId)spaceCoreData.GameId,
             modId: (ModId)spaceCoreData.ModId,
             fileId: (FileId)spaceCoreData.FileId
         );
@@ -540,7 +540,7 @@ public class ModUpdateServiceTests : ACyberpunkIsolatedGameTest<ModUpdateService
         // Hide multiple update files using the filter service
         var filesToHide = spaceCoreData.Updates.TakeLast(2).Select(update => new FileUid(
             (FileId)update.FileId,
-            (GameId)update.GameId
+            (NexusModsGameId)update.GameId
         )).ToArray();
         
         await _filterService.HideFilesAsync(filesToHide);

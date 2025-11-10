@@ -142,7 +142,7 @@ public class BuildHashesDb : IAsyncDisposable
         using var tx = _connection.BeginTransaction();
         foreach (var (gameName, osName, definition) in versionData)
         {
-            var gameObject = _gameRegistry.SupportedGames.First(g => g.Name == gameName);
+            var gameObject = _gameRegistry.SupportedGames.First(g => g.DisplayName == gameName);
             
             var os = osName switch
             {
@@ -156,7 +156,7 @@ public class BuildHashesDb : IAsyncDisposable
             {
                 Name = definition.Name,
                 OperatingSystem = os,
-                GameId = gameObject.GameId,
+                GameId = gameObject.NexusModsGameId.Value,
                 GOG = definition.GOG ?? [],
                 Steam = definition.Steam ?? [],
                 EpicBuildIds = definition.Epic ?? [],

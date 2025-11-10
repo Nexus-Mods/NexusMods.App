@@ -10,7 +10,7 @@ public class LoadoutAttachmentsFactory(IConnection conn) : IWorkspaceAttachments
     {
         // Use the game name as the title
         var loadout = Loadout.Load(conn.Db, context.LoadoutId);
-        return loadout.InstallationInstance.Game.Name;
+        return loadout.InstallationInstance.Game.DisplayName;
     }
 
     public string CreateSubtitle(LoadoutContext context)

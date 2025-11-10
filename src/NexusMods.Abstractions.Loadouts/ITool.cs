@@ -1,5 +1,5 @@
+using NexusMods.Sdk.Games;
 using NexusMods.Sdk.Jobs;
-using NexusMods.Sdk.NexusModsApi;
 using R3;
 
 namespace NexusMods.Abstractions.Loadouts;

@@ -546,7 +546,7 @@ public partial class ALoadoutSynchronizer : ILoadoutSynchronizer
         // NOTE(erri120): It would be very odd if we re-query the game, and it's not installed anymore
         if (!gameLocatorResults.TryGetFirst(result => result.Store == loadout.InstallationInstance.Store, out var gameLocatorResult))
         {
-            Logger.LogCritical("Found no installation of the game `{Store}`/`{Game}` anymore!", loadout.InstallationInstance.Store, loadout.InstallationInstance.Game.Name);
+            Logger.LogCritical("Found no installation of the game `{Store}`/`{Game}` anymore!", loadout.InstallationInstance.Store, loadout.InstallationInstance.Game.DisplayName);
             return loadout;
         }
 
@@ -554,7 +554,7 @@ public partial class ALoadoutSynchronizer : ILoadoutSynchronizer
         var newLocatorIds = metadataLocatorIds.Distinct().ToArray();
 
         if (newLocatorIds.Length != metadataLocatorIds.Length)
-            Logger.LogWarning("Found duplicate locator IDs `{LocatorIds}` on gameLocatorResult for game `{Game}` while updating locator IDs", metadataLocatorIds, loadout.InstallationInstance.Game.Name);
+            Logger.LogWarning("Found duplicate locator IDs `{LocatorIds}` on gameLocatorResult for game `{Game}` while updating locator IDs", metadataLocatorIds, loadout.InstallationInstance.Game.DisplayName);
 
         var locatorsToAdd = newLocatorIds.Except(loadout.LocatorIds).ToArray();
         var locatorsToRemove = loadout.LocatorIds.Except(newLocatorIds).ToArray();

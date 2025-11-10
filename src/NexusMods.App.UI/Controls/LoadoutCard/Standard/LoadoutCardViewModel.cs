@@ -150,12 +150,12 @@ public class LoadoutCardViewModel : AViewModel<ILoadoutCardViewModel>, ILoadoutC
         {
             try
             {
-                var stream = await source.GetGame().Icon.GetStreamAsync();
+                var stream = await source.GetGame().IconImage.GetStreamAsync();
                 return Bitmap.DecodeToWidth(stream, (int) ImageSizes.GameThumbnail.Width);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "While loading game image for {GameName}", source.Game.Name);
+                _logger.LogError(ex, "While loading game image for {GameName}", source.Game.DisplayName);
                 return null;
             }
         });

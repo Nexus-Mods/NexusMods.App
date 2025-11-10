@@ -27,7 +27,7 @@ public interface IDownloadsDataProvider
     /// <summary>
     /// Resolves the name of a game based on its GameId.
     /// </summary>
-    /// <param name="gameId">The GameId to resolve the name for.</param>
+    /// <param name="nexusModsGameId">The GameId to resolve the name for.</param>
     /// <returns>The name of the game or a default string if not found.</returns>
-    string ResolveGameName(GameId gameId);
+    string ResolveGameName(NexusModsGameId nexusModsGameId);
 }

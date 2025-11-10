@@ -46,7 +46,7 @@ public class UndeployableLoadoutDueToMissingGameFiles : ILoadoutDiagnosticEmitte
             yield return Diagnostics.CreateUndeployableLoadoutDueToMissingGameFiles(
                 Size: totalSize,
                 FileCount: count,
-                Game: loadout.InstallationInstance.Game.Name,
+                Game: loadout.InstallationInstance.Game.DisplayName,
                 Files: sb.ToString(),
                 Store: loadout.InstallationInstance.Store.Value,
                 Version: loadout.GameVersion.ToString()

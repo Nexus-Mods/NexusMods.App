@@ -23,7 +23,7 @@ public class ImageLoaderTests : AUiTest
     public async Task Test()
     {
         var library = Provider.GetRequiredService<NexusModsLibrary>();
-        var modPage = await library.GetOrAddModPage(ModId.From(6072), GameId.From(3333));
+        var modPage = await library.GetOrAddModPage(ModId.From(6072), NexusModsGameId.From(3333));
 
         {
             var pipeline = CreatePipeline();

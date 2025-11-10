@@ -11,14 +11,12 @@ using NexusMods.Abstractions.GameLocators.Stores.Xbox;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
-using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Games.MountAndBlade2Bannerlord.Diagnostics;
 using NexusMods.Games.MountAndBlade2Bannerlord.Installers;
-using NexusMods.Games.MountAndBlade2Bannerlord.LauncherManager;
 using NexusMods.Games.MountAndBlade2Bannerlord.Utils;
 using NexusMods.Paths;
+using NexusMods.Sdk.Games;
 using NexusMods.Sdk.IO;
-using NexusMods.Sdk.NexusModsApi;
 using static NexusMods.Games.MountAndBlade2Bannerlord.BannerlordConstants;
 
 namespace NexusMods.Games.MountAndBlade2Bannerlord;
@@ -27,26 +25,18 @@ namespace NexusMods.Games.MountAndBlade2Bannerlord;
 /// Maintained by the BUTR Team
 /// https://github.com/BUTR
 /// </summary>
-public sealed class Bannerlord : AGame, ISteamGame, IGogGame, IXboxGame//, IEpicGame
+public sealed class Bannerlord : AGame, ISteamGame, IGogGame, IXboxGame, IGameData<Bannerlord>
 {
-    public static readonly GameId GameIdStatic = Sdk.NexusModsApi.GameId.From(3174);
-    public static readonly GameDomain DomainStatic = GameDomain.From("mountandblade2bannerlord");
-    public static string DisplayName => "Mount & Blade II: Bannerlord";
-
     private readonly IServiceProvider _serviceProvider;
-    private readonly LauncherManagerFactory _launcherManagerFactory;
 
-    public override string Name => DisplayName;
-    public override GameId GameId => GameIdStatic;
-    public override SupportType SupportType => SupportType.Official;
+    public static GameId GameId { get; } = GameId.From("Bannerlord");
+    protected override GameId GameIdImpl => GameId;
 
-    public override HashSet<FeatureStatus> Features { get; } =
-    [
-        new(BaseFeatures.GameLocatable, IsImplemented: true),
-        new(BaseFeatures.HasInstallers, IsImplemented: true),
-        new(BaseFeatures.HasDiagnostics, IsImplemented: false),
-        new(BaseFeatures.HasLoadOrder, IsImplemented: false),
-    ];
+    public static string DisplayName => "Mount & Blade II: Bannerlord";
+    protected override string DisplayNameImpl => DisplayName;
+
+    public static Optional<Sdk.NexusModsApi.NexusModsGameId> NexusModsGameId => Sdk.NexusModsApi.NexusModsGameId.From(3174);
+    protected override Optional<Sdk.NexusModsApi.NexusModsGameId> NexusModsGameIdImpl => NexusModsGameId;
 
     public IEnumerable<uint> SteamIds => [261550u];
     public IEnumerable<long> GogIds => [1802539526, 1564781494];
@@ -55,11 +45,8 @@ public sealed class Bannerlord : AGame, ISteamGame, IGogGame, IXboxGame//, IEpic
     // public IEnumerable<string> EpicCatalogItemId => ["Chickadee"];
     public IEnumerable<string> XboxIds => ["TaleWorldsEntertainment.MountBladeIIBannerlord"];
 
-    public override IStreamFactory Icon =>
-        new EmbeddedResourceStreamFactory<Bannerlord>("NexusMods.Games.MountAndBlade2Bannerlord.Resources.thumbnail.webp");
-
-    public override IStreamFactory GameImage =>
-        new EmbeddedResourceStreamFactory<Bannerlord>("NexusMods.Games.MountAndBlade2Bannerlord.Resources.tile.webp");
+    public override IStreamFactory IconImage => new EmbeddedResourceStreamFactory<Bannerlord>("NexusMods.Games.MountAndBlade2Bannerlord.Resources.thumbnail.webp");
+    public override IStreamFactory TileImage => new EmbeddedResourceStreamFactory<Bannerlord>("NexusMods.Games.MountAndBlade2Bannerlord.Resources.tile.webp");
 
     public override ILibraryItemInstaller[] LibraryItemInstallers =>
     [
@@ -72,10 +59,9 @@ public sealed class Bannerlord : AGame, ISteamGame, IGogGame, IXboxGame//, IEpic
         new MissingProtontricksEmitter(_serviceProvider),
     ];
 
-    public Bannerlord(IServiceProvider serviceProvider, LauncherManagerFactory launcherManagerFactory) : base(serviceProvider)
+    public Bannerlord(IServiceProvider serviceProvider) : base(serviceProvider)
     {
         _serviceProvider = serviceProvider;
-        _launcherManagerFactory = launcherManagerFactory;
     }
 
     public override GamePath GetPrimaryFile(GameTargetInfo targetInfo) => GamePathProvier.PrimaryLauncherFile(targetInfo.Store);

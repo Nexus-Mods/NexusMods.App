@@ -17,7 +17,7 @@ public class DownloadJobFactory(IJobMonitor jobMonitor, IServiceProvider service
     /// <summary>
     /// Creates a controllable NexusMods download job and starts it in the <see cref="IJobMonitor"/>
     /// </summary>
-    public TestDownloadJobContext CreateAndStartDownloadJob(GameId gameId)
+    public TestDownloadJobContext CreateAndStartDownloadJob(NexusModsGameId nexusModsGameId)
     {
         // Create control subjects
         var statusController = new BehaviorSubject<JobStatus>(JobStatus.Running);
@@ -49,7 +49,7 @@ public class DownloadJobFactory(IJobMonitor jobMonitor, IServiceProvider service
         // Create test Nexus Mods download job
         var testNexusJob = new TestNexusModsDownloadJob
         {
-            FileMetadata = CreateTestFileMetadata("TestFile.zip", gameId),
+            FileMetadata = CreateTestFileMetadata("TestFile.zip", nexusModsGameId),
             StatusController = statusController,
             ProgressController = progressController,
             CompletionSource = completionSource,
@@ -80,7 +80,7 @@ public class DownloadJobFactory(IJobMonitor jobMonitor, IServiceProvider service
         };
     }
     
-    private NexusModsFileMetadata.ReadOnly CreateTestFileMetadata(string fileName, GameId gameId)
+    private NexusModsFileMetadata.ReadOnly CreateTestFileMetadata(string fileName, NexusModsGameId nexusModsGameId)
     {
         // Get database connection from service provider
         var connection = serviceProvider.GetRequiredService<IConnection>();
@@ -90,7 +90,7 @@ public class DownloadJobFactory(IJobMonitor jobMonitor, IServiceProvider service
         
         // Generate deterministic test values based on filename hash for consistency
         var fileNameHash = (ulong)Math.Abs(fileName.GetHashCode());
-        var gameIdHash = (ulong)Math.Abs(gameId.Value.GetHashCode());
+        var gameIdHash = (ulong)Math.Abs(nexusModsGameId.Value.GetHashCode());
         var uniqueId = fileNameHash + gameIdHash;
         
         var metadata = new NexusModsFileMetadata.New(tx)
@@ -99,7 +99,7 @@ public class DownloadJobFactory(IJobMonitor jobMonitor, IServiceProvider service
             Version = "1.0.0-test",
             Size = Size.FromLong(1024 * 1024), // 1MB test file
             UploadedAt = DateTimeOffset.UtcNow.AddDays(-1), // Uploaded yesterday
-            Uid = new FileUid(FileId.From(0), gameId),
+            Uid = new FileUid(FileId.From(0), nexusModsGameId),
             ModPageId = NexusModsModPageMetadataId.From(uniqueId + 1000) // Related mod page ID
         };
         

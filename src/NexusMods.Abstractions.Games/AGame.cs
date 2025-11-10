@@ -9,8 +9,8 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
+using NexusMods.Sdk.Games;
 using NexusMods.Sdk.IO;
-using NexusMods.Sdk.NexusModsApi;
 
 namespace NexusMods.Abstractions.Games;
 
@@ -20,8 +20,6 @@ namespace NexusMods.Abstractions.Games;
 [PublicAPI]
 public abstract class AGame : IGame
 {
-    private IReadOnlyCollection<GameInstallation>? _installations;
-    private readonly IEnumerable<IGameLocator> _gameLocators;
     private readonly Lazy<ILoadoutSynchronizer> _synchronizer;
     private readonly Lazy<ISortOrderManager> _sortOrderManager;
     private readonly IServiceProvider _provider;
@@ -33,7 +31,6 @@ public abstract class AGame : IGame
     protected AGame(IServiceProvider provider)
     {
         _provider = provider;
-        _gameLocators = provider.GetServices<IGameLocator>();
         // In a Lazy so we don't get a circular dependency
         _synchronizer = new Lazy<ILoadoutSynchronizer>(() => MakeSynchronizer(provider));
         _sortOrderManager = new Lazy<ISortOrderManager>(() => MakeSortOrderManager(provider, this));
@@ -55,27 +52,24 @@ public abstract class AGame : IGame
         return manager;
     }
 
-    /// <inheritdoc />
-    public abstract string Name { get; }
+    GameId IGameData.GameId => GameIdImpl;
+    protected abstract GameId GameIdImpl { get; }
 
-    /// <inheritdoc />
-    public abstract SupportType SupportType { get; }
+    string IGameData.DisplayName => DisplayNameImpl;
+    protected abstract string DisplayNameImpl { get; }
 
-    /// <inheritdoc />
-    public virtual HashSet<FeatureStatus> Features { get; } = [];
-
-    /// <inheritdoc />
-    public abstract GameId GameId { get; }
+    Optional<Sdk.NexusModsApi.NexusModsGameId> IGameData.NexusModsGameId => NexusModsGameIdImpl;
+    protected abstract Optional<Sdk.NexusModsApi.NexusModsGameId> NexusModsGameIdImpl { get; }
 
     /// <inheritdoc/>
     public abstract GamePath GetPrimaryFile(GameTargetInfo targetInfo);
 
     /// <inheritdoc />
-    public virtual IStreamFactory Icon => throw new NotImplementedException("No icon provided for this game.");
+    public abstract IStreamFactory IconImage { get; }
 
     /// <inheritdoc />
-    public virtual IStreamFactory GameImage => throw new NotImplementedException("No game image provided for this game.");
-    
+    public abstract IStreamFactory TileImage { get; }
+
     /// <inheritdoc />
     public virtual ILibraryItemInstaller[] LibraryItemInstallers { get; } = [];
 
@@ -131,35 +125,6 @@ public abstract class AGame : IGame
     }
 
     /// <summary>
-    /// Clears the internal cache of game installations, so that the next access will re-query the system.
-    /// </summary>
-    public void ResetInstallations()
-    {
-        _installations = null;
-    }
-
-    private List<GameInstallation> GetInstallations()
-    {
-        return _gameLocators
-            .SelectMany(locator => locator.Find(this), (locator, installation) =>
-            {
-                var locations = GetLocations(installation.Path.FileSystem, installation);
-                return new GameInstallation
-                {
-                    Game = this,
-                    LocationsRegister = new GameLocationsRegister(new Dictionary<LocationId, AbsolutePath>(locations)),
-                    InstallDestinations = GetInstallDestinations(locations),
-                    Store = installation.Store,
-                    TargetOS = installation.TargetOS,
-                    LocatorResultMetadata = installation.Metadata,
-                    Locator = locator,
-                };
-            })
-            .DistinctBy(g => g.LocationsRegister[LocationId.Game])
-            .ToList();
-    }
-
-    /// <summary>
     /// Returns the locations of known game elements, such as save folder, etc.
     /// </summary>
     protected abstract IReadOnlyDictionary<LocationId, AbsolutePath> GetLocations(IFileSystem fileSystem, GameLocatorResult installation);
@@ -180,5 +145,5 @@ public abstract class AGame : IGame
     public virtual Optional<GamePath> GetFallbackCollectionInstallDirectory(GameTargetInfo targetInfo) => Optional<GamePath>.None;
 
     /// <inheritdoc />
-    public override string ToString() => Name;
+    public override string ToString() => DisplayNameImpl;
 }

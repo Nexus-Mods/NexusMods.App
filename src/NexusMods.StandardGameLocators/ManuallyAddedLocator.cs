@@ -36,13 +36,18 @@ public class ManuallyAddedLocator : IGameLocator
     /// <returns></returns>
     public async Task<(EntityId, GameInstallation)> Add(IGame game, Version version, AbsolutePath path)
     {
+        // TODO: use game id
+        var nexusModsGameId = game.NexusModsGameId;
+        if (!nexusModsGameId.HasValue) throw new NotSupportedException($"The game {game.DisplayName} has no nexus mods game id");
+
         using var tx = _conn.Value.BeginTransaction();
         var ent = new ManuallyAddedGame.New(tx)
         {
-            GameId = game.GameId,
+            GameId = nexusModsGameId.Value,
             Version = version.ToString(),
             Path = path.ToString(),
         };
+
         var result = await tx.Commit();
         var addedGame = result.Remap(ent);
         var gameRegistry = _provider.GetRequiredService<IGameRegistry>();
@@ -70,9 +75,11 @@ public class ManuallyAddedLocator : IGameLocator
     /// <inheritdoc />
     public IEnumerable<GameLocatorResult> Find(ILocatableGame game, bool forceRefreshCache = false)
     {
-        var games = ManuallyAddedGame.FindByGameId(_conn.Value.Db, game.GameId)
-            .Select(g => new GameLocatorResult(_fileSystem.FromUnsanitizedFullPath(g.Path), _fileSystem,
-                OSInformation.Shared, GameStore.ManuallyAdded, g, Version.Parse(g.Version)));
+        // TODO: use game id
+        var nexusModsGameId = game.NexusModsGameId;
+        if (!nexusModsGameId.HasValue) return [];
+
+        var games = ManuallyAddedGame.FindByGameId(_conn.Value.Db, nexusModsGameId.Value).Select(g => new GameLocatorResult(_fileSystem.FromUnsanitizedFullPath(g.Path), _fileSystem, OSInformation.Shared, GameStore.ManuallyAdded, g, Version.Parse(g.Version)));
         return games;
     }
 }
