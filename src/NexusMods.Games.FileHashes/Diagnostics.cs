@@ -1,6 +1,5 @@
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Diagnostics;
-using NexusMods.Abstractions.Diagnostics.References;
 using NexusMods.Generators.Diagnostics;
 using NexusMods.Paths;
 
@@ -38,7 +37,7 @@ changes made by you or a game store (such as GOG Galaxy, Steam, etc.) may render
         .WithSummary("Loadout can't be applied due to {FileCount} missing game file(s) with no valid source")
         .WithDetails("""
 The loadout is based on {Game} v{Version} but there are {FileCount} file(s) missing from the game installation. Unless these file(s) are restored, the loadout cannot be applied. 
- 
+
 ## How to Resolve
 1. Open the {Store} launcher 
 2. Verify or repair the game files
@@ -49,10 +48,15 @@ While checking the contents of the game folder against the file list index for {
 
 Without all the required base game files, the loadout cannot be applied.
 
+The files with issues:
+
+{Files}
+
 """)
         .WithMessageData(messageBuilder => messageBuilder
             .AddValue<Size>("Size")
             .AddValue<int>("FileCount")
+            .AddValue<string>("Files")
             .AddValue<string>("Game")
             .AddValue<string>("Store")
             .AddValue<string>("Version")
