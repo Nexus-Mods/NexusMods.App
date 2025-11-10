@@ -31,12 +31,12 @@ public sealed class Bannerlord : AGame, ISteamGame, IGogGame, IXboxGame//, IEpic
 {
     public static readonly GameId GameIdStatic = Sdk.NexusModsApi.GameId.From(3174);
     public static readonly GameDomain DomainStatic = GameDomain.From("mountandblade2bannerlord");
-    public static string DisplayName => "Mount & Blade II: Bannerlord";
+    public static string StaticDisplayName => "Mount & Blade II: Bannerlord";
 
     private readonly IServiceProvider _serviceProvider;
     private readonly LauncherManagerFactory _launcherManagerFactory;
 
-    public override string Name => DisplayName;
+    public override string DisplayName => StaticDisplayName;
     public override GameId GameId => GameIdStatic;
     public override SupportType SupportType => SupportType.Official;
 

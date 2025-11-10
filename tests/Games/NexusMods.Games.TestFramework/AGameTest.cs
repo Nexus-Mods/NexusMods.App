@@ -75,7 +75,7 @@ public abstract class AGameTest<TGame> where TGame : AGame
         _logger = serviceProvider.GetRequiredService<ILogger<AGameTest<TGame>>>();
         if (GameInstallation.Locator is UniversalStubbedGameLocator<TGame> universal)
         {
-            _logger.LogInformation("Resetting game files for {Game}", Game.Name);
+            _logger.LogInformation("Resetting game files for {Game}", Game.DisplayName);
             ResetGameFolders();
         }
     }

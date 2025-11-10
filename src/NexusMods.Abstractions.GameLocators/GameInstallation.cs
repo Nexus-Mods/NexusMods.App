@@ -101,6 +101,6 @@ public class GameInstallation : IEquatable<GameInstallation>
     /// <inheritdoc />
     public override string ToString()
     {
-        return $"{Game.Name} {GameMetadataId} ({Store.Value})";
+        return $"{Game.DisplayName} {GameMetadataId} ({Store.Value})";
     }
 }

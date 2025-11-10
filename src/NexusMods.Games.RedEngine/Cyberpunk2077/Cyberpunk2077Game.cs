@@ -44,7 +44,7 @@ public class Cyberpunk2077Game : AGame, ISteamGame, IGogGame //, IEpicGame
     protected override ILoadoutSynchronizer MakeSynchronizer(IServiceProvider provider)
         => new Cyberpunk2077Synchronizer(provider);
 
-    public override string Name => "Cyberpunk 2077";
+    public override string DisplayName => "Cyberpunk 2077";
     public override GameId GameId => GameIdStatic;
     public override SupportType SupportType => SupportType.Official;
 

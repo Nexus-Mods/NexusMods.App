@@ -76,10 +76,10 @@ internal static class CliVerbs
         var rows = from game in games
             from install in registry.Installations.Values
             where game.GameId == install.Game.GameId
-            orderby game.Name
+            orderby game.DisplayName
             select new object[]
             {
-                game.Name, install.Game.GameId, install.Store, install.LocationsRegister.GetResolvedPath(LocationId.Game)
+                game.DisplayName, install.Game.GameId, install.Store, install.LocationsRegister.GetResolvedPath(LocationId.Game)
             };
 
         await renderer.Table(new[] {"Game", "GameId", "Store", "Location"}, rows);

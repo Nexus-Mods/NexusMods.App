@@ -56,7 +56,7 @@ public abstract class AGame : IGame
     }
 
     /// <inheritdoc />
-    public abstract string Name { get; }
+    public abstract string DisplayName { get; }
 
     /// <inheritdoc />
     public abstract SupportType SupportType { get; }
@@ -180,5 +180,5 @@ public abstract class AGame : IGame
     public virtual Optional<GamePath> GetFallbackCollectionInstallDirectory(GameTargetInfo targetInfo) => Optional<GamePath>.None;
 
     /// <inheritdoc />
-    public override string ToString() => Name;
+    public override string ToString() => DisplayName;
 }

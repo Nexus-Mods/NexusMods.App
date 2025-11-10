@@ -573,7 +573,7 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
         
         if (GameInstallation.Locator is UniversalStubbedGameLocator<TGame> universal)
         {
-            Logger.LogInformation("Resetting game files for {Game}", Game.Name);
+            Logger.LogInformation("Resetting game files for {Game}", Game.DisplayName);
             ResetGameFolders();
         }
     }

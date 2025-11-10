@@ -88,7 +88,7 @@ public class DownloadsLeftMenuViewModel : AViewModel<IDownloadsLeftMenuViewModel
             }
         )
         {
-            Text = new StringComponent(string.Format(Language.DownloadsLeftMenu_GameSpecificDownloads, gameInstallation.Game.Name)),
+            Text = new StringComponent(string.Format(Language.DownloadsLeftMenu_GameSpecificDownloads, gameInstallation.Game.DisplayName)),
             Icon = IconValues.FolderEditOutline, // Initial fallback icon
         };
 

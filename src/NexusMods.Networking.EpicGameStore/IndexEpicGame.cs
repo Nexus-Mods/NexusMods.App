@@ -49,14 +49,14 @@ public static class IndexEpicGame
         
         if (installation.Value == null)
         {
-            await renderer.TextLine($"Game {castedGame.Name} is not installed via Epic Game Store.", token);
+            await renderer.TextLine($"Game {castedGame.DisplayName} is not installed via Epic Game Store.", token);
             return 1;
         }
         
         var location = installation.Value.LocationsRegister[LocationId.Game];
 
         
-        await renderer.TextLine($"Indexing {castedGame.Name} at ({location})", token);
+        await renderer.TextLine($"Indexing {castedGame.DisplayName} at ({location})", token);
 
         var hashes = new ConcurrentDictionary<RelativePath, MultiHash>();
 

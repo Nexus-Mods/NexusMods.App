@@ -155,7 +155,7 @@ public class LoadoutCardViewModel : AViewModel<ILoadoutCardViewModel>, ILoadoutC
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "While loading game image for {GameName}", source.Game.Name);
+                _logger.LogError(ex, "While loading game image for {GameName}", source.Game.DisplayName);
                 return null;
             }
         });

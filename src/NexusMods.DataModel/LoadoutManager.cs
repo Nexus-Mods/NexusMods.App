@@ -68,7 +68,7 @@ internal partial class LoadoutManager : ILoadoutManager
                     
                 if (distinctLocatorIds.Length != metadataLocatorIds.Length)
                 {
-                    _logger.LogWarning("Duplicate locator ids `{LocatorIds}` found in LocatorResultMetadata for {Game} when creating new loadout", metadataLocatorIds, installation.Game.Name);
+                    _logger.LogWarning("Duplicate locator ids `{LocatorIds}` found in LocatorResultMetadata for {Game} when creating new loadout", metadataLocatorIds, installation.Game.DisplayName);
                 }
 
                 locatorIds.AddRange(distinctLocatorIds);
@@ -268,7 +268,7 @@ internal partial class LoadoutManager : ILoadoutManager
         
         if (locatorIds.Length != metadataLocatorIds.Length)
         {
-            _logger.LogWarning("Duplicate locator ids `{LocatorIds}` found in LocatorResultMetadata for {Game} when deactivating loadout", metadataLocatorIds, installation.Game.Name);
+            _logger.LogWarning("Duplicate locator ids `{LocatorIds}` found in LocatorResultMetadata for {Game} when deactivating loadout", metadataLocatorIds, installation.Game.DisplayName);
         }
 
         await synchronizer.ResetToOriginalGameState(installation, locatorIds);

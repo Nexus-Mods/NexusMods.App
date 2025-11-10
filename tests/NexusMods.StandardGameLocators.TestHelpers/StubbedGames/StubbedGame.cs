@@ -25,7 +25,7 @@ public class StubbedGame : AGame, IEADesktopGame, IEpicGame, IOriginGame, ISteam
 {
     private readonly ILogger<StubbedGame> _logger;
     private readonly IEnumerable<IGameLocator> _locators;
-    public override string Name => "Stubbed Game";
+    public override string DisplayName => "Stubbed Game";
     public override GameId GameId => Sdk.NexusModsApi.GameId.From(uint.MaxValue);
 
     public override SupportType SupportType => SupportType.Unsupported;

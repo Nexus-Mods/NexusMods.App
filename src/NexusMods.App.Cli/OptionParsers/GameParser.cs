@@ -11,7 +11,7 @@ internal class GameParser(IGameRegistry gameRegistry) : IOptionParser<IGame>
 {
     public bool TryParse(string toParse, out IGame value, out string error)
     {
-        var game = gameRegistry.SupportedGames.FirstOrDefault(g => g.Name.Equals(toParse, StringComparison.OrdinalIgnoreCase));
+        var game = gameRegistry.SupportedGames.FirstOrDefault(g => g.DisplayName.Equals(toParse, StringComparison.OrdinalIgnoreCase));
         if (game is null && uint.TryParse(toParse, out var parsedGameId))
         {
             game = gameRegistry.SupportedGames.FirstOrDefault(g => g.GameId.Equals(parsedGameId));

@@ -42,7 +42,7 @@ public partial class Fallout4 : AGame, ISteamGame, IGogGame, ICreationEngineGame
         ];
     }
 
-    public override string Name => "Fallout 4";
+    public override string DisplayName => "Fallout 4";
     public override GameId GameId => GameId.From(1151);
     public override GamePath GetPrimaryFile(GameTargetInfo targetInfo) => new(LocationId.Game, "Fallout4.exe");
 

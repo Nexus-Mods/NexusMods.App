@@ -139,7 +139,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         _loadout = Loadout.Load(_connection.Db, loadoutId.Value);
         var game = _loadout.InstallationInstance.Game;
 
-        EmptyLibrarySubtitleText = string.Format(Language.FileOriginsPageViewModel_EmptyLibrarySubtitleText, game.Name);
+        EmptyLibrarySubtitleText = string.Format(Language.FileOriginsPageViewModel_EmptyLibrarySubtitleText, game.DisplayName);
 
         DeselectItemsCommand = new ReactiveCommand<Unit>(_ =>
         {

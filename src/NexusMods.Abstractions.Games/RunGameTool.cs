@@ -53,7 +53,7 @@ public class RunGameTool<T> : IRunGameTool
     public IEnumerable<GameId> GameIds => [_game.GameId];
 
     /// <inheritdoc />
-    public string Name => $"Run {_game.Name}";
+    public string Name => $"Run {_game.DisplayName}";
 
     /// <summary/>
     public virtual async Task Execute(Loadout.ReadOnly loadout, CancellationToken cancellationToken, string[]? commandLineArgs)

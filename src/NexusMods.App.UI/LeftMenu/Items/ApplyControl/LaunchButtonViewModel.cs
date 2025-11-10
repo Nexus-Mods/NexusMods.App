@@ -73,13 +73,13 @@ public class LaunchButtonViewModel : AViewModel<ILaunchButtonViewModel>, ILaunch
                 var sw = Stopwatch.StartNew();
                 try
                 {
-                    Tracking.AddEvent(Events.Game.LaunchGame, new EventMetadata(name: $"{installation.Game.Name} - {installation.Store}"));
+                    Tracking.AddEvent(Events.Game.LaunchGame, new EventMetadata(name: $"{installation.Game.DisplayName} - {installation.Store}"));
                     await _toolManager.RunTool(tool, marker, _monitor, token: token);
                 }
                 finally
                 {
                     var duration = sw.Elapsed;
-                    Tracking.AddEvent(Events.Game.ExitGame, EventMetadata.Create(name: $"{installation.Game.Name} - {installation.Store}", value: duration.TotalSeconds));
+                    Tracking.AddEvent(Events.Game.ExitGame, EventMetadata.Create(name: $"{installation.Game.DisplayName} - {installation.Store}", value: duration.TotalSeconds));
                 }
             }, token);
         }

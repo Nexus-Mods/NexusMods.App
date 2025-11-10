@@ -38,7 +38,7 @@ public class GameWidgetViewModel : AViewModel<IGameWidgetViewModel>, IGameWidget
         this.WhenActivated(disposables =>
             {
                 this.WhenAnyValue(vm => vm.Installation)
-                    .Select(inst => $"{inst.Game.Name}")
+                    .Select(inst => $"{inst.Game.DisplayName}")
                     .BindToVM(this, vm => vm.Name)
                     .DisposeWith(disposables);
 
@@ -84,7 +84,7 @@ public class GameWidgetViewModel : AViewModel<IGameWidgetViewModel>, IGameWidget
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "While loading game image for {GameName}", source.Game.Name);
+            _logger.LogError(ex, "While loading game image for {GameName}", source.Game.DisplayName);
             return null;
         }
     }

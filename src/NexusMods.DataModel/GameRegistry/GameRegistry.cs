@@ -125,7 +125,7 @@ public class GameRegistry : IGameRegistry, IHostedService
             var id = tx.TempId();
             tx.Add(id, GameInstallMetadata.Store, result.Store);
             tx.Add(id, GameInstallMetadata.GameId, game.GameId);
-            tx.Add(id, GameInstallMetadata.Name, game.Name);
+            tx.Add(id, GameInstallMetadata.Name, game.DisplayName);
             tx.Add(id, GameInstallMetadata.Path, result.Path.ToString());
         });
         

@@ -23,7 +23,7 @@ public class BaldursGate3 : AGame, ISteamGame, IGogGame
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly IFileSystem _fs;
-    public override string Name => "Baldur's Gate 3";
+    public override string DisplayName => "Baldur's Gate 3";
 
     public IEnumerable<uint> SteamIds => [1086940u];
     public IEnumerable<long> GogIds => [1456460669];

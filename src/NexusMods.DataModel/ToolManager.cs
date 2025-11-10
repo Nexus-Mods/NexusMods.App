@@ -42,16 +42,16 @@ public class ToolManager : IToolManager
             throw new Exception("Tool does not support this game");
         
         _logger.LogInformation("Applying loadout {LoadoutId} on {GameName} {GameVersion}", 
-            loadout.Id, loadout.InstallationInstance.Game.Name, loadout.GameVersion);
+            loadout.Id, loadout.InstallationInstance.Game.DisplayName, loadout.GameVersion);
         await _syncService.Synchronize(loadout);
         var appliedLoadout = loadout.Rebase();
 
         _logger.LogInformation("Running tool {ToolName} for loadout {LoadoutId} on {GameName} {GameVersion}", 
-            tool.Name, appliedLoadout.Id, appliedLoadout.InstallationInstance.Game.Name, appliedLoadout.GameVersion);
+            tool.Name, appliedLoadout.Id, appliedLoadout.InstallationInstance.Game.DisplayName, appliedLoadout.GameVersion);
         await tool.StartJob(appliedLoadout, monitor, token);
 
         _logger.LogInformation("Ingesting loadout {LoadoutId} from {GameName} {GameVersion}", 
-            appliedLoadout.Id, appliedLoadout.InstallationInstance.Game.Name, appliedLoadout.GameVersion);
+            appliedLoadout.Id, appliedLoadout.InstallationInstance.Game.DisplayName, appliedLoadout.GameVersion);
         await _syncService.Synchronize(appliedLoadout);
 
         return appliedLoadout.Rebase();

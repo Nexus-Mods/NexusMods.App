@@ -29,7 +29,7 @@ public static class ImageHelper
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "While loading game image for {GameName}", game.Name);
+            logger.LogError(ex, "While loading game image for {GameName}", game.DisplayName);
             return null;
         }
     }

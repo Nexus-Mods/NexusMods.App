@@ -10,24 +10,10 @@ public interface ILocatableGame
     /// <summary>
     /// Human readable name of the game.
     /// </summary>
-    public string Name { get; }
-    
+    string DisplayName { get; }
+
     /// <summary>
-    /// Unique identifier for the game.
-    /// This ID can be obtained from the V2 API.
+    /// Nexus Mods Game Id.
     /// </summary>
-    /// <remarks>
-    ///     This can be obtained with a V2 call like:
-    ///
-    ///     ```
-    ///     query Game {
-    ///         game(domainName: "site") {
-    ///             id
-    ///         }
-    ///     }
-    ///
-    ///     To https://api.nexusmods.com/v2/graphql
-    ///     ```
-    /// </remarks>
-    public GameId GameId { get; }
+    GameId GameId { get; }
 }

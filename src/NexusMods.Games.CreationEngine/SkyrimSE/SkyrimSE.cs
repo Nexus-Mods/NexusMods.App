@@ -42,7 +42,7 @@ public partial class SkyrimSE : AGame, ISteamGame, IGogGame, ICreationEngineGame
         ];
     }
 
-    public override string Name => "Skyrim Special Edition";
+    public override string DisplayName => "Skyrim Special Edition";
     public override GameId GameId => GameId.From(1704);
     public override GamePath GetPrimaryFile(GameTargetInfo targetInfo) => new(LocationId.Game, "SkyrimSE.exe");
 
