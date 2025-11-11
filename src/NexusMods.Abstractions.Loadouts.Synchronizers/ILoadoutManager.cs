@@ -7,7 +7,7 @@ using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Loadouts.Synchronizers.Conflicts;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Sdk.Jobs;
-using NexusMods.Sdk.Models.Library;
+using NexusMods.Sdk.Library;
 
 namespace NexusMods.Abstractions.Loadouts.Synchronizers;
 

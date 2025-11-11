@@ -8,7 +8,7 @@ using NexusMods.Networking.HttpDownloader;
 using NexusMods.Paths;
 using NexusMods.Sdk.Hashes;
 using NexusMods.Sdk.Jobs;
-using NexusMods.Sdk.Models.Library;
+using NexusMods.Sdk.Library;
 
 namespace NexusMods.Networking.NexusWebApi;
 

@@ -7,7 +7,7 @@ using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using NexusMods.Paths.Trees.Traits;
 using NexusMods.Paths.Utilities;
-using NexusMods.Sdk.Models.Library;
+using NexusMods.Sdk.Library;
 
 namespace NexusMods.Games.RedEngine.ModInstallers;
 

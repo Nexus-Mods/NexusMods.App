@@ -9,8 +9,7 @@ using NexusMods.App.UI.Pages.LibraryPage;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Query;
 using NexusMods.Sdk.Games;
-using NexusMods.Sdk.Models.Library;
-using ManuallyCreatedArchive = NexusMods.Sdk.Models.Library.ManuallyCreatedArchive;
+using NexusMods.Sdk.Library;
 using UIObservableExtensions = NexusMods.App.UI.Extensions.ObservableExtensions;
 
 namespace NexusMods.App.UI.Pages;

@@ -31,7 +31,7 @@ using NexusMods.Networking.NexusWebApi;
 using NexusMods.Networking.Steam;
 using NexusMods.Paths;
 using NexusMods.ProxyConsole;
-using NexusMods.Sdk.Models.Library;
+using NexusMods.Sdk.Library;
 using NexusMods.Sdk.ProxyConsole;
 using NexusMods.Sdk.Settings;
 using NexusMods.Sdk.Tracking;

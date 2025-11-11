@@ -26,7 +26,7 @@ using NexusMods.Sdk.FileStore;
 using NexusMods.Sdk.Hashes;
 using NexusMods.Sdk.IO;
 using NexusMods.Sdk.Jobs;
-using NexusMods.Sdk.Models.Library;
+using NexusMods.Sdk.Library;
 
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 

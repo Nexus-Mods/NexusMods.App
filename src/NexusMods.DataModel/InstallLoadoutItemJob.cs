@@ -11,7 +11,7 @@ using NexusMods.Games.AdvancedInstaller;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Sdk.Jobs;
 using NexusMods.Sdk.Tracking;
-using NexusMods.Sdk.Models.Library;
+using NexusMods.Sdk.Library;
 
 namespace NexusMods.DataModel;
 

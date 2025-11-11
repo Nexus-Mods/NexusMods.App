@@ -38,7 +38,7 @@ using NexusMods.Sdk.NexusModsApi;
 using NexusMods.StandardGameLocators.TestHelpers;
 using Xunit.Abstractions;
 using Xunit.DependencyInjection;
-using NexusMods.Sdk.Models.Library;
+using NexusMods.Sdk.Library;
 
 namespace NexusMods.Games.TestFramework;
 

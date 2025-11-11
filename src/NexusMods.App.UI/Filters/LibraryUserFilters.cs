@@ -2,7 +2,7 @@ using DynamicData;
 using DynamicData.Alias;
 using JetBrains.Annotations;
 using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.Sdk.Models.Library;
+using NexusMods.Sdk.Library;
 
 namespace NexusMods.App.UI;
 

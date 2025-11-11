@@ -12,7 +12,7 @@ using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.DatomIterators;
 using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 using NexusMods.MnemonicDB.Abstractions.Models;
-using NexusMods.Sdk.Models.Library;
+using NexusMods.Sdk.Library;
 using R3;
 
 namespace NexusMods.App.UI.Pages;

@@ -8,7 +8,7 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Games.StardewValley.Emitters;
 using NexusMods.Games.TestFramework;
 using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.Sdk.Models.Library;
+using NexusMods.Sdk.Library;
 using NexusMods.Sdk.NexusModsApi;
 using NexusMods.StandardGameLocators.TestHelpers;
 using Xunit.Abstractions;

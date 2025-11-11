@@ -14,7 +14,7 @@ using NexusMods.MnemonicDB.Abstractions.Query;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Networking.NexusWebApi.UpdateFilters;
 using NexusMods.Sdk.Games;
-using NexusMods.Sdk.Models.Library;
+using NexusMods.Sdk.Library;
 using R3;
 using Observable = R3.Observable;
 

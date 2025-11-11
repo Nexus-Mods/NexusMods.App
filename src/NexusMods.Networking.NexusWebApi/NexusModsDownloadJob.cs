@@ -9,9 +9,8 @@ using NexusMods.Paths;
 using DynamicData.Kernel;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Sdk.Jobs;
-using NexusMods.Sdk.Models.Library;
+using NexusMods.Sdk.Library;
 using NexusMods.Sdk.Tracking;
-using DownloadedFile = NexusMods.Sdk.Models.Library.DownloadedFile;
 
 namespace NexusMods.Networking.NexusWebApi;
 

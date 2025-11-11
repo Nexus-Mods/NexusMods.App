@@ -17,7 +17,7 @@ using NexusMods.Paths;
 using NexusMods.Sdk;
 using NexusMods.Sdk.Hashes;
 using NexusMods.Sdk.IO;
-using NexusMods.Sdk.Models.Library;
+using NexusMods.Sdk.Library;
 using NexusMods.Sdk.NexusModsApi;
 
 namespace NexusMods.Networking.NexusWebApi;

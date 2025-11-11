@@ -11,7 +11,7 @@ using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Resources;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.NexusWebApi;
-using NexusMods.Sdk.Models.Library;
+using NexusMods.Sdk.Library;
 using NexusMods.UI.Sdk;
 using NexusMods.UI.Sdk.Icons;
 using ObservableCollections;

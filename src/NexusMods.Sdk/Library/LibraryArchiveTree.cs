@@ -3,7 +3,7 @@ using NexusMods.Paths;
 using NexusMods.Paths.Trees;
 using NexusMods.Paths.Trees.Traits;
 
-namespace NexusMods.Sdk.Models.Library;
+namespace NexusMods.Sdk.Library;
 using LibraryArchiveTreeNode = Paths.Trees.KeyedBox<Paths.RelativePath, LibraryArchiveTree>;
 
 /// <summary>

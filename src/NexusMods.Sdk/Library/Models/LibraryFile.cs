@@ -3,7 +3,7 @@ using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Models;
 using NexusMods.Sdk.Hashes;
 
-namespace NexusMods.Sdk.Models.Library;
+namespace NexusMods.Sdk.Library;
 
 /// <summary>
 /// Represents a <see cref="LibraryItem"/> that is a file in the library.

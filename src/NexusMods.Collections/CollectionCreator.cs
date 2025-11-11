@@ -24,7 +24,7 @@ using NexusMods.Sdk;
 using NexusMods.Sdk.Hashes;
 using NexusMods.Sdk.IO;
 using NexusMods.Telemetry;
-using NexusMods.Sdk.Models.Library;
+using NexusMods.Sdk.Library;
 using CollectionMod = NexusMods.Abstractions.Collections.Json.Mod;
 using ModSource = NexusMods.Abstractions.Collections.Json.ModSource;
 using UpdatePolicy = NexusMods.Abstractions.Collections.Json.UpdatePolicy;

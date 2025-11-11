@@ -1,7 +1,7 @@
 using System.Runtime.InteropServices;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.Sdk.Models.Library;
+using NexusMods.Sdk.Library;
 
 namespace NexusMods.App.UI.Pages.Library;
 

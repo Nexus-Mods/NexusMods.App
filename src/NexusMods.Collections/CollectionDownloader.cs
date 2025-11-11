@@ -27,7 +27,7 @@ using NexusMods.Sdk.Jobs;
 using NexusMods.Sdk.NexusModsApi;
 using OneOf;
 using Reloaded.Memory.Extensions;
-using NexusMods.Sdk.Models.Library;
+using NexusMods.Sdk.Library;
 
 namespace NexusMods.Collections;
 

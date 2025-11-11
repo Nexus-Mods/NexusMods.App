@@ -11,7 +11,7 @@ using NexusMods.Paths;
 using NexusMods.Paths.Utilities;
 using NexusMods.Sdk.FileStore;
 using Xunit.Abstractions;
-using NexusMods.Sdk.Models.Library;
+using NexusMods.Sdk.Library;
 
 namespace NexusMods.DataModel.Tests;
 

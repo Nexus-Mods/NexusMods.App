@@ -45,7 +45,7 @@ using OneOf;
 using R3;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
-using NexusMods.Sdk.Models.Library;
+using NexusMods.Sdk.Library;
 
 namespace NexusMods.App.UI.Pages.LibraryPage;
 

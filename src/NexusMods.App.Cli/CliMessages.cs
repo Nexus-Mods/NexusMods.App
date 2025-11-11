@@ -1,6 +1,6 @@
 using NexusMods.Sdk.EventBus;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
-using NexusMods.Sdk.Models.Library;
+using NexusMods.Sdk.Library;
 
 namespace NexusMods.CLI;
 

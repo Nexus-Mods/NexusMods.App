@@ -40,7 +40,7 @@ using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Paths;
 using NexusMods.Sdk;
 using NexusMods.Sdk.Jobs;
-using NexusMods.Sdk.Models.Library;
+using NexusMods.Sdk.Library;
 using NexusMods.Telemetry;
 using NexusMods.UI.Sdk;
 using NexusMods.UI.Sdk.Dialog;

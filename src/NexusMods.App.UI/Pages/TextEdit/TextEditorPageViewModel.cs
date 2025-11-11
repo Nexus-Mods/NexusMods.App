@@ -19,7 +19,7 @@ using NexusMods.MnemonicDB.Abstractions.Query;
 using NexusMods.Paths;
 using NexusMods.Sdk.FileStore;
 using NexusMods.Sdk.IO;
-using NexusMods.Sdk.Models.Library;
+using NexusMods.Sdk.Library;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using TextMateSharp.Grammars;

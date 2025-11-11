@@ -20,7 +20,7 @@ using NexusMods.Networking.NexusWebApi.UpdateFilters;
 using NuGet.Versioning;
 using NexusMods.Paths;
 using NexusMods.Sdk.Games;
-using NexusMods.Sdk.Models.Library;
+using NexusMods.Sdk.Library;
 using R3;
 
 namespace NexusMods.App.UI.Pages;

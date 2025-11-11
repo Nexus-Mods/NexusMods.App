@@ -12,7 +12,7 @@ using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.HttpDownloader.Tests;
 using NexusMods.Paths;
 using NexusMods.Sdk;
-using NexusMods.Sdk.Models.Library;
+using NexusMods.Sdk.Library;
 using NexusMods.Sdk.Settings;
 using Xunit.DependencyInjection.Logging;
 

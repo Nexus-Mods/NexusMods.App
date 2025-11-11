@@ -4,7 +4,7 @@ using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Games.TestFramework;
 using NexusMods.Paths;
-using NexusMods.Sdk.Models.Library;
+using NexusMods.Sdk.Library;
 
 namespace NexusMods.Networking.NexusWebApi.Tests;
 

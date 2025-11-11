@@ -14,7 +14,7 @@ using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using NexusMods.Sdk;
 using NexusMods.Sdk.FileStore;
-using NexusMods.Sdk.Models.Library;
+using NexusMods.Sdk.Library;
 using IFileSystem = NexusMods.Paths.IFileSystem;
 using FomodMod = FomodInstaller.Interface.Mod;
 

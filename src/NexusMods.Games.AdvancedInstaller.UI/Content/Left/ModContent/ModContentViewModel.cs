@@ -4,7 +4,7 @@ using NexusMods.App.UI.Helpers.TreeDataGrid;
 using NexusMods.Paths;
 using NexusMods.Paths.Trees;
 using NexusMods.Paths.Trees.Traits;
-using NexusMods.Sdk.Models.Library;
+using NexusMods.Sdk.Library;
 using NexusMods.UI.Sdk;
 using ReactiveUI.Fody.Helpers;
 

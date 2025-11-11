@@ -9,8 +9,8 @@ using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using NexusMods.Paths.Trees;
 using NexusMods.Paths.Trees.Traits;
-using NexusMods.Sdk.Models.Library;
-using LibraryArchiveTreeExtensions = NexusMods.Sdk.Models.Library.LibraryArchiveTreeExtensions;
+using NexusMods.Sdk.Library;
+using LibraryArchiveTreeExtensions = NexusMods.Sdk.Library.LibraryArchiveTreeExtensions;
 
 namespace NexusMods.Games.Generic.Installers;
 

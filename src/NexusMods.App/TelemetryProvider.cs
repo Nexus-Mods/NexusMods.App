@@ -13,7 +13,7 @@ using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Query;
 using NexusMods.Paths;
 using NexusMods.Sdk;
-using NexusMods.Sdk.Models.Library;
+using NexusMods.Sdk.Library;
 using OneOf;
 
 namespace NexusMods.App;

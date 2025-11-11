@@ -2,7 +2,7 @@ using JetBrains.Annotations;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Models;
 
-namespace NexusMods.Sdk.Models.Library;
+namespace NexusMods.Sdk.Library;
 
 /// <summary>
 /// Represents a downloaded file in the file.

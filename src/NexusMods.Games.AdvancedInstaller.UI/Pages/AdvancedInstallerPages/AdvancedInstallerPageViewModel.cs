@@ -2,7 +2,7 @@ using System.Reactive.Disposables;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Paths;
 using NexusMods.Paths.Trees;
-using NexusMods.Sdk.Models.Library;
+using NexusMods.Sdk.Library;
 using NexusMods.UI.Sdk;
 using ReactiveUI;
 

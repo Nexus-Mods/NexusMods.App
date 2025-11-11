@@ -13,7 +13,7 @@ using Polly;
 using Polly.Retry;
 using System.ComponentModel;
 using NexusMods.Sdk.Jobs;
-using NexusMods.Sdk.Models.Library;
+using NexusMods.Sdk.Library;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 

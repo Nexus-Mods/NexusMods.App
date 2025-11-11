@@ -12,7 +12,7 @@ using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 using NexusMods.Paths;
 using NexusMods.Sdk;
-using NexusMods.Sdk.Models.Library;
+using NexusMods.Sdk.Library;
 using Xunit.Abstractions;
 using PathTuple = (NexusMods.MnemonicDB.Abstractions.EntityId, NexusMods.Abstractions.GameLocators.LocationId, NexusMods.Paths.RelativePath);
 

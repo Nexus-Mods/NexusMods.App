@@ -10,7 +10,7 @@ using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using NexusMods.Sdk.FileStore;
 using NexusMods.Sdk.IO;
-using NexusMods.Sdk.Models.Library;
+using NexusMods.Sdk.Library;
 using Xunit.Abstractions;
 
 namespace NexusMods.DataModel.Tests;
