@@ -8,7 +8,6 @@ using Avalonia.Platform.Storage;
 using DynamicData;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NexusMods.App.UI.Overlays.Generic.MessageBox.Ok;
 using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Library.Models;
@@ -28,7 +27,6 @@ using NexusMods.App.UI.Overlays;
 using NexusMods.App.UI.Pages.Library;
 using NexusMods.App.UI.Pages.LibraryPage.Collections;
 using NexusMods.App.UI.Resources;
-using NexusMods.App.UI.Settings;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Collections;
@@ -128,20 +126,8 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
 
         var loadout = Loadout.Load(_connection.Db, loadoutId);
         var libraryFilter = new LibraryFilter(loadout, loadout.InstallationInstance.Game);
-
-        var sortingOptions = new TreeDataGridSortingOptions()
-        {
-            UseSortingStatePersistence = true,
-            DefaultSortingState = new TreeDataGridSortingStateSettings()
-            {
-                SortedColumnKey = LibraryColumns.ItemVersion.ColumnTemplateResourceKey,
-                SortDirection = ListSortDirection.Descending,
-                SchemaRevision = 3,
-            },
-            SettingsScopeKey = $"{nameof(LibraryTreeDataGridAdapter)}_{libraryFilter.Game.GameId}_{libraryFilter.LoadoutId}",
-        };
         
-        Adapter = new LibraryTreeDataGridAdapter(serviceProvider, libraryFilter, sortingOptions);
+        Adapter = new LibraryTreeDataGridAdapter(serviceProvider, libraryFilter);
 
         _advancedInstaller = serviceProvider.GetRequiredKeyedService<ILibraryItemInstaller>("AdvancedManualInstaller_Direct");
 
@@ -1088,7 +1074,7 @@ public class LibraryTreeDataGridAdapter :
 
     public Subject<OneOf<InstallMessage, UpdateAndReplaceMessage, UpdateAndKeepOldMessage, ViewChangelogMessage, ViewModPageMessage, HideUpdatesMessage, DeleteItemMessage>> MessageSubject { get; } = new();
 
-    public LibraryTreeDataGridAdapter(IServiceProvider serviceProvider, LibraryFilter libraryFilter, TreeDataGridSortingOptions sortingOptions) : base(serviceProvider, sortingOptions)
+    public LibraryTreeDataGridAdapter(IServiceProvider serviceProvider, LibraryFilter libraryFilter) : base(serviceProvider)
     {
         _libraryFilter = libraryFilter;
         _libraryDataProviders = serviceProvider.GetServices<ILibraryDataProvider>().ToArray();
