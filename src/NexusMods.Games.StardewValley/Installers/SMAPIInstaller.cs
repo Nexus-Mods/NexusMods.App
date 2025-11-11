@@ -4,7 +4,6 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.FileHashes;
 using NexusMods.Abstractions.Library.Installers;
-using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Games.StardewValley.Models;
 using NexusMods.Hashing.xxHash3;
@@ -13,6 +12,7 @@ using NexusMods.Paths;
 using NexusMods.Sdk;
 using NexusMods.Sdk.FileStore;
 using NexusMods.Sdk.IO;
+using NexusMods.Sdk.Models.Library;
 
 namespace NexusMods.Games.StardewValley.Installers;
 

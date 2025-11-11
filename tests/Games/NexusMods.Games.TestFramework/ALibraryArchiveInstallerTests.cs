@@ -5,15 +5,14 @@ using System.Text;
 using FluentAssertions;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
-using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Library.Installers;
-using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 using NexusMods.Paths;
 using NexusMods.Sdk;
+using NexusMods.Sdk.Models.Library;
 using Xunit.Abstractions;
 using PathTuple = (NexusMods.MnemonicDB.Abstractions.EntityId, NexusMods.Abstractions.GameLocators.LocationId, NexusMods.Paths.RelativePath);
 

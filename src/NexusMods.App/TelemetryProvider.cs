@@ -3,7 +3,6 @@ using System.Reactive.Disposables;
 using DynamicData;
 using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.Telemetry;
@@ -14,6 +13,7 @@ using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Query;
 using NexusMods.Paths;
 using NexusMods.Sdk;
+using NexusMods.Sdk.Models.Library;
 using OneOf;
 
 namespace NexusMods.App;

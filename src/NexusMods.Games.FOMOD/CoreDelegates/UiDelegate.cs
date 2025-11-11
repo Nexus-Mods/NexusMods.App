@@ -1,9 +1,9 @@
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GuidedInstallers;
 using NexusMods.Abstractions.GuidedInstallers.ValueObjects;
-using NexusMods.Abstractions.Library.Models;
 using NexusMods.Paths;
 using NexusMods.Sdk.Jobs;
+using NexusMods.Sdk.Models.Library;
 using NexusMods.Sdk.Threading;
 using GroupId = NexusMods.Abstractions.GuidedInstallers.ValueObjects.GroupId;
 using Option = NexusMods.Abstractions.GuidedInstallers.Option;

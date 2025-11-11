@@ -11,7 +11,6 @@ using Microsoft.Extensions.Logging;
 using NexusMods.App.UI.Overlays.Generic.MessageBox.Ok;
 using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Library.Installers;
-using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.NexusModsLibrary;
@@ -46,6 +45,7 @@ using OneOf;
 using R3;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
+using NexusMods.Sdk.Models.Library;
 
 namespace NexusMods.App.UI.Pages.LibraryPage;
 

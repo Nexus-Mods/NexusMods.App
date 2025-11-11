@@ -111,6 +111,24 @@
         <Compile Update="Hashes\IStreamingHasher.cs">
           <DependentUpon>IHasher.cs</DependentUpon>
         </Compile>
+        <Compile Update="Models\Library\DownloadedFile.cs">
+          <DependentUpon>LibraryFile.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Models\Library\LibraryArchive.cs">
+          <DependentUpon>LibraryFile.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Models\Library\LibraryFile.cs">
+          <DependentUpon>LibraryItem.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Models\Library\LibraryArchiveFileEntry.cs">
+          <DependentUpon>LibraryFile.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Models\Library\LocalFile.cs">
+          <DependentUpon>LibraryFile.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Models\Library\ManuallyCreatedArchive.cs">
+          <DependentUpon>LibraryArchive.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>

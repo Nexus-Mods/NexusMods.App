@@ -2,7 +2,7 @@ using JetBrains.Annotations;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Models;
 
-namespace NexusMods.Abstractions.Library.Models;
+namespace NexusMods.Sdk.Models.Library;
 
 [PublicAPI]
 [Include<LibraryArchive>]

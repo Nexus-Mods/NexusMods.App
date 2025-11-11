@@ -2,12 +2,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Library.Installers;
-using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using NexusMods.Paths.Trees.Traits;
 using NexusMods.Sdk;
+using NexusMods.Sdk.Models.Library;
 
 namespace NexusMods.Games.Larian.BaldursGate3.Installers;
 
@@ -32,7 +32,7 @@ public class BG3SEInstaller : ALibraryArchiveInstaller
         Loadout.ReadOnly loadout,
         CancellationToken cancellationToken)
     {
-        var tree = libraryArchive.GetTree();
+        var tree = LibraryArchiveTreeExtensions.GetTree(libraryArchive);
         var nodes = tree.FindSubPathsByKeyUpward([BG3SEFileName]);
         if (!nodes.TryGetFirst(out var dllNode)) return ValueTask.FromResult<InstallerResult>(new NotSupported(Reason: $"Found no file named `{BG3SEFileName}`"));
 

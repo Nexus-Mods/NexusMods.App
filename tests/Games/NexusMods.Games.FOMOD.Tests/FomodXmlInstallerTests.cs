@@ -4,12 +4,12 @@ using FluentAssertions;
 using FomodInstaller.Interface;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Games.RedEngine;
 using NexusMods.Games.RedEngine.Cyberpunk2077;
 using NexusMods.Games.TestFramework;
 using NexusMods.Paths;
+using NexusMods.Sdk.Models.Library;
 using NexusMods.StandardGameLocators.TestHelpers;
 using Xunit.Abstractions;
 

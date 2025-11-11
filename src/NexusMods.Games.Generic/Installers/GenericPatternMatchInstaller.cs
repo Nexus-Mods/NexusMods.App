@@ -1,16 +1,16 @@
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.FileSystemGlobbing;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators.GameCapabilities;
 using NexusMods.Abstractions.Library.Installers;
-using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Games.Generic.Extensions;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using NexusMods.Paths.Trees;
 using NexusMods.Paths.Trees.Traits;
+using NexusMods.Sdk.Models.Library;
+using LibraryArchiveTreeExtensions = NexusMods.Sdk.Models.Library.LibraryArchiveTreeExtensions;
 
 namespace NexusMods.Games.Generic.Installers;
 
@@ -44,7 +44,7 @@ public class GenericPatternMatchInstaller : ALibraryArchiveInstaller
         if (InstallFolderTargets.Length == 0)
             return ValueTask.FromResult<InstallerResult>(new NotSupported(Reason: "Found no targets to match against"));
 
-        var tree = libraryArchive.GetTree();
+        var tree = LibraryArchiveTreeExtensions.GetTree(libraryArchive);
 
         return InstallFolderTargets.Any(target => TryInstallForTarget(target, tree, installDataTuple))
             ? ValueTask.FromResult<InstallerResult>(new Success())

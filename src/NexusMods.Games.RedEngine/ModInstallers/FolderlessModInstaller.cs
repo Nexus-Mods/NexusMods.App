@@ -2,13 +2,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Library.Installers;
-using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
-using NexusMods.Paths.Extensions;
 using NexusMods.Paths.Trees.Traits;
 using NexusMods.Paths.Utilities;
+using NexusMods.Sdk.Models.Library;
 
 namespace NexusMods.Games.RedEngine.ModInstallers;
 
@@ -37,7 +36,7 @@ public class FolderlessModInstaller : ALibraryArchiveInstaller
         Loadout.ReadOnly loadout,
         CancellationToken cancellationToken)
     {
-        var tree = libraryArchive.GetTree();
+        var tree = LibraryArchiveTreeExtensions.GetTree(libraryArchive);
 
         var modFiles = tree.EnumerateFilesBfs()
             .Where(f => !IgnoreExtensions.Contains(f.Value.Item.Path.Extension))

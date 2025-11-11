@@ -1,14 +1,12 @@
-using DynamicData.Kernel;
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Downloads;
 using NexusMods.Abstractions.GC;
-using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Library.Jobs;
-using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using NexusMods.Sdk.Jobs;
+using NexusMods.Sdk.Models.Library;
 
 namespace NexusMods.Abstractions.Library;
 
@@ -106,7 +104,7 @@ public interface ILibraryService
 }
 
 /// <summary>
-/// Represents the result of a <see cref="ILibraryService.ReplaceLinkedItemsInAllLoadouts(NexusMods.Abstractions.Library.Models.LibraryItem.ReadOnly,NexusMods.Abstractions.Library.Models.LibraryItem.ReadOnly,NexusMods.Abstractions.Library.ReplaceLibraryItemOptions,NexusMods.MnemonicDB.Abstractions.ITransaction)"/> operation.
+/// Represents the result of a <see cref="ILibraryService.ReplaceLinkedItemsInAllLoadouts(LibraryItem.ReadOnly,LibraryItem.ReadOnly,NexusMods.Abstractions.Library.ReplaceLibraryItemOptions,NexusMods.MnemonicDB.Abstractions.ITransaction)"/> operation.
 /// </summary>
 public enum LibraryItemReplacementResult
 {
@@ -122,7 +120,7 @@ public enum LibraryItemReplacementResult
 }
 
 /// <summary>
-/// Options for the <see cref="ILibraryService.ReplaceLinkedItemsInAllLoadouts(NexusMods.Abstractions.Library.Models.LibraryItem.ReadOnly,NexusMods.Abstractions.Library.Models.LibraryItem.ReadOnly,NexusMods.Abstractions.Library.ReplaceLibraryItemOptions,NexusMods.MnemonicDB.Abstractions.ITransaction)"/>
+/// Options for the <see cref="ILibraryService.ReplaceLinkedItemsInAllLoadouts(LibraryItem.ReadOnly,LibraryItem.ReadOnly,NexusMods.Abstractions.Library.ReplaceLibraryItemOptions,NexusMods.MnemonicDB.Abstractions.ITransaction)"/>
 /// API.
 /// </summary>
 public struct ReplaceLibraryItemOptions

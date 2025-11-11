@@ -2,7 +2,6 @@ using System.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.HttpDownloads;
-using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.HttpDownloader;
@@ -10,7 +9,9 @@ using NexusMods.Paths;
 using DynamicData.Kernel;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Sdk.Jobs;
+using NexusMods.Sdk.Models.Library;
 using NexusMods.Sdk.Tracking;
+using DownloadedFile = NexusMods.Sdk.Models.Library.DownloadedFile;
 
 namespace NexusMods.Networking.NexusWebApi;
 

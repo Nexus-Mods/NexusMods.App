@@ -2,12 +2,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Library.Installers;
-using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
 using NexusMods.Paths.Trees.Traits;
+using NexusMods.Sdk.Models.Library;
 
 namespace NexusMods.StandardGameLocators.TestHelpers.StubbedGames;
 
@@ -26,7 +26,7 @@ public class StubbedGameInstaller : ALibraryArchiveInstaller
         Loadout.ReadOnly loadout,
         CancellationToken cancellationToken)
     {
-        var modFiles = libraryArchive.GetTree().GetFiles()
+        var modFiles = LibraryArchiveTreeExtensions.GetTree(libraryArchive).GetFiles()
             .Select(kv =>
             {
                 var path = kv.Item.Path;

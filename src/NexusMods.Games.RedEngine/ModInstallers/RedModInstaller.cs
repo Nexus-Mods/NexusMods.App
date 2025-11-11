@@ -4,7 +4,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Library.Installers;
-using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.MnemonicDB.Abstractions;
@@ -13,6 +12,7 @@ using NexusMods.Paths.Trees;
 using NexusMods.Paths.Trees.Traits;
 using NexusMods.Sdk.IO;
 using NexusMods.Sdk.FileStore;
+using NexusMods.Sdk.Models.Library;
 
 namespace NexusMods.Games.RedEngine.ModInstallers;
 
@@ -54,7 +54,7 @@ public class RedModInstaller : ALibraryArchiveInstaller
         Loadout.ReadOnly loadout,
         CancellationToken cancellationToken)
     {
-        var tree = libraryArchive.GetTree();
+        var tree = LibraryArchiveTreeExtensions.GetTree(libraryArchive);
         var infosList = new List<(KeyedBox<RelativePath, LibraryArchiveTree>  File, RedModInfo InfoJson)>();
         
         foreach (var f in tree.GetFiles())

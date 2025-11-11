@@ -1,8 +1,8 @@
 using JetBrains.Annotations;
-using NexusMods.Abstractions.Library.Models;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using NexusMods.Sdk.Jobs;
+using NexusMods.Sdk.Models.Library;
 
 namespace NexusMods.Abstractions.Downloads;
 

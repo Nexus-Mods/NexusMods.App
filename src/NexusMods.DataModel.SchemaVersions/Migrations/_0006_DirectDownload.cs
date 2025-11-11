@@ -1,6 +1,6 @@
 using NexusMods.Abstractions.Collections;
-using NexusMods.Abstractions.Library.Models;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.Sdk.Models.Library;
 
 namespace NexusMods.DataModel.SchemaVersions.Migrations;
 

@@ -4,7 +4,6 @@ using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Library;
-using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Games.TestFramework;
 using NexusMods.MnemonicDB.Abstractions;
@@ -12,6 +11,7 @@ using NexusMods.Paths;
 using NexusMods.Paths.Utilities;
 using NexusMods.Sdk.FileStore;
 using Xunit.Abstractions;
+using NexusMods.Sdk.Models.Library;
 
 namespace NexusMods.DataModel.Tests;
 

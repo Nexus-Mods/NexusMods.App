@@ -1,8 +1,8 @@
 using DynamicData;
 using DynamicData.Kernel;
 using JetBrains.Annotations;
-using NexusMods.Abstractions.Library.Models;
 using NexusMods.Sdk.NexusModsApi;
+using NexusMods.Sdk.Models.Library;
 
 namespace NexusMods.Abstractions.Downloads;
 

@@ -1,8 +1,9 @@
-using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.App.GarbageCollection.Interfaces;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.IndexSegments;
+using NexusMods.Sdk.Models.Library;
+
 namespace NexusMods.App.GarbageCollection.DataModel;
 
 /// <summary>

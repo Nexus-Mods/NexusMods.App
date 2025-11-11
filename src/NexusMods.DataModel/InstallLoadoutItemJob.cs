@@ -4,7 +4,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Library.Installers;
-using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.NexusModsLibrary;
@@ -12,6 +11,7 @@ using NexusMods.Games.AdvancedInstaller;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Sdk.Jobs;
 using NexusMods.Sdk.Tracking;
+using NexusMods.Sdk.Models.Library;
 
 namespace NexusMods.DataModel;
 

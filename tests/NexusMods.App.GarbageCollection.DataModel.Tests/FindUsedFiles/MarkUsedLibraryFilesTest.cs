@@ -2,14 +2,15 @@ using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.GC;
 using NexusMods.Abstractions.Library;
-using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.App.GarbageCollection.Nx;
 using NexusMods.Games.TestFramework;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.Paths;
+using NexusMods.Sdk.Models.Library;
 using NexusMods.StandardGameLocators.TestHelpers.StubbedGames;
 using static NexusMods.App.GarbageCollection.DataModel.Tests.FindUsedFiles.Helpers;
+
 namespace NexusMods.App.GarbageCollection.DataModel.Tests.FindUsedFiles;
 
 public class MarkUsedLibraryFilesTest(IServiceProvider serviceProvider, ILibraryService libraryService) : AGameTest<StubbedGame>(serviceProvider)
