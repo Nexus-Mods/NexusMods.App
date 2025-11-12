@@ -1185,7 +1185,27 @@ public partial class ALoadoutSynchronizer : ILoadoutSynchronizer
 
         var totalSize = archivedFiles.Sum(static x => x.Size);
         if (totalSize > MaximumBackupSize)
+        {
+            var nodeSignatures = files
+                .Where(static x => x.Value.Actions.HasFlag(Actions.BackupFile))
+                .Select(static x => x.Value.Signature)
+                .Distinct()
+                .ToList();
+            
+            Logger.LogError(
+                """
+                Cannot backup {FileCount} files with total size {TotalSize}, which exceeds maximum of {MaximumSize}. 
+                Node signatures: 
+                {Signatures}
+                """,
+                nodeSignatures.Count,
+                totalSize,
+                MaximumBackupSize,
+                string.Join(Environment.NewLine, nodeSignatures.Select(sig => $"  - {sig}"))
+            );
+            
             throw new Exception($"Cannot backup files, total size is {totalSize}, which is larger than the maximum of {MaximumBackupSize}");
+        }
         
         // PERFORMANCE: We deduplicate above with the HaveFile call.
         await _fileStore.BackupFiles(archivedFiles, deduplicate: false);
