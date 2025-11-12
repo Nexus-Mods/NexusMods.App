@@ -1,6 +1,5 @@
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Downloads;
-using NexusMods.Abstractions.Library.Models;
 
 namespace NexusMods.Abstractions.HttpDownloads;
 
@@ -15,6 +14,6 @@ public interface IHttpDownloadJob : IDownloadJob
     /// </summary>
     Uri Uri { get; }
 
-    /// <inheritdoc cref="DownloadedFile.DownloadPageUri"/>
+    /// <inheritdoc cref="Sdk.Models.Library.DownloadedFile.DownloadPageUri"/>
     Uri DownloadPageUri { get; }
 }

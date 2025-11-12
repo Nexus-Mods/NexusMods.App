@@ -1,7 +1,7 @@
 using System.Runtime.InteropServices;
-using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.Sdk.Library;
 
 namespace NexusMods.App.UI.Pages.Library;
 
@@ -103,7 +103,7 @@ public record struct LibraryItemDeleteWarningDetector
                 gameToLoadoutRefCount.TryGetValue(installation.GameMetadataId, out var refCount);
                 usedLoadouts[loadout.LoadoutId] = new LibraryItemUsedLoadoutInfo()
                 {
-                    GameName = installation.Game.Name,
+                    GameName = installation.Game.DisplayName,
                     LoadoutName = loadout.Name,
                     IsOnlyLoadoutForGame = refCount <= 1,
                 };

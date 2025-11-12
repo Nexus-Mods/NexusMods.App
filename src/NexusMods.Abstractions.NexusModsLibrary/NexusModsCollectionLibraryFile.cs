@@ -1,7 +1,7 @@
 using JetBrains.Annotations;
-using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.NexusModsLibrary.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Models;
+using NexusMods.Sdk.Library;
 
 namespace NexusMods.Abstractions.NexusModsLibrary;
 

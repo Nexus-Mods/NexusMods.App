@@ -5,7 +5,6 @@ using NexusMods.Sdk.EventBus;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.GOG;
 using NexusMods.Abstractions.Library;
-using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusWebApi;
@@ -16,7 +15,7 @@ using NexusMods.Networking.NexusWebApi;
 using NexusMods.Networking.NexusWebApi.Auth;
 using NexusMods.Paths;
 using NexusMods.Sdk;
-using System.Threading.Tasks;
+using NexusMods.Sdk.Library;
 using NexusMods.Sdk.Tracking;
 
 namespace NexusMods.CLI.Types.IpcHandlers;
@@ -228,13 +227,13 @@ public class NxmIpcProtocolHandler : IIpcProtocolHandler
         var gameId = _cache[domain];
         foreach (var installedGame in gameRegistry.InstalledGames)
         {
-            if (installedGame.Game.GameId != gameId) continue;
+            if (installedGame.Game.NexusModsGameId != gameId) continue;
             
             if (syncService.TryGetLastAppliedLoadout(installedGame, out _))
                 return installedGame;
 
             var activeLoadouts = Loadout.All(connection.Db)
-                .Where(ld => ld.InstallationInstance.Game.GameId == installedGame.Game.GameId);
+                .Where(ld => ld.InstallationInstance.Game.NexusModsGameId == installedGame.Game.NexusModsGameId);
 
             if (!activeLoadouts.Any()) continue;
             

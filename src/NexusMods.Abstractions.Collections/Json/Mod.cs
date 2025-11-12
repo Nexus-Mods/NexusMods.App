@@ -23,7 +23,7 @@ public class Mod
     public bool Optional { get; init; }
     
     /// <summary>
-    ///     TODO: Deprecate this with <see cref="GameId"/>
+    ///     TODO: Deprecate this with <see cref="NexusModsGameId"/>
     /// </summary>
     [JsonPropertyName("domainName")]
     public required GameDomain DomainName { get; init; }

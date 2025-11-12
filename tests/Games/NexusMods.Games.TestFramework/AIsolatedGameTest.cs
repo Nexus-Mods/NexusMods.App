@@ -17,7 +17,6 @@ using NexusMods.Abstractions.GC;
 using NexusMods.Abstractions.GuidedInstallers;
 using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Library.Installers;
-using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Extensions;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
@@ -39,11 +38,12 @@ using NexusMods.Sdk.NexusModsApi;
 using NexusMods.StandardGameLocators.TestHelpers;
 using Xunit.Abstractions;
 using Xunit.DependencyInjection;
+using NexusMods.Sdk.Library;
 
 namespace NexusMods.Games.TestFramework;
 
 [PublicAPI]
-public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGame : AGame
+public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGame : IGame
 {
     protected readonly ILogger Logger;
     protected readonly IServiceProvider ServiceProvider;
@@ -114,7 +114,7 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
     {
         await using var destination = TemporaryFileManager.CreateFile();
 
-        var downloadJob = await NexusModsLibrary.CreateDownloadJob(destination.Path, Game.GameId, modId, fileId);
+        var downloadJob = await NexusModsLibrary.CreateDownloadJob(destination.Path, Game.NexusModsGameId.Value, modId, fileId);
         return await LibraryService.AddDownload(downloadJob);
     }
 
@@ -573,7 +573,7 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
         
         if (GameInstallation.Locator is UniversalStubbedGameLocator<TGame> universal)
         {
-            Logger.LogInformation("Resetting game files for {Game}", Game.Name);
+            Logger.LogInformation("Resetting game files for {Game}", Game.DisplayName);
             ResetGameFolders();
         }
     }

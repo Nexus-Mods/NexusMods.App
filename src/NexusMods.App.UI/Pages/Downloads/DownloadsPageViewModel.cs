@@ -45,7 +45,7 @@ public class DownloadsPageViewModel : APageViewModel<IDownloadsPageViewModel>, I
             : DownloadsFilter.All();
 
         var downloadsDataProvider = serviceProvider.GetRequiredService<IDownloadsDataProvider>();
-        Adapter = new DownloadsTreeDataGridAdapter(downloadsDataProvider, filter);
+        Adapter = new DownloadsTreeDataGridAdapter(serviceProvider, downloadsDataProvider, filter);
         
         TabTitle = Language.Downloads_WorkspaceTitle;
         TabIcon = IconValues.PictogramDownload;

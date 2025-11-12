@@ -120,4 +120,8 @@
       </None>
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Models\Library\" />
+    </ItemGroup>
+
 </Project>

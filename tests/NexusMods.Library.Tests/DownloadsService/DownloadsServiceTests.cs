@@ -24,7 +24,7 @@ public class DownloadsServiceTests(
         out List<DownloadInfo> completedDownloads,
         out List<DownloadInfo> activeDownloads,
         out List<DownloadInfo>? gameDownloads,
-        GameId? gameId = null)
+        NexusModsGameId? gameId = null)
     {
         var disposables = new CompositeDisposable();
         
@@ -126,7 +126,7 @@ public class DownloadsServiceTests(
     public async Task Validate_Download_Jobs_Lifetime()
     {
         // Arrange
-        var gameId = GameId.From(1234u);
+        var gameId = NexusModsGameId.From(1234u);
         
         // Subscribe to collections - SourceCache publishes immediately on subscribe
         using var disposables = SetupCollectionSubscriptions(
@@ -182,7 +182,7 @@ public class DownloadsServiceTests(
     public async Task CancelledJobs_ShouldBeCompletelyRemoved_FromAllCollections()
     {
         // Arrange
-        var gameId = GameId.From(1234u);
+        var gameId = NexusModsGameId.From(1234u);
         
         using var disposables = SetupCollectionSubscriptions(
             out var allDownloads,

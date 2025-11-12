@@ -1,7 +1,7 @@
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Sdk.Games;
 using NexusMods.Sdk.Jobs;
-using NexusMods.Sdk.NexusModsApi;
 using R3;
 
 namespace NexusMods.StandardGameLocators.TestHelpers;
@@ -29,7 +29,7 @@ public class ListFilesTool : ITool
         });
     }
 
-    public IEnumerable<GameId> GameIds => [ GameId.From(uint.MaxValue) ];
+    public IEnumerable<GameId> GameIds => [GameId.From("StubbedGame")];
 
     public string Name => "List Files";
 

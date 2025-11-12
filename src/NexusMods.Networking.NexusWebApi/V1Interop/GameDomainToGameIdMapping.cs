@@ -19,5 +19,5 @@ public partial class GameDomainToGameIdMapping : IModelDefinition
     /// <summary>
     /// The game's ID on Nexus Mods.
     /// </summary>
-    public static readonly GameIdAttribute GameId = new(Namespace, nameof(GameId)) { IsIndexed = true };
+    public static readonly NexusModsGameIdAttribute GameId = new(Namespace, nameof(GameId)) { IsIndexed = true };
 }

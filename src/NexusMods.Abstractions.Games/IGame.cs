@@ -14,20 +14,6 @@ namespace NexusMods.Abstractions.Games;
 /// </summary>
 public interface IGame : ILocatableGame
 {
-    SupportType SupportType { get; }
-    HashSet<FeatureStatus> Features { get; }
-    GameFeatureStatus FeatureStatus => Features.ToStatus();
-
-    /// <summary>
-    /// Stream factory for the game's icon, must be square but need not be small.
-    /// </summary>
-    public IStreamFactory Icon { get; }
-
-    /// <summary>
-    /// Stream factory for the game's image, should be close to 16:9 aspect ratio.
-    /// </summary>
-    public IStreamFactory GameImage { get; }
-    
     /// <summary>
     /// Gets all available installers this game supports.
     /// </summary>

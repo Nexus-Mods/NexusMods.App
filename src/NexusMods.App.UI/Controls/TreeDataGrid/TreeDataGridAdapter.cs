@@ -1,4 +1,3 @@
-using System.ComponentModel;
 using Avalonia.Controls;
 using Avalonia.Controls.Models.TreeDataGrid;
 using Avalonia.Controls.Selection;
@@ -10,8 +9,10 @@ using System.Reactive.Linq;
 using Avalonia.Input;
 using System.Diagnostics;
 using DynamicData.Kernel;
-using NexusMods.Abstractions.Games;
+using Microsoft.Extensions.DependencyInjection;
 using NexusMods.App.UI.Controls.Filters;
+using NexusMods.App.UI.Settings;
+using NexusMods.Sdk.Settings;
 using NexusMods.UI.Sdk;
 using static NexusMods.App.UI.Controls.Filters.Filter;
 
@@ -38,15 +39,20 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object, ISea
     public BindableReactiveProperty<IComparer<TModel>?> CustomSortComparer { get; } = new(value: null);
     public ObservableHashSet<TModel> SelectedModels { get; private set; } = [];
     public ReactiveProperty<Filter> Filter { get; } = new(value: NoFilter.Instance);
+    public TreeDataGridSortingOptions SortingOptions { get; }
     protected ObservableList<TModel> Roots { get; private set; } = [];
+    protected ISettingsManager SettingsManager { get; }
     private ISynchronizedView<TModel, TModel> RootsView { get; }
     private INotifyCollectionChangedSynchronizedViewList<TModel> RootsCollectionChangedView { get; }
 
     private readonly IDisposable _activationDisposable;
     private readonly SerialDisposable _selectionModelsSerialDisposable = new();
     
-    protected TreeDataGridAdapter()
-    { 
+    
+    protected TreeDataGridAdapter(IServiceProvider serviceProvider, TreeDataGridSortingOptions? sortingOptions = null)
+    {
+        SettingsManager = serviceProvider.GetRequiredService<ISettingsManager>();
+        SortingOptions = sortingOptions ?? TreeDataGridSortingOptions.DefaultOptions;
         RootsView = Roots.CreateView(static kv => kv);
         RootsCollectionChangedView = RootsView.ToNotifyCollectionChanged();
 
@@ -296,6 +302,23 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object, ISea
         RowDropSubject.OnNext((sourceModels.ToArray(), targetModel, nextTargetModel, prevTargetModel, e));
     }
 
+    public virtual void PersistSortingState(TreeDataGridSortingStateSettings sortingState)
+    {
+        if (!SortingOptions.UseSortingStatePersistence) return;
+        SettingsManager.Set(sortingState, SortingOptions.SettingsScopeKey);
+    }
+    
+    public virtual TreeDataGridSortingStateSettings? LoadSortingState()
+    {
+        if (!SortingOptions.UseSortingStatePersistence) return null;
+
+        if (!SettingsManager.TryGet<TreeDataGridSortingStateSettings>(out var savedState, SortingOptions.SettingsScopeKey) 
+            || SortingOptions.DefaultSortingState is not null && SortingOptions.DefaultSortingState.SchemaRevision > savedState.SchemaRevision) 
+            return SortingOptions.DefaultSortingState;
+
+        return savedState;
+    }
+
     private static (TreeDataGridRowSelectionModel<TModel> selection, Observable<TreeSelectionModelSelectionChangedEventArgs<TModel>> selectionObservable, Observable<TreeSelectionModelSourceResetEventArgs> resetObservable) CreateSelection(ITreeDataGridSource<TModel> source)
     {
         var selection = new TreeDataGridRowSelectionModel<TModel>(source)
@@ -324,7 +347,11 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object, ISea
             var (selection, selectionObservable, resetObservable) = CreateSelection(source);
             source.Selection = selection;
 
-            source.Columns.AddRange(CreateColumns(viewHierarchical: createHierarchicalSource));
+            var columns = CreateColumns(viewHierarchical: createHierarchicalSource);
+            source.Columns.AddRange(columns);
+            // Note(Al12rs): While this sets the state of the columns correctly, TreeDataGrid doesn't actually sort the data once it gets added
+            LoadAndApplySortingState(source, columns);
+            
             return (source, selection, selectionObservable, resetObservable);
         }
         else
@@ -332,8 +359,12 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object, ISea
             var source = new FlatTreeDataGridSource<TModel>(models);
             var (selection, selectionObservable, resetObservable) = CreateSelection(source);
             source.Selection = selection;
-
-            source.Columns.AddRange(CreateColumns(viewHierarchical: createHierarchicalSource));
+            
+            var columns = CreateColumns(viewHierarchical: createHierarchicalSource);
+            source.Columns.AddRange(columns);
+            // Note(Al12rs): While this sets the state of the columns correctly, TreeDataGrid doesn't actually sort the data once it gets added
+            LoadAndApplySortingState(source,  columns);
+            
             return (source, selection, selectionObservable, resetObservable);
         }
     }
@@ -342,6 +373,22 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object, ISea
 
     protected abstract IObservable<IChangeSet<TModel, TKey>> GetRootsObservable(bool viewHierarchical);
     protected abstract IColumn<TModel>[] CreateColumns(bool viewHierarchical);
+    
+
+    public void LoadAndApplySortingState(ITreeDataGridSource<TModel> source, IColumn<TModel>[] columns)
+    {
+        if (!SortingOptions.UseSortingStatePersistence) return;
+        
+        var savedState = LoadSortingState();
+        if (savedState is { SortedColumnKey: not null, SortDirection: not null })
+        {
+            var columnToSort = columns.FirstOrDefault(col => savedState.SortedColumnKey?.Equals(col.Tag) is true);
+            if (columnToSort is not null)
+            {
+                source.SortBy(columnToSort, savedState.SortDirection.Value);
+            }
+        }
+    }
     
     /// <summary>
     /// Applies the given filter to the <see cref="RootsView"/>.

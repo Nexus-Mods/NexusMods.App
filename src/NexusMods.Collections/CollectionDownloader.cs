@@ -7,7 +7,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Collections;
 using NexusMods.Abstractions.Library;
-using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
@@ -28,6 +27,7 @@ using NexusMods.Sdk.Jobs;
 using NexusMods.Sdk.NexusModsApi;
 using OneOf;
 using Reloaded.Memory.Extensions;
+using NexusMods.Sdk.Library;
 
 namespace NexusMods.Collections;
 
@@ -686,9 +686,9 @@ public class CollectionDownloader
     /// <summary>
     /// Returns all collections for the given game.
     /// </summary>
-    public static CollectionMetadata.ReadOnly[] GetCollections(IDb db, GameId gameId)
+    public static CollectionMetadata.ReadOnly[] GetCollections(IDb db, NexusModsGameId nexusModsGameId)
     {
-        return CollectionMetadata.FindByGameId(db, gameId).ToArray();
+        return CollectionMetadata.FindByGameId(db, nexusModsGameId).ToArray();
     }
 }
 

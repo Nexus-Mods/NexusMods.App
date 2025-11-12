@@ -7,7 +7,6 @@ using System.Text.Json;
 using DynamicData.Kernel;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Collections.Json;
-using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi.Types;
@@ -18,11 +17,12 @@ using NexusMods.Paths;
 using NexusMods.Sdk;
 using NexusMods.Sdk.Hashes;
 using NexusMods.Sdk.IO;
+using NexusMods.Sdk.Library;
 using NexusMods.Sdk.NexusModsApi;
 
 namespace NexusMods.Networking.NexusWebApi;
 
-using GameIdCache = Dictionary<GameDomain, GameId>;
+using GameIdCache = Dictionary<GameDomain, NexusModsGameId>;
 using ResolvedEntitiesLookup = Dictionary<FileUid, ValueTuple<NexusModsModPageMetadataId, NexusModsFileMetadataId>>;
 using ModAndDownload = (Mod Mod, CollectionDownload.ReadOnly Download);
 
@@ -162,12 +162,12 @@ public partial class NexusModsLibrary
         return (collectionMetadata, revisionId);
     }
 
-    private async ValueTask<GraphQlResult<Optional<ICategory>, NotFound>> GetDefaultCategoryForCollections(GameId gameId, CancellationToken cancellationToken)
+    private async ValueTask<GraphQlResult<Optional<ICategory>, NotFound>> GetDefaultCategoryForCollections(NexusModsGameId nexusModsGameId, CancellationToken cancellationToken)
     {
         // NOTE(erri120): Default category until the user can select it, or we remove validation on the backend.
         const string defaultCategoryName = "Miscellaneous";
 
-        var result = await _graphQlClient.QueryGameCategories(gameId, cancellationToken);
+        var result = await _graphQlClient.QueryGameCategories(nexusModsGameId, cancellationToken);
         return result.Map<Optional<ICategory>>(static categories =>
         {
             var found = categories
@@ -502,7 +502,7 @@ public partial class NexusModsLibrary
 
             var id = new FileUid(
                 fileId: FileId.From((uint)modFile.FileId),
-                gameId: GameId.From((uint)modFile.GameId)
+                nexusModsGameId: NexusModsGameId.From((uint)modFile.GameId)
             );
 
             res[id] = (modEntityId, fileEntityId);
@@ -511,7 +511,7 @@ public partial class NexusModsLibrary
         foreach (var collectionMod in collectionRoot.Mods)
         {
             if (collectionMod.Source.Type != ModSourceType.NexusMods) continue;
-            var fileId = new FileUid(fileId: collectionMod.Source.FileId, gameId: gameIds[collectionMod.DomainName]);
+            var fileId = new FileUid(fileId: collectionMod.Source.FileId, nexusModsGameId: gameIds[collectionMod.DomainName]);
             if (res.ContainsKey(fileId)) continue;
 
             // TODO: use normal API to query information about this file
@@ -591,7 +591,7 @@ public partial class NexusModsLibrary
     {
         var modId = new ModUid(collectionMod.Source.ModId, gameIds[collectionMod.DomainName]);
 
-        var fileId = new FileUid(fileId: collectionMod.Source.FileId, gameId: gameIds[collectionMod.DomainName]);
+        var fileId = new FileUid(fileId: collectionMod.Source.FileId, nexusModsGameId: gameIds[collectionMod.DomainName]);
 
         Debug.Assert(resolvedEntitiesLookup.ContainsKey(fileId), message: "Should've resolved all mod files earlier");
         var (_, fileMetadataId) = resolvedEntitiesLookup[fileId];
@@ -701,7 +701,7 @@ public partial class NexusModsLibrary
 
         resolver.Add(CollectionMetadata.CollectionId, id);
         resolver.Add(CollectionMetadata.Name, collectionInfo.Name);
-        resolver.Add(CollectionMetadata.GameId, GameId.From((uint)collectionInfo.Game.Id));
+        resolver.Add(CollectionMetadata.GameId, NexusModsGameId.From((uint)collectionInfo.Game.Id));
         resolver.Add(CollectionMetadata.Summary, collectionInfo.Summary);
         resolver.Add(CollectionMetadata.Endorsements, (ulong)collectionInfo.Endorsements);
         resolver.Add(CollectionMetadata.TotalDownloads, (ulong)collectionInfo.TotalDownloads);

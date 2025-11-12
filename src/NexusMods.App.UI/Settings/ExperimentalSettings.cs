@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 using JetBrains.Annotations;
 using NexusMods.Sdk.Settings;
 using NexusMods.Sdk;
-using NexusMods.Sdk.NexusModsApi;
+using NexusMods.Sdk.Games;
 
 namespace NexusMods.App.UI.Settings;
 
@@ -22,8 +22,8 @@ public record ExperimentalSettings : ISettings
     [JsonIgnore]
     public readonly GameId[] SupportedGames =
     [
-        GameId.From(1303), // Stardew Valley 
-        GameId.From(3333) //  Cyberpunk
+        GameId.From("StardewValley"),
+        GameId.From("RedEngine.Cyberpunk2077"),
     ];
 
     public static ISettingsBuilder Configure(ISettingsBuilder settingsBuilder)

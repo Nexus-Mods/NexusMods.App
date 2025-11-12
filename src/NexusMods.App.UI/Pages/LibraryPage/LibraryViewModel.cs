@@ -8,10 +8,8 @@ using Avalonia.Platform.Storage;
 using DynamicData;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NexusMods.App.UI.Overlays.Generic.MessageBox.Ok;
 using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Library.Installers;
-using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.NexusModsLibrary;
@@ -27,7 +25,6 @@ using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Overlays;
 using NexusMods.App.UI.Pages.Library;
 using NexusMods.App.UI.Pages.LibraryPage.Collections;
-using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
@@ -46,6 +43,7 @@ using OneOf;
 using R3;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
+using NexusMods.Sdk.Library;
 
 namespace NexusMods.App.UI.Pages.LibraryPage;
 
@@ -128,7 +126,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
 
         var loadout = Loadout.Load(_connection.Db, loadoutId);
         var libraryFilter = new LibraryFilter(loadout, loadout.InstallationInstance.Game);
-
+        
         Adapter = new LibraryTreeDataGridAdapter(serviceProvider, libraryFilter);
 
         _advancedInstaller = serviceProvider.GetRequiredKeyedService<ILibraryItemInstaller>("AdvancedManualInstaller_Direct");
@@ -139,7 +137,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         _loadout = Loadout.Load(_connection.Db, loadoutId.Value);
         var game = _loadout.InstallationInstance.Game;
 
-        EmptyLibrarySubtitleText = string.Format(Language.FileOriginsPageViewModel_EmptyLibrarySubtitleText, game.Name);
+        EmptyLibrarySubtitleText = string.Format(Language.FileOriginsPageViewModel_EmptyLibrarySubtitleText, game.DisplayName);
 
         DeselectItemsCommand = new ReactiveCommand<Unit>(_ =>
         {
@@ -233,14 +231,14 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         var osInterop = serviceProvider.GetRequiredService<IOSInterop>();
         OpenNexusModsCommand = new ReactiveCommand<Unit>(execute: _ =>
         {
-            var gameDomain = _gameIdMappingCache[game.GameId];
+            var gameDomain = _gameIdMappingCache[game.NexusModsGameId.Value];
             var gameUri = NexusModsUrlBuilder.GetGameUri(gameDomain);
             osInterop.OpenUri(gameUri);
         });
 
         OpenNexusModsCollectionsCommand = new ReactiveCommand<Unit>(execute: _ =>
         {
-            var gameDomain = _gameIdMappingCache[game.GameId];
+            var gameDomain = _gameIdMappingCache[game.NexusModsGameId.Value];
             var gameUri = NexusModsUrlBuilder.GetBrowseCollectionsUri(gameDomain);
             osInterop.OpenUri(gameUri);
         });
@@ -285,7 +283,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
                 .AddTo(disposables);
 
             CollectionRevisionMetadata.ObserveAll(_connection)
-                .FilterImmutable(revision => revision.Collection.GameId == game.GameId)
+                .FilterImmutable(revision => revision.Collection.GameId == game.NexusModsGameId)
                 .OnUI()
                 .Transform(ICollectionCardViewModel (revision) => new CollectionCardViewModel(
                     collectionDownloader: collectionDownloader,
@@ -1008,12 +1006,12 @@ After asking design, we're choosing to simply open the mod page for now.
             }
 
             // Filter mod pages to only those for the current game
-            var currentGameId = _loadout.InstallationInstance.Game.GameId;
+            var currentGameId = _loadout.InstallationInstance.Game.NexusModsGameId;
             var modPagesWithUpdates = _modUpdateService.GetAllModPagesWithUpdates()
                 .Where(pair => 
                 {
                     var modPage = NexusModsModPageMetadata.Load(_connection.Db, pair.modPageId);
-                    return modPage.IsValid() && modPage.Uid.GameId.Equals(currentGameId);
+                    return modPage.IsValid() && modPage.Uid.GameId == currentGameId;
                 });
             var allUpdates = modPagesWithUpdates.Select(pair => pair.updates).ToArray();
             
@@ -1076,7 +1074,7 @@ public class LibraryTreeDataGridAdapter :
 
     public Subject<OneOf<InstallMessage, UpdateAndReplaceMessage, UpdateAndKeepOldMessage, ViewChangelogMessage, ViewModPageMessage, HideUpdatesMessage, DeleteItemMessage>> MessageSubject { get; } = new();
 
-    public LibraryTreeDataGridAdapter(IServiceProvider serviceProvider, LibraryFilter libraryFilter)
+    public LibraryTreeDataGridAdapter(IServiceProvider serviceProvider, LibraryFilter libraryFilter) : base(serviceProvider)
     {
         _libraryFilter = libraryFilter;
         _libraryDataProviders = serviceProvider.GetServices<ILibraryDataProvider>().ToArray();

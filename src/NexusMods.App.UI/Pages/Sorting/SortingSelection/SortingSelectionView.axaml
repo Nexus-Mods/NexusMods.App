@@ -12,10 +12,6 @@
                                 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
                                 x:Class="NexusMods.App.UI.Pages.Sorting.SortingSelectionView">
 
-    <Design.DataContext>
-        <sorting:SortingSelectionDesignViewModel />
-    </Design.DataContext>
-
     <TabControl x:Name="SortOrdersTabControl" Classes="Subtabs">
         <TabControl.ItemTemplate>
             <sdk:MultiDataTemplate>

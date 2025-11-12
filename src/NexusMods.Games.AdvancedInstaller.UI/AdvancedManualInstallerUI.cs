@@ -2,15 +2,13 @@ using System.Reactive.Concurrency;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.ReactiveUI;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Library.Installers;
-using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Games.AdvancedInstaller.UI.Resources;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using NexusMods.Paths.Trees;
+using NexusMods.Sdk.Library;
 
 namespace NexusMods.Games.AdvancedInstaller.UI;
 

@@ -4,7 +4,7 @@ using DynamicData;
 using DynamicData.Aggregation;
 using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.Library.Models;
+using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
@@ -19,14 +19,15 @@ using NexusMods.Networking.NexusWebApi;
 using NexusMods.Networking.NexusWebApi.UpdateFilters;
 using NuGet.Versioning;
 using NexusMods.Paths;
-using NexusMods.Sdk.NexusModsApi;
+using NexusMods.Sdk.Games;
+using NexusMods.Sdk.Library;
 using R3;
-using Observable = System.Reactive.Linq.Observable;
 
 namespace NexusMods.App.UI.Pages;
 
 public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
 {
+    private readonly IServiceProvider _serviceProvider;
     private readonly IConnection _connection;
     private readonly IModUpdateService _modUpdateService;
     private readonly IModUpdateFilterService _modUpdateFilterService;
@@ -34,6 +35,7 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
 
     public NexusModsDataProvider(IServiceProvider serviceProvider)
     {
+        _serviceProvider = serviceProvider;
         _connection = serviceProvider.GetRequiredService<IConnection>();
         _modUpdateService = serviceProvider.GetRequiredService<IModUpdateService>();
         _modUpdateFilterService = serviceProvider.GetRequiredService<IModUpdateFilterService>();
@@ -43,6 +45,9 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
 
     public LibraryFile.ReadOnly[] GetAllFiles(GameId gameId, IDb? db = null)
     {
+        var nexusModsGameId = _serviceProvider.GetServices<ILocatableGame>().First(x => x.GameId == gameId).NexusModsGameId;
+        if (!nexusModsGameId.HasValue) return [];
+
         db ??= _connection.Db;
 
         var libraryItems = NexusModsLibraryItem
@@ -53,7 +58,7 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
 
         var files = NexusModsFileMetadata
             .All(db)
-            .Where(modPage => modPage.Uid.GameId == gameId)
+            .Where(modPage => modPage.Uid.GameId == nexusModsGameId)
             .Select(fileMetadata => libraryItems.GetValueOrDefault(fileMetadata))
             .Where(static arr => arr is not null)
             .SelectMany(static x => x!)
@@ -68,7 +73,7 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
         return NexusModsModPageMetadata
             .ObserveAll(_connection)
             // only show mod pages for the currently selected game
-            .FilterImmutable(modPage => modPage.Uid.GameId.Equals(libraryFilter.Game.GameId))
+            .FilterImmutable(modPage => modPage.Uid.GameId == libraryFilter.Game.NexusModsGameId)
             // only show mod pages that have library files
             .FilterOnObservable(modPage => _connection
                 .ObserveDatoms(NexusModsLibraryItem.ModPageMetadata, modPage)

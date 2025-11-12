@@ -46,11 +46,11 @@ internal static class CleanupVerbs
             try
             {
                 await syncService.UnManage(installation, false);
-                await renderer.Text($"Reverted {installation.Game.Name} to its original state");
+                await renderer.Text($"Reverted {installation.Game.DisplayName} to its original state");
             }
             catch (Exception ex)
             {
-                await renderer.Error(ex, "Error reverting {0}: {1}", installation.Game.Name, ex.Message);
+                await renderer.Error(ex, "Error reverting {0}: {1}", installation.Game.DisplayName, ex.Message);
             }
         }
 

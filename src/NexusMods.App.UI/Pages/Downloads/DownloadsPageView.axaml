@@ -16,10 +16,6 @@
     Background="{StaticResource SurfaceTransparentBrush}">
     <!-- Background set to ensure that clicks anywhere on the page are correctly registered and bring focus to it -->
 
-    <Design.DataContext>
-        <local:DownloadsPageDesignViewModel />
-    </Design.DataContext>
-
     <Grid RowDefinitions="Auto, *">
 
         <pageHeader:PageHeader Grid.Row="0"

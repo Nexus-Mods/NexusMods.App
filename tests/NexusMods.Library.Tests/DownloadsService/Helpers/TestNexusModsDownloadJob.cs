@@ -1,10 +1,10 @@
 using System.Reactive.Subjects;
 using NexusMods.Abstractions.HttpDownloads;
-using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using NexusMods.Sdk.Jobs;
+using NexusMods.Sdk.Library;
 
 namespace NexusMods.Library.Tests.DownloadsService.Helpers;
 

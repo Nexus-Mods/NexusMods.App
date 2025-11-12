@@ -8,6 +8,8 @@ using NexusMods.Abstractions.Diagnostics.Values;
 using NexusMods.Abstractions.GameLocators.Stores.Steam;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Extensions;
+using NexusMods.Abstractions.NexusWebApi;
+using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Abstractions.Telemetry;
 using NexusMods.Games.Larian.BaldursGate3.Utils.LsxXmlParsing;
 using NexusMods.Hashing.xxHash3;
@@ -24,12 +26,14 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
     private readonly ILogger _logger;
     private readonly IResourceLoader<Hash, Outcome<LspkPackageFormat.PakMetaData>> _metadataPipeline;
     private readonly IOSInformation _os;
+    private readonly GameDomain _gameDomain;
 
-    public DependencyDiagnosticEmitter(IServiceProvider serviceProvider, ILogger<DependencyDiagnosticEmitter> logger, IOSInformation os)
+    public DependencyDiagnosticEmitter(IServiceProvider serviceProvider, ILogger<DependencyDiagnosticEmitter> logger, IOSInformation os, IGameDomainToGameIdMappingCache mappingCache)
     {
         _logger = logger;
         _metadataPipeline = Pipelines.GetMetadataPipeline(serviceProvider);
         _os = os;
+        _gameDomain = mappingCache[BaldursGate3.NexusModsGameId.Value];
     }
 
     public async IAsyncEnumerable<Diagnostic> Diagnose(Loadout.ReadOnly loadout, [EnumeratorCancellation] CancellationToken cancellationToken)
@@ -92,7 +96,6 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
                     PakName:pakMetaData.MetaFileData.ModuleShortDesc.Name,
                     BG3SENexusLink:BG3SENexusModsLink));
             }
-
 
             // check dependencies
             var dependencies = pakMetaData.MetaFileData.Dependencies;
@@ -216,8 +219,8 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
             .ToArray();
     }
 
-    private static readonly NamedLink NexusModsLink = new("Nexus Mods - Baldur's Gate 3", NexusModsUrlBuilder.GetGameUri(BaldursGate3.StaticDomain, campaign: NexusModsUrlBuilder.CampaignDiagnostics));
-    private static readonly NamedLink BG3SENexusModsLink = new("Nexus Mods", NexusModsUrlBuilder.GetModUri(BaldursGate3.StaticDomain, ModId.From(2172), campaign: NexusModsUrlBuilder.CampaignDiagnostics));
+    private NamedLink NexusModsLink => new("Nexus Mods - Baldur's Gate 3", NexusModsUrlBuilder.GetGameUri(_gameDomain, campaign: NexusModsUrlBuilder.CampaignDiagnostics));
+    private NamedLink BG3SENexusModsLink => new("Nexus Mods", NexusModsUrlBuilder.GetModUri(_gameDomain, ModId.From(2172), campaign: NexusModsUrlBuilder.CampaignDiagnostics));
 
 #endregion Helpers
 }

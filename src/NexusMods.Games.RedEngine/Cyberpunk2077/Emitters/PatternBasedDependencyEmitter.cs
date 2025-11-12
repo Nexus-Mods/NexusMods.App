@@ -9,6 +9,8 @@ using NexusMods.Abstractions.Diagnostics.Values;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Extensions;
+using NexusMods.Abstractions.NexusWebApi;
+using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Abstractions.Telemetry;
 using NexusMods.Paths;
 using NexusMods.Sdk.FileStore;
@@ -33,6 +35,7 @@ public class PatternBasedDependencyEmitter : ILoadoutDiagnosticEmitter
     private readonly HashSet<GamePath> _dependencyFiles;
 
     private readonly IFileStore _fileStore;
+    private readonly GameDomain _gameDomain;
 
     internal record MatchingDependency
     {
@@ -52,9 +55,11 @@ public class PatternBasedDependencyEmitter : ILoadoutDiagnosticEmitter
 
         _dependencies = patterns.Select(pattern => (pattern.DependencyPaths.ToHashSet(), pattern)).ToArray();
         _dependencyFiles = _dependencies.SelectMany(dependency => dependency.Paths).ToHashSet();
+
+        var mappingCache = provider.GetRequiredService<IGameDomainToGameIdMappingCache>();
+        _gameDomain = mappingCache[Cyberpunk2077Game.NexusModsGameId.Value];
     }
-    
-    
+
     public async IAsyncEnumerable<Diagnostic> Diagnose(Loadout.ReadOnly loadout, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
         // TODO: use a sorted index scan here to speed this up
@@ -178,7 +183,7 @@ public class PatternBasedDependencyEmitter : ILoadoutDiagnosticEmitter
             {
                 // Missing mod
                 var parent = row.File.AsLoadoutItem().Parent;
-                var downloadLink = new NamedLink("Nexus Mods", NexusModsUrlBuilder.GetModUri(Cyberpunk2077Game.StaticDomain, row.Pattern.ModId, campaign: NexusModsUrlBuilder.CampaignDiagnostics));
+                var downloadLink = new NamedLink("Nexus Mods", NexusModsUrlBuilder.GetModUri(_gameDomain, row.Pattern.ModId, campaign: NexusModsUrlBuilder.CampaignDiagnostics));
                 if (row.MatchingSegment.HasValue)
                 {
                     yield return Diagnostics.CreateMissingModWithKnownNexusUriWithStringSegment(

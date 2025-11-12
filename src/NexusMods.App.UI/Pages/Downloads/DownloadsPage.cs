@@ -14,7 +14,7 @@ public record DownloadsPageContext : IPageFactoryContext
     /// <summary>
     /// If provided, will limit the scope of downloads shown to the specified game.
     /// </summary>
-    public Optional<GameId> GameScope { get; init; } = Optional<GameId>.None;
+    public Optional<NexusModsGameId> GameScope { get; init; } = Optional<NexusModsGameId>.None;
 }
 
 [UsedImplicitly]

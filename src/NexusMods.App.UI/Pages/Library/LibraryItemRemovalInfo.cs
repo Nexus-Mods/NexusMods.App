@@ -1,6 +1,7 @@
-using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary;
+using NexusMods.Sdk.Library;
+
 namespace NexusMods.App.UI.Pages.Library;
 
 /// <summary>

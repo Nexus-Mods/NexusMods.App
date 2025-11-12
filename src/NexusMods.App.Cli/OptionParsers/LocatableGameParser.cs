@@ -15,8 +15,8 @@ public class LocatableGameParser(IEnumerable<ILocatableGame> locatableGames) : I
         {
             // Try to match the game name with the input string, either directly or via removing the spaces. 
             // This allows us to use "stardewvalley" instead of "Stardew Valley".
-            if (!locatableGame.Name.Equals(toParse, StringComparison.OrdinalIgnoreCase)
-                && !locatableGame.Name.Replace(" ", "").Equals(toParse, StringComparison.OrdinalIgnoreCase)) 
+            if (!locatableGame.DisplayName.Equals(toParse, StringComparison.OrdinalIgnoreCase)
+                && !locatableGame.DisplayName.Replace(" ", "").Equals(toParse, StringComparison.OrdinalIgnoreCase)) 
                 continue;
             value = locatableGame;
             error = string.Empty;

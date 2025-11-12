@@ -8,8 +8,8 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Games.Generic;
 using NexusMods.Games.RedEngine.Cyberpunk2077.SortOrder;
 using NexusMods.Paths;
+using NexusMods.Sdk.Games;
 using NexusMods.Sdk.Jobs;
-using NexusMods.Sdk.NexusModsApi;
 using R3;
 using static NexusMods.Games.RedEngine.Constants;
 
@@ -30,7 +30,7 @@ public class RedModDeployTool : ITool
         _redModSortOrderVariety = sortOrderVariety;
     }
     
-    public IEnumerable<GameId> GameIds => [Cyberpunk2077.Cyberpunk2077Game.GameIdStatic];
+    public IEnumerable<GameId> GameIds => [Cyberpunk2077.Cyberpunk2077Game.GameId];
 
     public async Task Execute(Loadout.ReadOnly loadout, CancellationToken cancellationToken)
     {

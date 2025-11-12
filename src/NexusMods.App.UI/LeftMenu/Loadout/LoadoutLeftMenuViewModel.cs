@@ -125,7 +125,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
 
         var collectionRevisionsObservable = CollectionRevisionMetadata
             .ObserveAll(conn)
-            .FilterImmutable(revision => revision.Collection.GameId == game.GameId)
+            .FilterImmutable(revision => revision.Collection.GameId == game.NexusModsGameId)
             .FilterOnObservable(revision =>
             {
                 var groupObservable = collectionDownloader.GetCollectionGroupObservable(revision, loadout);

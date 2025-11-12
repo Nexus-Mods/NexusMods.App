@@ -1,8 +1,8 @@
 using DynamicData;
 using DynamicData.Kernel;
 using JetBrains.Annotations;
-using NexusMods.Abstractions.Library.Models;
 using NexusMods.Sdk.NexusModsApi;
+using NexusMods.Sdk.Library;
 
 namespace NexusMods.Abstractions.Downloads;
 
@@ -30,12 +30,12 @@ public interface IDownloadsService
     /// <summary>
     /// Get downloads filtered by game.
     /// </summary>
-    IObservable<IChangeSet<DownloadInfo, DownloadId>> GetDownloadsForGame(GameId gameId);
+    IObservable<IChangeSet<DownloadInfo, DownloadId>> GetDownloadsForGame(NexusModsGameId nexusModsGameId);
     
     /// <summary>
     /// Get active downloads filtered by game.
     /// </summary>
-    IObservable<IChangeSet<DownloadInfo, DownloadId>> GetActiveDownloadsForGame(GameId gameId);
+    IObservable<IChangeSet<DownloadInfo, DownloadId>> GetActiveDownloadsForGame(NexusModsGameId nexusModsGameId);
     
     
     /// <summary>
@@ -61,7 +61,7 @@ public interface IDownloadsService
     /// <summary>
     /// Pauses all active downloads for a specific game.
     /// </summary>
-    void PauseAllForGame(GameId gameId);
+    void PauseAllForGame(NexusModsGameId nexusModsGameId);
     
     /// <summary>
     /// Resumes all paused downloads.
@@ -71,7 +71,7 @@ public interface IDownloadsService
     /// <summary>
     /// Resumes all paused downloads for a specific game.
     /// </summary>
-    void ResumeAllForGame(GameId gameId);
+    void ResumeAllForGame(NexusModsGameId nexusModsGameId);
     
     /// <summary>
     /// Cancels selected downloads.

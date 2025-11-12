@@ -7,6 +7,8 @@ using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.Diagnostics.Values;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Extensions;
+using NexusMods.Abstractions.NexusWebApi;
+using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Abstractions.Telemetry;
 using NexusMods.Games.MountAndBlade2Bannerlord.Models;
 using NexusMods.Sdk.NexusModsApi;
@@ -22,15 +24,19 @@ namespace NexusMods.Games.MountAndBlade2Bannerlord.Diagnostics;
 /// </summary>
 internal partial class BannerlordDiagnosticEmitter : ILoadoutDiagnosticEmitter
 {
-    private static readonly NamedLink BlseLink = new("Bannerlord Software Extender", NexusModsUrlBuilder.GetModUri(Bannerlord.DomainStatic, ModId.From(1), campaign: NexusModsUrlBuilder.CampaignDiagnostics));
-    private static readonly NamedLink HarmonyLink = new("Harmony",NexusModsUrlBuilder.GetModUri(Bannerlord.DomainStatic, ModId.From(2006), campaign: NexusModsUrlBuilder.CampaignDiagnostics));
+    private NamedLink BlseLink => new("Bannerlord Software Extender", NexusModsUrlBuilder.GetModUri(_gameDomain, ModId.From(1), campaign: NexusModsUrlBuilder.CampaignDiagnostics));
+    private NamedLink HarmonyLink => new("Harmony",NexusModsUrlBuilder.GetModUri(_gameDomain, ModId.From(2006), campaign: NexusModsUrlBuilder.CampaignDiagnostics));
     private readonly IResourceLoader<BannerlordModuleLoadoutItem.ReadOnly, ModuleInfoExtended> _manifestPipeline;
     private readonly ILogger _logger;
+    private readonly GameDomain _gameDomain;
 
     public BannerlordDiagnosticEmitter(IServiceProvider serviceProvider)
     {
         _logger = serviceProvider.GetRequiredService<ILogger<BannerlordDiagnosticEmitter>>();
         _manifestPipeline = Pipelines.GetManifestPipeline(serviceProvider);
+
+        var mappingCache = serviceProvider.GetRequiredService<IGameDomainToGameIdMappingCache>();
+        _gameDomain = mappingCache[Bannerlord.NexusModsGameId.Value];
     }
 
     public async IAsyncEnumerable<Diagnostic> Diagnose(Loadout.ReadOnly loadout, CancellationToken cancellationToken)

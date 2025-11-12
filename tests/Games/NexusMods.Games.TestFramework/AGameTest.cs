@@ -8,7 +8,6 @@ using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.GC;
-using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.DataModel;
@@ -20,11 +19,12 @@ using NexusMods.Paths;
 using NexusMods.Sdk.FileStore;
 using NexusMods.Sdk.IO;
 using NexusMods.StandardGameLocators.TestHelpers;
+using NexusMods.Sdk.Library;
 
 namespace NexusMods.Games.TestFramework;
 
 [PublicAPI]
-public abstract class AGameTest<TGame> where TGame : AGame
+public abstract class AGameTest<TGame> where TGame : IGame
 {
     protected readonly IServiceProvider ServiceProvider;
     protected readonly TGame Game;
@@ -75,7 +75,7 @@ public abstract class AGameTest<TGame> where TGame : AGame
         _logger = serviceProvider.GetRequiredService<ILogger<AGameTest<TGame>>>();
         if (GameInstallation.Locator is UniversalStubbedGameLocator<TGame> universal)
         {
-            _logger.LogInformation("Resetting game files for {Game}", Game.Name);
+            _logger.LogInformation("Resetting game files for {Game}", Game.DisplayName);
             ResetGameFolders();
         }
     }

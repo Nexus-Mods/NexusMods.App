@@ -27,15 +27,15 @@ public readonly struct FileUid : IEquatable<FileUid>
     /// <summary>
     /// Unique identifier for the game.
     /// </summary>
-    public readonly GameId GameId;
+    public readonly NexusModsGameId GameId;
 
     /// <summary>
     /// Constructor.
     /// </summary>
-    public FileUid(FileId fileId, GameId gameId)
+    public FileUid(FileId fileId, NexusModsGameId nexusModsGameId)
     {
         FileId = fileId;
-        GameId = gameId;
+        GameId = nexusModsGameId;
     }
 
     /// <summary>

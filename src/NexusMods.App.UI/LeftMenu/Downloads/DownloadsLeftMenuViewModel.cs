@@ -48,7 +48,7 @@ public class DownloadsLeftMenuViewModel : AViewModel<IDownloadsLeftMenuViewModel
             new PageData
             {
                 FactoryId = DownloadsPageFactory.StaticId,
-                Context = new DownloadsPageContext { GameScope = Optional<GameId>.None },
+                Context = new DownloadsPageContext { GameScope = Optional<NexusModsGameId>.None },
             }
         )
         {
@@ -84,11 +84,11 @@ public class DownloadsLeftMenuViewModel : AViewModel<IDownloadsLeftMenuViewModel
             new PageData
             {
                 FactoryId = DownloadsPageFactory.StaticId,
-                Context = new DownloadsPageContext { GameScope = gameInstallation.Game.GameId },
+                Context = new DownloadsPageContext { GameScope = gameInstallation.Game.NexusModsGameId },
             }
         )
         {
-            Text = new StringComponent(string.Format(Language.DownloadsLeftMenu_GameSpecificDownloads, gameInstallation.Game.Name)),
+            Text = new StringComponent(string.Format(Language.DownloadsLeftMenu_GameSpecificDownloads, gameInstallation.Game.DisplayName)),
             Icon = IconValues.FolderEditOutline, // Initial fallback icon
         };
 

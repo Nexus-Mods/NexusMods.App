@@ -1,8 +1,8 @@
 using DynamicData;
 using DynamicData.Alias;
 using JetBrains.Annotations;
-using NexusMods.Abstractions.Library.Models;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.Sdk.Library;
 
 namespace NexusMods.App.UI;
 

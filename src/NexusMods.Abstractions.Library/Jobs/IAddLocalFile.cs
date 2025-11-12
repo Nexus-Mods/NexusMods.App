@@ -1,6 +1,6 @@
-using NexusMods.Abstractions.Library.Models;
 using NexusMods.Paths;
 using NexusMods.Sdk.Jobs;
+using NexusMods.Sdk.Library;
 
 namespace NexusMods.Abstractions.Library.Jobs;
 
