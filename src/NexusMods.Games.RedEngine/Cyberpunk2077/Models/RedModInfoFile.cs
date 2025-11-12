@@ -1,4 +1,3 @@
-using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Models;

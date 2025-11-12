@@ -4,10 +4,10 @@ using NexusMods.Abstractions.Collections;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.GC;
 using NexusMods.Abstractions.Library.Installers;
-using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts.Synchronizers.Conflicts;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Sdk.Jobs;
+using NexusMods.Sdk.Library;
 
 namespace NexusMods.Abstractions.Loadouts.Synchronizers;
 

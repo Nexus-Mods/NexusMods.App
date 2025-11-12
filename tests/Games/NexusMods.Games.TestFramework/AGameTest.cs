@@ -8,7 +8,6 @@ using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.GC;
-using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.DataModel;
@@ -20,6 +19,7 @@ using NexusMods.Paths;
 using NexusMods.Sdk.FileStore;
 using NexusMods.Sdk.IO;
 using NexusMods.StandardGameLocators.TestHelpers;
+using NexusMods.Sdk.Library;
 
 namespace NexusMods.Games.TestFramework;
 

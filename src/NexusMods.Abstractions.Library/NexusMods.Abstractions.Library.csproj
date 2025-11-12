@@ -6,7 +6,6 @@
         <ProjectReference Include="..\NexusMods.Abstractions.Downloads\NexusMods.Abstractions.Downloads.csproj" />
         <ProjectReference Include="..\NexusMods.Abstractions.GC\NexusMods.Abstractions.GC.csproj" />
         <ProjectReference Include="..\NexusMods.Abstractions.Library.Installers\NexusMods.Abstractions.Library.Installers.csproj" />
-        <ProjectReference Include="..\NexusMods.Abstractions.Library.Models\NexusMods.Abstractions.Library.Models.csproj" />
         <ProjectReference Include="..\NexusMods.Abstractions.Loadouts\NexusMods.Abstractions.Loadouts.csproj" />
     </ItemGroup>
 

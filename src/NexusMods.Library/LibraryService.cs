@@ -3,7 +3,6 @@ using NexusMods.Abstractions.Downloads;
 using NexusMods.Abstractions.GC;
 using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Library.Jobs;
-using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Extensions;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
@@ -11,6 +10,7 @@ using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Paths;
 using NexusMods.Sdk.Jobs;
+using NexusMods.Sdk.Library;
 
 namespace NexusMods.Library;
 

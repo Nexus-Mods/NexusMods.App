@@ -1,13 +1,13 @@
 using System.Security.Cryptography;
 using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.Library.Models;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.DatomIterators;
 using NexusMods.MnemonicDB.Abstractions.Internals;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.MnemonicDB.Abstractions.ValueSerializers;
 using NexusMods.Sdk.Hashes;
+using NexusMods.Sdk.Library;
 
 namespace NexusMods.DataModel.SchemaVersions.Migrations;
 

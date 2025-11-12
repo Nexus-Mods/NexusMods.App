@@ -1,8 +1,8 @@
 using DynamicData.Kernel;
 using NexusMods.Abstractions.Library.Installers;
-using NexusMods.Abstractions.Library.Models;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Sdk.Jobs;
+using NexusMods.Sdk.Library;
 
 namespace NexusMods.Abstractions.Loadouts.Synchronizers;
 

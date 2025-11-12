@@ -3,7 +3,6 @@ using DynamicData;
 using DynamicData.Aggregation;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.App.UI.Controls;
@@ -13,6 +12,7 @@ using NexusMods.MnemonicDB.Abstractions.Query;
 using NexusMods.MnemonicDB.Abstractions.ValueSerializers;
 using NexusMods.Sdk.Games;
 using NexusMods.Sdk.Hashes;
+using NexusMods.Sdk.Library;
 using UIObservableExtensions = NexusMods.App.UI.Extensions.ObservableExtensions;
 
 namespace NexusMods.App.UI.Pages;

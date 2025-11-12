@@ -1,12 +1,12 @@
 using DynamicData.Cache.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Models;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
+using NexusMods.Sdk.Library;
 
 namespace NexusMods.Abstractions.Loadouts;
 

@@ -13,7 +13,6 @@ using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Library.Installers;
-using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.NexusModsLibrary;
@@ -27,6 +26,7 @@ using NexusMods.Sdk.FileStore;
 using NexusMods.Sdk.Hashes;
 using NexusMods.Sdk.IO;
 using NexusMods.Sdk.Jobs;
+using NexusMods.Sdk.Library;
 
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 

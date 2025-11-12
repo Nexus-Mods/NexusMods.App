@@ -1,11 +1,9 @@
-using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
 using JetBrains.Annotations;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Models;
 
-namespace NexusMods.Abstractions.Library.Models;
+namespace NexusMods.Sdk.Library;
 
 /// <summary>
 /// Represents an item in the library.
@@ -30,7 +28,7 @@ public partial class LibraryItem
         /// Adds a retraction which effectively deletes the current archived file from the data store.
         /// </summary>
         /// <param name="tx">The transaction to add the retraction to.</param>
-        public void Retract(ITransaction tx) => tx.Retract(Id, LibraryItem.Name, Name);
+        public void Retract(ITransaction tx) => tx.Retract<string, StringAttribute>(Id, LibraryItem.Name, Name);
         
         /// <summary>
         /// Tries to get the entity as a DownloadedFile entity, if the entity is not a DownloadedFile entity, it returns false.

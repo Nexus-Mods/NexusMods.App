@@ -9,7 +9,6 @@ using NexusMods.Abstractions.Collections;
 using NexusMods.Abstractions.Collections.Json;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.FileHashes;
-using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.NexusModsLibrary;
@@ -25,9 +24,9 @@ using NexusMods.Sdk;
 using NexusMods.Sdk.Hashes;
 using NexusMods.Sdk.IO;
 using NexusMods.Telemetry;
+using NexusMods.Sdk.Library;
 using CollectionMod = NexusMods.Abstractions.Collections.Json.Mod;
 using ModSource = NexusMods.Abstractions.Collections.Json.ModSource;
-using Size = NexusMods.Paths.Size;
 using UpdatePolicy = NexusMods.Abstractions.Collections.Json.UpdatePolicy;
 
 namespace NexusMods.Collections;
@@ -159,7 +158,7 @@ public static class CollectionCreator
                     added.Add(child.Hash);
                 }
 
-                tx.Add(libraryFileId, NexusMods.Abstractions.Library.Models.LibraryFile.Size, sum);
+                tx.Add(libraryFileId, LibraryFile.Size, sum);
             }
 
         }

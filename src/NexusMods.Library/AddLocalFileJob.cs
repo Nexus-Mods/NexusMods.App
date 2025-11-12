@@ -1,9 +1,9 @@
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Library.Jobs;
-using NexusMods.Abstractions.Library.Models;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using NexusMods.Sdk.Jobs;
+using NexusMods.Sdk.Library;
 
 namespace NexusMods.Library;
 

@@ -1,6 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Downloads;
-using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.Types;
@@ -8,6 +7,7 @@ using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Paths;
 using NexusMods.Sdk.Jobs;
+using NexusMods.Sdk.Library;
 
 namespace NexusMods.Networking.NexusWebApi;
 

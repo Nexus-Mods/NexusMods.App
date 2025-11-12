@@ -10,7 +10,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Library.Installers;
-using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.NexusModsLibrary;
@@ -44,6 +43,7 @@ using OneOf;
 using R3;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
+using NexusMods.Sdk.Library;
 
 namespace NexusMods.App.UI.Pages.LibraryPage;
 

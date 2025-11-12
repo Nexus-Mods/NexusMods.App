@@ -11,7 +11,6 @@ using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Games.FileHashes;
 using NexusMods.Abstractions.GC;
 using NexusMods.Abstractions.Library.Installers;
-using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Sorting;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
@@ -25,6 +24,7 @@ using NexusMods.MnemonicDB.Abstractions.Internals;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.MnemonicDB.Abstractions.ValueSerializers;
 using NexusMods.Sdk.Jobs;
+using NexusMods.Sdk.Library;
 
 namespace NexusMods.DataModel;
 

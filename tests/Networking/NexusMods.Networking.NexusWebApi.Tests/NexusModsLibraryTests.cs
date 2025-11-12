@@ -1,11 +1,10 @@
 using FluentAssertions;
 using NexusMods.Abstractions.Library;
-using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Games.TestFramework;
 using NexusMods.Paths;
-using Xunit;
+using NexusMods.Sdk.Library;
 
 namespace NexusMods.Networking.NexusWebApi.Tests;
 

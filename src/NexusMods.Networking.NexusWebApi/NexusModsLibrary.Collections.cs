@@ -7,7 +7,6 @@ using System.Text.Json;
 using DynamicData.Kernel;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Collections.Json;
-using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi.Types;
@@ -18,6 +17,7 @@ using NexusMods.Paths;
 using NexusMods.Sdk;
 using NexusMods.Sdk.Hashes;
 using NexusMods.Sdk.IO;
+using NexusMods.Sdk.Library;
 using NexusMods.Sdk.NexusModsApi;
 
 namespace NexusMods.Networking.NexusWebApi;
