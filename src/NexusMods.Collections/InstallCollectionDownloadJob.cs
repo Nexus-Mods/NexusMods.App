@@ -249,11 +249,17 @@ public class InstallCollectionDownloadJob : IJobDefinitionWithStart<InstallColle
             },
         };
 
-        _ = new NexusCollectionItemLoadoutGroup.New(tx, id)
+        var nexusCollectionItemLoadoutGroup = new NexusCollectionItemLoadoutGroup.New(tx, id)
         {
             DownloadId = Item,
             IsRequired = Item.IsRequired,
             LoadoutItemGroup = loadoutItemGroup,
+        };
+        
+        _ = new LibraryLinkedLoadoutItem.New(tx, id)
+        {
+            LibraryItemId = libraryFile.AsLibraryItem(),
+            LoadoutItemGroup = nexusCollectionItemLoadoutGroup.GetLoadoutItemGroup(tx),
         };
 
         var loadout = new Loadout.ReadOnly(Connection.Db, TargetLoadout);
