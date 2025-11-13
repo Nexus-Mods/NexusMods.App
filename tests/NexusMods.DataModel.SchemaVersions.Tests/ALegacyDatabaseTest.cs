@@ -84,7 +84,6 @@ public abstract class ALegacyDatabaseTest
             {
                 HashDatabaseLocation = new ConfigurablePath(baseKnownPath, $"{baseDirectory}/FileHashService"),
             })
-            .AddGameLocators()
             .AddSingleton<ITestOutputHelperAccessor>(_ => new Accessor { Output = _helper })
             .AddSingleton(mock)
             .Validate();
