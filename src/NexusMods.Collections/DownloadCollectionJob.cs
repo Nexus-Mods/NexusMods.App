@@ -27,7 +27,11 @@ public class DownloadCollectionJob : IJobDefinitionWithStart<DownloadCollectionJ
             var download = downloads[index];
             if (!CollectionDownloader.DownloadMatchesItemType(download, ItemType)) return;
             if (CollectionDownloader.GetStatus(download, Db).IsDownloaded()) return;
-
+            
+            // Waits until the download queue is unpaused
+            while (context.Monitor.IsDownloadQueuePaused())
+                await Task.Delay(500, token); // Checks every 500ms
+            
             try
             {
                 if (download.TryGetAsCollectionDownloadNexusMods(out var nexusModsDownload))

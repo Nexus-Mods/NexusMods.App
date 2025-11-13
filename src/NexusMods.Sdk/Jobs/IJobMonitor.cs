@@ -73,6 +73,11 @@ public interface IJobMonitor
     void PauseAll();
     
     /// <summary>
+    /// Pauses download queue to prevent new download jobs from starting
+    /// </summary>
+    void PauseDownloadQueue();
+    
+    /// <summary>
     /// Resumes a specific job by its ID
     /// </summary>
     void Resume(JobId jobId);
@@ -91,6 +96,16 @@ public interface IJobMonitor
     /// Resumes all active jobs
     /// </summary>
     void ResumeAll();
+    
+    /// <summary>
+    /// Resumes download queue to allow new download jobs to start
+    /// </summary>
+    void ResumeDownloadQueue();
+    
+    /// <summary>
+    /// Returns whether the download queue is currently paused
+    /// </summary>
+    bool IsDownloadQueuePaused();
     
     /// <summary>
     /// Finds a job by its ID

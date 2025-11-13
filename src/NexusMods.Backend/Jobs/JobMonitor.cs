@@ -18,6 +18,8 @@ public sealed class JobMonitor : IJobMonitor, IDisposable
 
     private readonly CompositeDisposable _compositeDisposable = new();
     private readonly ILogger<JobMonitor> _logger;
+    
+    private volatile bool _isDownloadQueuePaused;
 
     public JobMonitor(ILogger<JobMonitor> logger)
     {
@@ -101,6 +103,8 @@ public sealed class JobMonitor : IJobMonitor, IDisposable
                 job.AsContext().Pause();
         }
     }
+
+    public void PauseDownloadQueue() => _isDownloadQueuePaused = true;
     
     public void Resume(JobId jobId)
     {
@@ -128,6 +132,10 @@ public sealed class JobMonitor : IJobMonitor, IDisposable
             ExecuteJob(job.AsContext()); // Restart execution
         }
     }
+    
+    public void ResumeDownloadQueue() => _isDownloadQueuePaused = false;
+    
+    public bool IsDownloadQueuePaused() => _isDownloadQueuePaused;
     
     /// <summary>
     /// Finds a job by its ID
