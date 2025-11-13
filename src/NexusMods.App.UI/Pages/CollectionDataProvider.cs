@@ -16,6 +16,7 @@ using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Query;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Sdk.Jobs;
+using NexusMods.Sdk.Loadouts;
 using R3;
 
 namespace NexusMods.App.UI.Pages;

@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.GameLocators;
+
 using NexusMods.Abstractions.Loadouts.Synchronizers;
+using NexusMods.Sdk.Games;
 using NexusMods.Sdk.Settings;
 
 namespace NexusMods.Games.Larian.BaldursGate3;

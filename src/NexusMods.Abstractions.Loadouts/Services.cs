@@ -1,9 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.Loadouts.Files;
 using NexusMods.HyperDuck.Adaptor.Impls.ValueAdaptor;
 using NexusMods.HyperDuck.BindingConverters;
-using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.Sdk.Games;
+using NexusMods.Sdk.Loadouts;
 
 namespace NexusMods.Abstractions.Loadouts;
 

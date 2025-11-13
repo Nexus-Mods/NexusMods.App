@@ -1,5 +1,5 @@
-using NexusMods.Abstractions.GameLocators;
 using NexusMods.Paths;
+using NexusMods.Sdk.Games;
 
 namespace NexusMods.Games.AdvancedInstaller.Exceptions;
 

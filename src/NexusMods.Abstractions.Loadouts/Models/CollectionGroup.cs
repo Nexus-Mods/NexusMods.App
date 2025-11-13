@@ -2,6 +2,7 @@ using NexusMods.HyperDuck;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Models;
+using NexusMods.Sdk.Loadouts;
 
 namespace NexusMods.Abstractions.Loadouts;
 
@@ -27,6 +28,6 @@ public static partial class CollectionGroupLoaderExtensions
     /// </summary>
     public static Query<(EntityId CollectionId, string Name)> MutableCollections(this Loadout.ReadOnly loadout)
     {
-        return Loadout.MutableCollections(loadout.Db.Connection, loadout);
+        return LoadoutQueries2.MutableCollections(loadout.Db.Connection, loadout);
     }
 }

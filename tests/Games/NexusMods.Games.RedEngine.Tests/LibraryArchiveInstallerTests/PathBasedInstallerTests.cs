@@ -1,6 +1,6 @@
 using System.Runtime.CompilerServices;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.GameLocators;
+
 using NexusMods.Games.RedEngine.Cyberpunk2077;
 using NexusMods.Games.RedEngine.ModInstallers;
 using NexusMods.Games.TestFramework;
@@ -54,7 +54,7 @@ public class PathBasedInstallerTests(ITestOutputHelper outputHelper) : ALibraryA
         await VerifyChildren(ChildrenFilesAndHashes(group), archivePaths).UseParameters(testCaseName);
     }
 
-    private SettingsTask VerifyChildren(IEnumerable<(RelativePath FromPath, Hash Hash, GamePath GamePath)> childrenFilesAndHashes, string[] archivePaths, [CallerFilePath] string sourceFile = "")
+    private SettingsTask VerifyChildren(IEnumerable<(RelativePath FromPath, Hash Hash, Sdk.Games.GamePath GamePath)> childrenFilesAndHashes, string[] archivePaths, [CallerFilePath] string sourceFile = "")
     {
         var asArray = childrenFilesAndHashes.ToArray();
         

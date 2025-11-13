@@ -1,8 +1,9 @@
 using System.Runtime.CompilerServices;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.GameLocators;
+
 using NexusMods.Paths;
 using NexusMods.ProxyConsole;
+using NexusMods.Sdk.Games;
 using NexusMods.Sdk.ProxyConsole;
 using NexusMods.SingleProcess;
 using NexusMods.StandardGameLocators.TestHelpers.StubbedGames;

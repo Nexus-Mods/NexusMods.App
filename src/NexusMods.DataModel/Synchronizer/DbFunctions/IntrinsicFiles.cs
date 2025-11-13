@@ -1,11 +1,11 @@
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
-using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.HyperDuck;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
+using NexusMods.Sdk.Games;
+using NexusMods.Sdk.Loadouts;
 
 namespace NexusMods.DataModel.Synchronizer.DbFunctions;
 
@@ -63,7 +63,7 @@ public class IntrinsicFiles : ATableFunction
         var db = bindData.Db;
 
         var data = from loadout in Loadout.All(db)
-            let game = ((IGame)loadout.LocatableGame)
+            let game = ((IGame)loadout.Game)
             let synchronizer = (ALoadoutSynchronizer)game.Synchronizer
             from intrinsic in synchronizer.IntrinsicFiles(loadout)
             select (loadout.LoadoutId.Value, intrinsic.Key);

@@ -10,6 +10,7 @@ using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Games.AdvancedInstaller;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Sdk.Jobs;
+using NexusMods.Sdk.Loadouts;
 using NexusMods.Sdk.Tracking;
 using NexusMods.Sdk.Library;
 

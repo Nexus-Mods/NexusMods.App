@@ -111,6 +111,21 @@
         <Compile Update="Hashes\IStreamingHasher.cs">
           <DependentUpon>IHasher.cs</DependentUpon>
         </Compile>
+        <Compile Update="WineDllOverride.cs">
+          <DependentUpon>WineParser.cs</DependentUpon>
+        </Compile>
+        <Compile Update="WineDllOverrideType.cs">
+          <DependentUpon>WineParser.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Games\Locators\GameLocatorResult.cs">
+          <DependentUpon>IGameLocator.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Games\Locators\GameLocationDescriptor.cs">
+          <DependentUpon>GameLocations.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Games\Locators\ILinuxCompatabilityDataProvider.cs">
+          <DependentUpon>GameLocatorResult.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>

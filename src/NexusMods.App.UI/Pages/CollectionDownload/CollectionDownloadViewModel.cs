@@ -28,6 +28,7 @@ using NexusMods.Networking.NexusWebApi;
 using NexusMods.Paths;
 using NexusMods.Sdk;
 using NexusMods.Sdk.Jobs;
+using NexusMods.Sdk.Loadouts;
 using NexusMods.UI.Sdk;
 using NexusMods.UI.Sdk.Dialog;
 using OneOf;

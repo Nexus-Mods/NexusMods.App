@@ -2,17 +2,16 @@ using System.Collections.ObjectModel;
 using Avalonia.Controls;
 using DynamicData;
 using Humanizer.Bytes;
-using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.GameLocators.Trees;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Files.Diff;
-using NexusMods.Abstractions.Loadouts.Ids;
-using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.App.UI.Controls.Trees.Files;
 using NexusMods.App.UI.Helpers.TreeDataGrid;
 using NexusMods.App.UI.Resources;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths.Trees.Traits;
+using NexusMods.Sdk.Games;
+using NexusMods.Sdk.Loadouts;
+using NexusMods.Sdk.Trees;
 using NexusMods.UI.Sdk;
 
 namespace NexusMods.App.UI.Controls.Trees;
@@ -77,14 +76,13 @@ public class DiffTreeViewModel : AViewModel<IFileTreeViewModel>, IFileTreeViewMo
         uint deletedFileCount = 0;
         ulong operationSize = 0;
 
-
-        var locationsRegister = loadout.InstallationInstance.LocationsRegister;
+        var locations = loadout.InstallationInstance.Locations;
 
         // Add the root directories
         foreach (var rootNode in diffTree.GetRoots())
         {
             var model = new FileTreeNodeViewModel(
-                locationsRegister.GetResolvedPath(rootNode.GamePath()).ToString(),
+                locations.ToAbsolutePath(rootNode.GamePath()).ToString(),
                 rootNode.GamePath(),
                 IFileTreeViewModel.RootParentGamePath,
                 false,

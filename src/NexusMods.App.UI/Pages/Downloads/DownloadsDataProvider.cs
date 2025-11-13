@@ -4,11 +4,11 @@ using DynamicData;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Downloads;
-using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Resources;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.Sdk.Games;
 using NexusMods.Sdk.NexusModsApi;
 using NexusMods.Sdk.Resources;
 using R3;
@@ -94,7 +94,7 @@ public sealed class DownloadsDataProvider(IServiceProvider serviceProvider) : ID
 
     public string ResolveGameName(NexusModsGameId nexusModsGameId)
     {
-        return _gameRegistry.InstalledGames
+        return _gameRegistry.LocateGameInstallations()
             .FirstOrDefault(g => g.Game.NexusModsGameId.Equals(nexusModsGameId))?.Game.DisplayName 
             ?? Language.Downloads_UnknownGame;
     }

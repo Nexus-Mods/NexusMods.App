@@ -1,7 +1,7 @@
-using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
+using NexusMods.Sdk.Games;
 
 namespace NexusMods.App.UI.Pages.LoadoutGroupFilesPage;
 

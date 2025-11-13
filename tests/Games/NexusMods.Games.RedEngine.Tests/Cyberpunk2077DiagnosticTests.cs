@@ -1,7 +1,7 @@
 using System.Text;
 using FluentAssertions;
 using NexusMods.Abstractions.Diagnostics;
-using NexusMods.Abstractions.GameLocators;
+
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Games.RedEngine.Cyberpunk2077;
 using NexusMods.Games.RedEngine.Cyberpunk2077.Emitters;
@@ -10,7 +10,9 @@ using NexusMods.Hashing.xxHash3;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 using NexusMods.Paths;
 using NexusMods.Sdk.FileStore;
+using NexusMods.Sdk.Games;
 using NexusMods.Sdk.IO;
+using NexusMods.Sdk.Loadouts;
 using Xunit.Abstractions;
 
 namespace NexusMods.Games.RedEngine.Tests;
@@ -96,7 +98,7 @@ public class Cyberpunk2077DiagnosticTests(ITestOutputHelper outputHelper) : ACyb
 
         // Disable the dependency and the diagnostic should reappear
         {
-            var dependencyMod = LoadoutItemGroup.Load(Connection.Db, loadout.Items.First(m => m.Name == "DependencyMod").Id);
+            var dependencyMod = LoadoutItemGroup.Load(Connection.Db, LoadoutItem.FindByLoadout(loadout.Db, loadout).First(m => m.Name == "DependencyMod").Id);
             using var tx = Connection.BeginTransaction();
             tx.Add(dependencyMod, LoadoutItem.Disabled, Null.Instance);
             await tx.Commit();

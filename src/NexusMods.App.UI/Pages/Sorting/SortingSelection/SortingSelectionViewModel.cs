@@ -10,6 +10,7 @@ using NexusMods.App.UI.Pages.LoadoutPage;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.Sdk.Loadouts;
 using NexusMods.UI.Sdk;
 using R3;
 using ReactiveUI;

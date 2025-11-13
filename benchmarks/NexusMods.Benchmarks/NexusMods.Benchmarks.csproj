@@ -16,7 +16,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\src\NexusMods.Games.TestHarness\NexusMods.Games.TestHarness.csproj" />
       <ProjectReference Include="..\..\src\NexusMods.DataModel\NexusMods.DataModel.csproj" />
       <ProjectReference Include="..\..\tests\NexusMods.DataModel.Tests\NexusMods.DataModel.Tests.csproj" />
     </ItemGroup>

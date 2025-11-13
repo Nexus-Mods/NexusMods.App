@@ -4,12 +4,12 @@ using System.Text;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Diagnostics.Emitters;
-using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.Loadouts.Synchronizers.Rules;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
+using NexusMods.Sdk.Games;
+using NexusMods.Sdk.Loadouts;
 
 namespace NexusMods.Games.FileHashes.Emitters;
 
@@ -48,7 +48,7 @@ public class UndeployableLoadoutDueToMissingGameFiles : ILoadoutDiagnosticEmitte
                 FileCount: count,
                 Game: loadout.InstallationInstance.Game.DisplayName,
                 Files: sb.ToString(),
-                Store: loadout.InstallationInstance.Store.Value,
+                Store: loadout.Installation.Store.Value,
                 Version: loadout.GameVersion.ToString()
             );
         }

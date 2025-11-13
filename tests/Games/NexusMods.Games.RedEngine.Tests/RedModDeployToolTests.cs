@@ -10,6 +10,7 @@ using NexusMods.Games.RedEngine.Cyberpunk2077.SortOrder;
 using NexusMods.Games.TestFramework;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 using NexusMods.Paths;
+using NexusMods.Sdk.Loadouts;
 using OneOf;
 using R3;
 using Xunit.Abstractions;

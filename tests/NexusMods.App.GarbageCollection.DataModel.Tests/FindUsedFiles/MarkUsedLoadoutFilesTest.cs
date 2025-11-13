@@ -46,7 +46,7 @@ public class MarkUsedLoadoutFilesTest(IServiceProvider serviceProvider) : AGameT
             IsFileReferenced(gc, hashes[x]).Should().BeTrue($"File with hash {hashes[x]} should be marked as used");
 
         // Verify that all LoadoutFiles in the loadout are marked as used
-        foreach (var item in loadout.Items)
+        foreach (var item in LoadoutItem.FindByLoadout(loadout.Db, loadout))
         {
             var hasTargetPath = item.TryGetAsLoadoutItemWithTargetPath(out var targetPath);
             var hasLoadoutFile = targetPath.TryGetAsLoadoutFile(out var loadoutFile);
@@ -66,7 +66,7 @@ public class MarkUsedLoadoutFilesTest(IServiceProvider serviceProvider) : AGameT
         DataStoreReferenceMarker.MarkUsedFiles(Connection, gc);
 
         // Assert that no files are marked as used
-        foreach (var item in loadout.Items)
+        foreach (var item in LoadoutItem.FindByLoadout(loadout.Db, loadout))
         {
             var hasTargetPath = item.TryGetAsLoadoutItemWithTargetPath(out var targetPath);
             var hasLoadoutFile = targetPath.TryGetAsLoadoutFile(out var loadoutFile);

@@ -1,13 +1,8 @@
 using System.Reactive.Disposables;
-using System.Reactive.Linq;
 using Avalonia.Controls;
-using Avalonia.Media.Imaging;
 using Avalonia.ReactiveUI;
-using NexusMods.Abstractions.GameLocators;
 using NexusMods.App.UI.Extensions;
-using NexusMods.UI.Sdk.Icons;
 using ReactiveUI;
-using SkiaSharp;
 
 namespace NexusMods.App.UI.Controls.GameWidget;
 

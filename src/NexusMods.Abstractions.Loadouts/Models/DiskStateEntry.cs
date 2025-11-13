@@ -1,9 +1,9 @@
-﻿using NexusMods.Abstractions.GameLocators;
-using NexusMods.Hashing.xxHash3;
+﻿using NexusMods.Hashing.xxHash3;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Models;
 using NexusMods.Paths;
+using NexusMods.Sdk.Games;
 using NexusMods.Sdk.Hashes;
 
 namespace NexusMods.Abstractions.Loadouts;
@@ -21,7 +21,7 @@ public partial class DiskStateEntry : IModelDefinition
     /// The path to the file
     /// </summary>
     public static readonly GamePathParentAttribute Path = new(Namespace, nameof(Path));
-    
+
     /// <summary>
     /// The hash of the file
     /// </summary>
@@ -40,7 +40,7 @@ public partial class DiskStateEntry : IModelDefinition
     /// <summary>
     /// The owning game installation
     /// </summary>
-    public static readonly ReferenceAttribute<GameInstallMetadata> Game = new(Namespace, nameof(Game));
+    public static readonly ReferenceAttribute<Sdk.Games.GameInstallMetadata> Game = new(Namespace, nameof(Game));
     
     
     public partial struct ReadOnly : IHavePathHashSizeAndReference

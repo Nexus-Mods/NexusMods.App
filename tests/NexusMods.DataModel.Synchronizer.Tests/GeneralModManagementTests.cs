@@ -1,11 +1,12 @@
 using System.Text;
 using DynamicData.Kernel;
-using NexusMods.Abstractions.GameLocators;
+
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Games.RedEngine.Cyberpunk2077;
 using NexusMods.Games.TestFramework;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 using NexusMods.Paths;
+using NexusMods.Sdk.Games;
 using Xunit.Abstractions;
 
 namespace NexusMods.DataModel.Synchronizer.Tests;
@@ -19,7 +20,7 @@ public class GeneralModManagementTests(ITestOutputHelper helper) : ACyberpunkIso
         var sb = new StringBuilder();
         
         var originalFileGamePath = new GamePath(LocationId.Game, "bin/originalGameFile.txt");
-        var originalFileFullPath = GameInstallation.LocationsRegister.GetResolvedPath(originalFileGamePath);
+        var originalFileFullPath = GameInstallation.Locations.ToAbsolutePath(originalFileGamePath);
         originalFileFullPath.Parent.CreateDirectory();
         await originalFileFullPath.WriteAllTextAsync("Hello World!");
         

@@ -2,7 +2,7 @@ using System.Reactive;
 using System.Reactive.Linq;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
-using NexusMods.Abstractions.GameLocators;
+using NexusMods.Sdk.Games;
 using NexusMods.UI.Sdk;
 using NexusMods.UI.Sdk.Icons;
 using ReactiveUI;
@@ -12,9 +12,7 @@ namespace NexusMods.App.UI.Controls.GameWidget;
 
 public class GameWidgetDesignViewModel : AViewModel<IGameWidgetViewModel>, IGameWidgetViewModel
 {
-    
-    [Reactive]
-    public GameInstallation Installation { get; set; } = new() { Store = GameStore.XboxGamePass};
+    [Reactive] public GameInstallation? Installation { get; set; } = null!;
     public string Name { get; } = "Cyberpunk 2077";
     public string Version { get; set; }
     public string Store { get; set; }
@@ -34,7 +32,7 @@ public class GameWidgetDesignViewModel : AViewModel<IGameWidgetViewModel>, IGame
         Image = new Bitmap(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/DesignTime/tile.webp")));
         State = GameWidgetState.ManagedGame;
         Version = $"Version: 1.5.6";
-        Store = Installation.Store.Value;
-        GameStoreIcon = GameWidgetViewModel.MapGameStoreToIcon(Installation.Store);
+        Store = "Foo";
+        GameStoreIcon = GameWidgetViewModel.MapGameStoreToIcon(GameStore.EGS);
     }
 }

@@ -8,6 +8,7 @@ using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Paths;
+using NexusMods.Sdk.Loadouts;
 using NexusMods.Sdk.ProxyConsole;
 
 namespace NexusMods.Collections;

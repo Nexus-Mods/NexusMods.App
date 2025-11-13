@@ -1,5 +1,6 @@
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Sdk.Loadouts;
 
 namespace NexusMods.Abstractions.Diagnostics;
 

@@ -1,12 +1,13 @@
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.GameLocators;
+
 using NexusMods.Abstractions.GC;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Games.TestFramework;
+using NexusMods.Sdk.Games;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -58,12 +59,12 @@ public class CollectionInstallTests(ITestOutputHelper helper) : ACyberpunkIsolat
 
         loadout = loadout.Rebase();
 
-        var mods = loadout.Items.Where(item => !item.Contains(LoadoutItem.ParentId))
+        var mods = LoadoutItem.FindByLoadout(loadout.Db, loadout).Where(item => !item.Contains(LoadoutItem.ParentId))
             .OrderBy(r => r.Name)
             .Select(r => r.Name)
             .ToArray();
 
-        var files = loadout.Items
+        var files = LoadoutItem.FindByLoadout(loadout.Db, loadout)
             .OfTypeLoadoutItemWithTargetPath()
             .OfTypeLoadoutFile()
             .Select(f =>

@@ -39,5 +39,5 @@ public partial class GameBackedUpFile : IModelDefinition
     /// This is stored in the case of a future migration towards a system where
     /// we properly clean up files aft
     /// </summary>
-    public static readonly ReferenceAttribute<GameInstallMetadata> GameInstall = new(Namespace, nameof(GameInstall));
+    public static readonly ReferenceAttribute<Sdk.Games.GameInstallMetadata> GameInstall = new(Namespace, nameof(GameInstall));
 }

@@ -1,6 +1,7 @@
 using System.Text;
-using NexusMods.Abstractions.GameLocators;
+
 using NexusMods.Games.TestFramework;
+using NexusMods.Sdk.Games;
 using Xunit.Abstractions;
 
 namespace NexusMods.DataModel.Synchronizer.Tests;
@@ -24,7 +25,7 @@ public class GeneralFileManagementTests (ITestOutputHelper helper) : ACyberpunkI
         
         // Add a new file to the game
         var newfileGamePath = new GamePath(LocationId.Game, "bin/newFile.txt");
-        var newFileFullPath = GameInstallation.LocationsRegister.GetResolvedPath(newfileGamePath);
+        var newFileFullPath = GameInstallation.Locations.ToAbsolutePath(newfileGamePath);
         newFileFullPath.Parent.CreateDirectory();
         await newFileFullPath.WriteAllTextAsync("Hello World!");
         

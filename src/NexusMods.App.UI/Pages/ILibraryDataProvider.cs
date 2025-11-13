@@ -3,7 +3,6 @@ using DynamicData;
 using DynamicData.Aggregation;
 using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.App.UI.Controls;
@@ -15,6 +14,7 @@ using NexusMods.Networking.NexusWebApi;
 using NexusMods.Networking.NexusWebApi.UpdateFilters;
 using NexusMods.Sdk.Games;
 using NexusMods.Sdk.Library;
+using NexusMods.Sdk.Loadouts;
 using R3;
 using Observable = R3.Observable;
 
@@ -32,7 +32,7 @@ public interface ILibraryDataProvider
     LibraryFile.ReadOnly[] GetAllFiles(GameId gameId, IDb? db = null);
 }
 
-public record LibraryFilter(LoadoutId LoadoutId, ILocatableGame Game);
+public record LibraryFilter(LoadoutId LoadoutId, IGameData Game);
 
 public static class LibraryDataProviderHelper
 {

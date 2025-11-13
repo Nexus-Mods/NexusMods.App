@@ -6,7 +6,6 @@ using DynamicData.Kernel;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Helpers;
@@ -15,6 +14,7 @@ using NexusMods.App.UI.Pages.Downloads;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.Sdk.Games;
 using NexusMods.Sdk.NexusModsApi;
 using NexusMods.UI.Sdk;
 using NexusMods.UI.Sdk.Icons;
@@ -59,9 +59,9 @@ public class DownloadsLeftMenuViewModel : AViewModel<IDownloadsLeftMenuViewModel
         // Per-game downloads (dynamic)
         this.WhenActivated(disposable =>
         {
-            NexusMods.Abstractions.Loadouts.Loadout.ObserveAll(connection)
+            Sdk.Loadouts.Loadout.ObserveAll(connection)
                 .Filter(loadout => loadout.IsVisible())
-                .Group(loadout => loadout.InstallationInstance.GameMetadataId)
+                .Group(loadout => loadout.InstallationId)
                 .Transform(group => group.Cache.Items.First().InstallationInstance)
                 .Transform(gameInstallation => CreatePerGameDownloadItem(gameInstallation, workspaceController, workspaceId, logger))
                 .DisposeMany()

@@ -4,10 +4,12 @@ using Mutagen.Bethesda.Plugins.Records;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.Diagnostics.References;
-using NexusMods.Abstractions.GameLocators;
+
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Games.CreationEngine.Abstractions;
+using NexusMods.Sdk.Games;
+using NexusMods.Sdk.Loadouts;
 
 namespace NexusMods.Games.CreationEngine.Emitters;
 
@@ -35,7 +37,7 @@ public class MissingMasterEmitter : ILoadoutDiagnosticEmitter
         
         // Index the plugins in the loadout
         Dictionary<string, LoadoutItemGroup.ReadOnly> pluginsInLoadout = new();
-        foreach (var item in loadout.Items.OfTypeLoadoutItemWithTargetPath())
+        foreach (var item in LoadoutItem.FindByLoadout(loadout.Db, loadout).OfTypeLoadoutItemWithTargetPath())
         {
             var path = (GamePath)item.TargetPath;
             if (path.LocationId == LocationId.Game && path.Parent == KnownPaths.Data && KnownCEExtensions.Plugins.Contains(path.Extension))

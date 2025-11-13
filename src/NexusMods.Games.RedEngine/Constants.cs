@@ -1,4 +1,6 @@
-using NexusMods.Abstractions.GameLocators;
+
+using NexusMods.Sdk.Games;
+
 namespace NexusMods.Games.RedEngine;
 
 internal class Constants

@@ -1,5 +1,5 @@
-using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts.Synchronizers.Rules;
+using NexusMods.Sdk.Games;
 
 namespace NexusMods.Abstractions.Loadouts.Synchronizers;
 

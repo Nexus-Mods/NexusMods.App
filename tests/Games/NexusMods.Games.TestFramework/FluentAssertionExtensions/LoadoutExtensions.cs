@@ -1,9 +1,10 @@
 using FluentAssertions;
 using FluentAssertions.Collections;
 using FluentAssertions.Execution;
-using NexusMods.Abstractions.GameLocators;
+
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.MnemonicDB.Abstractions.IndexSegments;
+using NexusMods.Sdk.Games;
 
 namespace NexusMods.Games.TestFramework.FluentAssertionExtensions;
 

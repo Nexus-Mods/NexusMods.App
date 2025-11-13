@@ -4,6 +4,7 @@ using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Sdk.Settings;
 using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.Sdk.Loadouts;
 using R3;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;

@@ -1,6 +1,6 @@
 using JetBrains.Annotations;
-using NexusMods.Abstractions.GameLocators;
 using NexusMods.App.UI.Controls.Trees.Common;
+using NexusMods.Sdk.Games;
 
 namespace NexusMods.App.UI.Controls.Trees.Files;
 

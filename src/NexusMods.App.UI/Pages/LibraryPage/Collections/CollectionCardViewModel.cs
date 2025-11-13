@@ -12,6 +12,7 @@ using NexusMods.Collections;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using NexusMods.Sdk.Jobs;
+using NexusMods.Sdk.Loadouts;
 using NexusMods.UI.Sdk;
 using R3;
 using ReactiveUI;

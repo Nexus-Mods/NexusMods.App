@@ -35,6 +35,7 @@ using NexusMods.Networking.NexusWebApi;
 using NexusMods.Networking.NexusWebApi.UpdateFilters;
 using NexusMods.Paths;
 using NexusMods.Sdk;
+using NexusMods.Sdk.Loadouts;
 using NexusMods.UI.Sdk;
 using NexusMods.UI.Sdk.Dialog;
 using NexusMods.UI.Sdk.Dialog.Enums;
@@ -273,7 +274,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
                 configureAwait: false
             ).AddTo(disposables);
 
-            Loadout.MutableCollections(_connection, _loadout.LoadoutId)
+            LoadoutQueries2.MutableCollections(_connection, _loadout.LoadoutId)
                 .Observe(r => r.GroupId)
                 .Transform(r => new InstallationTarget(r.GroupId, r.Name))
                 .SortBy(target => target.Id.Value.Value)

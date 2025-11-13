@@ -1,9 +1,9 @@
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Diagnostics.Emitters;
-using NexusMods.Abstractions.Diagnostics.References;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Generators.Diagnostics;
+using NexusMods.Sdk.Loadouts;
 
 namespace Examples.Diagnostics;
 
@@ -38,7 +38,7 @@ file class MyDiagnosticLoadoutEmitter : ILoadoutDiagnosticEmitter
     {
         var res = new List<Diagnostic>();
 
-        var someMod = loadout.Items.First();
+        var someMod = LoadoutItem.FindByLoadout(loadout.Db, loadout).First();
 
         // this "Create" method was generated for you
         res.Add(Diagnostics.CreateModCompatabilityObsolete(

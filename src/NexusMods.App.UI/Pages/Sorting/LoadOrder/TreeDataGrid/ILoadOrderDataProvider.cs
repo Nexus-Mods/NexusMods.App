@@ -3,6 +3,7 @@ using DynamicData;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.App.UI.Controls;
+using NexusMods.Sdk.Loadouts;
 using R3;
 
 namespace NexusMods.App.UI.Pages.Sorting;

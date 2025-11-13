@@ -34,6 +34,7 @@ using NexusMods.MnemonicDB.Abstractions.Query;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Sdk;
+using NexusMods.Sdk.Loadouts;
 using NexusMods.UI.Sdk;
 using NexusMods.UI.Sdk.Dialog;
 using NexusMods.UI.Sdk.Dialog.Enums;
@@ -612,7 +613,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                     // or any of the children changed. We have that for Loadouts but not for LoadoutGroups.
                     // This query will produce false positives but not false negatives, the latter being more
                     // important.
-                    Loadout
+                    LoadoutQueries2
                         .RevisionsWithChildUpdates(_connection, loadout)
                         .Subscribe(_ => HasOutstandingChanges.Value = true)
                         .AddTo(disposables);

@@ -4,8 +4,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Cli;
 using NexusMods.Abstractions.EpicGameStore.Values;
-using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.GameLocators.Stores.GOG;
 using NexusMods.Abstractions.Games.FileHashes.Models;
 using NexusMods.Abstractions.GOG.DTOs;
 using NexusMods.Abstractions.GOG.Values;
@@ -22,6 +20,7 @@ using NexusMods.Networking.EpicGameStore.DTOs.EgData;
 using NexusMods.Paths;
 using NexusMods.Paths.Utilities;
 using NexusMods.Sdk;
+using NexusMods.Sdk.Games;
 using NexusMods.Sdk.ProxyConsole;
 using YamlDotNet.Serialization;
 using Build = NexusMods.Networking.EpicGameStore.DTOs.EgData.Build;
@@ -142,8 +141,8 @@ public class BuildHashesDb : IAsyncDisposable
         using var tx = _connection.BeginTransaction();
         foreach (var (gameName, osName, definition) in versionData)
         {
-            var gameObject = _gameRegistry.SupportedGames.First(g => g.DisplayName == gameName);
-            
+            var gameObject = Provider.GetServices<IGameData>().First(g => g.DisplayName == gameName);
+
             var os = osName switch
             {
                 "Windows" => OperatingSystem.Windows,
@@ -162,7 +161,7 @@ public class BuildHashesDb : IAsyncDisposable
                 EpicBuildIds = definition.Epic ?? [],
             };
 
-            var productIds = ((IGogGame)gameObject).GogIds.Select(id => ProductId.From((ulong)id));
+            var productIds = gameObject.StoreIdentifiers.GOGProductIds.Select(id => ProductId.From((ulong)id));
 
             // ?? is needed here because the parser 
             foreach (var id in definition.GOG ?? [])

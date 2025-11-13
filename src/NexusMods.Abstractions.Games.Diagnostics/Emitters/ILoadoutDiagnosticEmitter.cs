@@ -1,8 +1,8 @@
 using System.Collections.Frozen;
 using JetBrains.Annotations;
-using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
+using NexusMods.Sdk.Games;
+using NexusMods.Sdk.Loadouts;
 
 namespace NexusMods.Abstractions.Diagnostics.Emitters;
 

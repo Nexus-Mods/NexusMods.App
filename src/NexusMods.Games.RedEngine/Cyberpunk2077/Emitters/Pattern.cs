@@ -1,7 +1,8 @@
 using System.Text.RegularExpressions;
 using DynamicData.Kernel;
-using NexusMods.Abstractions.GameLocators;
+
 using NexusMods.Paths;
+using NexusMods.Sdk.Games;
 using NexusMods.Sdk.NexusModsApi;
 
 namespace NexusMods.Games.RedEngine.Cyberpunk2077.Emitters;

@@ -2,17 +2,17 @@ using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.Net.Http.Json;
 using System.Runtime.CompilerServices;
-using DynamicData.Kernel;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.Diagnostics.References;
 using NexusMods.Abstractions.Diagnostics.Values;
-using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Games.StardewValley.Models;
 using NexusMods.Sdk;
+using NexusMods.Sdk.Loadouts;
 using StardewModdingAPI;
 using StardewModdingAPI.Toolkit;
 
@@ -26,13 +26,16 @@ public class SMAPIGameVersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
 {
     private readonly ILogger _logger;
     private readonly HttpClient _client;
+    private readonly IGameDomainToGameIdMappingCache _mappingCache;
 
     public SMAPIGameVersionDiagnosticEmitter(
         ILogger<SMAPIGameVersionDiagnosticEmitter> logger,
-        HttpClient client)
+        HttpClient client,
+        IGameDomainToGameIdMappingCache mappingCache)
     {
         _logger = logger;
         _client = client;
+        _mappingCache = mappingCache;
     }
 
     public async IAsyncEnumerable<Diagnostic> Diagnose(Loadout.ReadOnly loadout, [EnumeratorCancellation] CancellationToken cancellationToken)
@@ -48,8 +51,7 @@ public class SMAPIGameVersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
 
         if (!Helpers.TryGetSMAPI(loadout, out var smapi))
         {
-            var smapiModCount = loadout
-                .Items
+            var smapiModCount = LoadoutItem.FindByLoadout(loadout.Db, loadout)
                 .OfTypeLoadoutItemGroup()
                 .OfTypeSMAPIModLoadoutItem()
                 .Count();
@@ -111,7 +113,7 @@ public class SMAPIGameVersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
         return Diagnostics.CreateSuggestSMAPIVersion(
             LatestSMAPIVersion: supportedSMAPIVersion.ToString(),
             CurrentGameVersion: gameVersion.ToString(),
-            SMAPINexusModsLink: Helpers.SMAPILink
+            SMAPINexusModsLink: Helpers.GetSMAPILink(_mappingCache)
         );
     }
 
@@ -146,7 +148,7 @@ public class SMAPIGameVersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
             MaximumGameVersion: maximumGameVersion.ToString(),
             CurrentGameVersion: gameVersion.ToString(),
             NewestSupportedSMAPIVersionForCurrentGameVersion: supportedSMAPIVersion.ToString(),
-            SMAPINexusModsLink: Helpers.SMAPILink,
+            SMAPINexusModsLink: Helpers.GetSMAPILink(_mappingCache),
             GitHubData: GitHubDataLink
         );
     }
@@ -180,7 +182,7 @@ public class SMAPIGameVersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
             MinimumGameVersion: minimumGameVersion.ToString(),
             CurrentGameVersion: gameVersion.ToString(),
             NewestSupportedSMAPIVersionForCurrentGameVersion: supportedSMAPIVersion.ToString(),
-            SMAPINexusModsLink: Helpers.SMAPILink,
+            SMAPINexusModsLink: Helpers.GetSMAPILink(_mappingCache),
             GitHubData: GitHubDataLink
         );
     }

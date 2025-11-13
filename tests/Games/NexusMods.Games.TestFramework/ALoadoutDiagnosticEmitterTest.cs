@@ -5,16 +5,14 @@ using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.Games;
-using NexusMods.Abstractions.Loadouts;
 using NexusMods.App.UI.DiagnosticSystem;
-using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.MnemonicDB.Abstractions.ElementComparers;
+using NexusMods.Sdk.Loadouts;
 using Xunit.Abstractions;
 
 namespace NexusMods.Games.TestFramework;
 
 public class ALoadoutDiagnosticEmitterTest<TTest, TGame, TEmitter> : AIsolatedGameTest<TTest, TGame>
-    where TGame : AGame
+    where TGame : IGame
     where TEmitter : ILoadoutDiagnosticEmitter
 {
     protected readonly TEmitter Emitter;

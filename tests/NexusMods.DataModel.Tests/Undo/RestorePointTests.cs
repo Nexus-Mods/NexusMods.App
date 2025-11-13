@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.DataModel.Undo;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.Sdk.Loadouts;
 using Xunit.Abstractions;
 
 namespace NexusMods.DataModel.Tests.Undo;

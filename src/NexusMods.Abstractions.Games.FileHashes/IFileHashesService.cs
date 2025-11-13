@@ -1,9 +1,10 @@
 using DynamicData.Kernel;
 using JetBrains.Annotations;
-using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.FileHashes.Models;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.Sdk;
+using NexusMods.Sdk.Games;
 using NexusMods.Sdk.NexusModsApi;
 
 namespace NexusMods.Abstractions.Games.FileHashes;
@@ -58,11 +59,9 @@ public interface IFileHashesService
     /// Suggest version data for a given game installation and files.
     /// </summary>
     public Optional<VersionData> SuggestVersionData(GameInstallation gameInstallation, IEnumerable<(GamePath Path, Hash Hash)> files);
-
-    LocatorId[] GetLocatorIdsForGame(GameInstallation loadoutInstallationInstance);
 }
 
 /// <summary>
-/// Tuple of many <see cref="LocatorId"/> and <see cref="GameLocators.VanityVersion"/>.
+/// Tuple of many <see cref="LocatorId"/> and <see cref="Sdk.VanityVersion"/>.
 /// </summary>
 public record struct VersionData(LocatorId[] LocatorIds, VanityVersion VanityVersion);

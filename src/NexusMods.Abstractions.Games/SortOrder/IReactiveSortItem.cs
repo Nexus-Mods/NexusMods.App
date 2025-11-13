@@ -1,4 +1,3 @@
-
 using DynamicData.Kernel;
 using NexusMods.Abstractions.Loadouts;
 

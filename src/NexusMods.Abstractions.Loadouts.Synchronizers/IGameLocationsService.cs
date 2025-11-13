@@ -1,8 +1,8 @@
 using System.Collections.Frozen;
 using JetBrains.Annotations;
-using NexusMods.Abstractions.GameLocators;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.Paths;
+using NexusMods.Sdk.Games;
 
 namespace NexusMods.Abstractions.Loadouts.Synchronizers;
 

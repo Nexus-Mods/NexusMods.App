@@ -11,6 +11,7 @@ using NexusMods.App.UI.Overlays.Generic.MessageBox.Ok;
 using NexusMods.App.UI.Resources;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Sdk.Jobs;
+using NexusMods.Sdk.Loadouts;
 using NexusMods.Telemetry;
 using NexusMods.UI.Sdk;
 using ReactiveUI;
@@ -62,7 +63,7 @@ public class LaunchButtonViewModel : AViewModel<ILaunchButtonViewModel>, ILaunch
 
     private async Task LaunchGame(CancellationToken token)
     {
-        var marker = NexusMods.Abstractions.Loadouts.Loadout.Load(_conn.Db, LoadoutId);
+        var marker = Sdk.Loadouts.Loadout.Load(_conn.Db, LoadoutId);
         SetLabelToRunning();
         try
         {
@@ -73,13 +74,13 @@ public class LaunchButtonViewModel : AViewModel<ILaunchButtonViewModel>, ILaunch
                 var sw = Stopwatch.StartNew();
                 try
                 {
-                    Tracking.AddEvent(Events.Game.LaunchGame, new EventMetadata(name: $"{installation.Game.DisplayName} - {installation.Store}"));
+                    Tracking.AddEvent(Events.Game.LaunchGame, new EventMetadata(name: $"{installation.Game.DisplayName} - {installation.LocatorResult.Store}"));
                     await _toolManager.RunTool(tool, marker, _monitor, token: token);
                 }
                 finally
                 {
                     var duration = sw.Elapsed;
-                    Tracking.AddEvent(Events.Game.ExitGame, EventMetadata.Create(name: $"{installation.Game.DisplayName} - {installation.Store}", value: duration.TotalSeconds));
+                    Tracking.AddEvent(Events.Game.ExitGame, EventMetadata.Create(name: $"{installation.Game.DisplayName} - {installation.LocatorResult.Store}", value: duration.TotalSeconds));
                 }
             }, token);
         }

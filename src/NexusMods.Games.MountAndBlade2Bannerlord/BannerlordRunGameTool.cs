@@ -1,13 +1,12 @@
 using Bannerlord.LauncherManager.Utils;
-using Bannerlord.ModuleManager;
 using CliWrap;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
-using NexusMods.Abstractions.Loadouts;
 using NexusMods.Games.Generic;
 using NexusMods.Paths;
+using NexusMods.Sdk.Games;
+using NexusMods.Sdk.Loadouts;
 using static Bannerlord.LauncherManager.Constants;
 namespace NexusMods.Games.MountAndBlade2Bannerlord;
 
@@ -41,7 +40,7 @@ public class BannerlordRunGameTool : RunGameTool<Bannerlord>
         // This way, external arguments specified by outside entities are preserved.
         var args = await GetBannerlordExeCommandlineArgs(loadout, commandLineArgs, cancellationToken);
         var install = loadout.InstallationInstance;
-        var exe = install.LocationsRegister[LocationId.Game];
+        var exe = install.Locations[LocationId.Game].Path;
 
         if (loadout.LocateBLSE(out var blseRelativePath))
         {
@@ -58,7 +57,7 @@ public class BannerlordRunGameTool : RunGameTool<Bannerlord>
         }
         else
         {
-            if (install.Store != GameStore.XboxGamePass) { exe = exe/BinFolder/Win64Configuration/BannerlordExecutable; }
+            if (install.LocatorResult.Store != GameStore.XboxGamePass) { exe = exe/BinFolder/Win64Configuration/BannerlordExecutable; }
             else { exe = exe/BinFolder/XboxConfiguration/BannerlordExecutable; }
         }
 

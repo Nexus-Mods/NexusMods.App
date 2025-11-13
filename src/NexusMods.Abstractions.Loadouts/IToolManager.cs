@@ -1,4 +1,5 @@
 using NexusMods.Sdk.Jobs;
+using NexusMods.Sdk.Loadouts;
 
 namespace NexusMods.Abstractions.Loadouts;
 

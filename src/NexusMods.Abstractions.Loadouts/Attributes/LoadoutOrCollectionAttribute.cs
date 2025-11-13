@@ -1,6 +1,7 @@
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.ValueSerializers;
+using NexusMods.Sdk.Loadouts;
 using OneOf;
 
 namespace NexusMods.Abstractions.Loadouts.Attributes;

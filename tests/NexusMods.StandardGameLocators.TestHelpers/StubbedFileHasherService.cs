@@ -2,7 +2,7 @@ using System.IO.Compression;
 using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.GameLocators;
+
 using NexusMods.Abstractions.Games.FileHashes;
 using NexusMods.Abstractions.Games.FileHashes.Models;
 using NexusMods.Sdk.Hashes;
@@ -11,7 +11,9 @@ using NexusMods.MnemonicDB;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Storage;
 using NexusMods.Paths;
+using NexusMods.Sdk;
 using NexusMods.Sdk.FileStore;
+using NexusMods.Sdk.Games;
 using NexusMods.Sdk.IO;
 using NexusMods.Sdk.NexusModsApi;
 
@@ -197,10 +199,10 @@ public class StubbedFileHasherService : IFileHashesService
         foreach (var versionDefinition in _versionFiles)
         {
             var (locatorIds , _) = versionDefinition;
-            var matchingCount = GetGameFiles((gameInstallation.Store, [locatorIds]))
+            var matchingCount = GetGameFiles((gameInstallation.LocatorResult.Store, [locatorIds]))
                 .Count(file => filesSet.Contains((file.Path, file.Hash)));
 
-            if (!TryGetVanityVersion((gameInstallation.Store, [locatorIds]), out var version))
+            if (!TryGetVanityVersion((gameInstallation.LocatorResult.Store, [locatorIds]), out var version))
             {
                 throw new Exception("Failed to suggest a game version");
             }
@@ -212,10 +214,5 @@ public class StubbedFileHasherService : IFileHashesService
             .OrderByDescending(t => t.Matches)
             .Select(t => t.VersionData)
             .FirstOrOptional(_ => true);
-    }
-
-    public LocatorId[] GetLocatorIdsForGame(GameInstallation loadoutInstallationInstance)
-    {
-        throw new NotImplementedException();
     }
 }

@@ -1,14 +1,15 @@
 using DynamicData.Kernel;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Diagnostics.Values;
-using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Extensions;
+using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Sdk.Resources;
 using NexusMods.Abstractions.Telemetry;
 using NexusMods.Games.StardewValley.Models;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Sdk;
+using NexusMods.Sdk.Loadouts;
 using NexusMods.Sdk.NexusModsApi;
 using StardewModdingAPI;
 using StardewModdingAPI.Toolkit;
@@ -18,12 +19,12 @@ namespace NexusMods.Games.StardewValley.Emitters;
 
 internal static class Helpers
 {
-    public static readonly NamedLink NexusModsLink = new("Nexus Mods", NexusModsUrlBuilder.GetGameUri(StardewValley.DomainStatic, campaign: NexusModsUrlBuilder.CampaignDiagnostics));
-    public static readonly NamedLink SMAPILink = new("Nexus Mods", NexusModsUrlBuilder.GetModUri(StardewValley.DomainStatic, ModId.From(2400), campaign: NexusModsUrlBuilder.CampaignDiagnostics));
+    public static NamedLink GetNexusModsLink(IGameDomainToGameIdMappingCache mapping) => new("Nexus Mods", NexusModsUrlBuilder.GetGameUri(mapping[StardewValley.NexusModsGameId.Value], campaign: NexusModsUrlBuilder.CampaignDiagnostics));
+    public static NamedLink GetSMAPILink(IGameDomainToGameIdMappingCache mapping) => new("Nexus Mods", NexusModsUrlBuilder.GetModUri(mapping[StardewValley.NexusModsGameId.Value], ModId.From(2400), campaign: NexusModsUrlBuilder.CampaignDiagnostics));
 
     public static ISemanticVersion GetGameVersion(Loadout.ReadOnly loadout)
     {
-        var game = (loadout.InstallationInstance.Game as AGame)!;
+        var game = loadout.Game;
 
         // NOTE(erri120): `Major.Minor.Patch` is the only thing the SMAPI API supports
         // in regard to SemanticVersion. Passing a `System.Version` into the constructor
@@ -33,7 +34,7 @@ internal static class Helpers
         // to it for some reason.
         // See https://github.com/Nexus-Mods/NexusMods.App/pull/2713 for details.
         var localVersion = game
-            .GetLocalVersion(loadout.Installation, loadout.InstallationInstance)
+            .GetLocalVersion(loadout.InstallationInstance)
             .Convert(static version => new SemanticVersion(version));
 
         if (localVersion.HasValue) return localVersion.Value;
@@ -57,7 +58,7 @@ internal static class Helpers
 
     public static bool TryGetSMAPI(Loadout.ReadOnly loadout, out SMAPILoadoutItem.ReadOnly smapi)
     {
-        var foundSMAPI = loadout.Items
+        var foundSMAPI = LoadoutItem.FindByLoadout(loadout.Db, loadout)
             .OfTypeLoadoutItemGroup()
             .OfTypeSMAPILoadoutItem()
             .TryGetFirst(x => x.AsLoadoutItemGroup().AsLoadoutItem().IsEnabled(), out smapi);

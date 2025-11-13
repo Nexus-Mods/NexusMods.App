@@ -8,6 +8,7 @@ using NexusMods.Games.TestFramework;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.Paths;
 using NexusMods.Sdk.Library;
+using NexusMods.Sdk.Loadouts;
 using NexusMods.StandardGameLocators.TestHelpers.StubbedGames;
 using static NexusMods.App.GarbageCollection.DataModel.Tests.FindUsedFiles.Helpers;
 
@@ -79,7 +80,7 @@ public class MarkUsedLibraryFilesTest(IServiceProvider serviceProvider, ILibrary
     private static void AssertAllLoadoutItemsAre(bool used, string reason, ArchiveGarbageCollector<NxParsedHeaderState, FileEntryWrapper> gc, Loadout.ReadOnly loadout)
     {
         // Verify that all LoadoutFiles in the loadout are marked as used
-        foreach (var item in loadout.Items)
+        foreach (var item in LoadoutItem.FindByLoadout(loadout.Db, loadout))
         {
             var hasTargetPath = item.TryGetAsLoadoutItemWithTargetPath(out var targetPath);
             var hasLoadoutFile = targetPath.TryGetAsLoadoutFile(out var loadoutFile);

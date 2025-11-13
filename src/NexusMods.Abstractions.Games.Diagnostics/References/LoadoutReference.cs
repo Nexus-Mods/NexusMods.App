@@ -2,6 +2,7 @@ using JetBrains.Annotations;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.Sdk.Loadouts;
 
 namespace NexusMods.Abstractions.Diagnostics.References;
 

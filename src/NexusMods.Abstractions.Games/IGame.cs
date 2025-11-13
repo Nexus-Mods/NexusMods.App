@@ -1,10 +1,9 @@
 using DynamicData.Kernel;
 using NexusMods.Abstractions.Diagnostics.Emitters;
-using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.Sdk.IO;
+using NexusMods.Sdk.Games;
 
 namespace NexusMods.Abstractions.Games;
 
@@ -12,46 +11,26 @@ namespace NexusMods.Abstractions.Games;
 /// Interface for a specific game recognized by the app. A single game can have
 /// multiple installations.
 /// </summary>
-public interface IGame : ILocatableGame
+public interface IGame : IGameData
 {
     /// <summary>
     /// Gets all available installers this game supports.
     /// </summary>
-    public ILibraryItemInstaller[] LibraryItemInstallers { get; }
+    ILibraryItemInstaller[] LibraryItemInstallers { get; }
 
     /// <summary>
     /// An array of all instances of <see cref="IDiagnosticEmitter"/> supported
     /// by the game.
     /// </summary>
-    public IDiagnosticEmitter[] DiagnosticEmitters { get; }
+    IDiagnosticEmitter[] DiagnosticEmitters { get; }
 
     /// <summary>
     /// The synchronizer for this game.
     /// </summary>
-    public ILoadoutSynchronizer Synchronizer { get; }
+    ILoadoutSynchronizer Synchronizer { get; }
     
     /// <summary>
     /// The sort order manager for this game.
     /// </summary>
-    public ISortOrderManager SortOrderManager { get; }
-    
-    /// <summary>
-    /// Constructs a <see cref="GameInstallation"/> from the given <see cref="GameLocatorResult"/>, and a unique DB ID,
-    /// also marks the installation was sourced from the given <see cref="IGameLocator"/>.
-    /// </summary>
-    public GameInstallation InstallationFromLocatorResult(GameLocatorResult metadata, EntityId dbId, IGameLocator locator);
-
-    /// <summary>
-    /// Returns the primary (executable) file for the game.
-    /// </summary>
-    GamePath GetPrimaryFile(GameTargetInfo targetInfo);
-
-    /// <summary>
-    /// Gets the fallback directory for mods in collections that don't have matching installers.
-    /// See https://github.com/Nexus-Mods/NexusMods.App/issues/2553 for details.
-    ///
-    /// Also is used for bundled mods.
-    /// See https://github.com/Nexus-Mods/NexusMods.App/issues/2630 for details.
-    /// </summary>
-    Optional<GamePath> GetFallbackCollectionInstallDirectory(GameTargetInfo targetInfo);
+    ISortOrderManager SortOrderManager { get; }
 }

@@ -1,6 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using DynamicData;
-using NexusMods.Abstractions.GameLocators;
+
+using NexusMods.Sdk.Games;
 using NexusMods.UI.Sdk;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.SelectLocation;

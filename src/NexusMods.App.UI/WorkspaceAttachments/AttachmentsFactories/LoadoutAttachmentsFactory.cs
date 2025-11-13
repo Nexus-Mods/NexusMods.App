@@ -1,6 +1,7 @@
 ﻿using NexusMods.Abstractions.Loadouts;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.Sdk.Loadouts;
 
 namespace NexusMods.App.UI.WorkspaceAttachments;
 

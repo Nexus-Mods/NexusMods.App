@@ -1,16 +1,19 @@
 using System.Collections.Immutable;
 using System.Runtime.CompilerServices;
 using DynamicData.Kernel;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.Diagnostics.References;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Extensions;
+using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Sdk.Resources;
 using NexusMods.Games.StardewValley.Models;
 using NexusMods.Games.StardewValley.WebAPI;
 using NexusMods.Paths;
+using NexusMods.Sdk.Loadouts;
 using StardewModdingAPI;
 using StardewModdingAPI.Toolkit;
 using SMAPIManifest = StardewModdingAPI.Toolkit.Serialization.Models.Manifest;
@@ -23,6 +26,7 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
     private readonly IOSInformation _os;
     private readonly ISMAPIWebApi _smapiWebApi;
     private readonly IResourceLoader<SMAPIManifestLoadoutFile.ReadOnly, SMAPIManifest> _manifestPipeline;
+    private readonly IGameDomainToGameIdMappingCache _mappingCache;
 
     public DependencyDiagnosticEmitter(
         IServiceProvider serviceProvider,
@@ -34,6 +38,7 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
         _smapiWebApi = smapiWebApi;
         _os = os;
         _manifestPipeline = Pipelines.GetManifestPipeline(serviceProvider);
+        _mappingCache = serviceProvider.GetRequiredService<IGameDomainToGameIdMappingCache>();
     }
 
     public async IAsyncEnumerable<Diagnostic> Diagnose(Loadout.ReadOnly loadout, [EnumeratorCancellation] CancellationToken cancellationToken)
@@ -176,7 +181,7 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
                 var modDetails = apiMods.GetValueOrDefault(missingDependency);
 
                 var name = modDetails?.Name ?? missingDependency;
-                var link = modDetails is null ? Helpers.NexusModsLink : modDetails.NexusModsLink.ValueOr(() => Helpers.NexusModsLink);
+                var link = modDetails is null ? Helpers.GetNexusModsLink(_mappingCache) : modDetails.NexusModsLink.ValueOr(() => Helpers.GetNexusModsLink(_mappingCache));
 
                 return Diagnostics.CreateMissingRequiredDependency(
                     SMAPIMod: loadoutItem.Parent.ToReference(loadout),
@@ -266,7 +271,7 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
             Dependency: LoadoutItem.Load(loadout.Db, tuple.DependencyModId).Parent.ToReference(loadout),
             MinimumVersion: tuple.MinimumVersion.ToString(),
             CurrentVersion: tuple.CurrentVersion.ToString(),
-            NexusModsDependencyUri: apiMods.GetLink(tuple.DependencyId, defaultValue: Helpers.NexusModsLink)
+            NexusModsDependencyUri: apiMods.GetLink(tuple.DependencyId, defaultValue: Helpers.GetNexusModsLink(_mappingCache))
         ));
     }
 

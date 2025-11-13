@@ -3,6 +3,7 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Synchronizers.Conflicts;
 using NexusMods.HyperDuck;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.Sdk.Loadouts;
 
 namespace NexusMods.DataModel.SchemaVersions.Migrations;
 

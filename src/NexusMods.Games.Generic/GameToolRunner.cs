@@ -1,12 +1,10 @@
-using System.Text;
 using CliWrap;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.GameLocators.Stores.Steam;
-using NexusMods.Abstractions.Loadouts;
 using NexusMods.Games.Generic.Dependencies;
 using NexusMods.Paths;
 using NexusMods.Sdk;
+using NexusMods.Sdk.Games;
+using NexusMods.Sdk.Loadouts;
 
 namespace NexusMods.Games.Generic;
 
@@ -47,10 +45,9 @@ public class GameToolRunner
 
         // For Linux, if the user is managing the game via Steam, we can use proton (via protontricks)
         var install = loadout.InstallationInstance;
-        if (install.Store == GameStore.Steam && _protontricks is not null 
-            && install.LocatorResultMetadata is SteamLocatorResultMetadata steamLocatorResultMetadata)
+        if (install.LocatorResult.Store == GameStore.Steam && _protontricks is not null)
         {
-            var appId = steamLocatorResultMetadata.AppId;
+            var appId = uint.Parse(install.LocatorResult.StoreIdentifier);
             command = await _protontricks.MakeLaunchCommand(command, appId);
         }
 

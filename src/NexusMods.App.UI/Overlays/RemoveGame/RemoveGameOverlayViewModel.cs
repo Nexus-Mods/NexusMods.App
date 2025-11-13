@@ -1,4 +1,3 @@
-using NexusMods.Abstractions.GameLocators;
 using NexusMods.Paths;
 using R3;
 

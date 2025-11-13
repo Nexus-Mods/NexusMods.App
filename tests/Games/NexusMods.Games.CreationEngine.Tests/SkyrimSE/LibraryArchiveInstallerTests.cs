@@ -1,10 +1,11 @@
 using Microsoft.Extensions.DependencyInjection;
 using Mutagen.Bethesda.Plugins;
-using NexusMods.Abstractions.GameLocators;
+
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Games.CreationEngine.Abstractions;
 using NexusMods.Games.TestFramework;
 using NexusMods.HyperDuck;
+using NexusMods.Sdk.Games;
 using NexusMods.Sdk.NexusModsApi;
 using NexusMods.StandardGameLocators.TestHelpers;
 using Xunit.Abstractions;

@@ -74,7 +74,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
         var collectionItemComparer = new LeftMenuCollectionItemComparer();
         var collectionDownloader = serviceProvider.GetRequiredService<CollectionDownloader>();
 
-        var loadout = Abstractions.Loadouts.Loadout.Load(conn.Db, loadoutContext.LoadoutId.Value);
+        var loadout = Sdk.Loadouts.Loadout.Load(conn.Db, loadoutContext.LoadoutId.Value);
         var game = loadout.InstallationInstance.Game;
 
         // Library

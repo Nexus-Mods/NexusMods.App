@@ -7,7 +7,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Collections;
 using NexusMods.Abstractions.Collections.Json;
-using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.FileHashes;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
@@ -23,6 +22,7 @@ using NexusMods.Paths;
 using NexusMods.Sdk;
 using NexusMods.Sdk.Hashes;
 using NexusMods.Sdk.IO;
+using NexusMods.Sdk.Loadouts;
 using NexusMods.Telemetry;
 using NexusMods.Sdk.Library;
 using CollectionMod = NexusMods.Abstractions.Collections.Json.Mod;
@@ -198,7 +198,7 @@ public static class CollectionCreator
 
         var result = await tx.Commit();
 
-        Tracking.AddEvent(Events.Collections.CreateLocalCollection, new EventMetadata(name: $"{loadout.LocatableGame.DisplayName} - {newName}"));
+        Tracking.AddEvent(Events.Collections.CreateLocalCollection, new EventMetadata(name: $"{loadout.Game.DisplayName} - {newName}"));
         return result.Remap(group);
     }
 
@@ -226,8 +226,8 @@ public static class CollectionCreator
 
         await fileHashesService.GetFileHashesDb();
         var installation = group.AsLoadoutItemGroup().AsLoadoutItem().Loadout.InstallationInstance;
-        var locatorIds = installation.LocatorResultMetadata?.ToLocatorIds().ToArray() ?? [];
-        var vanityVersion = fileHashesService.TryGetVanityVersion((installation.Store, locatorIds), out var tmpVanityVersion) ? tmpVanityVersion : VanityVersion.From("Unknown");
+        var locatorIds = installation.LocatorResult.LocatorIds.ToArray();
+        var vanityVersion = fileHashesService.TryGetVanityVersion((installation.LocatorResult.Store, locatorIds), out var tmpVanityVersion) ? tmpVanityVersion : VanityVersion.From("Unknown");
 
         var collectionManifest = LoadoutItemGroupToCollectionManifest(
             group: group.AsLoadoutItemGroup(),

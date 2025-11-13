@@ -13,7 +13,9 @@ using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.Sdk.Games;
 using NexusMods.Sdk.Jobs;
+using NexusMods.Sdk.Loadouts;
 using NexusMods.UI.Sdk;
 using R3;
 using ReactiveUI;
@@ -30,6 +32,7 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
     private readonly ISynchronizerService _syncService;
     private readonly IJobMonitor _jobMonitor;
     private readonly IWindowNotificationService _notificationService;
+    private readonly IGameRegistry _gameRegistry;
 
     private readonly LoadoutId _loadoutId;
     private readonly IServiceProvider _serviceProvider;
@@ -57,8 +60,9 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
         _jobMonitor = serviceProvider.GetRequiredService<IJobMonitor>();
         _notificationService = serviceProvider.GetRequiredService<IWindowNotificationService>();
         var windowManager = serviceProvider.GetRequiredService<IWindowManager>();
-        
-        _gameMetadataId = NexusMods.Abstractions.Loadouts.Loadout.Load(_conn.Db, loadoutId).InstallationId;
+        _gameRegistry = serviceProvider.GetRequiredService<IGameRegistry>();
+
+        _gameMetadataId = Sdk.Loadouts.Loadout.Load(_conn.Db, loadoutId).InstallationId;
 
         LaunchButtonViewModel = serviceProvider.GetRequiredService<ILaunchButtonViewModel>();
         LaunchButtonViewModel.LoadoutId = loadoutId;
@@ -95,8 +99,11 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
                 var gameStatuses = _syncService.StatusForGame(_gameMetadataId)
                     .Prepend(GameSynchronizerState.Idle);
 
-                var hasUnmanagingJob = _jobMonitor.HasActiveJob<UnmanageGameJob>(job => job.Installation.GameMetadataId.Equals(_gameMetadataId.Value))
-                    .Prepend(false);
+                var hasUnmanagingJob = _jobMonitor.HasActiveJob<UnmanageGameJob>(job =>
+                {
+                    if (!_gameRegistry.TryGetMetadata(job.Installation, out var metadata)) return false;
+                    return metadata.GameInstallMetadataId == _gameMetadataId;
+                }).Prepend(false);
 
                 // Note(sewer):
                 // Fire an initial value with StartWith because CombineLatest requires all stuff to have latest values.
@@ -152,7 +159,7 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
 
     private async Task Apply()
     {
-        var loadout = NexusMods.Abstractions.Loadouts.Loadout.Load(_conn.Db, _loadoutId);
+        var loadout = Sdk.Loadouts.Loadout.Load(_conn.Db, _loadoutId);
         try
         {
             await Task.Run(async () =>

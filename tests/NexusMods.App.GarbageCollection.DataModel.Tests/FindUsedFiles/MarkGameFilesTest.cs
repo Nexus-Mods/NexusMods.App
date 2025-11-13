@@ -1,8 +1,9 @@
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.GameLocators;
+
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.App.GarbageCollection.Nx;
+using NexusMods.Backend;
 using NexusMods.CrossPlatform;
 using NexusMods.Games.Generic;
 using NexusMods.Games.RedEngine;
@@ -10,6 +11,7 @@ using NexusMods.Games.RedEngine.Cyberpunk2077;
 using NexusMods.Games.TestFramework;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.Paths;
+using NexusMods.Sdk.Games;
 using NexusMods.StandardGameLocators;
 using NexusMods.StandardGameLocators.TestHelpers;
 using NexusMods.StandardGameLocators.TestHelpers.StubbedGames;
@@ -112,7 +114,7 @@ public class AGCStubbedGameTest<TTest> : AIsolatedGameTest<TTest, StubbedGame>
     /// </remarks>
     protected override async Task GenerateGameFiles()
     {
-        var register = GameInstallation.LocationsRegister;
+        var register = GameInstallation.Locations;
         var gameFolder = register.GetTopLevelLocations().First(x => x.Key == LocationId.Game);
         var destination = gameFolder.Value.Combine(GcRootFileName);
 
@@ -127,8 +129,6 @@ public class AGCStubbedGameTest<TTest> : AIsolatedGameTest<TTest, StubbedGame>
     
     protected override IServiceCollection AddServices(IServiceCollection services)
     {
-        return base.AddServices(services)
-            .AddStandardGameLocators(false)
-            .AddStubbedGameLocators();
+        return base.AddServices(services).AddGameLocators();
     }
 }

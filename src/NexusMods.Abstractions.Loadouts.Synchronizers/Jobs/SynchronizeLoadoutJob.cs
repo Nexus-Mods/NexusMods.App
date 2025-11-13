@@ -1,4 +1,5 @@
 using NexusMods.Sdk.Jobs;
+using NexusMods.Sdk.Loadouts;
 using R3;
 
 namespace NexusMods.Abstractions.Loadouts.Synchronizers;

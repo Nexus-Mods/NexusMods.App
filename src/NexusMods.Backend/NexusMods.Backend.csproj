@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <ItemGroup>
-        <ProjectReference Include="..\NexusMods.Abstractions.GameLocators\NexusMods.Abstractions.GameLocators.csproj" />
         <ProjectReference Include="..\NexusMods.Abstractions.Games.FileHashes\NexusMods.Abstractions.Games.FileHashes.csproj" />
+        <ProjectReference Include="..\NexusMods.Abstractions.Games\NexusMods.Abstractions.Games.csproj" />
         <ProjectReference Include="..\NexusMods.Abstractions.Loadouts.Synchronizers\NexusMods.Abstractions.Loadouts.Synchronizers.csproj" />
         <ProjectReference Include="..\NexusMods.Sdk\NexusMods.Sdk.csproj" />
         <ProjectReference Include="..\NexusMods.UI.Sdk\NexusMods.UI.Sdk.csproj" />
@@ -9,6 +9,7 @@
 
     <ItemGroup>
         <PackageReference Include="CommunityToolkit.HighPerformance"/>
+        <PackageReference Include="GameFinder" />
         <PackageReference Include="LinuxDesktopUtils.XDGDesktopPortal" />
         <PackageReference Include="Microsoft.Extensions.Http.Resilience" />
         <PackageReference Include="SharpZipLib" />

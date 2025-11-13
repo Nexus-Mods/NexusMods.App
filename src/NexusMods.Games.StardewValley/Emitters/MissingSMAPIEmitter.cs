@@ -3,12 +3,21 @@ using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Extensions;
+using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Games.StardewValley.Models;
+using NexusMods.Sdk.Loadouts;
 
 namespace NexusMods.Games.StardewValley.Emitters;
 
 public class MissingSMAPIEmitter : ILoadoutDiagnosticEmitter
 {
+    private readonly IGameDomainToGameIdMappingCache _mappingCache;
+    
+    public MissingSMAPIEmitter(IGameDomainToGameIdMappingCache mappingCache)
+    {
+        _mappingCache = mappingCache;
+    }
+
     public async IAsyncEnumerable<Diagnostic> Diagnose(
         Loadout.ReadOnly loadout,
         [EnumeratorCancellation] CancellationToken cancellationToken)
@@ -18,12 +27,12 @@ public class MissingSMAPIEmitter : ILoadoutDiagnosticEmitter
         var numEnabledSMAPIManifests = SMAPIManifestLoadoutFile.GetAllInLoadout(loadout.Db, loadout, onlyEnabled: true).Count();
         if (numEnabledSMAPIManifests == 0) yield break;
 
-        var smapiLoadoutItems = loadout.Items.OfTypeLoadoutItemGroup().OfTypeSMAPILoadoutItem().ToArray();
+        var smapiLoadoutItems = LoadoutItem.FindByLoadout(loadout.Db, loadout).OfTypeLoadoutItemGroup().OfTypeSMAPILoadoutItem().ToArray();
         if (smapiLoadoutItems.Length == 0)
         {
             yield return Diagnostics.CreateSMAPIRequiredButNotInstalled(
                 ModCount: numEnabledSMAPIManifests,
-                NexusModsSMAPIUri: Helpers.SMAPILink
+                NexusModsSMAPIUri: Helpers.GetSMAPILink(_mappingCache)
             );
 
             yield break;

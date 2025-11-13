@@ -2,14 +2,13 @@ using System.IO.Compression;
 using System.Text;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Games.RedEngine.Cyberpunk2077;
 using NexusMods.Games.TestFramework;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.Paths;
+using NexusMods.Sdk.Games;
 using NexusMods.StandardGameLocators.TestHelpers;
-using NexusMods.StandardGameLocators.Unknown;
 using Xunit.Abstractions;
 
 namespace NexusMods.DataModel.Synchronizer.Tests;
@@ -39,7 +38,7 @@ public class ExternalChangesTests : ACyberpunkIsolatedGameTest<ExternalChangesTe
             A new loadout has been created
             """, [loadoutA]);
 
-        var gameFolder = loadoutA.InstallationInstance.LocationsRegister[LocationId.Game];
+        var gameFolder = loadoutA.InstallationInstance.Locations[LocationId.Game].Path;
         await ExtractV2ToGameFolder(gameFolder);
 
         _locator.LocatorIds.Should().ContainSingle().Which.Value.Should().Be("StubbedGameState_game_v2.zip");
@@ -55,8 +54,8 @@ public class ExternalChangesTests : ACyberpunkIsolatedGameTest<ExternalChangesTe
             new GamePath(LocationId.Game, "game/Data/image.dds"),
             new GamePath(LocationId.Game, "game/Data/image2.dds"),
         };
-        
-        loadoutA.Items.OfTypeLoadoutItemWithTargetPath()
+
+        LoadoutItem.FindByLoadout(loadoutA.Db, loadoutA).OfTypeLoadoutItemWithTargetPath()
             .Select(i => (GamePath)i.TargetPath)
             .Should()
             .NotContain(changedFiles, "the files should not go into overrides or mods, but should update the game version");
@@ -70,7 +69,7 @@ public class ExternalChangesTests : ACyberpunkIsolatedGameTest<ExternalChangesTe
     public async Task ExistingFilesEndUpInOverrides()
     {
         // Get the game folder
-        var gameFolder = GameInstallation.LocationsRegister[LocationId.Game];
+        var gameFolder = GameInstallation.Locations[LocationId.Game].Path;
         
         await ExtractV2ToGameFolder(gameFolder);
 
@@ -87,8 +86,8 @@ public class ExternalChangesTests : ACyberpunkIsolatedGameTest<ExternalChangesTe
         loadoutA.GameVersion.Should().Be("1.1.Stubbed");
 
         // Check that the extra file is in the overrides folder and there should only be one such file
-        var extraFileGamePath = loadoutA.InstallationInstance.LocationsRegister.ToGamePath(extraFileName);
-        var extraFileRecord = loadoutA.Items.OfTypeLoadoutItemWithTargetPath().Single(f => f.TargetPath == extraFileGamePath);
+        var extraFileGamePath = loadoutA.InstallationInstance.Locations.ToGamePath(extraFileName);
+        var extraFileRecord =  LoadoutItem.FindByLoadout(loadoutA.Db, loadoutA).OfTypeLoadoutItemWithTargetPath().Single(f => f.TargetPath == extraFileGamePath);
         extraFileRecord.AsLoadoutItem().Parent.AsLoadoutItem().Name.Should().Be("Overrides", "the file should be in the overrides folder");
         
         // Delete the extra file
@@ -97,7 +96,7 @@ public class ExternalChangesTests : ACyberpunkIsolatedGameTest<ExternalChangesTe
         
         // Check that the extra file is no longer in the loadout. We can get an error here if reified deletes don't consider that the files they are
         // deleting may exist only in the overrides mod. In which case they should delete the entry instead.
-        loadoutA.Items.OfTypeLoadoutItemWithTargetPath().Select(f => (GamePath)f.TargetPath)
+        LoadoutItem.FindByLoadout(loadoutA.Db, loadoutA).OfTypeLoadoutItemWithTargetPath().Select(f => (GamePath)f.TargetPath)
             .Should()
             .NotContain(extraFileGamePath);
         
@@ -111,14 +110,14 @@ public class ExternalChangesTests : ACyberpunkIsolatedGameTest<ExternalChangesTe
     {
         await Synchronizer.RescanFiles(GameInstallation);
         var loadoutA = await CreateLoadout();
-        var externalFile = loadoutA.InstallationInstance.LocationsRegister[LocationId.Game] / "config.json";
+        var externalFile = loadoutA.InstallationInstance.Locations[LocationId.Game].Path / "config.json";
         var gameFile = new GamePath(LocationId.Game, "config.json");
 
         await externalFile.WriteAllTextAsync("version1");
         
         var loadout = await Synchronizer.Synchronize(loadoutA);
         
-        var externalFileRecord = loadout.Items.OfTypeLoadoutItemWithTargetPath().Single(f => f.TargetPath == gameFile);
+        var externalFileRecord =  LoadoutItem.FindByLoadout(loadoutA.Db, loadoutA).OfTypeLoadoutItemWithTargetPath().Single(f => f.TargetPath == gameFile);
         if (!externalFileRecord.TryGetAsLoadoutFile(out var loadoutFile))
             Assert.Fail("The file should be in the loadout");
 
@@ -128,7 +127,7 @@ public class ExternalChangesTests : ACyberpunkIsolatedGameTest<ExternalChangesTe
         
         loadout = await Synchronizer.Synchronize(loadout);
         
-        var refreshedRecord = loadout.Items.OfTypeLoadoutItemWithTargetPath().Single(f => f.TargetPath == gameFile);
+        var refreshedRecord =  LoadoutItem.FindByLoadout(loadoutA.Db, loadoutA).OfTypeLoadoutItemWithTargetPath().Single(f => f.TargetPath == gameFile);
         refreshedRecord.Id.Should().Be(externalFileRecord.Id, "the file should be the same id");
         
         if (!refreshedRecord.TryGetAsLoadoutFile(out var refreshedFile))

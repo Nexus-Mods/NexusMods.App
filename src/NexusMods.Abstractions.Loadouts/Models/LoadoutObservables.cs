@@ -1,15 +1,12 @@
 using DynamicData;
-using NexusMods.Abstractions.GameLocators;
-using NexusMods.Hashing.xxHash3;
 using NexusMods.HyperDuck;
 using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.Paths;
+using NexusMods.Sdk.Loadouts;
 
 namespace NexusMods.Abstractions.Loadouts;
 
-public partial class Loadout
+public class LoadoutQueries2
 {
-    
     /// <summary>
     /// Returns all mutable collection groups in a loadout.
     /// </summary>

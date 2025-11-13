@@ -2,6 +2,7 @@ using System.Runtime.InteropServices;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Sdk.Library;
+using NexusMods.Sdk.Loadouts;
 
 namespace NexusMods.App.UI.Pages.Library;
 
@@ -63,14 +64,13 @@ public record struct LibraryItemDeleteWarningDetector
         var gameToLoadoutRefCount = new Dictionary<EntityId, int>();
         foreach (var loadout in loadouts)
         {
-            var gameInfo = loadout.InstallationInstance;
-            ref var refCount = ref CollectionsMarshal.GetValueRefOrAddDefault(gameToLoadoutRefCount, gameInfo.GameMetadataId, out var exists);
+            ref var refCount = ref CollectionsMarshal.GetValueRefOrAddDefault(gameToLoadoutRefCount, loadout.InstallationId, out var exists);
             if (exists)
                 refCount++;
             else
                 refCount = 1;
         }
-        
+
         var nonPermanentItems = new List<LibraryItem.ReadOnly>();
         var manuallyAddedItems = new List<LibraryItem.ReadOnly>();
         var itemsInLoadouts = new List<LibraryItem.ReadOnly>();
@@ -99,11 +99,10 @@ public record struct LibraryItemDeleteWarningDetector
                 if (usedLoadouts.ContainsKey(loadout.LoadoutId)) 
                     continue;
 
-                var installation = loadout.InstallationInstance;
-                gameToLoadoutRefCount.TryGetValue(installation.GameMetadataId, out var refCount);
+                gameToLoadoutRefCount.TryGetValue(loadout.InstallationId, out var refCount);
                 usedLoadouts[loadout.LoadoutId] = new LibraryItemUsedLoadoutInfo()
                 {
-                    GameName = installation.Game.DisplayName,
+                    GameName = loadout.Game.DisplayName,
                     LoadoutName = loadout.Name,
                     IsOnlyLoadoutForGame = refCount <= 1,
                 };

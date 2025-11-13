@@ -2,7 +2,6 @@ using System.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Sdk.EventBus;
-using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.GOG;
 using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Loadouts;
@@ -16,6 +15,8 @@ using NexusMods.Networking.NexusWebApi.Auth;
 using NexusMods.Paths;
 using NexusMods.Sdk;
 using NexusMods.Sdk.Library;
+using NexusMods.Sdk.Games;
+using NexusMods.Sdk.Loadouts;
 using NexusMods.Sdk.Tracking;
 
 namespace NexusMods.CLI.Types.IpcHandlers;
@@ -223,23 +224,18 @@ public class NxmIpcProtocolHandler : IIpcProtocolHandler
         var gameRegistry = _serviceProvider.GetRequiredService<IGameRegistry>();
         var connection = _serviceProvider.GetRequiredService<IConnection>();
         var syncService = _serviceProvider.GetRequiredService<ISynchronizerService>();
-        
+
         var gameId = _cache[domain];
-        foreach (var installedGame in gameRegistry.InstalledGames)
+        foreach (var installedGame in gameRegistry.LocateGameInstallations())
         {
             if (installedGame.Game.NexusModsGameId != gameId) continue;
-            
-            if (syncService.TryGetLastAppliedLoadout(installedGame, out _))
-                return installedGame;
+            if (syncService.TryGetLastAppliedLoadout(installedGame, out _)) return installedGame;
 
-            var activeLoadouts = Loadout.All(connection.Db)
-                .Where(ld => ld.InstallationInstance.Game.NexusModsGameId == installedGame.Game.NexusModsGameId);
-
+            var activeLoadouts = Loadout.All(connection.Db).Where(ld => ld.Game.NexusModsGameId == installedGame.Game.NexusModsGameId);
             if (!activeLoadouts.Any()) continue;
-            
             return installedGame;
         }
-        
+
         return null;
     }
 }

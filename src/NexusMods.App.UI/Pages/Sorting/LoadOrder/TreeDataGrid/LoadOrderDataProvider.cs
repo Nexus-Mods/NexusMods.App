@@ -10,6 +10,7 @@ using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Sdk.Resources;
 using NexusMods.App.UI.Controls;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.Sdk.Loadouts;
 using R3;
 using ReactiveUI;
 // ReSharper disable InvokeAsExtensionMethod

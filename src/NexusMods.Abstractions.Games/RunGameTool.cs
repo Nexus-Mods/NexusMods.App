@@ -1,16 +1,13 @@
 using System.Diagnostics;
-using System.Globalization;
 using CliWrap;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.GameLocators.Stores.GOG;
-using NexusMods.Abstractions.GameLocators.Stores.Steam;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Paths;
 using NexusMods.Sdk;
 using NexusMods.Sdk.Games;
 using NexusMods.Sdk.Jobs;
+using NexusMods.Sdk.Loadouts;
 using R3;
 
 namespace NexusMods.Abstractions.Games;
@@ -62,19 +59,21 @@ public class RunGameTool<T> : IRunGameTool
         _logger.LogInformation("Starting {Name}", Name);
         
         var program = await GetGamePath(loadout);
-        var primaryFile = _game.GetPrimaryFile(loadout.InstallationInstance.TargetInfo).CombineChecked(loadout.InstallationInstance);
+        var primaryFile = loadout.InstallationInstance.Locations.ToAbsolutePath(_game.GetPrimaryFile(loadout.InstallationInstance));
 
         if (OSInformation.Shared.IsLinux && program.Equals(primaryFile))
         {
-            var locator = loadout.InstallationInstance.LocatorResultMetadata;
-            switch (locator)
+            var locatorResult = loadout.InstallationInstance.LocatorResult;
+            if (locatorResult.Store == GameStore.Steam)
             {
-                case SteamLocatorResultMetadata steamLocatorResultMetadata:
-                    await RunThroughSteam(steamLocatorResultMetadata.AppId, cancellationToken, commandLineArgs);
-                    return;
-                case HeroicGOGLocatorResultMetadata heroicGOGLocatorResultMetadata:
-                    await RunThroughHeroic("gog", heroicGOGLocatorResultMetadata.Id, cancellationToken, commandLineArgs);
-                    return;
+                await RunThroughSteam(locatorResult.StoreIdentifier, cancellationToken, commandLineArgs);
+                return;
+            }
+
+            if (locatorResult.Store == GameStore.GOG)
+            {
+                await RunThroughHeroic("gog", locatorResult.StoreIdentifier, cancellationToken, commandLineArgs);
+                return;
             }
         }
 
@@ -170,7 +169,7 @@ public class RunGameTool<T> : IRunGameTool
         return process;
     }
 
-    private async Task RunThroughSteam(uint appId, CancellationToken cancellationToken, string[] commandLineArgs)
+    private async Task RunThroughSteam(string appId, CancellationToken cancellationToken, string[] commandLineArgs)
     {
         if (!OSInformation.Shared.IsLinux) OSInformation.Shared.ThrowUnsupported();
 
@@ -182,7 +181,7 @@ public class RunGameTool<T> : IRunGameTool
 
         // Build the Steam URL with optional command line arguments
         // https://developer.valvesoftware.com/wiki/Steam_browser_protocol
-        var steamUrl = $"steam://run/{appId.ToString(CultureInfo.InvariantCulture)}";
+        var steamUrl = $"steam://run/{appId}";
         if (commandLineArgs is { Length: > 0 })
         {
             var encodedArgs = commandLineArgs
@@ -204,7 +203,7 @@ public class RunGameTool<T> : IRunGameTool
         await reaper.WaitForExitAsync(cancellationToken);
     }
 
-    private async Task RunThroughHeroic(string type, long appId, CancellationToken cancellationToken, string[] commandLineArgs)
+    private async Task RunThroughHeroic(string type, string productId, CancellationToken cancellationToken, string[] commandLineArgs)
     {
         Debug.Assert(OSInformation.Shared.IsLinux);
 
@@ -213,7 +212,7 @@ public class RunGameTool<T> : IRunGameTool
             _logger.LogError("Heroic does not currently support command line arguments: https://github.com/Nexus-Mods/NexusMods.App/issues/2264 . " +
                              $"Args {string.Join(',', commandLineArgs)} were specified but will be ignored.");
 
-        _osInterop.OpenUri(new Uri($"heroic://launch/{type}/{appId.ToString(CultureInfo.InvariantCulture)}"));
+        _osInterop.OpenUri(new Uri($"heroic://launch/{type}/{productId}"));
     }
 
     private async ValueTask<Process?> WaitForProcessToStart(
@@ -268,7 +267,8 @@ public class RunGameTool<T> : IRunGameTool
     /// <returns></returns>
     protected virtual ValueTask<AbsolutePath> GetGamePath(Loadout.ReadOnly loadout)
     {
-        return ValueTask.FromResult(_game.GetPrimaryFile(loadout.InstallationInstance.TargetInfo).Combine(loadout.InstallationInstance.LocationsRegister[LocationId.Game]));
+        var primaryFile = loadout.InstallationInstance.Locations.ToAbsolutePath(_game.GetPrimaryFile(loadout.InstallationInstance));
+        return new ValueTask<AbsolutePath>(primaryFile);
     }
 
     /// <inheritdoc />

@@ -1,6 +1,6 @@
 using System.Reactive;
 using Avalonia.Media.Imaging;
-using NexusMods.Abstractions.GameLocators;
+using NexusMods.Sdk.Games;
 using NexusMods.UI.Sdk;
 using NexusMods.UI.Sdk.Icons;
 using ReactiveUI;
@@ -9,7 +9,7 @@ namespace NexusMods.App.UI.Controls.GameWidget;
 
 public interface IGameWidgetViewModel : IViewModelInterface
 {
-    public GameInstallation Installation { get; set; }
+    public GameInstallation? Installation { get; set; }
     public string Name { get; }
     public string Version { get; }
     public string Store { get; }

@@ -3,11 +3,10 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Cli;
-using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.GameLocators.Stores.EGS;
 using NexusMods.Abstractions.Games;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
+using NexusMods.Sdk.Games;
 using NexusMods.Sdk.Hashes;
 using NexusMods.Sdk.Jobs;
 using NexusMods.Sdk.ProxyConsole;
@@ -27,7 +26,7 @@ public static class IndexEpicGame
     private static async Task<int> HashGameFiles(
         [Injected] IRenderer renderer,
         [Option("o", "output", "Path to the cloned GitHub hashes repo (with the `json` postfix)")] AbsolutePath output,
-        [Option("g", "game", "Game to index")] ILocatableGame game,
+        [Option("g", "game", "Game to index")] IGame game,
         [Injected] JsonSerializerOptions jsonSerializerOptions,
         [Injected] TemporaryFileManager temporaryFileManager,
         [Injected] IGameRegistry gameRegistry,
@@ -43,19 +42,17 @@ public static class IndexEpicGame
         
         var castedGame = (IGame)game;
 
-        var installation = gameRegistry.Installations
-            .Where(g => g.Value.Game.NexusModsGameId == game.NexusModsGameId)
-            .FirstOrDefault(g => g.Value.Game is IEpicGame); 
+        var installation = gameRegistry
+            .LocateGameInstallations()
+            .FirstOrDefault(installation => installation.Game.GameId == game.GameId && installation.LocatorResult.Store == GameStore.EGS);
         
-        if (installation.Value == null)
+        if (installation is null)
         {
             await renderer.TextLine($"Game {castedGame.DisplayName} is not installed via Epic Game Store.", token);
             return 1;
         }
-        
-        var location = installation.Value.LocationsRegister[LocationId.Game];
 
-        
+        var location = installation.Locations[LocationId.Game].Path;
         await renderer.TextLine($"Indexing {castedGame.DisplayName} at ({location})", token);
 
         var hashes = new ConcurrentDictionary<RelativePath, MultiHash>();

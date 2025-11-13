@@ -2,14 +2,13 @@ using System.Reflection;
 using CliWrap;
 using DynamicData.Kernel;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.GameLocators.Stores.Steam;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Games.Generic;
 using NexusMods.Games.RedEngine.Cyberpunk2077.SortOrder;
 using NexusMods.Paths;
 using NexusMods.Sdk.Games;
 using NexusMods.Sdk.Jobs;
+using NexusMods.Sdk.Loadouts;
 using R3;
 using static NexusMods.Games.RedEngine.Constants;
 
@@ -34,8 +33,8 @@ public class RedModDeployTool : ITool
 
     public async Task Execute(Loadout.ReadOnly loadout, CancellationToken cancellationToken)
     {
-        var exe = RedModPath.CombineChecked(loadout.InstallationInstance);
-        var deployFolder = RedModDeployFolder.CombineChecked(loadout.InstallationInstance);
+        var exe = loadout.InstallationInstance.Locations.ToAbsolutePath(RedModPath);
+        var deployFolder = loadout.InstallationInstance.Locations.ToAbsolutePath(RedModDeployFolder);
 
         await using var loadorderFile = _temporaryFileManager.CreateFile();
         await WriteLoadOrderFile(loadorderFile.Path, loadout);
@@ -58,10 +57,12 @@ public class RedModDeployTool : ITool
         }
         else
         {
-            if (loadout.InstallationInstance.LocatorResultMetadata is SteamLocatorResultMetadata steamLocatorResultMetadata)
+            if (loadout.Installation.Store == GameStore.Steam)
             {
-                if (steamLocatorResultMetadata.LinuxCompatibilityDataProvider is null) return;
-                var wineDirectory = steamLocatorResultMetadata.LinuxCompatibilityDataProvider.WinePrefixDirectoryPath;
+                var linuxCompatibilityDataProvider = loadout.InstallationInstance.LocatorResult.LinuxCompatabilityDataProvider;
+                if (linuxCompatibilityDataProvider is null) return;
+
+                var wineDirectory = linuxCompatibilityDataProvider.WinePrefixDirectoryPath;
                 var cDriveDirectory = wineDirectory.Combine("drive_c");
 
                 if (!cDriveDirectory.DirectoryExists()) cDriveDirectory.CreateDirectory();

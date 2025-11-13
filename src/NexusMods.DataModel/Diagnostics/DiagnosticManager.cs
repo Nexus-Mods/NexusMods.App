@@ -1,7 +1,5 @@
 using System.Collections.Frozen;
-using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using System.Reactive.Subjects;
 using DynamicData;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
@@ -10,9 +8,10 @@ using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.MnemonicDB.Abstractions.BuiltInEntities;
+using NexusMods.Sdk.Loadouts;
 using R3;
 using CompositeDisposable = R3.CompositeDisposable;
+using GameInstallMetadata = NexusMods.Sdk.Games.GameInstallMetadata;
 
 namespace NexusMods.DataModel.Diagnostics;
 
@@ -44,7 +43,7 @@ internal sealed class DiagnosticManager : IDiagnosticManager
             var existingObservable = _observableCache.Lookup(loadoutId);
             if (existingObservable.HasValue) return existingObservable.Value.AsSystemObservable();
 
-            var connectableObservable = Loadout.RevisionsWithChildUpdates(_connection, loadoutId)
+            var connectableObservable = LoadoutQueries2.RevisionsWithChildUpdates(_connection, loadoutId)
                 .ToObservable()
                 .Debounce(TimeSpan.FromMilliseconds(250))
                 .SelectAwait(async (_, cancellationToken) =>
@@ -83,7 +82,7 @@ internal sealed class DiagnosticManager : IDiagnosticManager
         
         var db = _connection.Db;
         var synchronizer = loadout.InstallationInstance.GetGame().Synchronizer;
-        var metaData = GameInstallMetadata.Load(db, loadout.InstallationInstance.GameMetadataId);
+        var metaData = loadout.Installation;
         var hasPreviousLoadout = GameInstallMetadata.LastSyncedLoadoutTransaction.TryGetValue(metaData, out var lastId);
 
         var lastScannedDiskState = await Task.Run(() => synchronizer.GetLastScannedDiskState(metaData), cancellationToken);
