@@ -1,5 +1,6 @@
-using NexusMods.Abstractions.GameLocators;
+using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Games;
+using NexusMods.Sdk.Games;
 using NexusMods.Sdk.ProxyConsole;
 
 namespace NexusMods.CLI.OptionParsers;
@@ -7,16 +8,17 @@ namespace NexusMods.CLI.OptionParsers;
 /// <summary>
 /// Parses a string into an <see cref="IGame"/>
 /// </summary>
-internal class GameParser(IGameRegistry gameRegistry) : IOptionParser<IGame>
+internal class GameParser(IServiceProvider serviceProvider) : IOptionParser<IGame>
 {
     public bool TryParse(string toParse, out IGame value, out string error)
     {
-        var game = gameRegistry.SupportedGames.FirstOrDefault(g => g.DisplayName.Equals(toParse, StringComparison.OrdinalIgnoreCase));
+        var games = serviceProvider.GetServices<IGameData>().ToArray();
+        var game = games.FirstOrDefault(x => x.DisplayName.Equals(toParse, StringComparison.OrdinalIgnoreCase));
         if (game is null && ulong.TryParse(toParse, out var parsedGameId))
         {
-            game = gameRegistry.SupportedGames.FirstOrDefault(g => g.GameId == parsedGameId);
+            game = games.FirstOrDefault(x => x.GameId == parsedGameId);
         }
-        
+
         if (game is null)
         {
             value = null!;

@@ -2,7 +2,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.GameLocators;
+
 using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Hashing.xxHash3;
@@ -13,6 +13,8 @@ using NexusMods.Paths.Trees.Traits;
 using NexusMods.Sdk.IO;
 using NexusMods.Sdk.FileStore;
 using NexusMods.Sdk.Library;
+using NexusMods.Sdk.Games;
+using NexusMods.Sdk.Loadouts;
 
 namespace NexusMods.Games.RedEngine.ModInstallers;
 

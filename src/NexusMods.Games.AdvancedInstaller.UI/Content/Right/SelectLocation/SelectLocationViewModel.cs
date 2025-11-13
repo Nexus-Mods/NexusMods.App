@@ -1,11 +1,13 @@
 ﻿using System.Collections.ObjectModel;
 using DynamicData;
-using NexusMods.Abstractions.GameLocators;
+
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Helpers.TreeDataGrid;
 using NexusMods.Games.AdvancedInstaller.UI.Resources;
 using NexusMods.Paths;
+using NexusMods.Sdk.Games;
+using NexusMods.Sdk.Loadouts;
 using NexusMods.UI.Sdk;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.SelectLocation;
@@ -31,7 +33,7 @@ public class SelectLocationViewModel : AViewModel<ISelectLocationViewModel>,
     {
         var installation = loadout.InstallationInstance;
         var gameName = installation.Game.DisplayName;
-        var register = installation.LocationsRegister;
+        var register = installation.Locations;
 
         SuggestedAreaSubtitle = string.Format(Language.SelectLocationViewModel_SuggestedLocationsSubtitle, gameName);
 
@@ -56,7 +58,7 @@ public class SelectLocationViewModel : AViewModel<ISelectLocationViewModel>,
     /// </summary>
     /// <param name="register"></param>
     /// <returns></returns>
-    private static IEnumerable<ISuggestedEntryViewModel> CreateSuggestedEntries(IGameLocationsRegister register)
+    private static IEnumerable<ISuggestedEntryViewModel> CreateSuggestedEntries(GameLocations register)
     {
         List<ISuggestedEntryViewModel> suggestedEntries = new();
 
@@ -71,9 +73,9 @@ public class SelectLocationViewModel : AViewModel<ISelectLocationViewModel>,
             ));
 
             // Add nested locations to suggested entries.
-            foreach (var nestedLocation in register.GetNestedLocations(locationId))
+            foreach (var nestedLocation in register[locationId].NestedLocations)
             {
-                var nestedFullPath = register.GetResolvedPath(nestedLocation);
+                var nestedFullPath = register[nestedLocation].Path;
                 var relativePath = nestedFullPath.RelativeTo(fullPath);
                 suggestedEntries.Add(new SuggestedEntryViewModel(
                     id: Guid.NewGuid(),
@@ -93,7 +95,7 @@ public class SelectLocationViewModel : AViewModel<ISelectLocationViewModel>,
     /// <param name="register">The game locations register</param>
     /// <param name="loadout">The loadout</param>
     /// <returns>The list of created tree entries that need to be added to the cache.</returns>
-    private static List<ISelectableTreeEntryViewModel> CreateTreeEntries(IGameLocationsRegister register, Loadout.ReadOnly loadout)
+    private static List<ISelectableTreeEntryViewModel> CreateTreeEntries(GameLocations register, Loadout.ReadOnly loadout)
     {
         // Initial population of the tree based on LocationIds
         List<ISelectableTreeEntryViewModel> treeEntries = new();
@@ -112,9 +114,9 @@ public class SelectLocationViewModel : AViewModel<ISelectLocationViewModel>,
             treeEntries.Add(createFolderEntry);
 
             // Add nested
-            foreach (var nestedLocation in register.GetNestedLocations(locationId))
+            foreach (var nestedLocation in register[locationId].NestedLocations)
             {
-                var nestedFullPath = register.GetResolvedPath(nestedLocation);
+                var nestedFullPath = register[nestedLocation].Path;
                 var relativePath = nestedFullPath.RelativeTo(fullPath);
                 var relativeGamePath = new GamePath(locationId, relativePath);
                 // Add all nodes from root to nested location.

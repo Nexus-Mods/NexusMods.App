@@ -3,6 +3,7 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Paths;
 using NexusMods.Paths.Trees;
 using NexusMods.Sdk.Library;
+using NexusMods.Sdk.Loadouts;
 using NexusMods.UI.Sdk;
 using ReactiveUI;
 

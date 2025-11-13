@@ -10,6 +10,7 @@ using NexusMods.DataModel;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using NexusMods.Sdk.FileExtractor;
+using NexusMods.Sdk.Loadouts;
 using NexusMods.Sdk.ProxyConsole;
 using NexusMods.Sdk.Tracking;
 

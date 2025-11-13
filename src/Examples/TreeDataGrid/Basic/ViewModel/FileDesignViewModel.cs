@@ -1,5 +1,5 @@
 using System.Collections.ObjectModel;
-using NexusMods.Abstractions.GameLocators;
+using NexusMods.Sdk.Games;
 using NexusMods.UI.Sdk;
 using ReactiveUI.Fody.Helpers;
 

@@ -6,7 +6,6 @@ using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Collections;
-using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Games.FileHashes;
 using NexusMods.Abstractions.GC;
@@ -23,8 +22,10 @@ using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 using NexusMods.MnemonicDB.Abstractions.Internals;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.MnemonicDB.Abstractions.ValueSerializers;
+using NexusMods.Sdk.Games;
 using NexusMods.Sdk.Jobs;
 using NexusMods.Sdk.Library;
+using NexusMods.Sdk.Loadouts;
 
 namespace NexusMods.DataModel;
 
@@ -37,6 +38,7 @@ internal partial class LoadoutManager : ILoadoutManager
     private readonly IConnection _connection;
     private readonly ISynchronizerService _synchronizerService;
     private readonly IGarbageCollectorRunner _garbageCollectorRunner;
+    private readonly IGameRegistry _gameRegistry;
 
     public LoadoutManager(IServiceProvider serviceProvider)
     {
@@ -47,6 +49,7 @@ internal partial class LoadoutManager : ILoadoutManager
         _connection = serviceProvider.GetRequiredService<IConnection>();
         _synchronizerService = serviceProvider.GetRequiredService<ISynchronizerService>();
         _garbageCollectorRunner = serviceProvider.GetRequiredService<IGarbageCollectorRunner>();
+        _gameRegistry = serviceProvider.GetRequiredService<IGameRegistry>();
     }
 
     public IJobTask<CreateLoadoutJob, Loadout.ReadOnly> CreateLoadout(GameInstallation installation, string? suggestedName = null)
@@ -56,16 +59,30 @@ internal partial class LoadoutManager : ILoadoutManager
             // Prime the hash database to make sure it's loaded
             await _fileHashesService.GetFileHashesDb();
 
-            var shortName = GetNewShortName(_connection.Db, installation.GameMetadataId);
+            if (!_gameRegistry.TryGetMetadata(installation, out var metadata))
+            {
+                using var metadataTx = _connection.BeginTransaction();
+                var newMetadata = new GameInstallMetadata.New(metadataTx)
+                {
+                    Store = installation.LocatorResult.Store,
+                    Path = installation.Locations[LocationId.Game].Path.ToString(),
+                    GameId = installation.Game.NexusModsGameId.Value,
+                    Name = installation.Game.DisplayName,
+                };
+
+                var metadataResult = await metadataTx.Commit();
+                metadata = metadataResult.Remap(newMetadata);
+            }
+
+            var shortName = GetNewShortName(_connection.Db, metadata);
 
             using var tx = _connection.BeginTransaction();
 
             List<LocatorId> locatorIds = [];
-            if (installation.LocatorResultMetadata != null)
             {
-                var metadataLocatorIds = installation.LocatorResultMetadata.ToLocatorIds().ToArray();
+                var metadataLocatorIds = installation.LocatorResult.LocatorIds;
                 var distinctLocatorIds = metadataLocatorIds.Distinct().ToArray();
-                    
+
                 if (distinctLocatorIds.Length != metadataLocatorIds.Length)
                 {
                     _logger.LogWarning("Duplicate locator ids `{LocatorIds}` found in LocatorResultMetadata for {Game} when creating new loadout", metadataLocatorIds, installation.Game.DisplayName);
@@ -74,14 +91,14 @@ internal partial class LoadoutManager : ILoadoutManager
                 locatorIds.AddRange(distinctLocatorIds);
             }
 
-            if (!_fileHashesService.TryGetVanityVersion((installation.Store, locatorIds.ToArray()), out var version))
-                _logger.LogWarning("Unable to find game version for {Game}", installation.GameMetadataId);
+            if (!_fileHashesService.TryGetVanityVersion((installation.LocatorResult.Store, locatorIds.ToArray()), out var version))
+                _logger.LogWarning("Unable to find game version for {Game}", installation.Game.DisplayName);
 
             var loadout = new Loadout.New(tx)
             {
                 Name = suggestedName ?? "Loadout " + shortName,
                 ShortName = shortName,
-                InstallationId = installation.GameMetadataId,
+                InstallationId = metadata,
                 Revision = 0,
                 LoadoutKind = LoadoutKind.Default,
                 LocatorIds = locatorIds,
@@ -162,7 +179,7 @@ internal partial class LoadoutManager : ILoadoutManager
         entityIdList[loadout.Id] = newLoadoutId;
 
         // And each item
-        foreach (var item in loadout.Items)
+        foreach (var item in LoadoutItem.FindByLoadout(loadout.Db, loadout))
         {
             entityIdList[item.Id] = tx.TempId();
         }
@@ -219,7 +236,7 @@ internal partial class LoadoutManager : ILoadoutManager
         var loadout = Loadout.Load(_connection.Db, loadoutId);
         Debug.Assert(!loadout.IsVisible(), "loadout shouldn't be visible anymore");
 
-        var metadata = GameInstallMetadata.Load(_connection.Db, loadout.InstallationInstance.GameMetadataId);
+        var metadata = GameInstallMetadata.Load(_connection.Db, loadout.InstallationId);
         if (deactivateIfActive && GameInstallMetadata.LastSyncedLoadout.TryGetValue(metadata, out var lastAppliedLoadout) && lastAppliedLoadout == loadoutId.Value)
         {
             await DeactivateCurrentLoadout(loadout.InstallationInstance, cancellationToken: cancellationToken);
@@ -228,7 +245,7 @@ internal partial class LoadoutManager : ILoadoutManager
         using var tx = _connection.BeginTransaction();
 
         tx.Delete(loadoutId, recursive: false);
-        foreach (var item in loadout.Items)
+        foreach (var item in LoadoutItem.FindByLoadout(loadout.Db, loadout))
         {
             tx.Delete(item.Id, recursive: false);
         }
@@ -255,7 +272,7 @@ internal partial class LoadoutManager : ILoadoutManager
 
     public async ValueTask DeactivateCurrentLoadout(GameInstallation installation, CancellationToken cancellationToken = default)
     {
-        var metadata = installation.GetMetadata(_connection);
+        var metadata = _gameRegistry.ForceGetMetadata(installation);
         var synchronizer = installation.GetGame().Synchronizer;
 
         if (!metadata.Contains(GameInstallMetadata.LastSyncedLoadout)) return;
@@ -263,7 +280,7 @@ internal partial class LoadoutManager : ILoadoutManager
         // Synchronize the last applied loadout, so we don't lose any changes
         await synchronizer.Synchronize(Loadout.Load(_connection.Db, metadata.LastSyncedLoadout));
 
-        var metadataLocatorIds = installation.LocatorResultMetadata?.ToLocatorIds().ToArray() ?? [];
+        var metadataLocatorIds = installation.LocatorResult.LocatorIds;
         var locatorIds = metadataLocatorIds.Distinct().ToArray();
         
         if (locatorIds.Length != metadataLocatorIds.Length)
@@ -276,7 +293,7 @@ internal partial class LoadoutManager : ILoadoutManager
 
     public Optional<LoadoutId> GetCurrentlyActiveLoadout(GameInstallation installation)
     {
-        var metadata = installation.GetMetadata(_connection);
+        var metadata = _gameRegistry.ForceGetMetadata(installation);
         if (!GameInstallMetadata.LastSyncedLoadout.TryGetValue(metadata, out var lastAppliedLoadout))
             return Optional<LoadoutId>.None;
         return LoadoutId.From(lastAppliedLoadout);
@@ -286,25 +303,25 @@ internal partial class LoadoutManager : ILoadoutManager
     {
         return _jobMonitor.Begin(new UnmanageGameJob(installation), async ctx =>
         {
-            var metadata = installation.GetMetadata(_connection);
+            var metadata = _gameRegistry.ForceGetMetadata(installation);
 
             if (GetCurrentlyActiveLoadout(installation).HasValue && cleanGameFolder) await DeactivateCurrentLoadout(installation, cancellationToken: cancellationToken);
             await ctx.YieldAsync();
 
             {
                 using var tx1 = _connection.BeginTransaction();
-                foreach (var loadout in metadata.Loadouts)
+                foreach (var loadout in Loadout.FindByInstallation(metadata.Db, metadata))
                 {
                     tx1.Add(loadout.Id, Loadout.LoadoutKind, LoadoutKind.Deleted);
                 }
 
-                await tx1.Commit();
+                var result = await tx1.Commit();
 
-                metadata = installation.GetMetadata(_connection);
-                Debug.Assert(metadata.Loadouts.All(x => !x.IsVisible()), "all loadouts shouldn't be visible anymore");
+                metadata = GameInstallMetadata.Load(result.Db, metadata.Id);
+                Debug.Assert(Loadout.FindByInstallation(metadata.Db, metadata).All(x => !x.IsVisible()), "all loadouts shouldn't be visible anymore");
             }
 
-            foreach (var loadout in metadata.Loadouts)
+            foreach (var loadout in Loadout.FindByInstallation(metadata.Db, metadata))
             {
                 _logger.LogInformation("Deleting loadout {Loadout} - {ShortName}", loadout.Name, loadout.ShortName);
                 await ctx.YieldAsync();
@@ -315,14 +332,14 @@ internal partial class LoadoutManager : ILoadoutManager
             using var tx = _connection.BeginTransaction();
             foreach (var file in GameBackedUpFile.All(_connection.Db))
             {
-                if (file.GameInstallId.Value == installation.GameMetadataId)
+                if (file.GameInstallId.Value == metadata)
                     tx.Delete(file, recursive: false);
             }
 
             // Delete the last applied/scanned disk state data
             metadata = metadata.Rebase();
 
-            foreach (var entry in metadata.DiskStateEntries)
+            foreach (var entry in DiskStateEntry.FindByGame(metadata.Db, metadata))
             {
                 tx.Delete(entry, recursive: false);
             }

@@ -1,7 +1,8 @@
-﻿using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.Loadouts.Files.Diff;
+﻿using NexusMods.Abstractions.Loadouts.Files.Diff;
 using NexusMods.Abstractions.Loadouts.Exceptions;
 using NexusMods.Abstractions.Loadouts.Ids;
+using NexusMods.Sdk.Games;
+using NexusMods.Sdk.Loadouts;
 using R3;
 
 namespace NexusMods.Abstractions.Loadouts;

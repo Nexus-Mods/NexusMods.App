@@ -5,6 +5,7 @@ using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 using NexusMods.MnemonicDB.Abstractions.Models;
+using NexusMods.Sdk.Loadouts;
 
 namespace NexusMods.Games.StardewValley.Models;
 

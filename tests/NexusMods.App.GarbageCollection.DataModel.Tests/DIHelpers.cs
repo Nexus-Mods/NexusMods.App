@@ -12,10 +12,9 @@ public static class DIHelpers
     public static void ConfigureServices(IServiceCollection services)
     {
         services.AddDefaultServicesForTesting()
-            .AddStandardGameLocators(false)
+            .AddGameLocators()
             .AddGameServices()
             .AddLoadoutAbstractions()
-            .AddStubbedGameLocators()
             .AddGames();
     }
 }

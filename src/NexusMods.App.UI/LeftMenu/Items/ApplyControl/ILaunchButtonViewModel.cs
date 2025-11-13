@@ -1,6 +1,7 @@
 using System.Reactive;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Sdk.Jobs;
+using NexusMods.Sdk.Loadouts;
 using NexusMods.UI.Sdk;
 using ReactiveUI;
 

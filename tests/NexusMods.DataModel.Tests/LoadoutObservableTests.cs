@@ -1,10 +1,13 @@
 using FluentAssertions;
-using NexusMods.Abstractions.GameLocators;
+
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Games.RedEngine.Cyberpunk2077;
 using NexusMods.Games.TestFramework;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
+using NexusMods.Sdk;
+using NexusMods.Sdk.Loadouts;
+using Loadout = NexusMods.Sdk.Loadouts.Loadout;
 
 namespace NexusMods.DataModel.Tests;
 
@@ -13,7 +16,7 @@ public class LoadoutObservableTests(IServiceProvider provider) : AGameTest<Cyber
     [Fact]
     public async Task DeletingAModShouldUpdateTheLoadout()
     {
-
+        var metadata = GameRegistry.ForceGetMetadata(GameInstallation);
         using var tx = Connection.BeginTransaction();
         var loadoutId = tx.TempId();
 
@@ -21,7 +24,7 @@ public class LoadoutObservableTests(IServiceProvider provider) : AGameTest<Cyber
         {
             Name = "Test Loadout",
             ShortName = "B",
-            InstallationId = GameInstallation.GameMetadataId,
+            InstallationId = metadata,
             LoadoutKind = LoadoutKind.Default,
             Revision = 0,
             GameVersion = VanityVersion.From("Unknown"),
@@ -51,7 +54,7 @@ public class LoadoutObservableTests(IServiceProvider provider) : AGameTest<Cyber
         
         var lastTimestamp = DateTimeOffset.UtcNow;
         var lastId = EntityId.From(0);
-        using var loadouts = Loadout.RevisionsWithChildUpdates(Connection, loadoutId)
+        using var loadouts = LoadoutQueries2.RevisionsWithChildUpdates(Connection, loadoutId)
             .Subscribe(loadout =>
                 {
                     lastId = loadout.Id;

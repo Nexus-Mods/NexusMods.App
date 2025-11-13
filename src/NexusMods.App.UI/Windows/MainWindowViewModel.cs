@@ -5,7 +5,7 @@ using Avalonia.Platform.Storage;
 using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Sdk.EventBus;
-using NexusMods.Abstractions.GameLocators;
+
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
@@ -29,6 +29,7 @@ using NexusMods.CrossPlatform;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Sdk;
 using NexusMods.Sdk.Games;
+using NexusMods.Sdk.Loadouts;
 using NexusMods.Sdk.NexusModsApi;
 using NexusMods.UI.Sdk;
 using R3;
@@ -274,7 +275,7 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
 
     private Optional<(LoadoutId, WorkspaceId)> GetWorkspaceIdForGame(IWorkspaceController workspaceController, NexusModsGameId nexusModsGameId)
     {
-        if (!_serviceProvider.GetServices<ILocatableGame>().TryGetFirst(x => x.NexusModsGameId == nexusModsGameId, out var game)) return Optional<(LoadoutId, WorkspaceId)>.None;
+        if (!_serviceProvider.GetServices<IGameData>().TryGetFirst(x => x.NexusModsGameId == nexusModsGameId, out var game)) return Optional<(LoadoutId, WorkspaceId)>.None;
         return GetWorkspaceIdForGame(workspaceController, game.GameId);
     }
 
@@ -301,13 +302,13 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
     private bool IsCorrectLoadoutForGame(LoadoutId loadoutId, GameId gameId)
     {
         var loadout = Loadout.Load(_connection.Db, loadoutId);
-        return loadout.IsValid() && loadout.LocatableGame.GameId == gameId;
+        return loadout.IsValid() && loadout.Game.GameId == gameId;
     }
 
     private Optional<LoadoutId> GetActiveLoadoutForGame(GameId gameId)
     {
         var gameRegistry = _serviceProvider.GetRequiredService<IGameRegistry>();
-        if (!gameRegistry.InstalledGames.TryGetFirst(x => x.Game.GameId == gameId, out var gameInstallation)) return Optional<LoadoutId>.None;
+        if (!gameRegistry.LocateGameInstallations().TryGetFirst(x => x.Game.GameId == gameId, out var gameInstallation)) return Optional<LoadoutId>.None;
 
         if (gameInstallation.Game is not IGame game) return Optional<LoadoutId>.None;
         return _serviceProvider.GetRequiredService<ILoadoutManager>().GetCurrentlyActiveLoadout(gameInstallation);

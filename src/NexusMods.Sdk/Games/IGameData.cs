@@ -1,5 +1,7 @@
+using System.Collections.Immutable;
 using DynamicData.Kernel;
 using JetBrains.Annotations;
+using NexusMods.Paths;
 using NexusMods.Sdk.IO;
 
 namespace NexusMods.Sdk.Games;
@@ -36,6 +38,39 @@ public interface IGameData
     /// Gets the stream factory for the horizontal tile image.
     /// </summary>
     IStreamFactory TileImage { get; }
+
+    ImmutableDictionary<LocationId, AbsolutePath> GetLocations(IFileSystem fileSystem, GameLocatorResult gameLocatorResult);
+
+    /// <summary>
+    /// Returns the primary (executable) file for the game.
+    /// </summary>
+    GamePath GetPrimaryFile(GameInstallation installation);
+
+    /// <summary>
+    /// Returns a game specific version.
+    /// </summary>
+    Optional<Version> GetLocalVersion(GameInstallation installation)
+    {
+        try
+        {
+            var primaryFile = GetPrimaryFile(installation);
+            var fvi = installation.Locations.ToAbsolutePath(primaryFile).FileInfo.GetFileVersionInfo();
+            return fvi.ProductVersion;
+        }
+        catch (Exception e)
+        {
+            return Optional<Version>.None;
+        }
+    }
+
+    /// <summary>
+    /// Gets the fallback directory for mods in collections that don't have matching installers.
+    /// See https://github.com/Nexus-Mods/NexusMods.App/issues/2553 for details.
+    ///
+    /// Also is used for bundled mods.
+    /// See https://github.com/Nexus-Mods/NexusMods.App/issues/2630 for details.
+    /// </summary>
+    Optional<GamePath> GetFallbackCollectionInstallDirectory(GameInstallation installation) => Optional<GamePath>.None;
 }
 
 [PublicAPI]

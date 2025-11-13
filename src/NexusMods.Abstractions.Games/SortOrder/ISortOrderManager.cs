@@ -1,6 +1,7 @@
 using System.Collections.Immutable;
 using DynamicData.Kernel;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Sdk.Loadouts;
 
 namespace NexusMods.Abstractions.Games;
 

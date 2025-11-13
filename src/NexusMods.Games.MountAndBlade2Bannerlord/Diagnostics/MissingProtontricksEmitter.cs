@@ -1,11 +1,13 @@
+using System.Runtime.CompilerServices;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.Diagnostics.Values;
-using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.Loadouts;
 using NexusMods.Games.Generic.Dependencies;
 using NexusMods.Paths;
+using NexusMods.Sdk.Games;
+using NexusMods.Sdk.Loadouts;
+
 namespace NexusMods.Games.MountAndBlade2Bannerlord.Diagnostics;
 
 public partial class MissingProtontricksEmitter : ILoadoutDiagnosticEmitter
@@ -22,7 +24,7 @@ public partial class MissingProtontricksEmitter : ILoadoutDiagnosticEmitter
 
     public async IAsyncEnumerable<Diagnostic> Diagnose(
         Loadout.ReadOnly loadout,
-        CancellationToken cancellationToken)
+        [EnumeratorCancellation] CancellationToken cancellationToken)
     {
         if (!FileSystem.Shared.OS.IsLinux || _protontricksDependency == null)
             yield break;

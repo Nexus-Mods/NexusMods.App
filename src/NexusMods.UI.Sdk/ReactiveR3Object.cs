@@ -2,6 +2,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
 using R3;
+using ReactiveUI;
 
 namespace NexusMods.UI.Sdk;
 

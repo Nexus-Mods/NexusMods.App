@@ -1,7 +1,8 @@
-using NexusMods.Abstractions.GameLocators;
+
 using NexusMods.App.UI.Helpers.TreeDataGrid.New.FolderGenerator;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
+using NexusMods.Sdk.Games;
 
 namespace NexusMods.UI.Tests.Helpers.TreeDataGrid.FolderGenerator;
 

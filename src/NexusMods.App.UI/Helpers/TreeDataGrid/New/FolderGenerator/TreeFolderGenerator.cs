@@ -1,7 +1,7 @@
 using DynamicData;
-using NexusMods.Abstractions.GameLocators;
 using NexusMods.App.UI.Controls;
 using System.Reactive.Linq;
+using NexusMods.Sdk.Games;
 
 namespace NexusMods.App.UI.Helpers.TreeDataGrid.New.FolderGenerator;
 

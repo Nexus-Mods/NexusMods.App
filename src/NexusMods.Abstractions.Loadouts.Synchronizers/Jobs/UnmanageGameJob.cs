@@ -1,4 +1,4 @@
-using NexusMods.Abstractions.GameLocators;
+using NexusMods.Sdk.Games;
 using NexusMods.Sdk.Jobs;
 
 namespace NexusMods.Abstractions.Loadouts.Synchronizers;

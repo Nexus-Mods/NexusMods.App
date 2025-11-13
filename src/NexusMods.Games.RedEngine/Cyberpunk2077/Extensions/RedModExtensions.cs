@@ -1,9 +1,11 @@
 using DynamicData;
-using NexusMods.Abstractions.GameLocators;
+
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Games.RedEngine.Cyberpunk2077.Models;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.Sdk.Games;
+using NexusMods.Sdk.Loadouts;
 
 namespace NexusMods.Games.RedEngine.Cyberpunk2077.Extensions;
 

@@ -5,7 +5,6 @@ using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.Diagnostics.References;
 using NexusMods.Abstractions.Diagnostics.Values;
-using NexusMods.Abstractions.GameLocators.Stores.Steam;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Extensions;
 using NexusMods.Abstractions.NexusWebApi;
@@ -15,6 +14,8 @@ using NexusMods.Games.Larian.BaldursGate3.Utils.LsxXmlParsing;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.Games.Larian.BaldursGate3.Utils.PakParsing;
 using NexusMods.Paths;
+using NexusMods.Sdk.Games;
+using NexusMods.Sdk.Loadouts;
 using NexusMods.Sdk.NexusModsApi;
 using Polly;
 using NexusMods.Sdk.Resources;
@@ -41,12 +42,12 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
         var bg3LoadoutFile = GetScriptExtenderLoadoutFile(loadout);
         
         // BG3SE WINEDLLOVERRIDE diagnostic
-        if (_os.IsLinux  && bg3LoadoutFile.HasValue && loadout.InstallationInstance.LocatorResultMetadata is SteamLocatorResultMetadata)
+        if (_os.IsLinux  && bg3LoadoutFile.HasValue && loadout.Installation.Store == GameStore.Steam)
         {
             // yield return Diagnostics.
             yield return Diagnostics.CreateBg3SeWineDllOverrideSteam(Template: "text");
         }
-        
+
         var diagnostics = await DiagnosePakModulesAsync(loadout, bg3LoadoutFile, cancellationToken);
         foreach (var diagnostic in diagnostics)
         {
@@ -162,7 +163,7 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
 
     private static Optional<LoadoutFile.ReadOnly> GetScriptExtenderLoadoutFile(Loadout.ReadOnly loadout)
     {
-        return loadout.Items.OfTypeLoadoutItemGroup()
+        return LoadoutItem.FindByLoadout(loadout.Db, loadout).OfTypeLoadoutItemGroup()
             .Where(g => g.AsLoadoutItem().IsEnabled())
             .SelectMany(group => group.Children.OfTypeLoadoutItemWithTargetPath()
                 .OfTypeLoadoutFile()
@@ -206,7 +207,7 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
         Loadout.ReadOnly loadout,
         bool onlyEnabledMods)
     {
-        return loadout.Items
+        return LoadoutItem.FindByLoadout(loadout.Db, loadout)
             .OfTypeLoadoutItemGroup()
             .Where(group => !onlyEnabledMods || !group.AsLoadoutItem().IsDisabled)
             // TODO: Quite inefficient way to find pak files, need to add markers on pak LoadoutFiles and mods containing them

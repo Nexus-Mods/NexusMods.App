@@ -2,6 +2,7 @@ using System.Collections.Immutable;
 using DynamicData.Kernel;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Diagnostics.Values;
+using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.Telemetry;
 using NexusMods.Paths;
 using NexusMods.Sdk.NexusModsApi;
@@ -19,15 +20,17 @@ internal sealed class SMAPIWebApi : ISMAPIWebApi
     private const string ApiBaseUrl = "https://smapi.io/api";
 
     private readonly ILogger<SMAPIWebApi> _logger;
+    private readonly IGameDomainToGameIdMappingCache _mappingCache;
 
     private bool _isDisposed;
     private WebApiClient? _client;
 
     private ImmutableDictionary<string, SMAPIWebApiMod> _cache = ImmutableDictionary<string, SMAPIWebApiMod>.Empty.WithComparers(StringComparer.OrdinalIgnoreCase);
 
-    public SMAPIWebApi(ILogger<SMAPIWebApi> logger)
+    public SMAPIWebApi(ILogger<SMAPIWebApi> logger, IGameDomainToGameIdMappingCache mappingCache)
     {
         _logger = logger;
+        _mappingCache = mappingCache;
     }
 
     public async Task<IReadOnlyDictionary<string, SMAPIWebApiMod>> GetModDetails(
@@ -87,7 +90,7 @@ internal sealed class SMAPIWebApi : ISMAPIWebApi
 
                         if (nexusId is not null)
                         {
-                            var uri = NexusModsUrlBuilder.GetModUri(StardewValley.DomainStatic, ModId.From((uint)nexusId.Value));
+                            var uri = NexusModsUrlBuilder.GetModUri(_mappingCache[StardewValley.NexusModsGameId.Value], ModId.From((uint)nexusId.Value));
                             nexusModsLink = uri.WithName("Nexus Mods");
                         }
 

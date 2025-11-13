@@ -2,9 +2,11 @@ using System.Collections.Immutable;
 using System.Runtime.CompilerServices;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Diagnostics.Emitters;
-using NexusMods.Abstractions.GameLocators;
+
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Games.Generic;
+using NexusMods.Sdk;
+using NexusMods.Sdk.Loadouts;
 
 namespace NexusMods.Games.RedEngine.Cyberpunk2077.Emitters;
 

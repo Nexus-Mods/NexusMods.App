@@ -4,6 +4,7 @@ using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.App.UI.Controls.MarkdownRenderer;
 using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.Sdk.Loadouts;
 
 namespace NexusMods.App.UI.Pages.Diagnostics;
 

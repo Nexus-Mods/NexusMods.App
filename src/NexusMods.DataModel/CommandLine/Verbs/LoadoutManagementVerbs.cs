@@ -1,7 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileSystemGlobbing;
 using NexusMods.Abstractions.Cli;
-using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Games.FileHashes;
 using NexusMods.Abstractions.Library;
@@ -12,8 +11,11 @@ using NexusMods.DataModel.Undo;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Paths;
+using NexusMods.Sdk;
 using NexusMods.Sdk.FileStore;
+using NexusMods.Sdk.Games;
 using NexusMods.Sdk.IO;
+using NexusMods.Sdk.Loadouts;
 using NexusMods.Sdk.ProxyConsole;
 
 namespace NexusMods.DataModel.CommandLine.Verbs;
@@ -45,7 +47,6 @@ public static class LoadoutManagementVerbs
             .AddVerb(() => ListGroupContents)
             .AddVerb(() => ListGroups)
             .AddVerb(() => DeleteGroupItems)
-            .AddVerb(() => CreateLoadout)
             .AddVerb(() => ListRevisions)
             .AddVerb(() => Revert);
 
@@ -55,15 +56,15 @@ public static class LoadoutManagementVerbs
         [Option("v", "version", "Version to set")] string version,
         [Injected] IFileHashesService hasherService)
     {
-        if (!hasherService.TryGetLocatorIdsForVanityVersion(loadout.InstallationInstance.Store, VanityVersion.From(version), out var newCommonIds))
+        if (!hasherService.TryGetLocatorIdsForVanityVersion(loadout.Installation.Store, VanityVersion.From(version), out var newCommonIds))
         {
             await renderer.Error("Version {0} not found", version);
             return -1;
         }
-        
+
         // Get the actual version from the ids, so that we can sanitize the version string, and collapse multiple
         // versions into a single version string
-        if (!hasherService.TryGetVanityVersion((loadout.InstallationInstance.Store, newCommonIds), out var actualVersion))
+        if (!hasherService.TryGetVanityVersion((loadout.Installation.Store, newCommonIds), out var actualVersion))
         {
             await renderer.Error("Version {0} not found", version);
             return -1;
@@ -112,7 +113,7 @@ public static class LoadoutManagementVerbs
         var toBackup = tree.Where(f => f.Value.HaveDisk && 
                                        !f.Value.Signature.HasFlag(Signature.DiskArchived) && 
                                        f.Value.SourceItemType == LoadoutSourceItemType.Game)
-            .Select(f => (Path: gameInstallation.LocationsRegister.GetResolvedPath(f.Key), f.Value.Disk.Size, f.Value.Disk.Hash))
+            .Select(f => (Path: gameInstallation.Locations.ToAbsolutePath(f.Key), f.Value.Disk.Size, f.Value.Disk.Hash))
             .ToArray();
         await renderer.TextLine("Backing up {0} files for a total of {1}", toBackup.Length, toBackup.Aggregate(Size.Zero, (a, b) => a + b.Size));
         
@@ -158,7 +159,7 @@ public static class LoadoutManagementVerbs
         var db = conn.Db;
         await Loadout.All(db)
             .Where(x => x.IsVisible())
-            .Select(list => (list.LoadoutId, list.Name, list.Installation.Name, list.GameVersion, list.Installation.Store, list.Items.Count))
+            .Select(list => (list.LoadoutId, list.Name, list.Installation.Name, list.GameVersion, list.Installation.Store, LoadoutItem.FindByLoadout(db, list.Id)))
             .RenderTable(renderer, "Id", "Name", "Game", "Version", "Store", "Items");
         return 0;
     }
@@ -170,10 +171,10 @@ public static class LoadoutManagementVerbs
         [Option("f", "filterFiles", "Filter files by the given glob", true)] Matcher? filterFiles,
         [Injected] CancellationToken token)
     {
-        var mod = loadout.Items
+        var mod = LoadoutItem.FindByLoadout(loadout.Db, loadout)
             .OfTypeLoadoutItemGroup()
             .First(m => m.AsLoadoutItem().Name == groupName);
-        
+
         if (!mod.IsValid())
             return await renderer.InputError("Group {0} not found", groupName);
         
@@ -213,7 +214,7 @@ public static class LoadoutManagementVerbs
         [Option("f", "filterFiles", "Filter files by the given glob")] Matcher filterFiles,
         [Injected] CancellationToken token)
     {
-        var mod = loadout.Items
+        var mod = LoadoutItem.FindByLoadout(loadout.Db, loadout)
             .OfTypeLoadoutItemGroup()
             .First(m => m.AsLoadoutItem().Name == groupName);
         
@@ -243,7 +244,7 @@ public static class LoadoutManagementVerbs
         [Option("l", "loadout", "Loadout to load")] Loadout.ReadOnly loadout,
         [Injected] CancellationToken token)
     {
-        await loadout.Items
+        await LoadoutItem.FindByLoadout(loadout.Db, loadout)
             .OfTypeLoadoutItemGroup()
             .Select(mod => (mod.AsLoadoutItem().Name, mod.Children.Count))
             .RenderTable(renderer, "Name", "Items");
@@ -285,25 +286,5 @@ public static class LoadoutManagementVerbs
         await undoService.RevertTo(revision.Revision);
         
         return 0;
-    }
-
-    
-    [Verb("loadout create", "Create a Loadout for a given game")]
-    private static async Task<int> CreateLoadout([Injected] IRenderer renderer,
-        [Option("g", "game", "Game to create a loadout for")] IGame game,
-        [Option("v", "version", "Version of the game to manage")] string version,
-        [Option("n", "name", "The name of the new loadout")] string name,
-        [Injected] IGameRegistry registry,
-        [Injected] CancellationToken token,
-        [Injected] ILoadoutManager loadoutManager)
-    {
-        var install = registry.Installations.Values.FirstOrDefault(g => g.Game == game);
-        if (install == null) throw new Exception("Game installation not found");
-
-        return await renderer.WithProgress(token, async () =>
-        {
-            await loadoutManager.CreateLoadout(install, name);
-            return 0;
-        });
     }
 }

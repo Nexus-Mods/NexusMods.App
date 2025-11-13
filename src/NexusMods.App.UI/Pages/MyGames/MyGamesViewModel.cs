@@ -7,7 +7,6 @@ using DynamicData.Kernel;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
@@ -39,12 +38,15 @@ using NexusMods.Collections;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Paths;
 using NexusMods.Sdk;
+using NexusMods.Sdk.Games;
 using NexusMods.Sdk.Jobs;
 using NexusMods.Sdk.Library;
+using NexusMods.Sdk.Loadouts;
 using NexusMods.Telemetry;
 using NexusMods.UI.Sdk;
 using NexusMods.UI.Sdk.Dialog;
 using NexusMods.UI.Sdk.Dialog.Enums;
+using GameInstallMetadata = NexusMods.Sdk.Games.GameInstallMetadata;
 
 namespace NexusMods.App.UI.Pages.MyGames;
 
@@ -62,6 +64,7 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
     private readonly IServiceProvider _serviceProvider;
     private readonly ISynchronizerService _syncService;
     private readonly ILoadoutManager _loadoutManager;
+    private readonly IGameRegistry _gameRegistry;
 
     private ReadOnlyObservableCollection<IViewModelInterface> _supportedGames = new([]);
     private ReadOnlyObservableCollection<IGameWidgetViewModel> _installedGames = new([]);
@@ -91,6 +94,7 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
         _overlayController = overlayController;
         _connection = conn;
         _loadoutManager = serviceProvider.GetRequiredService<ILoadoutManager>();
+        _gameRegistry = gameRegistry;
 
         TabTitle = Language.MyGames;
         TabIcon = IconValues.GamepadOutline;
@@ -107,7 +111,7 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
 
         this.WhenActivated(d =>
             {
-                gameRegistry.InstalledGames
+                gameRegistry.LocateGameInstallations()
                     .Where(game =>
                     {
                         if (experimentalSettings.EnableAllGames) return true;
@@ -146,17 +150,17 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
                                 await Task.Run(async () => await RemoveGame(installation, shouldDeleteDownloads: result.ShouldDeleteDownloads, filesToDelete, collections));
                                 vm.State = GameWidgetState.DetectedGame;
 
-                                Tracking.AddEvent(Events.Game.RemoveGame, new EventMetadata(name: $"{installation.Game.DisplayName} - {installation.Store}"));
+                                Tracking.AddEvent(Events.Game.RemoveGame, new EventMetadata(name: $"{installation.Game.DisplayName} - {installation.LocatorResult.Store}"));
                             });
 
                             vm.ViewGameCommand = ReactiveCommand.Create(() =>
                             {
                                 NavigateToLoadoutLibrary(conn, installation);
-                                Tracking.AddEvent(Events.Game.ViewGame, new EventMetadata(name: $"{installation.Game.DisplayName} - {installation.Store}"));
+                                Tracking.AddEvent(Events.Game.ViewGame, new EventMetadata(name: $"{installation.Game.DisplayName} - {installation.LocatorResult.Store}"));
                             });
 
                             vm.IsManagedObservable = Loadout.ObserveAll(conn)
-                                .Filter(l => l.IsVisible() && l.InstallationInstance.GameMetadataId == installation.GameMetadataId)
+                                .Filter(l => l.IsVisible() && l.InstallationInstance.Game.GameId == installation.Game.GameId && l.InstallationInstance.LocatorResult.Store == installation.LocatorResult.Store)
                                 .Count()
                                 .Select(c => c > 0);
 
@@ -178,17 +182,15 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
                     .SubscribeWithErrorLogging()
                     .DisposeWith(d);
 
-                // NOTE(insomnious): The weird cast is so that we don't get a circular reference with Abstractions.Games when
-                // referencing Abstractions.GameLocators directly 
-                var supportedGamesAsIGame = gameRegistry
-                    .SupportedGames
+                var supportedGamesAsIGame = serviceProvider
+                    .GetServices<IGameData>()
                     .Where(game =>
                     {
                         if (experimentalSettings.EnableAllGames) return true;
                         return experimentalSettings.SupportedGames.Contains(game.GameId);
                     })
                     .Cast<IGame>()
-                    .Where(game => _installedGames.All(install => install.Installation.GetGame().GameId != game.GameId)); // Exclude found games
+                    .Where(game => _installedGames.All(install => install.Installation?.GetGame().GameId != game.GameId)); // Exclude found games
 
                 var miniGameWidgetViewModels = supportedGamesAsIGame
                     .Select(game =>
@@ -197,10 +199,11 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
                             vm.Game = game;
                             vm.Name = game.DisplayName;
                             // is this supported game installed?
-                            vm.IsFound = _installedGames.Any(install => install.Installation.GetGame().GameId == game.GameId);
+                            vm.IsFound = _installedGames.Any(install => install.Installation?.GetGame().GameId == game.GameId);
                             vm.GameInstallations = _installedGames
-                                .Where(install => install.Installation.GetGame().GameId == game.GameId)
+                                .Where(install => install.Installation?.GetGame().GameId == game.GameId)
                                 .Select(install => install.Installation)
+                                .NotNull()
                                 .ToArray();
                             return vm;
                         }
@@ -275,7 +278,7 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
                 await Task.Run(async () => await _syncService.UnManage(installation, cleanGameFolder: false));
                 vm.State = GameWidgetState.DetectedGame;
                 
-                Tracking.AddEvent(Events.Game.RevertManageOnDirty, new EventMetadata(name: $"{installation.Game.DisplayName} - {installation.Store}"));
+                Tracking.AddEvent(Events.Game.RevertManageOnDirty, new EventMetadata(name: $"{installation.Game.DisplayName} - {installation.LocatorResult.Store}"));
                 return;
             }
             if (result == clean)
@@ -284,14 +287,14 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
                 await CleanGameFolder(installation, loadout);
                 vm.State = GameWidgetState.ManagedGame;
                 
-                Tracking.AddEvent(Events.Game.CleanGameOnManage, new EventMetadata(name: $"{installation.Game.DisplayName} - {installation.Store}"));
+                Tracking.AddEvent(Events.Game.CleanGameOnManage, new EventMetadata(name: $"{installation.Game.DisplayName} - {installation.LocatorResult.Store}"));
             }
             
             // do nothing, so keep the files
-            Tracking.AddEvent(Events.Game.KeepDirtyOnManage, new EventMetadata(name: $"{installation.Game.DisplayName} - {installation.Store}"));
+            Tracking.AddEvent(Events.Game.KeepDirtyOnManage, new EventMetadata(name: $"{installation.Game.DisplayName} - {installation.LocatorResult.Store}"));
         }
         
-        Tracking.AddEvent(Events.Game.AddGame, new EventMetadata(name: $"{installation.Game.DisplayName} - {installation.Store}"));
+        Tracking.AddEvent(Events.Game.AddGame, new EventMetadata(name: $"{installation.Game.DisplayName} - {installation.LocatorResult.Store}"));
         NavigateToLoadoutLibrary(_connection, installation);
     }
     
@@ -366,18 +369,14 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
 
     private Optional<LoadoutId> GetLoadout(IConnection conn, GameInstallation installation)
     {
-        var db = conn.Db;
-
-        var gameMetadata = GameInstallMetadata.Load(conn.Db, installation.GameMetadataId);
-        if (gameMetadata.Contains(GameInstallMetadata.LastSyncedLoadout))
+        if (!_gameRegistry.TryGetMetadata(installation, out var metadata)) return Optional<LoadoutId>.None;
+        if (metadata.Contains(GameInstallMetadata.LastSyncedLoadout))
         {
-            return gameMetadata.LastSyncedLoadout.LoadoutId;
+            return metadata.LastSyncedLoadout.LoadoutId;
         }
 
         // no applied loadout, return the first one
-        var loadout = Loadout.All(db).FirstOrOptional(loadout =>
-        loadout.IsVisible() && loadout.InstallationInstance.Equals(installation));
-
+        var loadout = Loadout.All(conn.Db).FirstOrOptional(loadout => loadout.IsVisible() && loadout.InstallationInstance.Equals(installation));
         return loadout.HasValue ? loadout.Value.LoadoutId : Optional<LoadoutId>.None;
     }
     

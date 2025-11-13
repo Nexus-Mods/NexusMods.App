@@ -1,5 +1,4 @@
 using JetBrains.Annotations;
-using NexusMods.Abstractions.GameLocators;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Models;
 
@@ -17,7 +16,7 @@ public partial class LoadoutGameFilesGroup : IModelDefinition
     /// <summary>
     /// Game metadata.
     /// </summary>
-    public static readonly ReferenceAttribute<GameInstallMetadata> GameMetadata = new(Namespace, nameof(GameMetadata));
+    public static readonly ReferenceAttribute<Sdk.Games.GameInstallMetadata> GameMetadata = new(Namespace, nameof(GameMetadata));
 }
 
 

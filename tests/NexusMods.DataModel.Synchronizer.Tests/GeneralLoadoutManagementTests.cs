@@ -3,12 +3,13 @@ using System.Reactive;
 using System.Text;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.GameLocators;
+
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Games.TestFramework;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 using NexusMods.Paths;
+using NexusMods.Sdk.Games;
 using Xunit.Abstractions;
 
 namespace NexusMods.DataModel.Synchronizer.Tests;
@@ -22,7 +23,7 @@ public class GeneralLoadoutManagementTests(ITestOutputHelper helper) : ACyberpun
         var sb = new StringBuilder();
         
         var originalFileGamePath = new GamePath(LocationId.Game, "bin/originalGameFile.txt");
-        var originalFileFullPath = GameInstallation.LocationsRegister.GetResolvedPath(originalFileGamePath);
+        var originalFileFullPath = GameInstallation.Locations.ToAbsolutePath(originalFileGamePath);
         originalFileFullPath.Parent.CreateDirectory();
         await originalFileFullPath.WriteAllTextAsync("Hello World!");
         
@@ -42,7 +43,7 @@ public class GeneralLoadoutManagementTests(ITestOutputHelper helper) : ACyberpun
             """, [loadoutA]);
 
         var newFileInGameFolderA = new GamePath(LocationId.Game, "bin/newFileInGameFolderA.txt");
-        var newFileFullPathA = GameInstallation.LocationsRegister.GetResolvedPath(newFileInGameFolderA);
+        var newFileFullPathA = GameInstallation.Locations.ToAbsolutePath(newFileInGameFolderA);
         newFileFullPathA.Parent.CreateDirectory();
         await newFileFullPathA.WriteAllTextAsync("New File for this loadout");
         
@@ -79,7 +80,7 @@ public class GeneralLoadoutManagementTests(ITestOutputHelper helper) : ACyberpun
         );
         
         var newFileInGameFolderB = new GamePath(LocationId.Game, "bin/newFileInGameFolderB.txt");
-        var newFileFullPathB = GameInstallation.LocationsRegister.GetResolvedPath(newFileInGameFolderB);
+        var newFileFullPathB = GameInstallation.Locations.ToAbsolutePath(newFileInGameFolderB);
         newFileFullPathB.Parent.CreateDirectory();
         await newFileFullPathB.WriteAllTextAsync("New File for this loadout, B");
         
@@ -184,7 +185,7 @@ public class GeneralLoadoutManagementTests(ITestOutputHelper helper) : ACyberpun
             """, [loadoutA, loadoutB]);
         
         var newFileInGameFolderA = new GamePath(LocationId.Game, "bin/newFileInGameFolderA.txt");
-        var newFileFullPathA = GameInstallation.LocationsRegister.GetResolvedPath(newFileInGameFolderA);
+        var newFileFullPathA = GameInstallation.Locations.ToAbsolutePath(newFileInGameFolderA);
         newFileFullPathA.Parent.CreateDirectory();
         await newFileFullPathA.WriteAllTextAsync("New File for this loadout");
 
@@ -257,8 +258,8 @@ public class GeneralLoadoutManagementTests(ITestOutputHelper helper) : ACyberpun
         var testFilePath = new GamePath(LocationId.Game, "bin/x64/ThisIsATestFile.txt");
         var otherTestFilePath = new GamePath(LocationId.Game, "bin/x64/And Another One.txt");
         
-        var diskPath = loadoutA.InstallationInstance.LocationsRegister.GetResolvedPath(testFilePath);
-        var otherDiskPath = loadoutA.InstallationInstance.LocationsRegister.GetResolvedPath(otherTestFilePath);
+        var diskPath = loadoutA.InstallationInstance.Locations.ToAbsolutePath(testFilePath);
+        var otherDiskPath = loadoutA.InstallationInstance.Locations.ToAbsolutePath(otherTestFilePath);
         diskPath.Delete();
         
         loadoutA = await Synchronizer.Synchronize(loadoutA);

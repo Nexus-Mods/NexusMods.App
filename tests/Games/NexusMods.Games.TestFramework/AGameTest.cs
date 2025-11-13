@@ -5,7 +5,7 @@ using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Diagnostics;
-using NexusMods.Abstractions.GameLocators;
+
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.GC;
 using NexusMods.Abstractions.Loadouts;
@@ -17,7 +17,9 @@ using NexusMods.MnemonicDB.Abstractions.Models;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Paths;
 using NexusMods.Sdk.FileStore;
+using NexusMods.Sdk.Games;
 using NexusMods.Sdk.IO;
+using NexusMods.Sdk.Loadouts;
 using NexusMods.StandardGameLocators.TestHelpers;
 using NexusMods.Sdk.Library;
 
@@ -58,8 +60,8 @@ public abstract class AGameTest<TGame> where TGame : IGame
         ServiceProvider = serviceProvider;
         
         GameRegistry = serviceProvider.GetRequiredService<IGameRegistry>();
-        
-        GameInstallation = GameRegistry.Installations.Values.First(g => g.Game is TGame);
+
+        GameInstallation = GameRegistry.LocateGameInstallations().First(g => g.Game is TGame);
         Game = (TGame)GameInstallation.Game;
 
         FileSystem = serviceProvider.GetRequiredService<IFileSystem>();
@@ -73,11 +75,6 @@ public abstract class AGameTest<TGame> where TGame : IGame
         NexusNexusApiClient = serviceProvider.GetRequiredService<NexusApiClient>();
 
         _logger = serviceProvider.GetRequiredService<ILogger<AGameTest<TGame>>>();
-        if (GameInstallation.Locator is UniversalStubbedGameLocator<TGame> universal)
-        {
-            _logger.LogInformation("Resetting game files for {Game}", Game.DisplayName);
-            ResetGameFolders();
-        }
     }
 
     /// <summary>
@@ -236,22 +233,6 @@ public abstract class AGameTest<TGame> where TGame : IGame
             Name = fileName,
         },
     };
-    
-    /// <summary>
-    /// Resets the game folders to a clean state.
-    /// </summary>
-    private void ResetGameFolders()
-    {
-        var register = GameInstallation.LocationsRegister;
-        var oldLocations = register.GetTopLevelLocations().ToArray();
-        var newLocations = new Dictionary<LocationId, AbsolutePath>();
-        foreach (var (k, _) in oldLocations)
-        {
-            newLocations[k] = TemporaryFileManager.CreateFolder().Path;
-        }
-        register.Reset(newLocations);
-        _gameFilesWritten = false;
-    }
 
     /// <summary>
     /// Creates a new loadout and returns the <see cref="Loadout.ReadOnly"/> of it.

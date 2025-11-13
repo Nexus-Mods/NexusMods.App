@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.FileExtractor;
-using NexusMods.Abstractions.GameLocators;
+
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Synchronizers.Conflicts;
@@ -30,6 +30,7 @@ using NexusMods.Networking.NexusWebApi.Errors;
 using NexusMods.Paths;
 using NexusMods.Sdk;
 using NexusMods.Sdk.Library;
+using NexusMods.Sdk.Games;
 using NexusMods.Sdk.Settings;
 using NexusMods.StandardGameLocators;
 using NexusMods.StandardGameLocators.TestHelpers;
@@ -56,13 +57,6 @@ public abstract class AArchivedDatabaseTest
     
     protected virtual IServiceCollection AddServices(IServiceCollection services)
     {
-        
-        // So Gog doesn't exist on linux, but this is a test where we're stubbing out the games
-        // so we don't actually need gog, and setting up Heroic and all the other wine stuff 
-        // just to run this test is a pain. OSX does have GOG but we don't have support for it yet
-        if (OSInformation.Shared.IsLinux || OSInformation.Shared.IsOSX)
-            services.AddSingleton<IGameLocator, GogLocator>();
-        
         const KnownPath baseKnownPath = KnownPath.EntryDirectory;
         var baseDirectory = $"NexusMods.UI.Tests.Tests-{Guid.NewGuid()}";
         
@@ -91,7 +85,7 @@ public abstract class AArchivedDatabaseTest
             .AddStardewValley()
             .AddLoadoutAbstractions()
             .AddFileExtractors()
-            .AddStubbedStardewValley()
+            .AddGameLocators()
             .AddNexusModsCollections()
             .AddNexusModsLibraryModels()
             .AddSortOrderItemModel()
@@ -101,7 +95,7 @@ public abstract class AArchivedDatabaseTest
             {
                 HashDatabaseLocation = new ConfigurablePath(baseKnownPath, $"{baseDirectory}/FileHashService"),
             })
-            .AddStandardGameLocators(registerConcreteLocators:false, registerHeroic:false, registerWine: false)
+            .AddGameLocators()
             .AddSingleton<ITestOutputHelperAccessor>(_ => new Accessor { Output = _helper })
             .AddSingleton(mock)
             .Validate();

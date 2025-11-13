@@ -5,10 +5,12 @@ using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.Diagnostics.References;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Sdk.Resources;
 using NexusMods.Games.StardewValley.Models;
 using NexusMods.Games.StardewValley.WebAPI;
 using NexusMods.Paths;
+using NexusMods.Sdk.Loadouts;
 using StardewModdingAPI.Toolkit;
 using SMAPIManifest = StardewModdingAPI.Toolkit.Serialization.Models.Manifest;
 
@@ -21,17 +23,20 @@ public class VersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
     private readonly IOSInformation _os;
     private readonly ISMAPIWebApi _smapiWebApi;
     private readonly IResourceLoader<SMAPIManifestLoadoutFile.ReadOnly, SMAPIManifest> _manifestPipeline;
+    private readonly IGameDomainToGameIdMappingCache _mappingCache;
 
     public VersionDiagnosticEmitter(
         IServiceProvider serviceProvider,
         ILogger<VersionDiagnosticEmitter> logger,
         IOSInformation os,
-        ISMAPIWebApi smapiWebApi)
+        ISMAPIWebApi smapiWebApi,
+        IGameDomainToGameIdMappingCache mappingCache)
     {
         _logger = logger;
         _os = os;
         _smapiWebApi = smapiWebApi;
         _manifestPipeline = Pipelines.GetManifestPipeline(serviceProvider);
+        _mappingCache = mappingCache;
     }
 
     public async IAsyncEnumerable<Diagnostic> Diagnose(Loadout.ReadOnly loadout, [EnumeratorCancellation] CancellationToken cancellationToken)
@@ -69,8 +74,8 @@ public class VersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
                     SMAPIModName: manifestLoadoutItem.AsLoadoutFile().AsLoadoutItemWithTargetPath().AsLoadoutItem().Parent.AsLoadoutItem().Name,
                     MinimumAPIVersion: minimumApiVersion.ToString(),
                     CurrentSMAPIVersion: smapiVersion.ToString(),
-                    NexusModsLink: apiMods.GetLink(manifest.UniqueID, defaultValue: Helpers.NexusModsLink),
-                    SMAPINexusModsLink: Helpers.SMAPILink
+                    NexusModsLink: apiMods.GetLink(manifest.UniqueID, defaultValue: Helpers.GetNexusModsLink(_mappingCache)),
+                    SMAPINexusModsLink: Helpers.GetSMAPILink(_mappingCache)
                 );
             }
 
@@ -81,7 +86,7 @@ public class VersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
                     SMAPIModName: manifestLoadoutItem.AsLoadoutFile().AsLoadoutItemWithTargetPath().AsLoadoutItem().Parent.AsLoadoutItem().Name,
                     MinimumGameVersion: minimumGameVersion.ToString(),
                     CurrentGameVersion: gameVersion.ToString(),
-                    NexusModsLink: apiMods.GetLink(manifest.UniqueID, defaultValue: Helpers.NexusModsLink)
+                    NexusModsLink: apiMods.GetLink(manifest.UniqueID, defaultValue: Helpers.GetNexusModsLink(_mappingCache))
                 );
             }
         }

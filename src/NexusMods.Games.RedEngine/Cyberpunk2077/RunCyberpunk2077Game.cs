@@ -1,5 +1,6 @@
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Sdk.Loadouts;
 
 namespace NexusMods.Games.RedEngine.Cyberpunk2077;
 

@@ -1,11 +1,12 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Sdk.Library;
+using NexusMods.Sdk.Games;
+using NexusMods.Sdk.Loadouts;
 
 namespace NexusMods.Collections;
 
@@ -21,7 +22,7 @@ internal class FallbackCollectionDownloadInstaller : ALibraryArchiveInstaller
 
     public static ILibraryItemInstaller? Create(IServiceProvider serviceProvider, Loadout.ReadOnly loadout, IGame game)
     {
-        var defaultPath = game.GetFallbackCollectionInstallDirectory(loadout.InstallationInstance.TargetInfo);
+        var defaultPath = game.GetFallbackCollectionInstallDirectory(loadout.InstallationInstance);
         if (!defaultPath.HasValue) return null;
         return new FallbackCollectionDownloadInstaller(serviceProvider, defaultPath.Value);
     }

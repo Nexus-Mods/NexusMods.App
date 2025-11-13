@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.App;
+using NexusMods.Backend;
 using NexusMods.DataModel;
 using NexusMods.Games.RedEngine.Cyberpunk2077;
 using NexusMods.Paths;
@@ -37,7 +38,7 @@ public class Startup
                         new ConfigurablePath(baseKnownPath, $"{baseDirectory}/Archives"),
                     ],
                 })
-                .AddStubbedGameLocators()
+                .AddGameLocators()
                 .AddSingleton<AvaloniaApp>()
                 .AddLogging(builder => builder.AddXunitOutput().SetMinimumLevel(LogLevel.Debug))
                 .Validate();

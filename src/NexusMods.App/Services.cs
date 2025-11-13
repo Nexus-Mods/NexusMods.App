@@ -9,19 +9,18 @@ using NexusMods.App.Commandline;
 using NexusMods.App.UI;
 using NexusMods.App.UI.Settings;
 using NexusMods.Backend;
+using NexusMods.Backend.Games.Locators;
 using NexusMods.CLI;
 using NexusMods.Collections;
 using NexusMods.CrossPlatform;
 using NexusMods.DataModel;
 using NexusMods.DataModel.JsonConverters;
-using NexusMods.FileExtractor;
 using NexusMods.Games.AdvancedInstaller;
 using NexusMods.Games.AdvancedInstaller.UI;
 using NexusMods.Games.FileHashes;
 using NexusMods.Games.FOMOD;
 using NexusMods.Games.FOMOD.UI;
 using NexusMods.Games.Generic;
-using NexusMods.Games.TestHarness;
 using NexusMods.Library;
 using NexusMods.Networking.EpicGameStore;
 using NexusMods.Networking.GitHub;
@@ -36,7 +35,6 @@ using NexusMods.Sdk.ProxyConsole;
 using NexusMods.Sdk.Settings;
 using NexusMods.Sdk.Tracking;
 using NexusMods.SingleProcess;
-using NexusMods.StandardGameLocators;
 using NexusMods.Telemetry;
 
 namespace NexusMods.App;
@@ -103,7 +101,6 @@ public static class Services
                 .AddNexusWebApi()
                 .AddHttpDownloader()
                 // .AddAdvancedHttpDownloader()
-                .AddTestHarness()
                 .AddFileSystem()
                 .AddCleanupVerbs()
                 .AddStatusVerbs()
@@ -116,7 +113,7 @@ public static class Services
                 services.AddSingleProcess(Mode.Main);
 
             if (addStandardGameLocators)
-                services.AddStandardGameLocators(settings: gameLocatorSettings);
+                services.AddGameLocators(settings: gameLocatorSettings);
         }
         else
         {

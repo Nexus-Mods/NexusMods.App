@@ -10,7 +10,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.FileExtractor;
-using NexusMods.Abstractions.GameLocators;
+
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Games.FileHashes;
 using NexusMods.Abstractions.GC;
@@ -33,7 +33,9 @@ using NexusMods.Paths;
 using NexusMods.Sdk;
 using NexusMods.Sdk.FileExtractor;
 using NexusMods.Sdk.FileStore;
+using NexusMods.Sdk.Games;
 using NexusMods.Sdk.IO;
+using NexusMods.Sdk.Loadouts;
 using NexusMods.Sdk.NexusModsApi;
 using NexusMods.StandardGameLocators.TestHelpers;
 using Xunit.Abstractions;
@@ -346,22 +348,6 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
             Name = fileName,
         },
     };
-    
-    /// <summary>
-    /// Resets the game folders to a clean state.
-    /// </summary>
-    private void ResetGameFolders()
-    {
-        var register = GameInstallation.LocationsRegister;
-        var oldLocations = register.GetTopLevelLocations().ToArray();
-        var newLocations = new Dictionary<LocationId, AbsolutePath>();
-        foreach (var (k, _) in oldLocations)
-        {
-            newLocations[k] = TemporaryFileManager.CreateFolder().Path;
-        }
-        register.Reset(newLocations);
-        _gameFilesWritten = false;
-    }
 
     /// <summary>
     /// Creates a new loadout and returns the <see cref="Loadout.ReadOnly"/> of it.
@@ -501,8 +487,8 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
     protected void LogDiskState(StringBuilder sb, string sectionName, string comments = "", Loadout.ReadOnly[]? loadouts = null)
     {
         Logger.LogInformation("Logging State {SectionName}", sectionName);
-        
-        var metadata = GameInstallation.GetMetadata(Connection);
+
+        var metadata = GameRegistry.ForceGetMetadata(GameInstallation);
         sb.AppendLine($"{sectionName}:");
         if (!string.IsNullOrEmpty(comments))
             sb.AppendLine(comments);
@@ -517,11 +503,11 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
         {
             foreach (var loadout in loadouts)
             {
-                if (!loadout.Items.Any())
-                    continue;
+                var loadoutItems = LoadoutItem.FindByLoadout(loadout.Db, loadout);
+                if (loadoutItems.Count == 0) continue;
 
-                var files = loadout.Items.OfTypeLoadoutItemWithTargetPath().ToArray();
-                
+                var files = loadoutItems.OfTypeLoadoutItemWithTargetPath().ToArray();
+
                 sb.AppendLine($"### Loadout {loadout.ShortName} - ({files.Length})");
                 sb.AppendLine("| Path | Hash | Size | Disabled | Deleted |");
                 sb.AppendLine("| --- | --- | --- | --- | --- |");
@@ -568,14 +554,8 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
         await _host.Services.GetRequiredService<IFileHashesService>().GetFileHashesDb();
 
         await _host.StartAsync();
-        GameInstallation = GameRegistry.Installations.Values.First(g => g.Game is TGame);
+        GameInstallation = GameRegistry.LocateGameInstallations().First(g => g.Game is TGame);
         Game = (TGame)GameInstallation.Game;
-        
-        if (GameInstallation.Locator is UniversalStubbedGameLocator<TGame> universal)
-        {
-            Logger.LogInformation("Resetting game files for {Game}", Game.DisplayName);
-            ResetGameFolders();
-        }
     }
 
     public Task DisposeAsync()

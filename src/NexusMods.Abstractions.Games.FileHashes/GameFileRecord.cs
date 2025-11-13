@@ -1,6 +1,6 @@
-using NexusMods.Abstractions.GameLocators;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.Paths;
+using NexusMods.Sdk.Games;
 
 namespace NexusMods.Abstractions.Games.FileHashes;
 
