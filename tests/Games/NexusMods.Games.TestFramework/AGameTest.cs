@@ -50,7 +50,6 @@ public abstract class AGameTest<TGame> where TGame : IGame
     
     public IDiagnosticManager DiagnosticManager { get; set; }
 
-
     /// <summary>
     /// Constructor.
     /// </summary>
@@ -58,7 +57,7 @@ public abstract class AGameTest<TGame> where TGame : IGame
     protected AGameTest(IServiceProvider serviceProvider)
     {
         ServiceProvider = serviceProvider;
-        
+
         GameRegistry = serviceProvider.GetRequiredService<IGameRegistry>();
 
         GameInstallation = GameRegistry.LocateGameInstallations().First(g => g.Game is TGame);
