@@ -74,6 +74,7 @@ public abstract class AArchivedDatabaseTest
             .AddSerializationAbstractions()
             .AddHttpDownloader()
             .AddSettingsManager()
+            .AddGameServices()
             .AddSettings<LoggingSettings>()
             .AddOSInterop()
             .AddRuntimeDependencies()
