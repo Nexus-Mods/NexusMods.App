@@ -1,6 +1,6 @@
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
-
+using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.App.GarbageCollection.Nx;
 using NexusMods.Backend;
@@ -89,6 +89,13 @@ public class AGCStubbedGameTest<TTest> : AIsolatedGameTest<TTest, StubbedGame>
     
     /// <inheritdoc />
     public AGCStubbedGameTest(ITestOutputHelper outputHelper) : base(outputHelper) { }
+
+    protected override IServiceCollection AddServices(IServiceCollection services)
+    {
+        return base.AddServices(services)
+            .AddGame<StubbedGame>()
+            .AddUniversalGameLocator<StubbedGame>(Version.Parse("0.0.0"));
+    }
 
     /// <summary/>
     /// <remarks>
