@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.IO.Compression;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -553,7 +554,13 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
         await _host.Services.GetRequiredService<IFileHashesService>().GetFileHashesDb();
 
         await _host.StartAsync();
-        GameInstallation = GameRegistry.LocateGameInstallations().First(g => g.Game is TGame);
+
+        var installations = GameRegistry.LocateGameInstallations().ToArray();
+        var didFind = installations.TryGetFirst(g => g.Game is TGame, out var gameInstallation);
+        Debug.Assert(didFind);
+        didFind.Should().BeTrue();
+
+        GameInstallation = gameInstallation;
         Game = (TGame)GameInstallation.Game;
     }
 

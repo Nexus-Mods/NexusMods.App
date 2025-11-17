@@ -18,9 +18,6 @@ namespace NexusMods.StandardGameLocators.TestHelpers.StubbedGames;
 
 public class StubbedGame : IGame, IGameData<StubbedGame>
 {
-    private readonly ILogger<StubbedGame> _logger;
-    private readonly IEnumerable<IGameLocator> _locators;
-
     public static GameId GameId { get; } = GameId.From("StubbedGame");
     public static string DisplayName => "Stubbed Game";
 
@@ -41,11 +38,9 @@ public class StubbedGame : IGame, IGameData<StubbedGame>
     public IStreamFactory TileImage => throw new NotImplementedException("No game image for stubbed game.");
 
     private readonly IServiceProvider _serviceProvider;
-    public StubbedGame(ILogger<StubbedGame> logger, IEnumerable<IGameLocator> locators, IFileSystem fileSystem, IServiceProvider provider)
+    public StubbedGame(IServiceProvider provider)
     {
         _serviceProvider = provider;
-        _logger = logger;
-        _locators = locators;
     }
 
     public GamePath GetPrimaryFile(GameInstallation installation) => new(LocationId.Game, "");
