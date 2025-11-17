@@ -63,6 +63,7 @@ public abstract class ALegacyDatabaseTest
         });
 
         return services
+            .AddNexusWebApi()
             .AddGameServices()
             .AddSingleton<ICoreDelegates, MockDelegates>()
             .AddSingleton<TimeProvider>(_ => TimeProvider.System)
@@ -82,16 +83,16 @@ public abstract class ALegacyDatabaseTest
             .AddLoadoutAbstractions()
             .AddFileExtractors()
             .AddNexusModsCollections()
-            .AddNexusModsLibraryModels()
             .OverrideSettingsForTests<FileHashesServiceSettings>(settings => settings with
             {
                 HashDatabaseLocation = new ConfigurablePath(baseKnownPath, $"{baseDirectory}/FileHashService"),
             })
             .AddSingleton<ITestOutputHelperAccessor>(_ => new Accessor { Output = _helper })
             .AddSingleton(mock)
+            .AddUniversalGameLocator<StardewValley>(Version.Parse("1.5.6"), stores: [GameStore.Steam, GameStore.GOG])
             .Validate();
     }
-    
+
     private class Accessor : ITestOutputHelperAccessor
     {
         public ITestOutputHelper? Output { get; set; }

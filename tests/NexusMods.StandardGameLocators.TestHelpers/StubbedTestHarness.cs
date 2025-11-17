@@ -10,7 +10,8 @@ public static class StubbedTestHarnessExtensions
     public static IServiceCollection AddUniversalGameLocator<TGame>(
         this IServiceCollection services,
         Version version,
-        Dictionary<RelativePath, byte[]>? gameFiles = null)
+        Dictionary<RelativePath, byte[]>? gameFiles = null,
+        GameStore[]? stores = null)
         where TGame : IGame
     {
         services
@@ -19,7 +20,8 @@ public static class StubbedTestHarnessExtensions
                     s,
                     s.GetRequiredService<IFileSystem>(),
                     s.GetRequiredService<TemporaryFileManager>(),
-                    gameFiles));
+                    gameFiles,
+                    stores));
 
         return services;
     }
