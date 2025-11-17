@@ -30,7 +30,7 @@ public class Startup
         const KnownPath baseKnownPath = KnownPath.EntryDirectory;
         var baseDirectory = $"NexusMods.UI.Tests.Tests-{Guid.NewGuid()}";
 
-        services.AddGameLocators()
+        services
                 .AddSingleton<CommandLineConfigurator>()
                 .AddFileSystem()
                 .AddSettingsManager()

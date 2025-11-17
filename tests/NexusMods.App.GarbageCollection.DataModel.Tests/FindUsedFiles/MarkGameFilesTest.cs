@@ -126,9 +126,4 @@ public class AGCStubbedGameTest<TTest> : AIsolatedGameTest<TTest, StubbedGame>
         // Get the hash of the item we expect after first synchronize.
         ExpectedHash = await file.HashingCopyAsync(Stream.Null, CancellationToken.None);
     }
-    
-    protected override IServiceCollection AddServices(IServiceCollection services)
-    {
-        return base.AddServices(services).AddGameLocators();
-    }
 }

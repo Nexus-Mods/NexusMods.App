@@ -20,7 +20,7 @@ public class ExternalChangesTests : ACyberpunkIsolatedGameTest<ExternalChangesTe
     public ExternalChangesTests(ITestOutputHelper helper) : base(helper)
     {
         var locators = ServiceProvider.GetServices<IGameLocator>();
-        _locator = locators.Should().ContainSingle().Which.Should().BeOfType<UniversalStubbedGameLocator<Cyberpunk2077Game>>().Which;
+        _locator = locators.Should().Contain(locator => locator is UniversalStubbedGameLocator<Cyberpunk2077Game>).Which.Should().BeOfType<UniversalStubbedGameLocator<Cyberpunk2077Game>>().Which;
     }
 
     [Fact]
@@ -116,8 +116,8 @@ public class ExternalChangesTests : ACyberpunkIsolatedGameTest<ExternalChangesTe
         await externalFile.WriteAllTextAsync("version1");
         
         var loadout = await Synchronizer.Synchronize(loadoutA);
-        
-        var externalFileRecord =  LoadoutItem.FindByLoadout(loadoutA.Db, loadoutA).OfTypeLoadoutItemWithTargetPath().Single(f => f.TargetPath == gameFile);
+
+        var externalFileRecord =  LoadoutItem.FindByLoadout(loadout.Db, loadout).OfTypeLoadoutItemWithTargetPath().Single(f => f.TargetPath == gameFile);
         if (!externalFileRecord.TryGetAsLoadoutFile(out var loadoutFile))
             Assert.Fail("The file should be in the loadout");
 
@@ -126,15 +126,14 @@ public class ExternalChangesTests : ACyberpunkIsolatedGameTest<ExternalChangesTe
         await externalFile.WriteAllTextAsync("version2");
         
         loadout = await Synchronizer.Synchronize(loadout);
-        
-        var refreshedRecord =  LoadoutItem.FindByLoadout(loadoutA.Db, loadoutA).OfTypeLoadoutItemWithTargetPath().Single(f => f.TargetPath == gameFile);
+
+        var refreshedRecord =  LoadoutItem.FindByLoadout(loadout.Db, loadout).OfTypeLoadoutItemWithTargetPath().Single(f => f.TargetPath == gameFile);
         refreshedRecord.Id.Should().Be(externalFileRecord.Id, "the file should be the same id");
         
         if (!refreshedRecord.TryGetAsLoadoutFile(out var refreshedFile))
             Assert.Fail("The file should be in the loadout");
         
         refreshedFile.Hash.Should().Be("version2".xxHash3AsUtf8());
-        
     }
 
     private async Task ExtractV2ToGameFolder(AbsolutePath gameFolder)

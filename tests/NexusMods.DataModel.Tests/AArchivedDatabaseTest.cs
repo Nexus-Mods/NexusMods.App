@@ -86,7 +86,6 @@ public abstract class AArchivedDatabaseTest
             .AddStardewValley()
             .AddLoadoutAbstractions()
             .AddFileExtractors()
-            .AddGameLocators()
             .AddNexusModsCollections()
             .AddNexusModsLibraryModels()
             .AddSortOrderItemModel()

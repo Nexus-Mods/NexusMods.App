@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.IO.Compression;
 using FluentAssertions;
+using FomodInstaller.Interface;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -17,6 +18,7 @@ using NexusMods.CrossPlatform;
 using NexusMods.FileExtractor;
 using NexusMods.Games.FileHashes;
 using NexusMods.Games.StardewValley;
+using NexusMods.Games.TestFramework;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.MnemonicDB;
 using NexusMods.MnemonicDB.Abstractions;
@@ -61,6 +63,8 @@ public abstract class ALegacyDatabaseTest
         });
 
         return services
+            .AddGameServices()
+            .AddSingleton<ICoreDelegates, MockDelegates>()
             .AddSingleton<TimeProvider>(_ => TimeProvider.System)
             .AddLogging(builder => builder.AddXUnit())
             .AddSerializationAbstractions()
@@ -77,7 +81,6 @@ public abstract class ALegacyDatabaseTest
             .AddStardewValley()
             .AddLoadoutAbstractions()
             .AddFileExtractors()
-            .AddGameLocators()
             .AddNexusModsCollections()
             .AddNexusModsLibraryModels()
             .OverrideSettingsForTests<FileHashesServiceSettings>(settings => settings with

@@ -38,7 +38,6 @@ public class Startup
                         new ConfigurablePath(baseKnownPath, $"{baseDirectory}/Archives"),
                     ],
                 })
-                .AddGameLocators()
                 .AddSingleton<AvaloniaApp>()
                 .AddLogging(builder => builder.AddXunitOutput().SetMinimumLevel(LogLevel.Debug))
                 .Validate();

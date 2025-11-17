@@ -1230,7 +1230,21 @@ public partial class ALoadoutSynchronizer : ILoadoutSynchronizer
     {        
         using var _ = await _lock.LockAsync();
 
-        var metadata = _gameRegistry.ForceGetMetadata(installation);
+        if (!_gameRegistry.TryGetMetadata(installation, out var metadata))
+        {
+            using var metadataTx = Connection.BeginTransaction();
+            var newMetadata = new GameInstallMetadata.New(metadataTx)
+            {
+                Store = installation.LocatorResult.Store,
+                Path = installation.Locations[LocationId.Game].Path.ToString(),
+                GameId = installation.Game.NexusModsGameId.Value,
+                Name = installation.Game.DisplayName,
+            };
+
+            var metadataResult = await metadataTx.Commit();
+            metadata = metadataResult.Remap(newMetadata);
+        }
+
         using var tx = Connection.BeginTransaction();
 
         // Index the state

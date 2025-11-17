@@ -37,7 +37,6 @@ using NexusMods.Sdk.Games;
 using NexusMods.Sdk.IO;
 using NexusMods.Sdk.Loadouts;
 using NexusMods.Sdk.NexusModsApi;
-using NexusMods.StandardGameLocators.TestHelpers;
 using Xunit.Abstractions;
 using Xunit.DependencyInjection;
 using NexusMods.Sdk.Library;

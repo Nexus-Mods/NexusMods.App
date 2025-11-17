@@ -30,11 +30,6 @@ public static class ServiceExtensions
         this IServiceCollection serviceCollection,
         GameLocatorSettings? settings = null)
     {
-        serviceCollection
-            .AddSettings<GameLocatorSettings>()
-            .AddSingleton<IGameLocator, ManuallyAddedLocator>()
-            .AddManuallyAddedGameModel();
-        
         OSInformation.Shared.SwitchPlatform(
             onWindows: () =>
             {
@@ -75,7 +70,10 @@ public static class ServiceExtensions
         return serviceCollection
             .AddSingleton<IGameLocationsService, GameLocationsService>()
             .AddSingleton<IGameRegistry, GameRegistry>()
-            .AddGameInstallMetadataModel();
+            .AddGameInstallMetadataModel()
+            .AddSettings<GameLocatorSettings>()
+            .AddSingleton<IGameLocator, ManuallyAddedLocator>()
+            .AddManuallyAddedGameModel();
     }
 
     public static IServiceCollection AddOSInterop(this IServiceCollection serviceCollection, IOSInformation? os = null)
