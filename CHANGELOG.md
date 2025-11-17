@@ -1,3 +1,32 @@
+## v0.21.1 2025-11-17
+
+This update focuses on making mod **collection installation** smoother, improving **Health Checks** and logs, and squashing several key bugs for a more reliable experience.
+
+---
+### Features:
+
+- **Collection Conflict Rules:** Mod collection **conflict resolution rules** (which files win when multiple mods include the same file) are now correctly applied the very **first time** you install a collection. This ensures your collection starts up correctly from the beginning.
+
+- **Better File Checks:** The "Missing Game Files" Health Check now includes a **list of the actual affected files**. This makes it much easier to pinpoint exactly which files need attention.
+
+---
+### Bug Fixes and Stability:
+
+- **Fixed Collection Installation:** Fixed a bug that occurred when installing collections that use **Fomod installers with predefined choices**.
+
+- **Resolved 'File In Use' Error:** Fixed a "File in use" exception that could appear when **unmanaging a game** and then trying to **delete the associated mods**.
+
+- **Improved Logging:** Added more **debug information** to the logs, specifically for cases where **backup limit exceptions** are triggered. This will help our team diagnose and fix these issues.
+
+---
+
+### Behind-the-Scenes Improvements:
+
+- **Refactoring and Optimizations:** we did some general refactoring and optimization related to project structure, hashing and GameIds.
+
+- **UI State System:** Implemented a system to **save and restore user interface (UI) state**. While not actively used yet, this sets the stage for features where views can remember your preferred layouts and configurations.  
+
+
 # v0.20.2 2025-11-03
 
 This update introduces a powerful new view for managing file conflicts, adds convenient right-click context menus to the navigation pane, and resolves several key bugs for a more stable experience.
