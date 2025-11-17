@@ -364,7 +364,7 @@ public class NxFileStore : IFileStore, IReadOnlyStreamSource
         // Extract from all source archives.
         Parallel.ForEach(groupedFiles, group =>
         {
-            var file = group.Key.Read();
+            using var file = group.Key.Read();
             var provider = new FromStreamProvider(file);
             var unpacker = new NxUnpacker(provider);
 
