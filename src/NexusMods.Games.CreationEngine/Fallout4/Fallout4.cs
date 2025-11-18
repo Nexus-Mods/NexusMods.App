@@ -37,8 +37,8 @@ public class Fallout4 : ICreationEngineGame, IGameData<Fallout4>
         GOGProductIds = [1998527297L],
     };
 
-    public IStreamFactory IconImage => new EmbeddedResourceStreamFactory<Fallout4>("NexusMods.Games.CreationEngine.Resources.Fallout4.thumbnail.webp");
-    public IStreamFactory TileImage => new EmbeddedResourceStreamFactory<Fallout4>("NexusMods.Games.CreationEngine.Resources.Fallout4.tile.webp");
+    public IStreamFactory IconImage { get; } = new EmbeddedResourceStreamFactory<Fallout4>("NexusMods.Games.CreationEngine.Resources.Fallout4.thumbnail.webp");
+    public IStreamFactory TileImage { get; } = new EmbeddedResourceStreamFactory<Fallout4>("NexusMods.Games.CreationEngine.Resources.Fallout4.tile.webp");
 
     private readonly Lazy<ILoadoutSynchronizer> _synchronizer;
     public ILoadoutSynchronizer Synchronizer => _synchronizer.Value;

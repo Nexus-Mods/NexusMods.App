@@ -30,8 +30,8 @@ public class StardewValley : IGame, IGameData<StardewValley>
         XboxPackageIdentifiers = ["ConcernedApe.StardewValleyPC"],
     };
 
-    public IStreamFactory IconImage => new EmbeddedResourceStreamFactory<StardewValley>("NexusMods.Games.StardewValley.Resources.thumbnail.webp");
-    public IStreamFactory TileImage => new EmbeddedResourceStreamFactory<StardewValley>("NexusMods.Games.StardewValley.Resources.tile.webp");
+    public IStreamFactory IconImage { get; } = new EmbeddedResourceStreamFactory<StardewValley>("NexusMods.Games.StardewValley.Resources.thumbnail.webp");
+    public IStreamFactory TileImage { get; } = new EmbeddedResourceStreamFactory<StardewValley>("NexusMods.Games.StardewValley.Resources.tile.webp");
 
     private readonly Lazy<ILoadoutSynchronizer> _synchronizer;
     public ILoadoutSynchronizer Synchronizer => _synchronizer.Value;

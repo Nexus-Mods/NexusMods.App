@@ -33,8 +33,8 @@ public sealed class Bannerlord : IGame, IGameData<Bannerlord>
         XboxPackageIdentifiers = ["TaleWorldsEntertainment.MountBladeIIBannerlord"],
     };
 
-    public IStreamFactory IconImage => new EmbeddedResourceStreamFactory<Bannerlord>("NexusMods.Games.MountAndBlade2Bannerlord.Resources.thumbnail.webp");
-    public IStreamFactory TileImage => new EmbeddedResourceStreamFactory<Bannerlord>("NexusMods.Games.MountAndBlade2Bannerlord.Resources.tile.webp");
+    public IStreamFactory IconImage { get; } = new EmbeddedResourceStreamFactory<Bannerlord>("NexusMods.Games.MountAndBlade2Bannerlord.Resources.thumbnail.webp");
+    public IStreamFactory TileImage { get; } = new EmbeddedResourceStreamFactory<Bannerlord>("NexusMods.Games.MountAndBlade2Bannerlord.Resources.tile.webp");
 
     private readonly Lazy<ILoadoutSynchronizer> _synchronizer;
     public ILoadoutSynchronizer Synchronizer => _synchronizer.Value;

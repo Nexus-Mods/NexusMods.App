@@ -27,8 +27,8 @@ public class BaldursGate3 : IGame, IGameData<BaldursGate3>
         GOGProductIds = [1456460669L],
     };
 
-    public IStreamFactory IconImage => new EmbeddedResourceStreamFactory<BaldursGate3>("NexusMods.Games.Larian.Resources.BaldursGate3.thumbnail.webp");
-    public IStreamFactory TileImage => new EmbeddedResourceStreamFactory<BaldursGate3>("NexusMods.Games.Larian.Resources.BaldursGate3.tile.webp");
+    public IStreamFactory IconImage { get; } = new EmbeddedResourceStreamFactory<BaldursGate3>("NexusMods.Games.Larian.Resources.BaldursGate3.thumbnail.webp");
+    public IStreamFactory TileImage { get; } = new EmbeddedResourceStreamFactory<BaldursGate3>("NexusMods.Games.Larian.Resources.BaldursGate3.tile.webp");
 
     private readonly Lazy<ILoadoutSynchronizer> _synchronizer;
     public ILoadoutSynchronizer Synchronizer => _synchronizer.Value;

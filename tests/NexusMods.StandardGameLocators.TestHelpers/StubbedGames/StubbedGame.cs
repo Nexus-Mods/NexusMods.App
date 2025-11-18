@@ -34,7 +34,7 @@ public class StubbedGame : IGame, IGameData<StubbedGame>
         XboxPackageIdentifiers = ["xbox-game-id"],
     };
 
-    public IStreamFactory IconImage => new EmbeddedResourceStreamFactory<StubbedGame>("NexusMods.StandardGameLocators.TestHelpers.Resources.question_mark_game.png");
+    public IStreamFactory IconImage { get; } = new EmbeddedResourceStreamFactory<StubbedGame>("NexusMods.StandardGameLocators.TestHelpers.Resources.question_mark_game.png");
     public IStreamFactory TileImage => throw new NotImplementedException("No game image for stubbed game.");
 
     private readonly IServiceProvider _serviceProvider;

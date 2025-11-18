@@ -55,8 +55,10 @@ internal class GOGLocator : IGameLocator
 
             var dlcIds = gameFinderGames
                 .Where(x => x.ParentGameId == gameFinderGame.Id)
-                .Select(x => LocatorId.From(x.Id.Value.ToString()));
+                .Select(x => LocatorId.From(x.Id.Value.ToString()))
+                .ToArray();
 
+            _logger.LogDebug("Found registered game '{GameName}' with store identifier '{StoreIdentifier}' and DLC IDs {DLCIds}", gameFinderGame.Name, storeIdentifier, dlcIds.Select(x => x.Value).ToArray());
             ImmutableArray<LocatorId> locatorIds =
             [
                 LocatorId.From(gameFinderGame.BuildId.ToString()),
