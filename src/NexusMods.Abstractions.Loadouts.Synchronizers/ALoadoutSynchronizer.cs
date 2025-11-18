@@ -1189,7 +1189,8 @@ public partial class ALoadoutSynchronizer : ILoadoutSynchronizer
             var nodeSignatures = files
                 .Where(static x => x.Value.Actions.HasFlag(Actions.BackupFile))
                 .Select(static x => x.Value.Signature)
-                .Distinct()
+                .GroupBy(signature => signature)
+                .Select(static grp => new {Signature = grp.Key, FileCount = grp.Count()})
                 .ToList();
             
             Logger.LogError(
@@ -1198,10 +1199,10 @@ public partial class ALoadoutSynchronizer : ILoadoutSynchronizer
                 Node signatures: 
                 {Signatures}
                 """,
-                nodeSignatures.Count,
+                archivedFiles.Count,
                 totalSize,
                 MaximumBackupSize,
-                string.Join(Environment.NewLine, nodeSignatures.Select(sig => $"  - {sig}"))
+                string.Join(Environment.NewLine, nodeSignatures.Select(sig => $"  - {sig.Signature}: {sig.FileCount} files"))
             );
             
             throw new Exception($"Cannot backup files, total size is {totalSize}, which is larger than the maximum of {MaximumBackupSize}");
