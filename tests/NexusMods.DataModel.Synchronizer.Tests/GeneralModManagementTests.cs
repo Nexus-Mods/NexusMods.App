@@ -23,9 +23,10 @@ public class GeneralModManagementTests(ITestOutputHelper helper) : ACyberpunkIso
         var originalFileFullPath = GameInstallation.Locations.ToAbsolutePath(originalFileGamePath);
         originalFileFullPath.Parent.CreateDirectory();
         await originalFileFullPath.WriteAllTextAsync("Hello World!");
-        
-        await Synchronizer.RescanFiles(GameInstallation);
-        
+
+        await LoadoutManager.ManageInstallation(GameInstallation);
+        await Synchronizer.ReindexState(GameInstallation);
+
         LogDiskState(sb, "## 1 - Initial State",
             """
             The initial state of the game, no loadout has been created yet.
@@ -50,8 +51,8 @@ public class GeneralModManagementTests(ITestOutputHelper helper) : ACyberpunkIso
         Refresh(ref loadoutA);
         
         loadoutA = await Synchronizer.Synchronize(loadoutA);
-        await Synchronizer.RescanFiles(GameInstallation);
-        
+        await Synchronizer.ReindexState(GameInstallation);
+
         LogDiskState(sb, "## 3 - Added ModA to Loadout(A) - Synced",
             """
             Added ModA to Loadout A and synced it.
@@ -67,8 +68,8 @@ public class GeneralModManagementTests(ITestOutputHelper helper) : ACyberpunkIso
         Refresh(ref loadoutA);
         
         loadoutA = await Synchronizer.Synchronize(loadoutA);
-        await Synchronizer.RescanFiles(GameInstallation);
-        
+        await Synchronizer.ReindexState(GameInstallation);
+
         LogDiskState(sb, "## 4 - Added ModB to Loadout(A) - Synced",
             """
             Added ModB to Loadout A and synced it.
@@ -85,7 +86,7 @@ public class GeneralModManagementTests(ITestOutputHelper helper) : ACyberpunkIso
         Refresh(ref loadoutA);
         
         loadoutA = await Synchronizer.Synchronize(loadoutA);
-        await Synchronizer.RescanFiles(GameInstallation);
+        await Synchronizer.ReindexState(GameInstallation);
         Refresh(ref loadoutA);
         
         LogDiskState(sb, "## 5 - Disabled ModB in Loadout(A) - Synced",

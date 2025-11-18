@@ -44,13 +44,6 @@ public interface ILoadoutSynchronizer
     Task<Loadout.ReadOnly> Synchronize(Loadout.ReadOnly loadout, SynchronizeLoadoutJob? job = null);
 
     /// <summary>
-    /// Rescan the files in the folders this game requires. This is used to bring the local cache up to date with the
-    /// whatever is on disk.
-    /// </summary>
-    /// <param name="gameInstallation">The game installation to rescan.</param>
-    Task<Sdk.Games.GameInstallMetadata.ReadOnly> RescanFiles(GameInstallation gameInstallation);
-
-    /// <summary>
     /// Get the disk state for a game as of a specific transaction.
     /// </summary>
     /// <param name="metadata"></param>

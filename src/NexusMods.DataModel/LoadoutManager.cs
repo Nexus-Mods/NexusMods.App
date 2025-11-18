@@ -52,6 +52,26 @@ internal partial class LoadoutManager : ILoadoutManager
         _gameRegistry = serviceProvider.GetRequiredService<IGameRegistry>();
     }
 
+    public async ValueTask<GameInstallMetadata.ReadOnly> ManageInstallation(GameInstallation installation)
+    {
+        if (!_gameRegistry.TryGetMetadata(installation, out var metadata))
+        {
+            using var metadataTx = _connection.BeginTransaction();
+            var newMetadata = new GameInstallMetadata.New(metadataTx)
+            {
+                Store = installation.LocatorResult.Store,
+                Path = installation.Locations[LocationId.Game].Path.ToString(),
+                GameId = installation.Game.NexusModsGameId.Value,
+                Name = installation.Game.DisplayName,
+            };
+
+            var metadataResult = await metadataTx.Commit();
+            metadata = metadataResult.Remap(newMetadata);
+        }
+
+        return metadata;
+    }
+
     public IJobTask<CreateLoadoutJob, Loadout.ReadOnly> CreateLoadout(GameInstallation installation, string? suggestedName = null)
     {
         return _jobMonitor.Begin(new CreateLoadoutJob(installation), async ctx =>
@@ -59,21 +79,7 @@ internal partial class LoadoutManager : ILoadoutManager
             // Prime the hash database to make sure it's loaded
             await _fileHashesService.GetFileHashesDb();
 
-            if (!_gameRegistry.TryGetMetadata(installation, out var metadata))
-            {
-                using var metadataTx = _connection.BeginTransaction();
-                var newMetadata = new GameInstallMetadata.New(metadataTx)
-                {
-                    Store = installation.LocatorResult.Store,
-                    Path = installation.Locations[LocationId.Game].Path.ToString(),
-                    GameId = installation.Game.NexusModsGameId.Value,
-                    Name = installation.Game.DisplayName,
-                };
-
-                var metadataResult = await metadataTx.Commit();
-                metadata = metadataResult.Remap(newMetadata);
-            }
-
+            var metadata = await ManageInstallation(installation);
             var shortName = GetNewShortName(_connection.Db, metadata);
 
             using var tx = _connection.BeginTransaction();

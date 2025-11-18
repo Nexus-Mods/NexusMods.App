@@ -999,7 +999,7 @@ public partial class ALoadoutSynchronizer : ILoadoutSynchronizer
                 return loadout.Rebase();
             }
         }
-        
+
         job?.SetStatus("Collecting files");
         var tree = await BuildSyncTree(loadout);
         ProcessSyncTree(tree);
@@ -1010,7 +1010,7 @@ public partial class ALoadoutSynchronizer : ILoadoutSynchronizer
         return loadout;
     }
 
-    public async Task<Sdk.Games.GameInstallMetadata.ReadOnly> RescanFiles(GameInstallation gameInstallation)
+    public async Task<GameInstallMetadata.ReadOnly> RescanFiles(GameInstallation gameInstallation)
     {
         // Make sure the file hashes are up to date
         await _fileHashService.GetFileHashesDb();
@@ -1230,25 +1230,11 @@ public partial class ALoadoutSynchronizer : ILoadoutSynchronizer
     {        
         using var _ = await _lock.LockAsync();
 
-        if (!_gameRegistry.TryGetMetadata(installation, out var metadata))
-        {
-            using var metadataTx = Connection.BeginTransaction();
-            var newMetadata = new GameInstallMetadata.New(metadataTx)
-            {
-                Store = installation.LocatorResult.Store,
-                Path = installation.Locations[LocationId.Game].Path.ToString(),
-                GameId = installation.Game.NexusModsGameId.Value,
-                Name = installation.Game.DisplayName,
-            };
-
-            var metadataResult = await metadataTx.Commit();
-            metadata = metadataResult.Remap(newMetadata);
-        }
-
+        var metadata = _gameRegistry.ForceGetMetadata(installation);
         using var tx = Connection.BeginTransaction();
 
         // Index the state
-        var changed = await ReindexState(installation, tx);
+        var changed = await ReindexState(metadata, installation, tx);
 
         if (!metadata.Contains(Sdk.Games.GameInstallMetadata.InitialDiskStateTransaction))
         {
@@ -1289,9 +1275,8 @@ public partial class ALoadoutSynchronizer : ILoadoutSynchronizer
     /// <summary>
     /// Reindex the state of the game
     /// </summary>
-    public async Task<bool> ReindexState(GameInstallation installation, ITransaction tx)
+    private async Task<bool> ReindexState(GameInstallMetadata.ReadOnly metadata, GameInstallation installation, ITransaction tx)
     {
-        var metadata = _gameRegistry.ForceGetMetadata(installation);
         var previousState = GetDiskState(metadata);
 
         var indexGameResult = await _gameLocationsService.IndexGame(
@@ -1336,18 +1321,6 @@ public partial class ALoadoutSynchronizer : ILoadoutSynchronizer
 
         tx.Add(metadata.Id, GameInstallMetadata.LastScannedDiskStateTransaction, EntityId.From(TxId.Tmp.Value));
         return true;
-    }
-
-    public async Task ActivateLoadout(LoadoutId loadoutId)
-    {
-        var loadout = Loadout.Load(Connection.Db, loadoutId);
-        var reindexed = await ReindexState(loadout.InstallationInstance);
-
-        var diskStateEntries = DiskStateEntry.FindByGame(reindexed.Db, reindexed);
-
-        var tree = BuildSyncTree(DiskStateToPathPartPair(diskStateEntries), DiskStateToPathPartPair(diskStateEntries), loadout);
-        ProcessSyncTree(tree);
-        await RunActions(tree, loadout);
     }
 
     public async ValueTask BuildProcessRun(Loadout.ReadOnly loadout, GameInstallMetadata.ReadOnly state, CancellationToken cancellationToken)

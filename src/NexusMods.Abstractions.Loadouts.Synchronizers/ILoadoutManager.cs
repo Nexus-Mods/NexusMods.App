@@ -16,6 +16,11 @@ namespace NexusMods.Abstractions.Loadouts.Synchronizers;
 public interface ILoadoutManager
 {
     /// <summary>
+    /// Manages the installation without creating a loadout.
+    /// </summary>
+    ValueTask<GameInstallMetadata.ReadOnly> ManageInstallation(GameInstallation installation);
+
+    /// <summary>
     /// Creates a loadout for a game, managing the game if it has not previously been managed.
     /// </summary>
     IJobTask<CreateLoadoutJob, Loadout.ReadOnly> CreateLoadout(GameInstallation installation, string? suggestedName = null);

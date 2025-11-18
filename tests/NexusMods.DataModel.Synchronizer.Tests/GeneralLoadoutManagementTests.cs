@@ -26,9 +26,10 @@ public class GeneralLoadoutManagementTests(ITestOutputHelper helper) : ACyberpun
         var originalFileFullPath = GameInstallation.Locations.ToAbsolutePath(originalFileGamePath);
         originalFileFullPath.Parent.CreateDirectory();
         await originalFileFullPath.WriteAllTextAsync("Hello World!");
-        
-        await Synchronizer.RescanFiles(GameInstallation);
-        
+
+        await LoadoutManager.ManageInstallation(GameInstallation);
+        await Synchronizer.ReindexState(GameInstallation);
+
         LogDiskState(sb, "## 1 - Initial State",
             """
             The initial state of the game folder should contain the game files as they were created by the game store. No loadout has been created yet.
@@ -46,8 +47,8 @@ public class GeneralLoadoutManagementTests(ITestOutputHelper helper) : ACyberpun
         var newFileFullPathA = GameInstallation.Locations.ToAbsolutePath(newFileInGameFolderA);
         newFileFullPathA.Parent.CreateDirectory();
         await newFileFullPathA.WriteAllTextAsync("New File for this loadout");
-        
-        await Synchronizer.RescanFiles(GameInstallation);
+
+        await Synchronizer.ReindexState(GameInstallation);
         LogDiskState(sb, "## 4 - New File Added to Game Folder",
             """
             New files have been added to the game folder by the user or the game, but the loadout hasn't been synchronized yet.
@@ -189,8 +190,9 @@ public class GeneralLoadoutManagementTests(ITestOutputHelper helper) : ACyberpun
         newFileFullPathA.Parent.CreateDirectory();
         await newFileFullPathA.WriteAllTextAsync("New File for this loadout");
 
-        await Synchronizer.RescanFiles(loadoutA.InstallationInstance);
-        
+        loadoutA = await Synchronizer.Synchronize(loadoutA);
+        await Synchronizer.ReindexState(GameInstallation);
+
         LogDiskState(sb, "## 2 - New File Added to Game Folder",
             """
             A new file has been added to the game folder, and the loadout has been synchronized. The new file should be added to the loadout.

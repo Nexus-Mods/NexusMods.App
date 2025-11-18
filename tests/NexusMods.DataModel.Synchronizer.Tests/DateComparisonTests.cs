@@ -13,9 +13,7 @@ public class DateComparisonTests(ITestOutputHelper helper) : ACyberpunkIsolatedG
     [Fact]
     public async Task DatesRoundTripCorrectlyThroughStorage()
     {
-        
         // Setup the game files 
-        await Synchronizer.RescanFiles(GameInstallation);
         var loadoutA = await CreateLoadout();
         loadoutA = await Synchronizer.Synchronize(loadoutA);
         
@@ -24,8 +22,7 @@ public class DateComparisonTests(ITestOutputHelper helper) : ACyberpunkIsolatedG
         var resolvedPath = GameInstallation.Locations.ToAbsolutePath(pathToTest);
         resolvedPath.Parent.CreateDirectory();
         await resolvedPath.WriteAllTextAsync("Hello World!");
-        
-        await Synchronizer.RescanFiles(GameInstallation);
+
         loadoutA = await Synchronizer.Synchronize(loadoutA);
         
         resolvedPath.FileExists.Should().BeTrue("The file shouldn't be deleted via the sync process");

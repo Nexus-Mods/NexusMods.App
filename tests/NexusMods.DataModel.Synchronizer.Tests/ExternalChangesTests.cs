@@ -27,7 +27,6 @@ public class ExternalChangesTests : ACyberpunkIsolatedGameTest<ExternalChangesTe
     public async Task CanDeployGameAfterUpdating()
     {
         var sb = new StringBuilder();
-        await Synchronizer.RescanFiles(GameInstallation);
         var loadoutA = await CreateLoadout();
 
         _locator.LocatorIds.Should().ContainSingle().Which.Value.Should().Be("StubbedGameState.zip");
@@ -108,7 +107,6 @@ public class ExternalChangesTests : ACyberpunkIsolatedGameTest<ExternalChangesTe
     [Fact]
     public async Task ChangingExternalFileUpdatesExternalFiles()
     {
-        await Synchronizer.RescanFiles(GameInstallation);
         var loadoutA = await CreateLoadout();
         var externalFile = loadoutA.InstallationInstance.Locations[LocationId.Game].Path / "config.json";
         var gameFile = new GamePath(LocationId.Game, "config.json");
