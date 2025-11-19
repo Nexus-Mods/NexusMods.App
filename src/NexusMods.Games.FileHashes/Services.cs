@@ -14,18 +14,10 @@ public static class Services
     public static IServiceCollection AddFileHashes(this IServiceCollection services)
     {
         return services.AddFileHashesVerbs()
-            .AddPathHashRelationModel()
-            .AddVersionDefinitionModel()
-            .AddGogBuildModel()
-            .AddGogDepotModel()
-            .AddGogManifestModel()
-            .AddSteamManifestModel()
-            .AddEpicGameStoreBuildModel()
             .AddFileHashesQueriesSql()
             .AddSingleton<IFileHashesService, FileHashesService>()
             .AddSingleton<IHostedService>(s => (IHostedService)s.GetRequiredService<IFileHashesService>())
-            .AddSettings<FileHashesServiceSettings>()
-            .AddHashRelationModel();
+            .AddSettings<FileHashesServiceSettings>();
     }
     
 }

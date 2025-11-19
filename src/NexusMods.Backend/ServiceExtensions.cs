@@ -70,10 +70,8 @@ public static class ServiceExtensions
         return serviceCollection
             .AddSingleton<IGameLocationsService, GameLocationsService>()
             .AddSingleton<IGameRegistry, GameRegistry>()
-            .AddGameInstallMetadataModel()
             .AddSettings<GameLocatorSettings>()
-            .AddSingleton<IGameLocator, ManuallyAddedLocator>()
-            .AddManuallyAddedGameModel();
+            .AddSingleton<IGameLocator, ManuallyAddedLocator>();
     }
 
     public static IServiceCollection AddOSInterop(this IServiceCollection serviceCollection, IOSInformation? os = null)
@@ -161,10 +159,9 @@ public static class ServiceExtensions
                 IconFunc: () => IconValues.WarningAmber,
                 Priority: ushort.MinValue,
                 Hidden: !ApplicationConstants.IsDebug
-            ))
-            .AddSettingModel();
+            ));
     }
-    
+
     /// <summary>
     /// Adds file extraction related services to the provided DI container.
     /// </summary>

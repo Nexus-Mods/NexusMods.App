@@ -5,14 +5,12 @@ using NexusMods.Abstractions.Serialization;
 using NexusMods.Backend;
 using NexusMods.CrossPlatform;
 using NexusMods.DataModel;
-using NexusMods.FileExtractor;
 using NexusMods.Games.FileHashes;
 using NexusMods.Library;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.HttpDownloader.Tests;
 using NexusMods.Paths;
 using NexusMods.Sdk;
-using NexusMods.Sdk.Library;
 using NexusMods.Sdk.Settings;
 using Xunit.DependencyInjection.Logging;
 
@@ -23,6 +21,7 @@ public class Startup
     public void ConfigureServices(IServiceCollection services)
     {
         services
+            .AddDatabaseModels()
             .AddGameServices()
             .AddSerializationAbstractions()
             .AddFileSystem()
@@ -37,7 +36,6 @@ public class Startup
             .AddLoadoutAbstractions()
             .AddJobMonitor()
             .AddLibrary()
-            .AddLibraryModels()
             .AddFileExtractors()
             .AddFileHashes()
             .AddDataModel() // this is required because we're also using NMA integration

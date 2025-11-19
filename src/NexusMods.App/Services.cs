@@ -61,11 +61,11 @@ public static class Services
         if (startupMode.RunAsMain)
         {
             services
+                .AddDatabaseModels()
                 .AddEpicGameStore()
                 .AddSingleton<TimeProvider>(_ => TimeProvider.System)
                 .AddDataModel()
                 .AddLibrary()
-                .AddLibraryModels()
                 .AddJobMonitor()
                 .AddNexusModsCollections()
 

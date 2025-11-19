@@ -63,6 +63,7 @@ public abstract class ALegacyDatabaseTest
         });
 
         return services
+            .AddDatabaseModels()
             .AddNexusWebApi()
             .AddGameServices()
             .AddSingleton<ICoreDelegates, MockDelegates>()
@@ -78,7 +79,6 @@ public abstract class ALegacyDatabaseTest
             .AddFileHashes()
             .AddFileSystem()
             .AddDataModel()
-            .AddLibraryModels()
             .AddStardewValley()
             .AddLoadoutAbstractions()
             .AddFileExtractors()
