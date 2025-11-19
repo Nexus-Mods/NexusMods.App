@@ -3,12 +3,13 @@ using System.Reactive;
 using System.Text;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.GameLocators;
+
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Games.TestFramework;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 using NexusMods.Paths;
+using NexusMods.Sdk.Games;
 using Xunit.Abstractions;
 
 namespace NexusMods.DataModel.Synchronizer.Tests;
@@ -22,12 +23,13 @@ public class GeneralLoadoutManagementTests(ITestOutputHelper helper) : ACyberpun
         var sb = new StringBuilder();
         
         var originalFileGamePath = new GamePath(LocationId.Game, "bin/originalGameFile.txt");
-        var originalFileFullPath = GameInstallation.LocationsRegister.GetResolvedPath(originalFileGamePath);
+        var originalFileFullPath = GameInstallation.Locations.ToAbsolutePath(originalFileGamePath);
         originalFileFullPath.Parent.CreateDirectory();
         await originalFileFullPath.WriteAllTextAsync("Hello World!");
-        
-        await Synchronizer.RescanFiles(GameInstallation);
-        
+
+        await LoadoutManager.ManageInstallation(GameInstallation);
+        await Synchronizer.ReindexState(GameInstallation);
+
         LogDiskState(sb, "## 1 - Initial State",
             """
             The initial state of the game folder should contain the game files as they were created by the game store. No loadout has been created yet.
@@ -42,11 +44,11 @@ public class GeneralLoadoutManagementTests(ITestOutputHelper helper) : ACyberpun
             """, [loadoutA]);
 
         var newFileInGameFolderA = new GamePath(LocationId.Game, "bin/newFileInGameFolderA.txt");
-        var newFileFullPathA = GameInstallation.LocationsRegister.GetResolvedPath(newFileInGameFolderA);
+        var newFileFullPathA = GameInstallation.Locations.ToAbsolutePath(newFileInGameFolderA);
         newFileFullPathA.Parent.CreateDirectory();
         await newFileFullPathA.WriteAllTextAsync("New File for this loadout");
-        
-        await Synchronizer.RescanFiles(GameInstallation);
+
+        await Synchronizer.ReindexState(GameInstallation);
         LogDiskState(sb, "## 4 - New File Added to Game Folder",
             """
             New files have been added to the game folder by the user or the game, but the loadout hasn't been synchronized yet.
@@ -79,7 +81,7 @@ public class GeneralLoadoutManagementTests(ITestOutputHelper helper) : ACyberpun
         );
         
         var newFileInGameFolderB = new GamePath(LocationId.Game, "bin/newFileInGameFolderB.txt");
-        var newFileFullPathB = GameInstallation.LocationsRegister.GetResolvedPath(newFileInGameFolderB);
+        var newFileFullPathB = GameInstallation.Locations.ToAbsolutePath(newFileInGameFolderB);
         newFileFullPathB.Parent.CreateDirectory();
         await newFileFullPathB.WriteAllTextAsync("New File for this loadout, B");
         
@@ -184,12 +186,13 @@ public class GeneralLoadoutManagementTests(ITestOutputHelper helper) : ACyberpun
             """, [loadoutA, loadoutB]);
         
         var newFileInGameFolderA = new GamePath(LocationId.Game, "bin/newFileInGameFolderA.txt");
-        var newFileFullPathA = GameInstallation.LocationsRegister.GetResolvedPath(newFileInGameFolderA);
+        var newFileFullPathA = GameInstallation.Locations.ToAbsolutePath(newFileInGameFolderA);
         newFileFullPathA.Parent.CreateDirectory();
         await newFileFullPathA.WriteAllTextAsync("New File for this loadout");
 
-        await Synchronizer.RescanFiles(loadoutA.InstallationInstance);
-        
+        loadoutA = await Synchronizer.Synchronize(loadoutA);
+        await Synchronizer.ReindexState(GameInstallation);
+
         LogDiskState(sb, "## 2 - New File Added to Game Folder",
             """
             A new file has been added to the game folder, and the loadout has been synchronized. The new file should be added to the loadout.
@@ -257,8 +260,8 @@ public class GeneralLoadoutManagementTests(ITestOutputHelper helper) : ACyberpun
         var testFilePath = new GamePath(LocationId.Game, "bin/x64/ThisIsATestFile.txt");
         var otherTestFilePath = new GamePath(LocationId.Game, "bin/x64/And Another One.txt");
         
-        var diskPath = loadoutA.InstallationInstance.LocationsRegister.GetResolvedPath(testFilePath);
-        var otherDiskPath = loadoutA.InstallationInstance.LocationsRegister.GetResolvedPath(otherTestFilePath);
+        var diskPath = loadoutA.InstallationInstance.Locations.ToAbsolutePath(testFilePath);
+        var otherDiskPath = loadoutA.InstallationInstance.Locations.ToAbsolutePath(otherTestFilePath);
         diskPath.Delete();
         
         loadoutA = await Synchronizer.Synchronize(loadoutA);

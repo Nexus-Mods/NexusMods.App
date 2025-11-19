@@ -1,9 +1,11 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Logging;
 using NexusMods.Backend.FileExtractor;
 using NexusMods.Backend.FileExtractor.Extractors;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
-using NexusMods.Backend.Game;
+using NexusMods.Backend.Games;
+using NexusMods.Backend.Games.Locators;
 using NexusMods.Backend.Jobs;
 using NexusMods.Backend.OS;
 using NexusMods.Backend.Process;
@@ -13,6 +15,7 @@ using NexusMods.FileExtractor;
 using NexusMods.Paths;
 using NexusMods.Sdk;
 using NexusMods.Sdk.FileExtractor;
+using NexusMods.Sdk.Games;
 using NexusMods.Sdk.Jobs;
 using NexusMods.Sdk.Settings;
 using NexusMods.Sdk.Tracking;
@@ -23,9 +26,54 @@ namespace NexusMods.Backend;
 
 public static class ServiceExtensions
 {
+    public static IServiceCollection AddGameLocators(
+        this IServiceCollection serviceCollection,
+        GameLocatorSettings? settings = null)
+    {
+        OSInformation.Shared.SwitchPlatform(
+            onWindows: () =>
+            {
+                serviceCollection.AddSingleton<IGameLocator, SteamLocator>();
+                serviceCollection.AddSingleton<IGameLocator, GOGLocator>();
+                serviceCollection.AddSingleton<IGameLocator, EGSLocator>();
+
+                if (settings?.EnableXboxGamePass ?? false)
+                    serviceCollection.AddSingleton<IGameLocator, XboxLocator>();
+            },
+            onLinux: () =>
+            {
+                serviceCollection.AddSingleton<IGameLocator>(serviceProvider => new SteamLocator(serviceProvider.GetServices<IGameData>(), serviceProvider.GetRequiredService<ILoggerFactory>(), serviceProvider.GetRequiredService<IFileSystem>(), registry: null));
+                serviceCollection.AddSingleton<IGameLocator, HeroicGOGLocator>();
+
+                serviceCollection.AddSingleton<IGameLocator>(serviceProvider =>
+                {
+                    var locatorFactories = new WinePrefixWrappingLocator.LocatorFactory[]
+                    {
+                        (provider, loggerFactory, fileSystem, registry) => new GOGLocator(provider.GetServices<IGameData>(), loggerFactory, fileSystem, registry),
+                        (provider, loggerFactory, fileSystem, registry) => new EGSLocator(provider.GetServices<IGameData>(), loggerFactory, fileSystem, registry),
+                    };
+
+                    return new WinePrefixWrappingLocator(serviceProvider, locatorFactories);
+                });
+            },
+            onOSX: () =>
+            {
+                serviceCollection.AddSingleton<IGameLocator, SteamLocator>();
+            }
+        );
+
+        return serviceCollection;
+    }
+
     public static IServiceCollection AddGameServices(this IServiceCollection serviceCollection)
     {
-        return serviceCollection.AddSingleton<IGameLocationsService, GameLocationsService>();
+        return serviceCollection
+            .AddSingleton<IGameLocationsService, GameLocationsService>()
+            .AddSingleton<IGameRegistry, GameRegistry>()
+            .AddGameInstallMetadataModel()
+            .AddSettings<GameLocatorSettings>()
+            .AddSingleton<IGameLocator, ManuallyAddedLocator>()
+            .AddManuallyAddedGameModel();
     }
 
     public static IServiceCollection AddOSInterop(this IServiceCollection serviceCollection, IOSInformation? os = null)

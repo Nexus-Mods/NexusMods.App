@@ -1,8 +1,9 @@
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.App.GarbageCollection.Nx;
+using NexusMods.Backend;
 using NexusMods.CrossPlatform;
 using NexusMods.Games.Generic;
 using NexusMods.Games.RedEngine;
@@ -10,6 +11,7 @@ using NexusMods.Games.RedEngine.Cyberpunk2077;
 using NexusMods.Games.TestFramework;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.Paths;
+using NexusMods.Sdk.Games;
 using NexusMods.StandardGameLocators;
 using NexusMods.StandardGameLocators.TestHelpers;
 using NexusMods.StandardGameLocators.TestHelpers.StubbedGames;
@@ -88,6 +90,13 @@ public class AGCStubbedGameTest<TTest> : AIsolatedGameTest<TTest, StubbedGame>
     /// <inheritdoc />
     public AGCStubbedGameTest(ITestOutputHelper outputHelper) : base(outputHelper) { }
 
+    protected override IServiceCollection AddServices(IServiceCollection services)
+    {
+        return base.AddServices(services)
+            .AddGame<StubbedGame>()
+            .AddUniversalGameLocator<StubbedGame>(Version.Parse("0.0.0"));
+    }
+
     /// <summary/>
     /// <remarks>
     /// Our 'stubbed game' infrastructure is set up in such a way where
@@ -112,7 +121,7 @@ public class AGCStubbedGameTest<TTest> : AIsolatedGameTest<TTest, StubbedGame>
     /// </remarks>
     protected override async Task GenerateGameFiles()
     {
-        var register = GameInstallation.LocationsRegister;
+        var register = GameInstallation.Locations;
         var gameFolder = register.GetTopLevelLocations().First(x => x.Key == LocationId.Game);
         var destination = gameFolder.Value.Combine(GcRootFileName);
 
@@ -123,12 +132,5 @@ public class AGCStubbedGameTest<TTest> : AIsolatedGameTest<TTest, StubbedGame>
 
         // Get the hash of the item we expect after first synchronize.
         ExpectedHash = await file.HashingCopyAsync(Stream.Null, CancellationToken.None);
-    }
-    
-    protected override IServiceCollection AddServices(IServiceCollection services)
-    {
-        return base.AddServices(services)
-            .AddStandardGameLocators(false)
-            .AddStubbedGameLocators();
     }
 }

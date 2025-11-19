@@ -9,6 +9,8 @@ using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 using NexusMods.MnemonicDB.Abstractions.Query;
 using NexusMods.MnemonicDB.Abstractions.ValueSerializers;
+using NexusMods.Sdk.Loadouts;
+using GameInstallMetadata = NexusMods.Sdk.Games.GameInstallMetadata;
 
 namespace NexusMods.DataModel.Undo;
 

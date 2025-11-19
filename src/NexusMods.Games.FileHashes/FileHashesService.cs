@@ -6,7 +6,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.EpicGameStore.Values;
-using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.FileHashes;
 using NexusMods.Abstractions.Games.FileHashes.Models;
 using NexusMods.Abstractions.GOG.Values;
@@ -14,12 +13,12 @@ using NexusMods.Sdk.Settings;
 using NexusMods.Abstractions.Steam.Values;
 using NexusMods.Games.FileHashes.DTOs;
 using NexusMods.Hashing.xxHash3;
-using NexusMods.HyperDuck;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Storage;
 using NexusMods.MnemonicDB.Storage.RocksDbBackend;
 using NexusMods.Paths;
 using NexusMods.Sdk;
+using NexusMods.Sdk.Games;
 using NexusMods.Sdk.IO;
 using NexusMods.Sdk.Jobs;
 using NexusMods.Sdk.NexusModsApi;
@@ -48,11 +47,16 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable, IHost
 
     private readonly ILogger<FileHashesService> _logger;
     private readonly IQueryEngine _queryEngine;
-    private IQueryMixin _queryMixin;
 
     private record ConnectedDb(IDb Db, DatomStore Store, Backend Backend, DatabaseInfo DatabaseInfo);
 
-    public FileHashesService(ILogger<FileHashesService> logger, ISettingsManager settingsManager, IFileSystem fileSystem, HttpClient httpClient, JsonSerializerOptions jsonSerializerOptions, IServiceProvider provider)
+    public FileHashesService(
+        ILogger<FileHashesService> logger,
+        ISettingsManager settingsManager,
+        IFileSystem fileSystem,
+        HttpClient httpClient,
+        JsonSerializerOptions jsonSerializerOptions,
+        IServiceProvider provider)
     {
         _logger = logger;
         _httpClient = httpClient;
@@ -62,7 +66,6 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable, IHost
         _databases = new Dictionary<AbsolutePath, ConnectedDb>();
         _provider = provider;
         _queryEngine = provider.GetRequiredService<IQueryEngine>();
-        _queryMixin = _queryEngine.DuckDb;
 
         _hashDatabaseLocation = _settings.HashDatabaseLocation.ToPath(_fileSystem);
         _hashDatabaseLocation.CreateDirectory();
@@ -606,9 +609,9 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable, IHost
         List<(VersionData VersionData, int Matches)> versionMatches = [];
         foreach (var versionDefinition in GetVersionDefinitions(gameInstallation.Game.NexusModsGameId.Value))
         {
-            var locatorIds = GetLocatorIdsForVersionDefinition(gameInstallation.Store, versionDefinition);
+            var locatorIds = GetLocatorIdsForVersionDefinition(gameInstallation.LocatorResult.Store, versionDefinition);
 
-            var matchingCount = GetGameFiles((gameInstallation.Store, locatorIds))
+            var matchingCount = GetGameFiles((gameInstallation.LocatorResult.Store, locatorIds))
                 .Count(file => filesSet.Contains((file.Path, file.Hash)));
 
             versionMatches.Add((new VersionData(locatorIds, VanityVersion.From(versionDefinition.Name)), matchingCount));
@@ -618,42 +621,6 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable, IHost
             .OrderByDescending(t => t.Matches)
             .Select(t => t.VersionData)
             .FirstOrOptional(_ => true);
-    }
-
-    public LocatorId[] GetLocatorIdsForGame(GameInstallation gameInstallation)
-    {
-        if (gameInstallation.Store == GameStore.Steam)
-        {
-            var ids = _queryMixin.Query<DepotId>("SELECT * FROM file_hashes.resolve_steam_depots({gameInstallation.GameMetadataId});")
-                .Select(id => LocatorId.From(id.Value.ToString()))
-                .ToArray();
-            return ids;
-        }
-        else if (gameInstallation.Store == GameStore.GOG)
-        {
-            if (!_queryMixin.Query<(BuildId, ProductId, List<ProductId>)>("SELECT BuildId, BuildProductId, ProductIds FROM file_hashes.resolve_gog_build({gameInstallation.GameMetadataId})")
-                .TryGetFirst(out var found))
-                return [];
-            
-            var ids = new List<LocatorId>();
-            
-            ids.Add(LocatorId.From(found.Item1.Value.ToString()));
-            
-            // We want to add the Build Id and then all the product Ids that are not the same as the Build's product
-            foreach (var productId in found.Item3)
-            {
-                if (productId == found.Item2)
-                    continue;
-                
-                ids.Add(LocatorId.From(productId.Value.ToString()));
-            }
-            
-            return ids.ToArray();
-        }
-        else
-        {
-            throw new NotSupportedException("No way to get locator IDs for: " + gameInstallation.Store);
-        }
     }
 
     /// <inheritdoc/>

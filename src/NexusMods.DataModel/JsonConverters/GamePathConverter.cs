@@ -1,7 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using NexusMods.Abstractions.GameLocators;
-using NexusMods.Paths.Extensions;
+using NexusMods.Sdk.Games;
 
 namespace NexusMods.DataModel.JsonConverters;
 

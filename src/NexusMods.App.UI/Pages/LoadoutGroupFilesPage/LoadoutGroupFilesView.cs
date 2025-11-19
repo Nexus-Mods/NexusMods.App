@@ -1,9 +1,7 @@
-using Avalonia.Controls;
-using Avalonia.Input;
 using Avalonia.ReactiveUI;
 using JetBrains.Annotations;
-using NexusMods.Abstractions.GameLocators;
 using NexusMods.App.UI.Controls;
+using NexusMods.Sdk.Games;
 using R3;
 using ReactiveUI;
 

@@ -1,6 +1,7 @@
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Extensions;
 using NexusMods.Paths;
+using NexusMods.Sdk.Loadouts;
 using static Bannerlord.LauncherManager.Constants;
 namespace NexusMods.Games.MountAndBlade2Bannerlord;
 
@@ -18,7 +19,7 @@ public static class LoadoutExtensions
     {
         var blseXboxPath = (RelativePath)BinFolder / XboxConfiguration / BlseExecutable;
         var blseStandalonePath = (RelativePath)BinFolder / Win64Configuration / BlseExecutable;
-        var blseLauncher = loadout.Items.OfTypeLoadoutItemWithTargetPath()
+        var blseLauncher = LoadoutItem.FindByLoadout(loadout.Db, loadout).OfTypeLoadoutItemWithTargetPath()
             .Where(x => x.AsLoadoutItem().IsEnabled())
             .FirstOrDefault(x =>
             {

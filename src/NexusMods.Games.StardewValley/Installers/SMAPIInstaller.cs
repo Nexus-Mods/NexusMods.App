@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using DynamicData.Kernel;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.GameLocators;
+
 using NexusMods.Abstractions.Games.FileHashes;
 using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Loadouts;
@@ -11,8 +11,10 @@ using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using NexusMods.Sdk;
 using NexusMods.Sdk.FileStore;
+using NexusMods.Sdk.Games;
 using NexusMods.Sdk.IO;
 using NexusMods.Sdk.Library;
+using NexusMods.Sdk.Loadouts;
 
 namespace NexusMods.Games.StardewValley.Installers;
 
@@ -50,7 +52,7 @@ public class SMAPIInstaller : ALibraryArchiveInstaller
         Loadout.ReadOnly loadout,
         CancellationToken cancellationToken)
     {
-        var targetOS = loadout.InstallationInstance.TargetOS;
+        var targetOS = loadout.InstallationInstance.LocatorResult.TargetOS;
         var targetParentName = targetOS.MatchPlatform(
             onWindows: static () => WindowsFolder,
             onLinux: static () => LinuxFolder,
@@ -209,7 +211,7 @@ public class SMAPIInstaller : ALibraryArchiveInstaller
         hash = default(Hash);
         size = default(Size);
 
-        if (_fileHashesService.GetGameFiles((loadout.InstallationInstance.Store, loadout.LocatorIds.Distinct().ToArray()))
+        if (_fileHashesService.GetGameFiles((loadout.Installation.Store, loadout.LocatorIds.Distinct().ToArray()))
             .Where(f => f.Path == path)
             .TryGetFirst(out var gameFileRecord))
         {

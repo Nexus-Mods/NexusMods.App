@@ -4,6 +4,7 @@ using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Sdk.Library;
+using NexusMods.Sdk.Loadouts;
 
 namespace NexusMods.Games.AdvancedInstaller;
 

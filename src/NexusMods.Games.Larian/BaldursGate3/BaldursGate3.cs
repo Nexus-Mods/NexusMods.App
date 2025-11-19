@@ -1,10 +1,7 @@
+using System.Collections.Immutable;
 using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Diagnostics.Emitters;
-using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.GameLocators.GameCapabilities;
-using NexusMods.Abstractions.GameLocators.Stores.GOG;
-using NexusMods.Abstractions.GameLocators.Stores.Steam;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
@@ -18,133 +15,103 @@ using NexusMods.Sdk.IO;
 
 namespace NexusMods.Games.Larian.BaldursGate3;
 
-public class BaldursGate3 : AGame, ISteamGame, IGogGame, IGameData<BaldursGate3>
+public class BaldursGate3 : IGame, IGameData<BaldursGate3>
 {
-    private readonly IServiceProvider _serviceProvider;
-    private readonly IFileSystem _fs;
-
     public static GameId GameId { get; } = GameId.From("Larian.BaldursGate3");
-    protected override GameId GameIdImpl => GameId;
-
     public static string DisplayName => "Baldur's Gate 3";
-    protected override string DisplayNameImpl => DisplayName;
-
     public static Optional<Sdk.NexusModsApi.NexusModsGameId> NexusModsGameId => Sdk.NexusModsApi.NexusModsGameId.From(3474);
-    protected override Optional<Sdk.NexusModsApi.NexusModsGameId> NexusModsGameIdImpl => NexusModsGameId;
 
-    public IEnumerable<uint> SteamIds => [1086940u];
-    public IEnumerable<long> GogIds => [1456460669];
-
-    public BaldursGate3(IServiceProvider provider) : base(provider)
+    public StoreIdentifiers StoreIdentifiers { get; } = new(GameId)
     {
-        _serviceProvider = provider;
-        _fs = provider.GetRequiredService<IFileSystem>();
+        SteamAppIds = [1086940u],
+        GOGProductIds = [1456460669L],
+    };
+
+    public IStreamFactory IconImage { get; } = new EmbeddedResourceStreamFactory<BaldursGate3>("NexusMods.Games.Larian.Resources.BaldursGate3.thumbnail.webp");
+    public IStreamFactory TileImage { get; } = new EmbeddedResourceStreamFactory<BaldursGate3>("NexusMods.Games.Larian.Resources.BaldursGate3.tile.webp");
+
+    private readonly Lazy<ILoadoutSynchronizer> _synchronizer;
+    public ILoadoutSynchronizer Synchronizer => _synchronizer.Value;
+    public ILibraryItemInstaller[] LibraryItemInstallers { get; }
+    private readonly Lazy<ISortOrderManager> _sortOrderManager;
+    public ISortOrderManager SortOrderManager => _sortOrderManager.Value;
+    public IDiagnosticEmitter[] DiagnosticEmitters { get; }
+
+    public BaldursGate3(IServiceProvider provider)
+    {
+        _synchronizer = new Lazy<ILoadoutSynchronizer>(() => new BaldursGate3Synchronizer(provider));
+        _sortOrderManager = new Lazy<ISortOrderManager>(() =>
+        {
+            var sortOrderManager = provider.GetRequiredService<SortOrderManager>();
+            sortOrderManager.RegisterSortOrderVarieties([], this);
+            return sortOrderManager;
+        });
+
+        DiagnosticEmitters = [provider.GetRequiredService<DependencyDiagnosticEmitter>()];
+
+        LibraryItemInstallers =
+        [
+            new BG3SEInstaller(provider),
+            new GenericPatternMatchInstaller(provider)
+            {
+                InstallFolderTargets =
+                [
+                    // Pak mods
+                    // Examples:
+                    // - <see href="https://www.nexusmods.com/baldursgate3/mods/366?tab=description">ImpUI (ImprovedUI) Patch7Ready</see>
+                    // - <see href="https://www.nexusmods.com/baldursgate3/mods/11373?tab=description">NPC Visual Overhaul (WIP) - NPC VO</see>
+                    new InstallFolderTarget
+                    {
+                        DestinationGamePath = new GamePath(Bg3Constants.ModsLocationId, ""),
+                        KnownValidFileExtensions = [Bg3Constants.PakFileExtension],
+                        FileExtensionsToDiscard =
+                        [
+                            KnownExtensions.Txt, KnownExtensions.Md, KnownExtensions.Pdf, KnownExtensions.Png,
+                            KnownExtensions.Json, new Extension(".lnk"),
+                        ],
+                    },
+
+                    // bin and NativeMods mods
+                    // Examples:
+                    // - <see href="https://www.nexusmods.com/baldursgate3/mods/944">Native Mod Loader</see>
+                    // - <see href="https://www.nexusmods.com/baldursgate3/mods/668?tab=files">Achievement Enabler</see>
+                    new InstallFolderTarget
+                    {
+                        DestinationGamePath = new GamePath(LocationId.Game, "bin"),
+                        KnownSourceFolderNames = ["bin"],
+                        Names = ["NativeMods"],
+                    },
+
+                    // loose files Data mods
+                    // Examples:
+                    // - <see href="https://www.nexusmods.com/baldursgate3/mods/555?tab=description">Fast XP</see>
+                    new InstallFolderTarget
+                    {
+                        DestinationGamePath = new GamePath(LocationId.Game, "Data"),
+                        KnownSourceFolderNames = ["Data"],
+                        Names = ["Generated", "Public"],
+                    },
+                ],
+            },
+        ];
     }
 
-    public override Optional<Version> GetLocalVersion(GameTargetInfo targetInfo, AbsolutePath installationPath)
+    public ImmutableDictionary<LocationId, AbsolutePath> GetLocations(IFileSystem fileSystem, GameLocatorResult gameLocatorResult)
     {
-        try
+        return new Dictionary<LocationId, AbsolutePath>()
         {
-            // Use the vulkan executable to get the version, not the primary file (launcher)
-            var executableGamePath = targetInfo.OS.IsOSX 
-                ? new GamePath(LocationId.Game, "Contents/MacOS/Baldur's Gate 3") 
-                : new GamePath(LocationId.Game, "bin/bg3.exe");
-
-            var fvi = executableGamePath
-                .Combine(installationPath).FileInfo
-                .GetFileVersionInfo();
-            return fvi.ProductVersion;
-        }
-        catch (Exception)
-        {
-            return Optional<Version>.None;
-        }
+            { LocationId.Game, gameLocatorResult.Path },
+            { Bg3Constants.ModsLocationId, fileSystem.GetKnownPath(KnownPath.LocalApplicationDataDirectory).Combine("Larian Studios/Baldur's Gate 3/Mods") },
+            { Bg3Constants.PlayerProfilesLocationId, fileSystem.GetKnownPath(KnownPath.LocalApplicationDataDirectory).Combine("Larian Studios/Baldur's Gate 3/PlayerProfiles/Public") },
+            { Bg3Constants.ScriptExtenderConfigLocationId, fileSystem.GetKnownPath(KnownPath.LocalApplicationDataDirectory).Combine("Larian Studios/Baldur's Gate 3/ScriptExtender") },
+        }.ToImmutableDictionary();
     }
 
-    public override GamePath GetPrimaryFile(GameTargetInfo targetInfo)
+    public GamePath GetPrimaryFile(GameInstallation installation)
     {
-        if (targetInfo.OS.IsOSX) return new GamePath(LocationId.Game, "Contents/MacOS/Baldur's Gate 3");
+        if (installation.LocatorResult.TargetOS.IsOSX) return new GamePath(LocationId.Game, "Contents/MacOS/Baldur's Gate 3");
 
         // Use launcher to allow choosing between DirectX11 and Vulkan on GOG, Steam already always starts the launcher
         return new GamePath(LocationId.Game, "Launcher/LariLauncher.exe");
     }
-
-    protected override IReadOnlyDictionary<LocationId, AbsolutePath> GetLocations(IFileSystem fileSystem, GameLocatorResult installation)
-    {
-        var result = new Dictionary<LocationId, AbsolutePath>()
-        {
-            { LocationId.Game, installation.Path },
-            { Bg3Constants.ModsLocationId, fileSystem.GetKnownPath(KnownPath.LocalApplicationDataDirectory).Combine("Larian Studios/Baldur's Gate 3/Mods") },
-            { Bg3Constants.PlayerProfilesLocationId, fileSystem.GetKnownPath(KnownPath.LocalApplicationDataDirectory).Combine("Larian Studios/Baldur's Gate 3/PlayerProfiles/Public") },
-            { Bg3Constants.ScriptExtenderConfigLocationId, fileSystem.GetKnownPath(KnownPath.LocalApplicationDataDirectory).Combine("Larian Studios/Baldur's Gate 3/ScriptExtender") },
-        };
-        return result;
-    }
-
-    /// <inheritdoc />
-    public override List<IModInstallDestination> GetInstallDestinations(IReadOnlyDictionary<LocationId, AbsolutePath> locations)
-    {
-        return
-        [
-        ];
-    }
-
-    public override ILibraryItemInstaller[] LibraryItemInstallers =>
-    [
-        new BG3SEInstaller(_serviceProvider),
-        new GenericPatternMatchInstaller(_serviceProvider)
-        {
-            InstallFolderTargets =
-            [
-                // Pak mods
-                // Examples:
-                // - <see href="https://www.nexusmods.com/baldursgate3/mods/366?tab=description">ImpUI (ImprovedUI) Patch7Ready</see>
-                // - <see href="https://www.nexusmods.com/baldursgate3/mods/11373?tab=description">NPC Visual Overhaul (WIP) - NPC VO</see>
-                new InstallFolderTarget
-                {
-                    DestinationGamePath = new GamePath(Bg3Constants.ModsLocationId, ""),
-                    KnownValidFileExtensions = [Bg3Constants.PakFileExtension],
-                    FileExtensionsToDiscard =
-                    [
-                        KnownExtensions.Txt, KnownExtensions.Md, KnownExtensions.Pdf, KnownExtensions.Png,
-                        KnownExtensions.Json, new Extension(".lnk"),
-                    ],
-                },
-
-                // bin and NativeMods mods
-                // Examples:
-                // - <see href="https://www.nexusmods.com/baldursgate3/mods/944">Native Mod Loader</see>
-                // - <see href="https://www.nexusmods.com/baldursgate3/mods/668?tab=files">Achievement Enabler</see>
-                new InstallFolderTarget
-                {
-                    DestinationGamePath = new GamePath(LocationId.Game, "bin"),
-                    KnownSourceFolderNames = ["bin"],
-                    Names = ["NativeMods"],
-                },
-
-                // loose files Data mods
-                // Examples:
-                // - <see href="https://www.nexusmods.com/baldursgate3/mods/555?tab=description">Fast XP</see>
-                new InstallFolderTarget
-                {
-                    DestinationGamePath = new GamePath(LocationId.Game, "Data"),
-                    KnownSourceFolderNames = ["Data"],
-                    Names = ["Generated", "Public"],
-                },
-            ],
-        },
-    ];
-
-    protected override ILoadoutSynchronizer MakeSynchronizer(IServiceProvider provider)
-    {
-        return new BaldursGate3Synchronizer(provider);
-    }
-
-    public override IDiagnosticEmitter[] DiagnosticEmitters =>
-    [
-        _serviceProvider.GetRequiredService<DependencyDiagnosticEmitter>(),
-    ];
-
-    public override IStreamFactory IconImage => new EmbeddedResourceStreamFactory<BaldursGate3>("NexusMods.Games.Larian.Resources.BaldursGate3.thumbnail.webp");
-    public override IStreamFactory TileImage => new EmbeddedResourceStreamFactory<BaldursGate3>("NexusMods.Games.Larian.Resources.BaldursGate3.tile.webp");
 }

@@ -3,7 +3,8 @@ using FluentAssertions;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Helpers.TreeDataGrid.New.FolderGenerator;
 using DynamicData.Aggregation;
-using NexusMods.Abstractions.GameLocators;
+
+using NexusMods.Sdk.Games;
 
 namespace NexusMods.UI.Tests.Helpers.TreeDataGrid.FolderGenerator;
 

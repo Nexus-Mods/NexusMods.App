@@ -8,6 +8,7 @@ using NexusMods.Games.RedEngine.Cyberpunk2077.Models;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Paths;
+using NexusMods.Sdk.Loadouts;
 using OneOf;
 
 namespace NexusMods.Games.RedEngine.Cyberpunk2077.SortOrder;

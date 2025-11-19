@@ -23,16 +23,18 @@ A new file has been added to the game folder, and the loadout has been synchroni
 ### Initial State - (0)
 | Path | Hash | Size |
 | --- | --- | --- |
-### Last Synced State - (0)
+### Last Synced State - (1)
 | Path | Hash | Size |
 | --- | --- | --- |
+| {Game, bin/newFileInGameFolderA.txt} | 0x3FB1DBAC894B6380 | 25 B |
 ### Current State - (1)
 | Path | Hash | Size |
 | --- | --- | --- |
 | {Game, bin/newFileInGameFolderA.txt} | 0x3FB1DBAC894B6380 | 25 B |
-### Loadout A - (0)
+### Loadout A - (1)
 | Path | Hash | Size | Disabled | Deleted |
 | --- | --- | --- | --- | --- |
+| {Game, bin/newFileInGameFolderA.txt} | 0x3FB1DBAC894B6380 | 25 B |   |   |
 ### Loadout B - (0)
 | Path | Hash | Size | Disabled | Deleted |
 | --- | --- | --- | --- | --- |

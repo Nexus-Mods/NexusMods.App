@@ -1,16 +1,11 @@
+using System.Collections.Immutable;
 using DynamicData.Kernel;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Diagnostics.Emitters;
-using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.GameLocators.GameCapabilities;
-using NexusMods.Abstractions.GameLocators.Stores.GOG;
-using NexusMods.Abstractions.GameLocators.Stores.Steam;
-using NexusMods.Abstractions.GameLocators.Stores.Xbox;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
-using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Games.FileHashes.Emitters;
 using NexusMods.Games.FOMOD;
 using NexusMods.Games.StardewValley.Emitters;
@@ -22,45 +17,82 @@ using NexusMods.Sdk.IO;
 namespace NexusMods.Games.StardewValley;
 
 [UsedImplicitly]
-public class StardewValley : AGame, ISteamGame, IGogGame, IXboxGame, IGameData<StardewValley>
+public class StardewValley : IGame, IGameData<StardewValley>
 {
-    public static GameDomain DomainStatic => GameDomain.From("stardewvalley");
-    private readonly IServiceProvider _serviceProvider;
-    public IEnumerable<uint> SteamIds => new[] { 413150u };
-    public IEnumerable<long> GogIds => new long[] { 1453375253 };
-    public IEnumerable<string> XboxIds => new[] { "ConcernedApe.StardewValleyPC" };
-
     public static GameId GameId { get; } = GameId.From("StardewValley");
-    protected override GameId GameIdImpl => GameId;
-
     public static string DisplayName => "Stardew Valley";
-    protected override string DisplayNameImpl => DisplayName;
-
     public static Optional<Sdk.NexusModsApi.NexusModsGameId> NexusModsGameId => Sdk.NexusModsApi.NexusModsGameId.From(1303);
-    protected override Optional<Sdk.NexusModsApi.NexusModsGameId> NexusModsGameIdImpl => NexusModsGameId;
 
-    public StardewValley(
-        IOSInformation osInformation,
-        IEnumerable<IGameLocator> gameLocators,
-        IServiceProvider provider) : base(provider)
+    public StoreIdentifiers StoreIdentifiers { get; } = new(GameId)
     {
-        _serviceProvider = provider;
+        SteamAppIds = [413150u],
+        GOGProductIds = [1453375253L],
+        XboxPackageIdentifiers = ["ConcernedApe.StardewValleyPC"],
+    };
+
+    public IStreamFactory IconImage { get; } = new EmbeddedResourceStreamFactory<StardewValley>("NexusMods.Games.StardewValley.Resources.thumbnail.webp");
+    public IStreamFactory TileImage { get; } = new EmbeddedResourceStreamFactory<StardewValley>("NexusMods.Games.StardewValley.Resources.tile.webp");
+
+    private readonly Lazy<ILoadoutSynchronizer> _synchronizer;
+    public ILoadoutSynchronizer Synchronizer => _synchronizer.Value;
+    public ILibraryItemInstaller[] LibraryItemInstallers { get; }
+    private readonly Lazy<ISortOrderManager> _sortOrderManager;
+    public ISortOrderManager SortOrderManager => _sortOrderManager.Value;
+    public IDiagnosticEmitter[] DiagnosticEmitters { get; }
+
+    public StardewValley(IServiceProvider serviceProvider)
+    {
+        _synchronizer = new Lazy<ILoadoutSynchronizer>(() => new StardewValleyLoadoutSynchronizer(serviceProvider));
+        _sortOrderManager = new Lazy<ISortOrderManager>(() =>
+        {
+            var sortOrderManager = serviceProvider.GetRequiredService<SortOrderManager>();
+            sortOrderManager.RegisterSortOrderVarieties([], this);
+
+            return sortOrderManager;
+        });
+
+        LibraryItemInstallers =
+        [
+            FomodXmlInstaller.Create(serviceProvider, new GamePath(LocationId.Game, Constants.ModsFolder)),
+            serviceProvider.GetRequiredService<SMAPIInstaller>(),
+            serviceProvider.GetRequiredService<GenericInstaller>(),
+        ];
+
+        DiagnosticEmitters =
+        [
+            new NoWayToSourceFilesOnDisk(),
+            new UndeployableLoadoutDueToMissingGameFiles(serviceProvider),
+            serviceProvider.GetRequiredService<SMAPIGameVersionDiagnosticEmitter>(),
+            serviceProvider.GetRequiredService<DependencyDiagnosticEmitter>(),
+            serviceProvider.GetRequiredService<MissingSMAPIEmitter>(),
+            serviceProvider.GetRequiredService<SMAPIModDatabaseCompatibilityDiagnosticEmitter>(),
+            serviceProvider.GetRequiredService<VersionDiagnosticEmitter>(),
+            serviceProvider.GetRequiredService<ModOverwritesGameFilesEmitter>(),
+        ];
     }
 
-    public override GamePath GetPrimaryFile(GameTargetInfo targetInfo)
+    public ImmutableDictionary<LocationId, AbsolutePath> GetLocations(IFileSystem fileSystem, GameLocatorResult gameLocatorResult)
+    {
+        return new Dictionary<LocationId, AbsolutePath>
+        {
+            { LocationId.Game, gameLocatorResult.Path },
+        }.ToImmutableDictionary();
+    }
+
+    public GamePath GetPrimaryFile(GameInstallation installation)
     {
         // NOTE(erri120): Our SMAPI installer overrides all of these files.
-        return targetInfo.OS.MatchPlatform(
+        return installation.LocatorResult.TargetOS.MatchPlatform(
             onWindows: () => new GamePath(LocationId.Game, "Stardew Valley.exe"),
             onLinux: () => new GamePath(LocationId.Game, "StardewValley"),
             onOSX: () => new GamePath(LocationId.Game, "Contents/MacOS/StardewValley")
         );
     }
 
-    public override Optional<GamePath> GetFallbackCollectionInstallDirectory(GameTargetInfo targetInfo)
+    public Optional<GamePath> GetFallbackCollectionInstallDirectory(GameInstallation installation)
     {
         // NOTE(erri120): see https://github.com/Nexus-Mods/NexusMods.App/issues/2553
-        var path = targetInfo.OS.MatchPlatform(
+        var path = installation.LocatorResult.TargetOS.MatchPlatform(
             onWindows: () => new GamePath(LocationId.Game, Constants.ModsFolder),
             onLinux: () => new GamePath(LocationId.Game, Constants.ModsFolder),
             onOSX: () => new GamePath(LocationId.Game, "Contents/MacOS" / Constants.ModsFolder)
@@ -69,17 +101,17 @@ public class StardewValley : AGame, ISteamGame, IGogGame, IXboxGame, IGameData<S
         return Optional<GamePath>.Create(path);
     }
 
-    public override Optional<Version> GetLocalVersion(GameTargetInfo targetInfo, AbsolutePath installationPath)
+    public Optional<Version> GetLocalVersion(GameInstallation installation)
     {
         try
         {
-            var path = targetInfo.OS.MatchPlatform(
+            var path = installation.LocatorResult.TargetOS.MatchPlatform(
                 onWindows: () => "Stardew Valley.dll",
                 onLinux: () => "Stardew Valley.dll",
                 onOSX: () => "Contents/MacOS/Stardew Valley.dll"
             );
 
-            var fileInfo = installationPath.Combine(path).FileInfo;
+            var fileInfo = installation.Locations[LocationId.Game].Path.Combine(path).FileInfo;
             return fileInfo.GetFileVersionInfo().FileVersion;
         }
         catch (Exception)
@@ -88,41 +120,5 @@ public class StardewValley : AGame, ISteamGame, IGogGame, IXboxGame, IGameData<S
         }
     }
 
-    protected override IReadOnlyDictionary<LocationId, AbsolutePath> GetLocations(IFileSystem fileSystem, GameLocatorResult installation)
-    {
-        var result = new Dictionary<LocationId, AbsolutePath>()
-        {
-            { LocationId.Game, installation.Path },
-        };
-        return result;
-    }
 
-    public override IStreamFactory IconImage => new EmbeddedResourceStreamFactory<StardewValley>("NexusMods.Games.StardewValley.Resources.thumbnail.webp");
-    public override IStreamFactory TileImage => new EmbeddedResourceStreamFactory<StardewValley>("NexusMods.Games.StardewValley.Resources.tile.webp");
-
-    public override ILibraryItemInstaller[] LibraryItemInstallers =>
-    [
-        FomodXmlInstaller.Create(_serviceProvider, new GamePath(LocationId.Game, Constants.ModsFolder)),
-        _serviceProvider.GetRequiredService<SMAPIInstaller>(),
-        _serviceProvider.GetRequiredService<GenericInstaller>(),
-    ];
-
-    public override IDiagnosticEmitter[] DiagnosticEmitters =>
-    [
-        new NoWayToSourceFilesOnDisk(),
-        new UndeployableLoadoutDueToMissingGameFiles(_serviceProvider),
-        _serviceProvider.GetRequiredService<SMAPIGameVersionDiagnosticEmitter>(),
-        _serviceProvider.GetRequiredService<DependencyDiagnosticEmitter>(),
-        _serviceProvider.GetRequiredService<MissingSMAPIEmitter>(),
-        _serviceProvider.GetRequiredService<SMAPIModDatabaseCompatibilityDiagnosticEmitter>(),
-        _serviceProvider.GetRequiredService<VersionDiagnosticEmitter>(),
-        _serviceProvider.GetRequiredService<ModOverwritesGameFilesEmitter>(),
-    ];
-
-    public override List<IModInstallDestination> GetInstallDestinations(IReadOnlyDictionary<LocationId, AbsolutePath> locations) => ModInstallDestinationHelpers.GetCommonLocations(locations);
-    
-    protected override ILoadoutSynchronizer MakeSynchronizer(IServiceProvider provider)
-    {
-        return new StardewValleyLoadoutSynchronizer(provider);
-    }
 }

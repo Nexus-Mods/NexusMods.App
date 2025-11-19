@@ -4,7 +4,6 @@ using DynamicData;
 using DynamicData.Aggregation;
 using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
@@ -45,7 +44,7 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
 
     public LibraryFile.ReadOnly[] GetAllFiles(GameId gameId, IDb? db = null)
     {
-        var nexusModsGameId = _serviceProvider.GetServices<ILocatableGame>().First(x => x.GameId == gameId).NexusModsGameId;
+        var nexusModsGameId = _serviceProvider.GetServices<IGameData>().First(x => x.GameId == gameId).NexusModsGameId;
         if (!nexusModsGameId.HasValue) return [];
 
         db ??= _connection.Db;

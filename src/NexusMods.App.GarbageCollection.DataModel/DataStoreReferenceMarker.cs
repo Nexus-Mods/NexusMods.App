@@ -3,6 +3,7 @@ using NexusMods.App.GarbageCollection.Interfaces;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 using NexusMods.Sdk.Library;
+using NexusMods.Sdk.Loadouts;
 
 namespace NexusMods.App.GarbageCollection.DataModel;
 

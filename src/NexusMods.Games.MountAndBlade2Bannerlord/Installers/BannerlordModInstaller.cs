@@ -5,7 +5,7 @@ using Bannerlord.ModuleManager;
 using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.GameLocators;
+
 using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Games.MountAndBlade2Bannerlord.LauncherManager;
@@ -14,6 +14,8 @@ using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using NexusMods.Sdk.FileStore;
 using NexusMods.Sdk.Library;
+using NexusMods.Sdk.Games;
+using NexusMods.Sdk.Loadouts;
 using static NexusMods.Games.MountAndBlade2Bannerlord.BannerlordConstants;
 using GameStore = Bannerlord.LauncherManager.Models.GameStore;
 
@@ -37,9 +39,9 @@ public sealed class BannerlordModInstaller : ALibraryArchiveInstaller
 
         var launcherManager = _launcherManagerFactory.Get(loadout.Installation);
         var store = loadout.Installation.Store;
-        var isXboxStore = store == Abstractions.GameLocators.GameStore.XboxGamePass;
+        var isXboxStore = store == Sdk.Games.GameStore.XboxGamePass;
         var isNonXboxStore = !isXboxStore;
-        
+
         foreach (var tuple in moduleInfoFileTuples)
         {
             var (moduleInfoFile, moduleInfo) = tuple;

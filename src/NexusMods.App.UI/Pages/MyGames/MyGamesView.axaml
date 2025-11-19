@@ -12,13 +12,10 @@
     xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
     xmlns:myGames="clr-namespace:NexusMods.App.UI.Pages.MyGames"
     xmlns:gameWidget="clr-namespace:NexusMods.App.UI.Controls.GameWidget"
-    xmlns:miniGameWidget="clr-namespace:NexusMods.App.UI.Controls.MiniGameWidget"
     xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
     xmlns:icons="clr-namespace:NexusMods.UI.Sdk.Icons;assembly=NexusMods.UI.Sdk"
     xmlns:panels="clr-namespace:Avalonia.Labs.Panels;assembly=Avalonia.Labs.Panels"
     xmlns:pageHeader="clr-namespace:NexusMods.App.UI.Controls.PageHeader"
-    xmlns:standard="clr-namespace:NexusMods.App.UI.Controls.MiniGameWidget.Standard"
-    xmlns:ui="clr-namespace:NexusMods.Abstractions.UI;assembly=NexusMods.Abstractions.UI"
     xmlns:sdk="clr-namespace:NexusMods.UI.Sdk;assembly=NexusMods.UI.Sdk">
 
     <Design.DataContext>

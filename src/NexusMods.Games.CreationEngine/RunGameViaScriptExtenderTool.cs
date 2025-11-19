@@ -1,17 +1,19 @@
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Paths;
+using NexusMods.Sdk.Games;
+using NexusMods.Sdk.Loadouts;
 
 namespace NexusMods.Games.CreationEngine;
 
-public class RunGameViaScriptExtenderTool<TGame> : RunGameTool<TGame>
-    where TGame : AGame
+public class RunGameViaScriptExtenderTool<TGame> : RunGameTool<TGame> where TGame : IGame
 {
+    private readonly GamePath _scriptExtenderPath;
+    
     private RunGameViaScriptExtenderTool(IServiceProvider serviceProvider, TGame game, GamePath scriptExtenderPath) : base(serviceProvider, game)
     {
-        ScriptExtenderPath = scriptExtenderPath;
+        _scriptExtenderPath = scriptExtenderPath;
     }
 
     public static IRunGameTool Create(IServiceProvider serviceProvider, GamePath scriptExtenderPath)
@@ -19,17 +21,11 @@ public class RunGameViaScriptExtenderTool<TGame> : RunGameTool<TGame>
         return new RunGameViaScriptExtenderTool<TGame>(serviceProvider, serviceProvider.GetRequiredService<TGame>(), scriptExtenderPath);
     }
 
-    public GamePath ScriptExtenderPath { get; set; }
-
     protected override ValueTask<AbsolutePath> GetGamePath(Loadout.ReadOnly loadout)
     {
         var installationInstance = loadout.InstallationInstance;
-        var game = installationInstance.GetGame();
-        
-        var extenderPath = installationInstance.LocationsRegister.GetResolvedPath(ScriptExtenderPath);
-        if (extenderPath.FileExists)
-            return ValueTask.FromResult(extenderPath);
-        var primaryFile =  game.GetPrimaryFile(installationInstance.TargetInfo);
-        return ValueTask.FromResult(installationInstance.LocationsRegister.GetResolvedPath(primaryFile)); 
+        var extenderPath = installationInstance.Locations.ToAbsolutePath(_scriptExtenderPath);
+        if (extenderPath.FileExists) return ValueTask.FromResult(extenderPath);
+        return base.GetGamePath(loadout);
     }
 }

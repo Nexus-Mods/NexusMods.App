@@ -5,17 +5,14 @@ using System.Runtime.InteropServices;
 using System.Text;
 using CommunityToolkit.HighPerformance.Buffers;
 using DynamicData.Kernel;
-using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.FileHashes;
 using NexusMods.Abstractions.GC;
 using NexusMods.Abstractions.Loadouts.Files.Diff;
 using NexusMods.Abstractions.Loadouts.Sorting;
 using NexusMods.Abstractions.Loadouts.Synchronizers.Rules;
 using NexusMods.Hashing.xxHash3;
-using NexusMods.HyperDuck;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 using NexusMods.MnemonicDB.Abstractions.Query;
@@ -23,9 +20,10 @@ using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Paths;
 using NexusMods.Sdk;
 using NexusMods.Sdk.FileStore;
+using NexusMods.Sdk.Games;
 using NexusMods.Sdk.IO;
 using NexusMods.Sdk.Jobs;
-using OneOf;
+using NexusMods.Sdk.Loadouts;
 using Reloaded.Memory.Extensions;
 
 namespace NexusMods.Abstractions.Loadouts.Synchronizers;
@@ -55,6 +53,7 @@ public partial class ALoadoutSynchronizer : ILoadoutSynchronizer
     private readonly IServiceProvider _serviceProvider;
     private readonly ILoadoutManager _loadoutManager;
     private readonly IGameLocationsService _gameLocationsService;
+    private readonly IGameRegistry _gameRegistry;
 
     private readonly StringPool _fileNamePool = new();
 
@@ -84,6 +83,7 @@ public partial class ALoadoutSynchronizer : ILoadoutSynchronizer
         _jobMonitor = serviceProvider.GetRequiredService<IJobMonitor>();
         _loadoutManager = serviceProvider.GetRequiredService<ILoadoutManager>();
         _gameLocationsService = serviceProvider.GetRequiredService<IGameLocationsService>();
+        _gameRegistry = serviceProvider.GetRequiredService<IGameRegistry>();
 
         _fileHashService = fileHashService;
 
@@ -165,7 +165,7 @@ public partial class ALoadoutSynchronizer : ILoadoutSynchronizer
         foreach (var dir in directoriesToDelete)
         {
             // Could have other empty directories as children, so we need to delete recursively
-            installation.LocationsRegister.GetResolvedPath(dir).DeleteDirectory(recursive: true);
+            installation.Locations.ToAbsolutePath(dir).DeleteDirectory(recursive: true);
         }
     }
 
@@ -311,7 +311,7 @@ public partial class ALoadoutSynchronizer : ILoadoutSynchronizer
     /// This is a highly optimized way to load all the disk state for a game. It's a sorted merge
     /// join over all the required attributes for the results
     /// </summary>
-    public unsafe List<PathPartPair> GetDiskStateForGame(GameInstallMetadata.ReadOnly metadata)
+    public unsafe List<PathPartPair> GetDiskStateForGame(Sdk.Games.GameInstallMetadata.ReadOnly metadata)
     {
         var db = metadata.Db;
         var pairs = new List<PathPartPair>();
@@ -419,11 +419,11 @@ public partial class ALoadoutSynchronizer : ILoadoutSynchronizer
     {
         using var _ = await _lock.LockAsync();
         using var tx = Connection.BeginTransaction();
-        var gameMetadataId = loadout.InstallationInstance.GameMetadataId;
-        var register = loadout.InstallationInstance.LocationsRegister;
+        var gameMetadataId = loadout.InstallationId;
+        var locations = loadout.InstallationInstance.Locations;
         HashSet<GamePath> foldersWithDeletedFiles = [];
         EntityId? overridesGroup = null;
-        
+
         foreach (var action in ActionsInOrder)
         {
             switch (action)
@@ -433,7 +433,7 @@ public partial class ALoadoutSynchronizer : ILoadoutSynchronizer
 
                 case Actions.BackupFile:
                     job?.SetStatus("Backing up files");
-                    await ActionBackupNewFiles(loadout.InstallationInstance, syncTree);
+                    await ActionBackupNewFiles(loadout.InstallationInstance, loadout.InstallationId, syncTree);
                     break;
 
                 case Actions.IngestFromDisk:
@@ -443,22 +443,22 @@ public partial class ALoadoutSynchronizer : ILoadoutSynchronizer
                 
                 case Actions.AdaptLoadout:
                     job?.SetStatus("Updating loadout");
-                    await AdaptLoadout(syncTree, register, loadout, tx);
+                    await AdaptLoadout(syncTree, locations, loadout, tx);
                     break;
 
                 case Actions.DeleteFromDisk:
                     job?.SetStatus("Deleting files");
-                    ActionDeleteFromDisk(syncTree, register, tx, gameMetadataId, foldersWithDeletedFiles, job);
+                    ActionDeleteFromDisk(syncTree, locations, tx, gameMetadataId, foldersWithDeletedFiles, job);
                     break;
 
                 case Actions.ExtractToDisk:
                     job?.SetStatus("Extracting files");
-                    await ActionExtractToDisk(syncTree, register, tx, gameMetadataId, job);
+                    await ActionExtractToDisk(syncTree, locations, tx, gameMetadataId, job);
                     break;
                 
                 case Actions.WriteIntrinsic:
                     job?.SetStatus("Writing intrinsic files");
-                    await ActionWriteIntrinsics(syncTree, register, tx, loadout, job);
+                    await ActionWriteIntrinsics(syncTree, locations, tx, loadout, job);
                     break;
 
                 case Actions.AddReifiedDelete:
@@ -481,14 +481,14 @@ public partial class ALoadoutSynchronizer : ILoadoutSynchronizer
 
         job?.SetStatus("Recording changes");
         
-        tx.Add(gameMetadataId, GameInstallMetadata.LastSyncedLoadout, loadout.Id);
-        tx.Add(gameMetadataId, GameInstallMetadata.LastSyncedLoadoutTransaction, EntityId.From(tx.ThisTxId.Value));
-        tx.Add(gameMetadataId, GameInstallMetadata.LastScannedDiskStateTransaction, EntityId.From(tx.ThisTxId.Value));
+        tx.Add(gameMetadataId, Sdk.Games.GameInstallMetadata.LastSyncedLoadout, loadout.Id);
+        tx.Add(gameMetadataId, Sdk.Games.GameInstallMetadata.LastSyncedLoadoutTransaction, EntityId.From(tx.ThisTxId.Value));
+        tx.Add(gameMetadataId, Sdk.Games.GameInstallMetadata.LastScannedDiskStateTransaction, EntityId.From(tx.ThisTxId.Value));
         tx.Add(loadout.Id, Loadout.LastAppliedDateTime, DateTime.UtcNow);
         await tx.Commit();
 
         loadout = loadout.Rebase();
-        var newState = loadout.Installation.DiskStateEntries;
+        var newState = DiskStateEntry.FindByGame(loadout.Db, loadout.Installation);
 
         // Clean up empty directories
         if (foldersWithDeletedFiles.Count > 0)
@@ -503,7 +503,7 @@ public partial class ALoadoutSynchronizer : ILoadoutSynchronizer
         return loadout;
     }
 
-    private async Task ActionWriteIntrinsics(Dictionary<GamePath, SyncNode> syncTree, IGameLocationsRegister register, IMainTransaction tx, Loadout.ReadOnly loadout, SynchronizeLoadoutJob? job)
+    private async Task ActionWriteIntrinsics(Dictionary<GamePath, SyncNode> syncTree, GameLocations gameLocations, IMainTransaction tx, Loadout.ReadOnly loadout, SynchronizeLoadoutJob? job)
     {
         var intrinsicFiles = IntrinsicFiles(loadout);
         foreach (var (path, node) in syncTree)
@@ -512,7 +512,7 @@ public partial class ALoadoutSynchronizer : ILoadoutSynchronizer
             if (node.SourceItemType != LoadoutSourceItemType.Intrinsic) throw new Exception("WriteIntrinsic should only be called on intrinsic files");
 
             var instance = intrinsicFiles[path];
-            var resolvedPath = register.GetResolvedPath(path);
+            var resolvedPath = gameLocations.ToAbsolutePath(path);
             resolvedPath.Parent.CreateDirectory();
             await using var stream = resolvedPath.Create();
             stream.SetLength(0);
@@ -520,7 +520,7 @@ public partial class ALoadoutSynchronizer : ILoadoutSynchronizer
         }
     }
 
-    private async Task AdaptLoadout(Dictionary<GamePath, SyncNode> syncTree, IGameLocationsRegister register, Loadout.ReadOnly loadout, IMainTransaction tx)
+    private async Task AdaptLoadout(Dictionary<GamePath, SyncNode> syncTree, GameLocations gameLocations, Loadout.ReadOnly loadout, IMainTransaction tx)
     {
         var intrinsicFiles = IntrinsicFiles(loadout);
         foreach (var (path, node) in syncTree)
@@ -529,7 +529,7 @@ public partial class ALoadoutSynchronizer : ILoadoutSynchronizer
             if (node.SourceItemType != LoadoutSourceItemType.Intrinsic) throw new Exception("AdaptLoadout should only be called on intrinsic files");
 
             var instance = intrinsicFiles[path];
-            var resolvedPath = register.GetResolvedPath(path);
+            var resolvedPath = gameLocations.ToAbsolutePath(path);
             await using var stream = resolvedPath.Read();
             await instance.Ingest(stream, loadout, syncTree, tx);
         }
@@ -541,16 +541,15 @@ public partial class ALoadoutSynchronizer : ILoadoutSynchronizer
     /// </summary>
     private async ValueTask<Loadout.ReadOnly> UpdateLocatorIds(Loadout.ReadOnly loadout)
     {
-        var gameLocatorResults = loadout.InstallationInstance.Locator.Find(loadout.InstallationInstance.Game, forceRefreshCache: true);
-
-        // NOTE(erri120): It would be very odd if we re-query the game, and it's not installed anymore
-        if (!gameLocatorResults.TryGetFirst(result => result.Store == loadout.InstallationInstance.Store, out var gameLocatorResult))
+        var locator = loadout.InstallationInstance.LocatorResult.Locator;
+        if (!locator.TryLocate(loadout.Game, out var gameLocatorResult))
         {
-            Logger.LogCritical("Found no installation of the game `{Store}`/`{Game}` anymore!", loadout.InstallationInstance.Store, loadout.InstallationInstance.Game.DisplayName);
+            // NOTE(erri120): It would be very odd if we re-query the game, and it's not installed anymore
+            Logger.LogCritical("Found no installation of the game `{Store}`/`{Game}` anymore!", loadout.Installation.Store, loadout.Game.DisplayName);
             return loadout;
         }
 
-        var metadataLocatorIds = gameLocatorResult.Metadata.ToLocatorIds().ToArray();
+        var metadataLocatorIds = gameLocatorResult.LocatorIds;
         var newLocatorIds = metadataLocatorIds.Distinct().ToArray();
 
         if (newLocatorIds.Length != metadataLocatorIds.Length)
@@ -596,12 +595,12 @@ public partial class ALoadoutSynchronizer : ILoadoutSynchronizer
     {
         // Make a lookup set of the new files based on current locator IDs
         var versionFiles = _fileHashService
-            .GetGameFiles((loadout.InstallationInstance.Store, loadout.LocatorIds.ToArray()))
+            .GetGameFiles((loadout.Installation.Store, loadout.LocatorIds.ToArray()))
             .Select(file => file.Path)
             .ToHashSet();
 
         // Find all files in the overrides that match a path in the new files
-        var toDelete = from grp in loadout.Items.OfTypeLoadoutItemGroup().OfTypeLoadoutOverridesGroup()
+        var toDelete = from grp in LoadoutItem.FindByLoadout(loadout.Db, loadout).OfTypeLoadoutItemGroup().OfTypeLoadoutOverridesGroup()
             from item in grp.AsLoadoutItemGroup().Children.OfTypeLoadoutItemWithTargetPath()
             let path = (GamePath)item.TargetPath
             where versionFiles.Contains(path)
@@ -612,7 +611,7 @@ public partial class ALoadoutSynchronizer : ILoadoutSynchronizer
             return loadout;
 
         using var tx = Connection.BeginTransaction();
-        var gameMetadataId = loadout.InstallationInstance.GameMetadataId;
+        var gameMetadataId = loadout.InstallationId;
 
         // Delete all the matching override files
         foreach (var file in toDelete)
@@ -644,9 +643,10 @@ public partial class ALoadoutSynchronizer : ILoadoutSynchronizer
     {
         using var _ = await _lock.LockAsync();
         using var tx = Connection.BeginTransaction();
-        var gameMetadataId = gameInstallation.GameMetadataId;
-        var gameMetadata = GameInstallMetadata.Load(Connection.Db, gameMetadataId);
-        var register = gameInstallation.LocationsRegister;
+
+        var metadata = _gameRegistry.ForceGetMetadata(gameInstallation);
+        var locations = gameInstallation.Locations;
+
         HashSet<GamePath> foldersWithDeletedFiles = [];
 
         foreach (var action in ActionsInOrder)
@@ -657,7 +657,7 @@ public partial class ALoadoutSynchronizer : ILoadoutSynchronizer
                     break;
 
                 case Actions.BackupFile:
-                    await ActionBackupNewFiles(gameInstallation, syncTree);
+                    await ActionBackupNewFiles(gameInstallation, metadata, syncTree);
                     break;
                 
                 case Actions.AdaptLoadout:
@@ -676,11 +676,11 @@ public partial class ALoadoutSynchronizer : ILoadoutSynchronizer
                     break;
 
                 case Actions.DeleteFromDisk:
-                    ActionDeleteFromDisk(syncTree, register, tx, gameInstallation.GameMetadataId, foldersWithDeletedFiles);
+                    ActionDeleteFromDisk(syncTree, locations, tx, metadata, foldersWithDeletedFiles);
                     break;
 
                 case Actions.ExtractToDisk:
-                    await ActionExtractToDisk(syncTree, register, tx, gameMetadataId);
+                    await ActionExtractToDisk(syncTree, locations, tx, metadata);
                     break;
 
                 case Actions.AddReifiedDelete:
@@ -701,21 +701,22 @@ public partial class ALoadoutSynchronizer : ILoadoutSynchronizer
             }
         }
 
-        if (gameMetadata.Contains(GameInstallMetadata.LastSyncedLoadout))
+        if (metadata.Contains(Sdk.Games.GameInstallMetadata.LastSyncedLoadout))
         {
-            tx.Retract(gameMetadataId, GameInstallMetadata.LastSyncedLoadout, (EntityId)gameMetadata.LastSyncedLoadout);
-            tx.Retract(gameMetadataId, GameInstallMetadata.LastSyncedLoadoutTransaction, (EntityId)gameMetadata.LastSyncedLoadoutTransaction);
+            tx.Retract(metadata, Sdk.Games.GameInstallMetadata.LastSyncedLoadout, (EntityId)metadata.LastSyncedLoadout);
+            tx.Retract(metadata, Sdk.Games.GameInstallMetadata.LastSyncedLoadoutTransaction, (EntityId)metadata.LastSyncedLoadoutTransaction);
         }
-        tx.Add(gameMetadataId, GameInstallMetadata.LastScannedDiskStateTransaction, EntityId.From(tx.ThisTxId.Value));
+
+        tx.Add(metadata, Sdk.Games.GameInstallMetadata.LastScannedDiskStateTransaction, EntityId.From(tx.ThisTxId.Value));
 
         var result = await tx.Commit();
 
-        var newMetadata = gameMetadata.Rebase(result.Db);
+        var newMetadata = metadata.Rebase(result.Db);
 
         // Clean up empty directories
         if (foldersWithDeletedFiles.Count > 0)
         {
-            CleanDirectories(foldersWithDeletedFiles, newMetadata.DiskStateEntries, gameInstallation);
+            CleanDirectories(foldersWithDeletedFiles, DiskStateEntry.FindByGame(newMetadata.Db, newMetadata), gameInstallation);
         }
     }
 
@@ -788,7 +789,7 @@ public partial class ALoadoutSynchronizer : ILoadoutSynchronizer
         }
     }
 
-    private async Task ActionExtractToDisk(Dictionary<GamePath, SyncNode> groupings, IGameLocationsRegister register, ITransaction tx, EntityId gameMetadataId, SynchronizeLoadoutJob? job = null)
+    private async Task ActionExtractToDisk(Dictionary<GamePath, SyncNode> groupings, GameLocations gameLocations, ITransaction tx, EntityId gameMetadataId, SynchronizeLoadoutJob? job = null)
     {
         List<(Hash Hash, AbsolutePath Path)> toExtract = [];
         
@@ -798,11 +799,11 @@ public partial class ALoadoutSynchronizer : ILoadoutSynchronizer
                 continue;
             
             Debug.Assert(node.Loadout.Hash != Hash.Zero, "Loadout hash is zero, this should not happen");
-            
-            var gamePath = register.GetResolvedPath(path);
-            toExtract.Add((node.Loadout.Hash, gamePath));
+
+            var resolvedPath = gameLocations.ToAbsolutePath(path);
+            toExtract.Add((node.Loadout.Hash, resolvedPath));
         }
-        
+
         // Extract files to disk
         Logger.LogDebug("Extracting {Count} files to disk", toExtract.Count);
         
@@ -816,7 +817,7 @@ public partial class ALoadoutSynchronizer : ILoadoutSynchronizer
                 if (!node.Actions.HasFlag(Actions.ExtractToDisk))
                     continue;
 
-                var resolvedPath = register.GetResolvedPath(gamePath);
+                var resolvedPath = gameLocations.ToAbsolutePath(gamePath);
                 var writeTimeUtc = new DateTimeOffset(resolvedPath.FileInfo.LastWriteTimeUtc);
                 
                 // Reuse the old disk state entry if it exists
@@ -864,7 +865,7 @@ public partial class ALoadoutSynchronizer : ILoadoutSynchronizer
 
     private void ActionDeleteFromDisk(
         Dictionary<GamePath, SyncNode> groupings,
-        IGameLocationsRegister register,
+        GameLocations gameLocations,
         ITransaction tx,
         GameInstallMetadataId gameMetadataId,
         HashSet<GamePath> foldersWithDeletedFiles,
@@ -883,11 +884,10 @@ public partial class ALoadoutSynchronizer : ILoadoutSynchronizer
             if (itemIndex % 1000f == 0)
                 job?.SetStatus($"({itemIndex}/{deleteFileCount}) Deleting files");
             itemIndex++;
-            
-            var resolvedPath = register.GetResolvedPath(path);
+
+            var resolvedPath = gameLocations.ToAbsolutePath(path);
             resolvedPath.Delete();
 
-            
             // Only delete the entry if we're not going to replace it
             if (!node.Actions.HasFlag(Actions.ExtractToDisk))
             {
@@ -989,7 +989,7 @@ public partial class ALoadoutSynchronizer : ILoadoutSynchronizer
         
         // If we are swapping loadouts, then we need to synchronize the previous loadout first to ingest
         // any changes, then we can apply the new loadout.
-        if (GameInstallMetadata.LastSyncedLoadout.TryGetValue(loadout.Installation, out var lastAppliedId) && lastAppliedId != loadout.Id)
+        if (Sdk.Games.GameInstallMetadata.LastSyncedLoadout.TryGetValue(loadout.Installation, out var lastAppliedId) && lastAppliedId != loadout.Id)
         {
             var prevLoadout = Loadout.Load(loadout.Db, lastAppliedId);
             if (prevLoadout.IsValid())
@@ -999,7 +999,7 @@ public partial class ALoadoutSynchronizer : ILoadoutSynchronizer
                 return loadout.Rebase();
             }
         }
-        
+
         job?.SetStatus("Collecting files");
         var tree = await BuildSyncTree(loadout);
         ProcessSyncTree(tree);
@@ -1137,7 +1137,7 @@ public partial class ALoadoutSynchronizer : ILoadoutSynchronizer
     /// Backs up any new files in the loadout.
     ///
     /// </summary>
-    public virtual async Task ActionBackupNewFiles(GameInstallation installation, Dictionary<GamePath, SyncNode> files)
+    public virtual async Task ActionBackupNewFiles(GameInstallation installation, GameInstallMetadataId installMetadataId, Dictionary<GamePath, SyncNode> files)
     {
         // During ingest, new files that haven't been seen before are fed into the game's synchronizer to convert a
         // DiskStateEntry (hash, size, path) into some sort of LoadoutItem. By default, these are converted into a "LoadoutFile".
@@ -1160,8 +1160,8 @@ public partial class ALoadoutSynchronizer : ILoadoutSynchronizer
                 var (gamePath, node) = item;
                 if (!node.Actions.HasFlag(Actions.BackupFile))
                     return;
-                
-                var path = installation.LocationsRegister.GetResolvedPath(gamePath);
+
+                var path = installation.Locations.ToAbsolutePath(gamePath);
                 Debug.Assert(node.HaveDisk, "Node must have a disk entry to backup");
                 
                 if (await _fileStore.HaveFile(node.Disk.Hash))
@@ -1217,7 +1217,7 @@ public partial class ALoadoutSynchronizer : ILoadoutSynchronizer
         {
             _ = new GameBackedUpFile.New(tx)
             {
-                GameInstallId = installation.GameMetadataId,
+                GameInstallId = installMetadataId,
                 Hash = hash,
             };
         }
@@ -1230,31 +1230,32 @@ public partial class ALoadoutSynchronizer : ILoadoutSynchronizer
     public async Task<GameInstallMetadata.ReadOnly> ReindexState(GameInstallation installation)
     {        
         using var _ = await _lock.LockAsync();
-        var originalMetadata = installation.GetMetadata(Connection);
+
+        var metadata = _gameRegistry.ForceGetMetadata(installation);
         using var tx = Connection.BeginTransaction();
 
         // Index the state
-        var changed = await ReindexState(installation, tx);
+        var changed = await ReindexState(metadata, installation, tx);
 
-        if (!originalMetadata.Contains(GameInstallMetadata.InitialDiskStateTransaction))
+        if (!metadata.Contains(Sdk.Games.GameInstallMetadata.InitialDiskStateTransaction))
         {
             // No initial state, so set this transaction as the initial state
             changed = true;
-            tx.Add(originalMetadata.Id, GameInstallMetadata.InitialDiskStateTransaction, EntityId.From(TxId.Tmp.Value));
+            tx.Add(metadata.Id, Sdk.Games.GameInstallMetadata.InitialDiskStateTransaction, EntityId.From(TxId.Tmp.Value));
         }
 
         if (changed)
         {
-            tx.Add(installation.GameMetadataId, GameInstallMetadata.LastScannedDiskStateTransactionId, EntityId.From(TxId.Tmp.Value));
+            tx.Add(metadata, Sdk.Games.GameInstallMetadata.LastScannedDiskStateTransactionId, EntityId.From(TxId.Tmp.Value));
             await tx.Commit();
         }
 
-        return GameInstallMetadata.Load(Connection.Db, installation.GameMetadataId);
+        return GameInstallMetadata.Load(Connection.Db, metadata);
     }
 
     private FrozenDictionary<GamePath, DiskStateEntry.ReadOnly> GetDiskState(GameInstallMetadata.ReadOnly gameInstallMetadata)
     {
-        var entities = gameInstallMetadata.DiskStateEntries;
+        var entities = DiskStateEntry.FindByGame(gameInstallMetadata.Db, gameInstallMetadata);
         var result = new Dictionary<GamePath, DiskStateEntry.ReadOnly>(capacity: entities.Count);
 
         foreach (var entity in entities)
@@ -1275,10 +1276,9 @@ public partial class ALoadoutSynchronizer : ILoadoutSynchronizer
     /// <summary>
     /// Reindex the state of the game
     /// </summary>
-    public async Task<bool> ReindexState(GameInstallation installation, ITransaction tx)
+    private async Task<bool> ReindexState(GameInstallMetadata.ReadOnly metadata, GameInstallation installation, ITransaction tx)
     {
-        var gameInstallMetadata = GameInstallMetadata.Load(Connection.Db, installation.GameMetadataId);
-        var previousState = GetDiskState(gameInstallMetadata);
+        var previousState = GetDiskState(metadata);
 
         var indexGameResult = await _gameLocationsService.IndexGame(
             installation: installation,
@@ -1291,11 +1291,11 @@ public partial class ALoadoutSynchronizer : ILoadoutSynchronizer
         {
             _ = new DiskStateEntry.New(tx, tx.TempId(DiskStateEntry.EntryPartition))
             {
-                Path = gamePath.ToGamePathParentTuple(gameInstallMetadata.Id),
+                Path = gamePath.ToGamePathParentTuple(metadata.Id),
                 Hash = result.Hash,
                 Size = result.Size,
                 LastModified = result.LastModified,
-                GameId = gameInstallMetadata.Id,
+                GameId = metadata.Id,
             };
         }
 
@@ -1320,42 +1320,16 @@ public partial class ALoadoutSynchronizer : ILoadoutSynchronizer
         var hasChanged = indexGameResult.NewFiles.Count != 0 || indexGameResult.ModifiedFiles.Count != 0 || indexGameResult.RemovedFiles.Count != 0;
         if (!hasChanged) return false;
 
-        tx.Add(gameInstallMetadata.Id, GameInstallMetadata.LastScannedDiskStateTransaction, EntityId.From(TxId.Tmp.Value));
+        tx.Add(metadata.Id, GameInstallMetadata.LastScannedDiskStateTransaction, EntityId.From(TxId.Tmp.Value));
         return true;
-    }
-
-    public async Task ActivateLoadout(LoadoutId loadoutId)
-    {
-        var loadout = Loadout.Load(Connection.Db, loadoutId);
-        var reindexed = await ReindexState(loadout.InstallationInstance);
-        
-        var tree = BuildSyncTree(DiskStateToPathPartPair(reindexed.DiskStateEntries), DiskStateToPathPartPair(reindexed.DiskStateEntries), loadout);
-        ProcessSyncTree(tree);
-        await RunActions(tree, loadout);
     }
 
     public async ValueTask BuildProcessRun(Loadout.ReadOnly loadout, GameInstallMetadata.ReadOnly state, CancellationToken cancellationToken)
     {
-        var tree = BuildSyncTree(DiskStateToPathPartPair(state.DiskStateEntries), DiskStateToPathPartPair(state.DiskStateEntries), loadout);
+        var diskStateEntries = DiskStateEntry.FindByGame(state.Db, state);
+        var tree = BuildSyncTree(DiskStateToPathPartPair(diskStateEntries), DiskStateToPathPartPair(diskStateEntries), loadout);
         ProcessSyncTree(tree);
         await RunActions(tree, loadout);
-    }
-
-    private LoadoutGameFilesGroup.New CreateLoadoutGameFilesGroup(LoadoutId loadout, GameInstallation installation, ITransaction tx)
-    {
-        return new LoadoutGameFilesGroup.New(tx, out var id)
-        {
-            GameMetadataId = installation.GameMetadataId,
-            LoadoutItemGroup = new LoadoutItemGroup.New(tx, id)
-            {
-                IsGroup = true,
-                LoadoutItem = new LoadoutItem.New(tx, id)
-                {
-                    Name = "Game Files",
-                    LoadoutId = loadout,
-                },
-            },
-        };
     }
 
     /// <inheritdoc />
@@ -1382,12 +1356,14 @@ public partial class ALoadoutSynchronizer : ILoadoutSynchronizer
 
     public async Task ResetToOriginalGameState(GameInstallation installation, LocatorId[] locatorIds)
     {
-        var gameState = _fileHashService.GetGameFiles((installation.Store, locatorIds));
-        var metaData = await ReindexState(installation);
+        var gameState = _fileHashService.GetGameFiles((installation.LocatorResult.Store, locatorIds));
+        var metadata = await ReindexState(installation);
+
+        var diskStateEntries = DiskStateEntry.FindByGame(metadata.Db, metadata);
 
         List<PathPartPair> diskState = [];
 
-        foreach (var diskFile in metaData.DiskStateEntries)
+        foreach (var diskFile in diskStateEntries)
         {
             diskState.Add(new PathPartPair(diskFile.Path, new SyncNodePart
             {   

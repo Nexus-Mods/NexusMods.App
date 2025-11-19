@@ -1,6 +1,7 @@
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Sdk.Library;
+using NexusMods.Sdk.Loadouts;
 
 namespace NexusMods.App.UI.Pages.Library;
 
@@ -32,7 +33,19 @@ public record struct LibraryItemRemovalInfo(bool IsNexus, bool IsNonPermanent, b
         }
         
         // Check if it's added to any loadout
-        info.Loadouts = loadouts.Where(loadout => loadout.GetLoadoutItemsByLibraryItem(toRemove).Any()).ToArray();
+        info.Loadouts = loadouts.Where(loadout => GetLoadoutItemsByLibraryItem(loadout, toRemove).Any()).ToArray();
         return info;
+    }
+
+    /// <summary>
+    /// Returns an enumerable containing all loadout items linked to the given library item.
+    /// </summary>
+    private static IEnumerable<LibraryLinkedLoadoutItem.ReadOnly> GetLoadoutItemsByLibraryItem(Loadout.ReadOnly loadout, LibraryItem.ReadOnly libraryItem)
+    {
+        // Start with a backref. This assumes that the number of loadouts with a given library item will be fairly small.
+        // This could be false, but it's a good starting point.
+        return LibraryLinkedLoadoutItem
+            .FindByLibraryItem(loadout.Db, libraryItem)
+            .Where(linked => linked.AsLoadoutItemGroup().AsLoadoutItem().LoadoutId == loadout);
     }
 }

@@ -1,4 +1,5 @@
-using NexusMods.Abstractions.GameLocators;
+
+using NexusMods.Sdk.Games;
 
 namespace NexusMods.Games.CreationEngine.SkyrimSE;
 

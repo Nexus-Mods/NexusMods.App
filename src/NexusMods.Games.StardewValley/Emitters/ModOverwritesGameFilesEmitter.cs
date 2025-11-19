@@ -3,9 +3,11 @@ using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.Diagnostics.References;
 using NexusMods.Abstractions.Diagnostics.Values;
-using NexusMods.Abstractions.GameLocators;
+
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Extensions;
+using NexusMods.Sdk.Games;
+using NexusMods.Sdk.Loadouts;
 
 namespace NexusMods.Games.StardewValley.Emitters;
 
@@ -22,7 +24,7 @@ public class ModOverwritesGameFilesEmitter : ILoadoutDiagnosticEmitter
     {
         await Task.Yield();
 
-        var groups = loadout.Items
+        var groups = LoadoutItem.FindByLoadout(loadout.Db, loadout)
             .GetEnabledLoadoutFiles()
             .Where(file =>
             {

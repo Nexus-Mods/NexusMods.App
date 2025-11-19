@@ -1,12 +1,10 @@
-using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.Diagnostics.Values;
-using NexusMods.Abstractions.Loadouts;
 using NexusMods.Games.Generic.Dependencies;
-using NexusMods.Generators.Diagnostics;
 using NexusMods.Paths;
+using NexusMods.Sdk.Loadouts;
 using static NexusMods.Games.RedEngine.Constants;
 namespace NexusMods.Games.RedEngine.Cyberpunk2077.Emitters;
 
@@ -27,8 +25,8 @@ public partial class MissingProtontricksForRedModEmitter : ILoadoutDiagnosticEmi
         CancellationToken cancellationToken)
     {
         var install = loadout.InstallationInstance;
-        var locations = install.LocationsRegister;
-        var redModPath = locations.GetResolvedPath(RedModPath);
+        var locations = install.Locations;
+        var redModPath = locations.ToAbsolutePath(RedModPath);
 
         if (!FileSystem.Shared.OS.IsLinux || _protontricksDependency == null)
             yield break;

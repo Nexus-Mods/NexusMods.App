@@ -1,7 +1,6 @@
 ﻿using System.Reactive.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Games.FileHashes;
 using NexusMods.Abstractions.Loadouts;
@@ -10,12 +9,13 @@ using NexusMods.Abstractions.Loadouts.Exceptions;
 using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.MnemonicDB.Abstractions.BuiltInEntities;
 using NexusMods.Paths;
+using NexusMods.Sdk.Games;
 using NexusMods.Sdk.Jobs;
+using NexusMods.Sdk.Loadouts;
 using ReactiveUI;
 using R3;
-using Reloaded.Memory.Utilities;
+using GameInstallMetadata = NexusMods.Sdk.Games.GameInstallMetadata;
 
 namespace NexusMods.DataModel.Synchronizer;
 
@@ -26,7 +26,7 @@ public class SynchronizerService : ISynchronizerService
     private readonly IConnection _conn;
     private readonly IGameRegistry _gameRegistry;
     private readonly IJobMonitor _jobMonitor;
-    private readonly Dictionary<EntityId, SynchronizerState> _gameStates;
+    private readonly Dictionary<GameInstallMetadataId, SynchronizerState> _gameStates;
     private readonly Dictionary<LoadoutId, SynchronizerState> _loadoutStates;
     private readonly Lazy<ILoadoutManager> _loadoutManager;
     private readonly SemaphoreSlim _semaphore = new(1, 1);
@@ -41,19 +41,19 @@ public class SynchronizerService : ISynchronizerService
         _conn = conn;
         _jobMonitor = jobMonitor;
         _gameRegistry = gameRegistry;
-        _gameStates = _gameRegistry.Installations.ToDictionary(e => e.Key, _ => new SynchronizerState());
+        _gameStates = GameInstallMetadata.All(conn.Db).ToDictionary(e => e.GameInstallMetadataId, _ => new SynchronizerState());
         _loadoutStates = Loadout.All(conn.Db).ToDictionary(e => e.LoadoutId, _ => new SynchronizerState());
         _fileHashesService = fileHashesService;
         _loadoutManager = new Lazy<ILoadoutManager>(serviceProvider.GetRequiredService<ILoadoutManager>);
     }
-    
+
     /// <inheritdoc />
     public FileDiffTree GetApplyDiffTree(LoadoutId loadoutId)
     {
         var db = _conn.Db;
         var loadout = Loadout.Load(db, loadoutId);
-        var synchronizer = loadout.InstallationInstance.GetGame().Synchronizer;
-        var metaData = GameInstallMetadata.Load(db, loadout.InstallationInstance.GameMetadataId);
+        var synchronizer = ((IGame)loadout.Game).Synchronizer;
+        var metaData = loadout.Installation;
         var hasPreviousLoadout = GameInstallMetadata.LastSyncedLoadoutTransaction.TryGetValue(metaData, out var lastId);
 
         var lastScannedDiskState = synchronizer.GetLastScannedDiskState(metaData);
@@ -61,8 +61,7 @@ public class SynchronizerService : ISynchronizerService
         
         return synchronizer.LoadoutToDiskDiff(loadout, previousDiskState, lastScannedDiskState);
     }
-    
-    /// <inheritdoc />
+
     public IJobTask<ProcessLoadoutChangesJob, bool> GetShouldSynchronize(LoadoutId loadoutId)
     {
         return _jobMonitor.Begin(new ProcessLoadoutChangesJob(loadoutId),
@@ -73,7 +72,7 @@ public class SynchronizerService : ISynchronizerService
                 if (!loadout.IsValid())
                     return ValueTask.FromResult(false);
                 var synchronizer = loadout.InstallationInstance.GetGame().Synchronizer;
-                var metaData = GameInstallMetadata.Load(db, loadout.InstallationInstance.GameMetadataId);
+                var metaData = loadout.Installation;
                 var hasPreviousLoadout = GameInstallMetadata.LastSyncedLoadoutTransaction.TryGetValue(metaData, out var lastId);
 
                 var lastScannedDiskState = synchronizer.GetDiskStateForGame(metaData);
@@ -103,7 +102,7 @@ public class SynchronizerService : ISynchronizerService
                     var loadoutState = GetOrAddLoadoutState(loadoutId);
                     using var _ = loadoutState.WithLock();
 
-                    var gameState = GetOrAddGameState(loadout.InstallationInstance.GameMetadataId);
+                    var gameState = GetOrAddGameState(loadout.InstallationId);
                     using var _2 = gameState.WithLock();
 
                     await loadout.InstallationInstance.GetGame().Synchronizer.Synchronize(loadout, job);
@@ -124,13 +123,7 @@ public class SynchronizerService : ISynchronizerService
         await _semaphore.WaitAsync();
         try
         {
-            var metadata = installation.GetMetadata(_conn);
-
-            if (!metadata.IsValid())
-            {
-                return;
-            }
-
+            if (!_gameRegistry.TryGetMetadata(installation, out var metadata)) return;
             await _loadoutManager.Value.UnManage(installation, runGc, cleanGameFolder);
         }
         finally
@@ -152,23 +145,24 @@ public class SynchronizerService : ISynchronizerService
         }
     }
     
-    private SynchronizerState GetOrAddGameState(EntityId gameId)
+    private SynchronizerState GetOrAddGameState(GameInstallMetadataId metadataId)
     {
         lock (_lock)
         {
-            if (!_gameStates.TryGetValue(gameId, out var state))
+            if (!_gameStates.TryGetValue(metadataId, out var state))
             {
-                _loadoutStates[gameId] = state = new SynchronizerState();
+                _gameStates[metadataId] = state = new SynchronizerState();
             }
+
             return state;
         }
     }
-    
+
     /// <inheritdoc />
     public bool TryGetLastAppliedLoadout(GameInstallation gameInstallation, out Loadout.ReadOnly loadout)
     {
-        var metadata = gameInstallation.GetMetadata(_conn);
-        
+        var metadata = _gameRegistry.ForceGetMetadata(gameInstallation);
+
         if (GameInstallMetadata.LastSyncedLoadout.TryGetValue(metadata, out var lastId))
         {
             loadout = Loadout.Load(_conn.Db, lastId);
@@ -182,7 +176,7 @@ public class SynchronizerService : ISynchronizerService
     /// <inheritdoc />
     public IObservable<LoadoutWithTxId> LastAppliedRevisionFor(GameInstallation gameInstallation)
     {
-        return GameInstallMetadata.Observe(_conn, gameInstallation.GameMetadataId)
+        return GameInstallMetadata.Observe(_conn, _gameRegistry.ForceGetMetadata(gameInstallation))
             .Select(metadata =>
                 {
                     if (GameInstallMetadata.LastSyncedLoadout.TryGetValue(metadata, out var lastId) 
@@ -238,7 +232,7 @@ public class SynchronizerService : ISynchronizerService
         var lastApplied = LastAppliedRevisionFor(loadout.InstallationInstance)
             .ToObservable();
 
-        var revisions = Loadout.RevisionsWithChildUpdates(_conn, loadoutId)
+        var revisions = LoadoutQueries2.RevisionsWithChildUpdates(_conn, loadoutId)
             .ToObservable()
             // Use DB transaction, since child updates are not part of the loadout
             .Select(rev => (loadout: rev, revDbTx: _conn.Db.BasisTxId));
@@ -298,9 +292,8 @@ public class SynchronizerService : ISynchronizerService
         //             - Only on Windows.
         // Solution: Check if EXE (primaryfile) is in use.
         // Note: This doesn't account for CLI calls. I think that's fine; an external CLI user/caller
-        var game = loadout.InstallationInstance.GetGame() as AGame;
-        var primaryFile = game!.GetPrimaryFile(loadout.InstallationInstance.TargetInfo)
-            .Combine(loadout.InstallationInstance.LocationsRegister[LocationId.Game]);
+        var game = loadout.InstallationInstance.GetGame();
+        var primaryFile = game.GetPrimaryFile(loadout.InstallationInstance).Combine(loadout.InstallationInstance.Locations[LocationId.Game].Path);
         if (IsFileInUse(primaryFile))
             throw new ExecutableInUseException("Game's main executable file is in use.\n" +
                                                "This is an indicator the game may have been started outside of the App; and therefore files may be in use.\n" +

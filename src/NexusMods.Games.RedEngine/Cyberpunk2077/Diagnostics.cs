@@ -2,11 +2,12 @@ using JetBrains.Annotations;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Diagnostics.References;
 using NexusMods.Abstractions.Diagnostics.Values;
-using NexusMods.Abstractions.GameLocators;
+
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Games.RedEngine.Cyberpunk2077.Emitters;
 using NexusMods.Generators.Diagnostics;
 using NexusMods.Paths;
+using NexusMods.Sdk.Games;
 
 namespace NexusMods.Games.RedEngine.Cyberpunk2077;
 

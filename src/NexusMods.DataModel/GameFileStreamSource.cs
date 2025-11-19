@@ -1,9 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.GameLocators;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
+using NexusMods.Sdk;
 using NexusMods.Sdk.FileStore;
+using NexusMods.Sdk.Games;
 
 namespace NexusMods.DataModel;
 
@@ -15,14 +16,14 @@ namespace NexusMods.DataModel;
 public class GameFileStreamSource : IReadOnlyStreamSource
 {
     private readonly IConnection _conn;
-    private readonly Lazy<IGameRegistry> _gameRegistry;
+    private readonly IGameRegistry _gameRegistry;
 
     public GameFileStreamSource(IConnection conn, IServiceProvider provider)
     {
         _conn = conn;
-        _gameRegistry = new Lazy<IGameRegistry>(provider.GetRequiredService<IGameRegistry>);
+        _gameRegistry = provider.GetRequiredService<IGameRegistry>();
     }
-    
+
     public async ValueTask<Stream?> OpenAsync(Hash hash, CancellationToken cancellationToken = default)
     {
         var path = Resolve(hash);
@@ -39,16 +40,15 @@ public class GameFileStreamSource : IReadOnlyStreamSource
     public AbsolutePath? Resolve(Hash hash)
     {
         var options = _conn.Query<(EntityId Game, LocationId Location, RelativePath Path, DateTimeOffset LastModified, Hash Hash, Size Size)>(
-            $"select Path.Item1, Path.Item2, Path.Item3, LastModified, Hash, Size from mdb_DiskStateEntry(Db=>{_conn}) WHERE Hash = {hash} ORDER BY LastModified DESC");
+            $"select Game, Path.Item1, Path.Item2, Path.Item3, LastModified, Hash, Size from mdb_DiskStateEntry(Db=>{_conn}) WHERE Hash = {hash} ORDER BY LastModified DESC");
         foreach (var option in options)
         {
-            
-            if (!_gameRegistry.Value.Installations.TryGetValue(option.Game, out var game))
-                continue;
+            var metadata = GameInstallMetadata.Load(_conn.Db, option.Game);
+            if (!metadata.IsValid()) continue;
+            if (!_gameRegistry.TryGetGameInstallation(metadata.LastSyncedLoadout, out var installation)) continue;
 
-            var resolvedPath = game.LocationsRegister.GetResolvedPath(new GamePath(option.Location, option.Path));
-            if (!resolvedPath.FileExists)
-                continue;
+            var resolvedPath = installation.Locations.ToAbsolutePath(new GamePath(option.Location, option.Path));
+            if (!resolvedPath.FileExists) continue;
             try
             {
                 var info = resolvedPath.FileInfo;

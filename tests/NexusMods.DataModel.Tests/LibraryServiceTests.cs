@@ -2,16 +2,20 @@ using System.Text;
 using DynamicData.Kernel;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.GameLocators;
+
 using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Games.TestFramework;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using NexusMods.Paths.Utilities;
+using NexusMods.Sdk;
 using NexusMods.Sdk.FileStore;
+using NexusMods.Sdk.Games;
+using NexusMods.Sdk.Loadouts;
 using Xunit.Abstractions;
 using NexusMods.Sdk.Library;
+using Loadout = NexusMods.Sdk.Loadouts.Loadout;
 
 namespace NexusMods.DataModel.Tests;
 
@@ -277,11 +281,20 @@ public class LibraryServiceTests : ACyberpunkIsolatedGameTest<LibraryServiceTest
     private async Task<Loadout.ReadOnly> CreateTestLoadout(string name)
     {
         using var tx = _connection.BeginTransaction();
+
+        var metadata = new GameInstallMetadata.New(tx)
+        {
+            Path = GameInstallation.LocatorResult.Path.ToString(),
+            Name = GameInstallation.Game.DisplayName,
+            Store = GameInstallation.LocatorResult.Store,
+            GameId = GameInstallation.Game.NexusModsGameId.Value,
+        };
+
         var loadoutNew = new Loadout.New(tx)
         {
             Name = name,
             ShortName = name,
-            InstallationId = GameInstallation.GameMetadataId,
+            InstallationId = metadata,
             LoadoutKind = LoadoutKind.Default,
             Revision = 0,
             GameVersion = VanityVersion.From("Unknown"),

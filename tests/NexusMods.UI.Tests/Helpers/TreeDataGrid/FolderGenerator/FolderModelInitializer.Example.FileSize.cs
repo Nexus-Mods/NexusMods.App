@@ -4,8 +4,9 @@ using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Helpers.TreeDataGrid.New.FolderGenerator;
 using DynamicData.Aggregation;
 using DynamicData;
-using NexusMods.Abstractions.GameLocators;
+
 using NexusMods.Paths;
+using NexusMods.Sdk.Games;
 
 namespace NexusMods.UI.Tests.Helpers.TreeDataGrid.FolderGenerator;
 

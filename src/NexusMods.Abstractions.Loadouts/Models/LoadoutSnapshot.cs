@@ -1,6 +1,7 @@
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.BuiltInEntities;
 using NexusMods.MnemonicDB.Abstractions.Models;
+using NexusMods.Sdk.Loadouts;
 
 namespace NexusMods.Abstractions.Loadouts;
 

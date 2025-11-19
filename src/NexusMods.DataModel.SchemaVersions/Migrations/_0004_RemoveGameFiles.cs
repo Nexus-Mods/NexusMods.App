@@ -1,9 +1,10 @@
-using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.FileHashes;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
+using NexusMods.Sdk.Games;
+using NexusMods.Sdk.Loadouts;
 
 namespace NexusMods.DataModel.SchemaVersions.Migrations;
 
@@ -45,10 +46,10 @@ internal class _0004_RemoveGameFiles : ITransactionalMigration
                 continue;
             
             // Get groups attached to the loadout that have the game files group attributes
-            var gameFilesGroups = loadout.Items
+            var gameFilesGroups = LoadoutItem.FindByLoadout(loadout.Db, loadout)
                 .OfTypeLoadoutItemGroup()
                 .Where(grp => _resolvedGroupAttrs.Any(attr => grp.Contains(attr)));
-            
+
             var files = gameFilesGroups
                 .SelectMany(grp => grp.Children)
                 .OfTypeLoadoutItemWithTargetPath()

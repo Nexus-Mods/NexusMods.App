@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.Games;
@@ -5,12 +6,13 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.Loadouts.Synchronizers.Rules;
 using NexusMods.Paths;
+using NexusMods.Sdk.Loadouts;
 
 namespace NexusMods.Games.FileHashes.Emitters;
 
 public class NoWayToSourceFilesOnDisk : ILoadoutDiagnosticEmitter
 {
-    public async IAsyncEnumerable<Diagnostic> Diagnose(Loadout.ReadOnly loadout, CancellationToken cancellationToken)
+    public async IAsyncEnumerable<Diagnostic> Diagnose(Loadout.ReadOnly loadout, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
         // TODO: Enable this diagnostic once users have a way to back up the game files from UI
         yield break;

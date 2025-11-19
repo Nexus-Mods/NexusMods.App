@@ -1,19 +1,25 @@
 using DynamicData.Kernel;
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Collections;
-using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.GC;
 using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Loadouts.Synchronizers.Conflicts;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.Sdk.Games;
 using NexusMods.Sdk.Jobs;
 using NexusMods.Sdk.Library;
+using NexusMods.Sdk.Loadouts;
 
 namespace NexusMods.Abstractions.Loadouts.Synchronizers;
 
 [PublicAPI]
 public interface ILoadoutManager
 {
+    /// <summary>
+    /// Manages the installation without creating a loadout.
+    /// </summary>
+    ValueTask<GameInstallMetadata.ReadOnly> ManageInstallation(GameInstallation installation);
+
     /// <summary>
     /// Creates a loadout for a game, managing the game if it has not previously been managed.
     /// </summary>
