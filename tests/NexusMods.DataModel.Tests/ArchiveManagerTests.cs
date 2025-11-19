@@ -1,8 +1,13 @@
 using FluentAssertions;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.Paths;
 using NexusMods.Sdk.FileStore;
 using NexusMods.Sdk.IO;
+using Xunit.Abstractions;
+using Xunit.DependencyInjection;
 
 namespace NexusMods.DataModel.Tests;
 
@@ -11,10 +16,25 @@ public class ArchiveManagerTests
     private readonly IFileStore _manager;
     private readonly TemporaryFileManager _temporaryFileManager;
 
-    public ArchiveManagerTests(IFileStore manager, TemporaryFileManager temporaryFileManager)
+    private class Accessor : ITestOutputHelperAccessor
     {
-        _manager = manager;
-        _temporaryFileManager = temporaryFileManager;
+        public ITestOutputHelper? Output { get; set; }
+    }
+    
+    public ArchiveManagerTests(ITestOutputHelper helper)
+    {
+        var host = new HostBuilder()
+            .ConfigureServices(s=>
+                {
+                    s.AddLogging(builder => builder.AddXUnit())
+                        .AddSingleton<ITestOutputHelperAccessor>(_ => new Accessor { Output = helper });
+                    Startup.ConfigureTestedServices(s);
+                }
+            )
+            .Build();
+        
+        _manager = host.Services.GetRequiredService<IFileStore>();
+        _temporaryFileManager = host.Services.GetRequiredService<TemporaryFileManager>();
     }
 
     [Theory]
