@@ -7,8 +7,6 @@ public static class Services
 {
     public static IServiceCollection AddMigrations(this IServiceCollection services)
     {
-        services.AddSchemaVersionModel();
-        services.AddMigrationLogItemModel();
         services.AddTransient<MigrationService>();
 
         // Migrations go here:

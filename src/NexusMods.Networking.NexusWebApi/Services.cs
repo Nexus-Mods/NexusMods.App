@@ -42,12 +42,8 @@ public static class Services
         collection.AddSingleton<OAuth>();
         collection.AddSingleton<IIDGenerator, IDGenerator>();
 
-        collection.AddJWTTokenModel();
-        collection.AddApiKeyModel();
         collection.AddSingleton(TimeProvider.System);
-        collection.AddIgnoreFileUpdateModel();
 
-        collection.AddGameDomainToGameIdMappingModel();
         collection.AddSingleton<GameDomainToGameIdMappingCache>();
         collection.AddSingleton<IGameDomainToGameIdMappingCache>(serviceProvider =>
         {
@@ -68,7 +64,6 @@ public static class Services
         });
 
         collection
-            .AddNexusModsLibraryModels()
             .AddSingleton<IGraphQlClient, GraphQlClient>()
             .AddSingleton<NexusModsLibrary>()
             .AddAllSingleton<ILoginManager, LoginManager>()

@@ -55,6 +55,7 @@ public static class DependencyInjectionHelper
             .Combine($"NexusMods.Games.TestFramework-{Guid.NewGuid()}") : prefix;
 
         serviceCollection
+            .AddDatabaseModels()
             .AddLogging(builder => builder.AddXunitOutput().SetMinimumLevel(LogLevel.Debug))
             .AddSerializationAbstractions()
             .AddFileSystem()
@@ -69,7 +70,6 @@ public static class DependencyInjectionHelper
             .AddHttpDownloader()
             .AddDataModel()
             .AddLibrary()
-            .AddLibraryModels()
             .AddJobMonitor()
             .OverrideSettingsForTests<DataModelSettings>(settings => settings with
             {
@@ -88,15 +88,7 @@ public static class DependencyInjectionHelper
         
         if (stubbedFileHashService)
             serviceCollection
-                .AddPathHashRelationModel()
-                .AddVersionDefinitionModel()
-                .AddGogBuildModel()
-                .AddGogDepotModel()
-                .AddGogManifestModel()
-                .AddSteamManifestModel()
-                .AddEpicGameStoreBuildModel()
                 .AddFileHashesQueriesSql()
-                .AddHashRelationModel()
                 .AddSingleton<IFileHashesService, StubbedFileHasherService>();
         else 
             serviceCollection

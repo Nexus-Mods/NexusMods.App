@@ -19,6 +19,7 @@ public static class DIHelpers
         var prefix = FileSystem.Shared.GetKnownPath(baseKnownPath).Combine(baseDirectory);
         
         services
+            .AddDatabaseModels()
             // Add logging
             .AddLogging(builder => builder.AddXUnit())
             
@@ -34,7 +35,6 @@ public static class DIHelpers
             
             // Add DataModel - provides complete MnemonicDB setup including in-memory settings
             .AddDataModel()
-            .AddNexusModsLibraryModels()
             .AddSettingsManager()
             .OverrideSettingsForTests<DataModelSettings>(settings => settings with
             {

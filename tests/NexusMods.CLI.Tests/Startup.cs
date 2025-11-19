@@ -6,7 +6,6 @@ using NexusMods.Abstractions.Serialization;
 using NexusMods.Backend;
 using NexusMods.CrossPlatform;
 using NexusMods.DataModel;
-using NexusMods.FileExtractor;
 using NexusMods.Games.FileHashes;
 using NexusMods.Library;
 using NexusMods.Networking.HttpDownloader;
@@ -14,11 +13,8 @@ using NexusMods.Networking.HttpDownloader.Tests;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Paths;
 using NexusMods.Sdk;
-using NexusMods.Sdk.Library;
 using NexusMods.Sdk.Settings;
 using NexusMods.SingleProcess;
-using NexusMods.StandardGameLocators;
-using NexusMods.StandardGameLocators.TestHelpers;
 using Xunit.DependencyInjection.Logging;
 
 namespace NexusMods.CLI.Tests;
@@ -31,12 +27,12 @@ public class Startup
         var baseDirectory = $"NexusMods.UI.Tests.Tests-{Guid.NewGuid()}";
 
         services
+            .AddDatabaseModels()
                 .AddSingleton<CommandLineConfigurator>()
                 .AddFileSystem()
                 .AddSettingsManager()
                 .AddDataModel()
                 .AddLibrary()
-                .AddLibraryModels()
                 .AddJobMonitor()
                 .OverrideSettingsForTests<DataModelSettings>(settings => settings with
                 {

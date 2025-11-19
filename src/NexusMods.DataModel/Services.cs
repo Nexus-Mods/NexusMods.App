@@ -90,7 +90,6 @@ public static class Services
         coll.AddAllSingleton<IToolManager, ToolManager>();
 
         // Disk State and Synchronizer
-        coll.AddDiskStateEntryModel();
         coll.AddAllSingleton<ISynchronizerService, SynchronizerService>();
 
         coll.AddSingleton<ITypeFinder>(_ => new AssemblyTypeFinder(typeof(Services).Assembly));
@@ -102,9 +101,6 @@ public static class Services
         
         // GC
         coll.AddAllSingleton<IGarbageCollectorRunner, GarbageCollectorRunner>();
-        
-        
-        coll.AddPersistedDbResourceModel();
         
         // Undo
         coll.AddSingleton<UndoService>();

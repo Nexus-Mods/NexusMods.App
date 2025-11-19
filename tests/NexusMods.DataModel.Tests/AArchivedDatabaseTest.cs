@@ -69,6 +69,7 @@ public abstract class AArchivedDatabaseTest
         });
 
         return services
+            .AddDatabaseModels()
             .AddSingleton<TimeProvider>(_ => TimeProvider.System)
             .AddLogging(builder => builder.AddXUnit())
             .AddSerializationAbstractions()
@@ -82,14 +83,10 @@ public abstract class AArchivedDatabaseTest
             .AddFileHashes()
             .AddFileSystem()
             .AddDataModel()
-            .AddLibraryModels()
             .AddStardewValley()
             .AddLoadoutAbstractions()
             .AddFileExtractors()
             .AddNexusModsCollections()
-            .AddNexusModsLibraryModels()
-            .AddSortOrderItemModel()
-            .AddLoadoutItemGroupPriorityModel()
             .AddJobMonitor()
             .OverrideSettingsForTests<FileHashesServiceSettings>(settings => settings with
             {

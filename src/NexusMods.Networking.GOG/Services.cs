@@ -13,7 +13,6 @@ public static class Services
     {
         services.AddGOGVerbs();
         services.AddSingleton<IClient, Client>();
-        services.AddAuthInfoModel();
         services.AddOptionParser(s => ProductId.From(ulong.Parse(s)));
         return services;
     }

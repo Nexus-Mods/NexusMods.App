@@ -20,19 +20,6 @@ public static class Services
             .AddBindingConverter<LoadoutId, ulong>(l => l.Value.Value)
             .AddBindingConverter<LocationId, ushort>(l => l.Value)
             .AddValueAdaptor<ushort, LocationId>(LocationId.From)
-            .AddLoadoutModel()
-            .AddLoadoutItemModel()
-            .AddLoadoutItemGroupModel()
-            .AddLoadoutGameFilesGroupModel()
-            .AddLoadoutOverridesGroupModel()
-            .AddLibraryLinkedLoadoutItemModel()
-            .AddLoadoutItemWithTargetPathModel()
-            .AddLoadoutFileModel()
-            .AddLoadoutSnapshotModel()
-            .AddDeletedFileModel()
-            .AddCollectionGroupModel()
-            .AddSortOrderModel()
-            .AddGameBackedUpFileModel()
             .AddLoadoutQueriesSql();
     }
 }
