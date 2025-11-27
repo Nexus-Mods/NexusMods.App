@@ -1,11 +1,13 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.GameLocators;
+
 using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using NexusMods.Sdk.Library;
+using NexusMods.Sdk.Games;
+using NexusMods.Sdk.Loadouts;
 
 namespace NexusMods.Games.MountAndBlade2Bannerlord.Installers;
 
@@ -46,8 +48,8 @@ public class BLSEInstaller : ALibraryArchiveInstaller
         LibraryArchive.ReadOnly libraryArchive, LoadoutItemGroup.New loadoutGroup, ITransaction transaction, Loadout.ReadOnly loadout, CancellationToken cancellationToken)
     {
         const string launcherFileName = "Bannerlord.BLSE.Launcher.exe";
-        
-        var store = loadout.InstallationInstance.Store;
+
+        var store = loadout.Installation.Store;
         var installDir = store == GameStore.XboxGamePass ? (RelativePath)"bin/Gaming.Desktop.x64_Shipping_Client" : (RelativePath)"bin/Win64_Shipping_Client";
 
         // Check if we are BLSE, we'll do a simple file check to determine this.

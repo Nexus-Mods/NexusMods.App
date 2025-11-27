@@ -63,7 +63,7 @@ public class BG3InstallerTests(ITestOutputHelper outputHelper) : ALibraryArchive
 
 
     private static SettingsTask VerifyChildren(
-        IEnumerable<(RelativePath FromPath, Hashing.xxHash3.Hash Hash, Abstractions.GameLocators.GamePath GamePath)> childrenFilesAndHashes,
+        IEnumerable<(RelativePath FromPath, Hashing.xxHash3.Hash Hash, Sdk.Games.GamePath GamePath)> childrenFilesAndHashes,
         string[] archivePaths,
         [CallerFilePath] string sourceFile = "")
     {

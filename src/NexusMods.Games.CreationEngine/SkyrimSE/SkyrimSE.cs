@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using Mutagen.Bethesda;
@@ -7,10 +8,6 @@ using Mutagen.Bethesda.Plugins.Binary.Streams;
 using Mutagen.Bethesda.Plugins.Records;
 using Mutagen.Bethesda.Skyrim;
 using NexusMods.Abstractions.Diagnostics.Emitters;
-using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.GameLocators.GameCapabilities;
-using NexusMods.Abstractions.GameLocators.Stores.GOG;
-using NexusMods.Abstractions.GameLocators.Stores.Steam;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
@@ -26,76 +23,77 @@ using NexusMods.Sdk.IO;
 
 namespace NexusMods.Games.CreationEngine.SkyrimSE;
 
-public partial class SkyrimSE : AGame, ISteamGame, IGogGame, ICreationEngineGame, IGameData<SkyrimSE>
+public class SkyrimSE : ICreationEngineGame, IGameData<SkyrimSE>
 {
-    private readonly IServiceProvider _serviceProvider;
-    private readonly IDiagnosticEmitter[] _emitters;
     private readonly IStreamSourceDispatcher _streamSource;
 
     public static GameId GameId { get; } = GameId.From("CreationEngine.SkyrimSE");
-    protected override GameId GameIdImpl => GameId;
-
     public static string DisplayName => "Skyrim Special Edition";
-    protected override string DisplayNameImpl => DisplayName;
-
     public static Optional<Sdk.NexusModsApi.NexusModsGameId> NexusModsGameId => Sdk.NexusModsApi.NexusModsGameId.From(1704);
-    protected override Optional<Sdk.NexusModsApi.NexusModsGameId> NexusModsGameIdImpl => NexusModsGameId;
 
-    public SkyrimSE(IServiceProvider provider) : base(provider)
+    public StoreIdentifiers StoreIdentifiers { get; } = new(GameId)
     {
-        _serviceProvider = provider;
+        SteamAppIds = [489830u],
+        GOGProductIds = [1711230643L],
+    };
+
+    public IStreamFactory IconImage { get; } = new EmbeddedResourceStreamFactory<SkyrimSE>("NexusMods.Games.CreationEngine.Resources.SkyrimSE.thumbnail.webp");
+    public IStreamFactory TileImage { get; } = new EmbeddedResourceStreamFactory<SkyrimSE>("NexusMods.Games.CreationEngine.Resources.SkyrimSE.tile.webp");
+
+    private readonly Lazy<ILoadoutSynchronizer> _synchronizer;
+    public ILoadoutSynchronizer Synchronizer => _synchronizer.Value;
+    public ILibraryItemInstaller[] LibraryItemInstallers { get; }
+    private readonly Lazy<ISortOrderManager> _sortOrderManager;
+    public ISortOrderManager SortOrderManager => _sortOrderManager.Value;
+    public IDiagnosticEmitter[] DiagnosticEmitters { get; }
+    
+    public SkyrimSE(IServiceProvider provider)
+    {
         _streamSource = provider.GetRequiredService<IStreamSourceDispatcher>();
 
-        _emitters =
+        _synchronizer = new Lazy<ILoadoutSynchronizer>(() => new SkyrimSESynchronizer(provider, this));
+        _sortOrderManager = new Lazy<ISortOrderManager>(() =>
+        {
+            var sortOrderManager = provider.GetRequiredService<SortOrderManager>();
+            sortOrderManager.RegisterSortOrderVarieties([], this);
+            return sortOrderManager;
+        });
+
+        DiagnosticEmitters =
         [
             new MissingMasterEmitter(this),
         ];
+
+        LibraryItemInstallers =
+        [
+            FomodXmlInstaller.Create(provider, new GamePath(LocationId.Game, "Data")),
+            // Files in a Data folder
+            new StopPatternInstaller(provider)
+            {
+                GameId = GameId,
+                GameAliases = ["Skyrim Special Edition", "SkyrimSE", "SSE"],
+                TopLevelDirs = KnownPaths.CommonTopLevelFolders,
+                StopPatterns = ["(^|/)skse(/|$)"],
+                EngineFiles = [@"skse64_loader\.exe", @"skse64_.*\.dll"],
+                
+            }.Build(),
+        ];
     }
 
-    public override GamePath GetPrimaryFile(GameTargetInfo targetInfo) => new(LocationId.Game, "SkyrimSE.exe");
-
-    protected override IReadOnlyDictionary<LocationId, AbsolutePath> GetLocations(IFileSystem fileSystem, GameLocatorResult installation)
+    public ImmutableDictionary<LocationId, AbsolutePath> GetLocations(IFileSystem fileSystem, GameLocatorResult gameLocatorResult)
     {
-        string postfix = "";
-        if (installation.Store == GameStore.GOG)
-            postfix = " GOG";
+        var postfix = "";
+        if (gameLocatorResult.Store == GameStore.GOG) postfix = " GOG";
+
         return new Dictionary<LocationId, AbsolutePath>()
         {
-            { LocationId.Game, installation.Path },
+            { LocationId.Game, gameLocatorResult.Path },
             { LocationId.AppData, fileSystem.GetKnownPath(KnownPath.LocalApplicationDataDirectory) / "Skyrim Special Edition" },
             { LocationId.Preferences, fileSystem.GetKnownPath(KnownPath.MyGamesDirectory) / ("Skyrim Special Edition" + postfix)},
-        };
+        }.ToImmutableDictionary();
     }
 
-    public override List<IModInstallDestination> GetInstallDestinations(IReadOnlyDictionary<LocationId, AbsolutePath> locations)
-    {
-        return [];
-    }
-
-    protected override ILoadoutSynchronizer MakeSynchronizer(IServiceProvider provider) => new SkyrimSESynchronizer(provider, this);
-
-    public IEnumerable<uint> SteamIds => [489830];
-    public IEnumerable<long> GogIds => [1711230643];
-
-    public override IStreamFactory IconImage => new EmbeddedResourceStreamFactory<SkyrimSE>("NexusMods.Games.CreationEngine.Resources.SkyrimSE.thumbnail.webp");
-    public override IStreamFactory TileImage => new EmbeddedResourceStreamFactory<SkyrimSE>("NexusMods.Games.CreationEngine.Resources.SkyrimSE.tile.webp");
-
-    public override IDiagnosticEmitter[] DiagnosticEmitters => _emitters;
-
-    public override ILibraryItemInstaller[] LibraryItemInstallers =>
-    [
-        FomodXmlInstaller.Create(_serviceProvider, new GamePath(LocationId.Game, "Data")),
-        // Files in a Data folder
-        new StopPatternInstaller(_serviceProvider)
-        {
-            GameId = GameId,
-            GameAliases = ["Skyrim Special Edition", "SkyrimSE", "SSE"],
-            TopLevelDirs = KnownPaths.CommonTopLevelFolders,
-            StopPatterns = ["(^|/)skse(/|$)"],
-            EngineFiles = [@"skse64_loader\.exe", @"skse64_.*\.dll"],
-            
-        }.Build(),
-    ];
+    public GamePath GetPrimaryFile(GameInstallation installation) => new(LocationId.Game, "SkyrimSE.exe");
 
     private static readonly GroupMask EmptyGroupMask = new(false);
     public async ValueTask<IMod?> ParsePlugin(Hash hash, RelativePath? name = null)
@@ -109,5 +107,5 @@ public partial class SkyrimSE : AGame, ISteamGame, IGogGame, ICreationEngineGame
         return SkyrimMod.CreateFromBinary(frame, SkyrimRelease.SkyrimSE, EmptyGroupMask);
     }
 
-    public GamePath PluginsFile => new GamePath(LocationId.AppData, "Plugins.txt");
+    public GamePath PluginsFile => new(LocationId.AppData, "Plugins.txt");
 }

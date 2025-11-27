@@ -1,6 +1,7 @@
-using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts.Files.Diff;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.Sdk.Games;
+using NexusMods.Sdk.Loadouts;
 using OneOf;
 
 namespace NexusMods.Abstractions.Loadouts.Synchronizers;
@@ -43,40 +44,33 @@ public interface ILoadoutSynchronizer
     Task<Loadout.ReadOnly> Synchronize(Loadout.ReadOnly loadout, SynchronizeLoadoutJob? job = null);
 
     /// <summary>
-    /// Rescan the files in the folders this game requires. This is used to bring the local cache up to date with the
-    /// whatever is on disk.
-    /// </summary>
-    /// <param name="gameInstallation">The game installation to rescan.</param>
-    Task<GameInstallMetadata.ReadOnly> RescanFiles(GameInstallation gameInstallation);
-
-    /// <summary>
     /// Get the disk state for a game as of a specific transaction.
     /// </summary>
     /// <param name="metadata"></param>
     /// <param name="asOfTxId"></param>
     /// <returns></returns>
-    public List<PathPartPair> GetDiskStateForGameAsOf(GameInstallMetadata.ReadOnly metadata, TxId asOfTxId)
+    public List<PathPartPair> GetDiskStateForGameAsOf(Sdk.Games.GameInstallMetadata.ReadOnly metadata, TxId asOfTxId)
     {
         var db = metadata.Db.Connection.AsOf(asOfTxId);
-        var oldMetadata = GameInstallMetadata.Load(db, metadata.Id);
+        var oldMetadata = Sdk.Games.GameInstallMetadata.Load(db, metadata.Id);
         return GetDiskStateForGame(oldMetadata);
     }
 
     /// <summary>
     /// Gets the previously applied disk state for a game.
     /// </summary>
-    public List<PathPartPair> GetPreviouslyAppliedDiskState(GameInstallMetadata.ReadOnly metadata)
+    public List<PathPartPair> GetPreviouslyAppliedDiskState(Sdk.Games.GameInstallMetadata.ReadOnly metadata)
     {
         List<PathPartPair> prevItems;
-        if (!metadata.Contains(GameInstallMetadata.LastSyncedLoadout))
+        if (!metadata.Contains(Sdk.Games.GameInstallMetadata.LastSyncedLoadout))
         {
             prevItems = [];
         }
         else
         {
-            var txId = GameInstallMetadata.LastSyncedLoadoutTransactionId.Get(metadata);
+            var txId = Sdk.Games.GameInstallMetadata.LastSyncedLoadoutTransactionId.Get(metadata);
             var asOfDb = metadata.Db.Connection.AsOf(TxId.From(txId.Value));
-            var oldMetadata = GameInstallMetadata.Load(asOfDb, metadata.Id);
+            var oldMetadata = Sdk.Games.GameInstallMetadata.Load(asOfDb, metadata.Id);
             prevItems = GetDiskStateForGame(oldMetadata);
         }
         return prevItems;
@@ -85,17 +79,17 @@ public interface ILoadoutSynchronizer
     /// <summary>
     /// Gets the previously applied disk state for a game.
     /// </summary>
-    public List<PathPartPair> GetLastScannedDiskState(GameInstallMetadata.ReadOnly metadata)
+    public List<PathPartPair> GetLastScannedDiskState(Sdk.Games.GameInstallMetadata.ReadOnly metadata)
     {
         List<PathPartPair> prevItems;
-        if (!GameInstallMetadata.LastScannedDiskStateTransaction.TryGetValue(metadata, out var txId))
+        if (!Sdk.Games.GameInstallMetadata.LastScannedDiskStateTransaction.TryGetValue(metadata, out var txId))
         {
             prevItems = [];
         }
         else
         {
             var asOfDb = metadata.Db.Connection.AsOf(TxId.From(txId.Value));
-            var oldMetadata = GameInstallMetadata.Load(asOfDb, metadata.Id);
+            var oldMetadata = Sdk.Games.GameInstallMetadata.Load(asOfDb, metadata.Id);
             prevItems = GetDiskStateForGame(oldMetadata);
         }
         return prevItems;
@@ -104,7 +98,7 @@ public interface ILoadoutSynchronizer
     /// <summary>
     /// Get the disk state for a game from the given database.
     /// </summary>
-    public List<PathPartPair> GetDiskStateForGame(GameInstallMetadata.ReadOnly metadata);
+    public List<PathPartPair> GetDiskStateForGame(Sdk.Games.GameInstallMetadata.ReadOnly metadata);
 
     public bool ShouldSynchronize(Loadout.ReadOnly loadout, IEnumerable<PathPartPair> previousState, IEnumerable<PathPartPair> lastScannedState);
     
@@ -117,8 +111,8 @@ public interface ILoadoutSynchronizer
     /// <returns>A tree of all the files with associated <see cref="FileChangeType"/></returns>
     FileDiffTree LoadoutToDiskDiff(Loadout.ReadOnly loadout, List<PathPartPair> previousState, List<PathPartPair> lastScannedState);
 
-    Task<GameInstallMetadata.ReadOnly> ReindexState(GameInstallation installation);
-    ValueTask BuildProcessRun(Loadout.ReadOnly loadout, GameInstallMetadata.ReadOnly state, CancellationToken cancellationToken);
+    Task<Sdk.Games.GameInstallMetadata.ReadOnly> ReindexState(GameInstallation installation);
+    ValueTask BuildProcessRun(Loadout.ReadOnly loadout, Sdk.Games.GameInstallMetadata.ReadOnly state, CancellationToken cancellationToken);
 
     Task ResetToOriginalGameState(GameInstallation installation, LocatorId[] locatorIds);
 

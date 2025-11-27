@@ -1,11 +1,8 @@
+using System.Collections.Immutable;
 using DynamicData.Kernel;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Diagnostics.Emitters;
-using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.GameLocators.GameCapabilities;
-using NexusMods.Abstractions.GameLocators.Stores.GOG;
-using NexusMods.Abstractions.GameLocators.Stores.Steam;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
@@ -21,39 +18,70 @@ using NexusMods.Sdk.IO;
 namespace NexusMods.Games.RedEngine.Cyberpunk2077;
 
 [UsedImplicitly]
-public class Cyberpunk2077Game : AGame, ISteamGame, IGogGame, IGameData<Cyberpunk2077Game>
+public class Cyberpunk2077Game : IGame, IGameData<Cyberpunk2077Game>
 {
-    private readonly IServiceProvider _serviceProvider;
-    private readonly ISortOrderVariety[] _sortOrderVarieties;
-
     public static GameId GameId { get; } = GameId.From("RedEngine.Cyberpunk2077");
-    protected override GameId GameIdImpl => GameId;
-
     public static string DisplayName => "Cyberpunk 2077";
-    protected override string DisplayNameImpl => DisplayName;
-
     public static Optional<Sdk.NexusModsApi.NexusModsGameId> NexusModsGameId => Sdk.NexusModsApi.NexusModsGameId.From(3333);
-    protected override Optional<Sdk.NexusModsApi.NexusModsGameId> NexusModsGameIdImpl => NexusModsGameId;
 
-    public Cyberpunk2077Game(IServiceProvider provider) : base(provider)
+    public StoreIdentifiers StoreIdentifiers { get; } = new(GameId)
     {
-        _serviceProvider = provider;
+        SteamAppIds = [1091500u],
+        GOGProductIds = [2093619782L, 1423049311L],
+        EGSCatalogItemId = ["5beededaad9743df90e8f07d92df153f"],
+    };
 
-        _sortOrderVarieties =
+    public IStreamFactory IconImage { get; } = new EmbeddedResourceStreamFactory<Cyberpunk2077Game>("NexusMods.Games.RedEngine.Resources.Cyberpunk2077.thumbnail.webp");
+    public IStreamFactory TileImage { get; } = new EmbeddedResourceStreamFactory<Cyberpunk2077Game>("NexusMods.Games.RedEngine.Resources.Cyberpunk2077.tile.webp");
+
+    private readonly Lazy<ILoadoutSynchronizer> _synchronizer;
+    public ILoadoutSynchronizer Synchronizer => _synchronizer.Value;
+    public ILibraryItemInstaller[] LibraryItemInstallers { get; }
+    private readonly Lazy<ISortOrderManager> _sortOrderManager;
+    public ISortOrderManager SortOrderManager => _sortOrderManager.Value;
+    public IDiagnosticEmitter[] DiagnosticEmitters { get; }
+
+    public Cyberpunk2077Game(IServiceProvider provider)
+    {
+        _synchronizer = new Lazy<ILoadoutSynchronizer>(() => new Cyberpunk2077Synchronizer(provider));
+        _sortOrderManager = new Lazy<ISortOrderManager>(() =>
+        {
+            var sortOrderManager = provider.GetRequiredService<SortOrderManager>();
+            sortOrderManager.RegisterSortOrderVarieties(
+                sortOrderVarieties: [
+                    provider.GetRequiredService<RedModSortOrderVariety>(),
+                ],
+                game: this
+            );
+
+            return sortOrderManager;
+        });
+
+        DiagnosticEmitters =
         [
-            provider.GetRequiredService<RedModSortOrderVariety>(),
+            new NoWayToSourceFilesOnDisk(),
+            new UndeployableLoadoutDueToMissingGameFiles(provider),
+            new PatternBasedDependencyEmitter(PatternDefinitions.Definitions, provider),
+            new MissingProtontricksForRedModEmitter(provider),
+            new MissingRedModEmitter(),
+            new WinePrefixRequirementsEmitter(),
+        ];
+
+        LibraryItemInstallers =
+        [
+            FomodXmlInstaller.Create(provider, new GamePath(LocationId.Game, "")),
+            new RedModInstaller(provider),
+            new SimpleOverlayModInstaller(provider),
+            new AppearancePresetInstaller(provider),
+            new FolderlessModInstaller(provider),
         ];
     }
 
-    protected override ILoadoutSynchronizer MakeSynchronizer(IServiceProvider provider) => new Cyberpunk2077Synchronizer(provider);
-
-    public override GamePath GetPrimaryFile(GameTargetInfo targetInfo) => new(LocationId.Game, "bin/x64/Cyberpunk2077.exe");
-    protected override IReadOnlyDictionary<LocationId, AbsolutePath> GetLocations(IFileSystem fileSystem,
-        GameLocatorResult installation)
+    public ImmutableDictionary<LocationId, AbsolutePath> GetLocations(IFileSystem fileSystem, GameLocatorResult gameLocatorResult)
     {
-        var result = new Dictionary<LocationId, AbsolutePath>()
+        return new Dictionary<LocationId, AbsolutePath>()
         {
-            { LocationId.Game, installation.Path },
+            { LocationId.Game, gameLocatorResult.Path },
             // Skip managing saves for now, to prevent accidental deletion of saves
             // e.g. when removing loadouts, un-managing the game, or uninstalling the app
             // {
@@ -62,49 +90,10 @@ public class Cyberpunk2077Game : AGame, ISteamGame, IGogGame, IGameData<Cyberpun
             // },
             {
                 LocationId.AppData,
-                fileSystem.GetKnownPath(KnownPath.LocalApplicationDataDirectory)
-                    .Combine("CD Projekt Red/Cyberpunk 2077")
+                fileSystem.GetKnownPath(KnownPath.LocalApplicationDataDirectory).Combine("CD Projekt Red/Cyberpunk 2077")
             }
-        };
-
-        return result;
+        }.ToImmutableDictionary();
     }
 
-    public IEnumerable<uint> SteamIds => new[] { 1091500u };
-    public IEnumerable<long> GogIds => new[] { 2093619782L, 1423049311 };
-
-    // The Epic Games Store is not supported yet, managing the game will put the user into a state where they cannot apply a loadout. 
-    public IEnumerable<string> EpicCatalogItemId => new[] { "5beededaad9743df90e8f07d92df153f" };
-
-    public override IStreamFactory IconImage => new EmbeddedResourceStreamFactory<Cyberpunk2077Game>("NexusMods.Games.RedEngine.Resources.Cyberpunk2077.thumbnail.webp");
-    public override IStreamFactory TileImage => new EmbeddedResourceStreamFactory<Cyberpunk2077Game>("NexusMods.Games.RedEngine.Resources.Cyberpunk2077.tile.webp");
-
-    public override IDiagnosticEmitter[] DiagnosticEmitters =>
-    [
-        new NoWayToSourceFilesOnDisk(),
-        new UndeployableLoadoutDueToMissingGameFiles(_serviceProvider),
-        new PatternBasedDependencyEmitter(PatternDefinitions.Definitions, _serviceProvider),
-        new MissingProtontricksForRedModEmitter(_serviceProvider),
-        new MissingRedModEmitter(),
-        new WinePrefixRequirementsEmitter(),
-    ];
-
-    /// <inheritdoc />
-    protected override ISortOrderVariety[] GetSortOrderVarieties()
-    {
-        return _sortOrderVarieties;
-    }
-    
-    /// <inheritdoc />
-    public override ILibraryItemInstaller[] LibraryItemInstallers =>
-    [
-        FomodXmlInstaller.Create(_serviceProvider, new GamePath(LocationId.Game, "")),
-        new RedModInstaller(_serviceProvider),
-        new SimpleOverlayModInstaller(_serviceProvider),
-        new AppearancePresetInstaller(_serviceProvider),
-        new FolderlessModInstaller(_serviceProvider),
-    ];
-
-    public override List<IModInstallDestination> GetInstallDestinations(IReadOnlyDictionary<LocationId, AbsolutePath> locations)
-        => ModInstallDestinationHelpers.GetCommonLocations(locations);
+    public GamePath GetPrimaryFile(GameInstallation installation) => new(LocationId.Game, "bin/x64/Cyberpunk2077.exe");
 }

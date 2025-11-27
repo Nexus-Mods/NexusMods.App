@@ -6,7 +6,6 @@
                                 xmlns:settings="clr-namespace:NexusMods.App.UI.Pages.Settings"
                                 xmlns:icons="clr-namespace:NexusMods.UI.Sdk.Icons;assembly=NexusMods.UI.Sdk"
                                 xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
-                                xmlns:ui1="clr-namespace:NexusMods.Abstractions.UI;assembly=NexusMods.Abstractions.UI"
                                 xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
                                 xmlns:pageHeader="clr-namespace:NexusMods.App.UI.Controls.PageHeader"
                                 xmlns:ui="clr-namespace:NexusMods.UI.Sdk;assembly=NexusMods.UI.Sdk"

@@ -1,9 +1,7 @@
 using System.Collections.ObjectModel;
 using System.Reactive;
 using DynamicData;
-using NexusMods.Abstractions.GameLocators;
 using NexusMods.App.UI.Controls.GameWidget;
-using NexusMods.App.UI.Controls.MiniGameWidget;
 using NexusMods.App.UI.Controls.MiniGameWidget.ComingSoon;
 using NexusMods.App.UI.Controls.MiniGameWidget.Standard;
 using NexusMods.App.UI.Windows;

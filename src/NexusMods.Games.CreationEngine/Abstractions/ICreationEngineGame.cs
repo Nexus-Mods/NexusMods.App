@@ -1,16 +1,17 @@
 using Mutagen.Bethesda.Plugins.Records;
+using NexusMods.Abstractions.Games;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.Paths;
 
-using NexusMods.Abstractions.GameLocators;
+
+using NexusMods.Sdk.Games;
 
 namespace NexusMods.Games.CreationEngine.Abstractions;
-
 
 /// <summary>
 /// A common interface for all games that use the creation engine.
 /// </summary>
-public interface ICreationEngineGame
+public interface ICreationEngineGame : IGame
 {
     public GamePath PluginsFile { get; }
     /// <summary>

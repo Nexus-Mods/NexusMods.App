@@ -1,5 +1,5 @@
-using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.GameLocators.Trees;
+using NexusMods.Sdk.Games;
+using NexusMods.Sdk.Trees;
 
 namespace NexusMods.Abstractions.Loadouts.Files.Diff;
 

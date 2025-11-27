@@ -1,7 +1,9 @@
 using System.Collections.Concurrent;
-using NexusMods.Abstractions.GameLocators;
+
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Games.MountAndBlade2Bannerlord.Utils;
+using NexusMods.Sdk.Games;
+using GameInstallMetadata = NexusMods.Sdk.Games.GameInstallMetadata;
 
 namespace NexusMods.Games.MountAndBlade2Bannerlord.LauncherManager;
 
@@ -31,8 +33,8 @@ public sealed class LauncherManagerFactory
 
     public LauncherManagerNexusModsApp Get(GameInstallation installation)
     {
-        var store = Converter.ToGameStoreTW(installation.Store);
-        return _instances.GetOrAdd(installation.LocationsRegister[LocationId.Game].ToString(),
+        var store = Converter.ToGameStoreTW(installation.LocatorResult.Store);
+        return _instances.GetOrAdd(installation.Locations[LocationId.Game].Path.ToString(),
             static (installationPath, tuple) => ValueFactory(tuple._serviceProvider, installationPath, tuple.store), (_serviceProvider, store));
     }
 

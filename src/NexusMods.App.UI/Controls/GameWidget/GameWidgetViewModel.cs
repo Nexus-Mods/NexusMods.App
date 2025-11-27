@@ -3,10 +3,9 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia.Media.Imaging;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Games.FileHashes;
 using NexusMods.App.UI.Resources;
+using NexusMods.Sdk.Games;
 using NexusMods.Sdk.Settings;
 using NexusMods.UI.Sdk;
 using NexusMods.UI.Sdk.Icons;
@@ -29,7 +28,7 @@ public class GameWidgetViewModel : AViewModel<IGameWidgetViewModel>, IGameWidget
 
         _image = this
             .WhenAnyValue(vm => vm.Installation)
-            .Where(installation => installation.Game is not null)
+            .Where(installation => installation?.Game is not null)
             .OffUi()
             .SelectMany(LoadImage)
             .WhereNotNull()
@@ -38,16 +37,18 @@ public class GameWidgetViewModel : AViewModel<IGameWidgetViewModel>, IGameWidget
         this.WhenActivated(disposables =>
             {
                 this.WhenAnyValue(vm => vm.Installation)
+                    .WhereNotNull()
                     .Select(inst => $"{inst.Game.DisplayName}")
                     .BindToVM(this, vm => vm.Name)
                     .DisposeWith(disposables);
 
                 this.WhenAnyValue(vm => vm.Installation)
+                    .WhereNotNull()
                     .SelectMany(async installation =>
                     {
                         await fileHashesService.GetFileHashesDb();
-                        var locatorIds = installation.LocatorResultMetadata?.ToLocatorIds().ToArray() ?? [];
-                        if (!fileHashesService.TryGetVanityVersion((installation.Store, locatorIds), out var vanityVersion))
+                        var locatorIds = installation.LocatorResult.LocatorIds.ToArray();
+                        if (!fileHashesService.TryGetVanityVersion((installation.LocatorResult.Store, locatorIds), out var vanityVersion))
                             return Language.GameWidget_VersionUnknown;
                         return $"Version: {vanityVersion.Value}";
                     })
@@ -55,12 +56,14 @@ public class GameWidgetViewModel : AViewModel<IGameWidgetViewModel>, IGameWidget
                     .DisposeWith(disposables);
 
                 this.WhenAnyValue(vm => vm.Installation)
-                    .Select(inst => $"{inst.Store.Value}")
+                    .WhereNotNull()
+                    .Select(inst => $"{inst.LocatorResult.Store.Value}")
                     .BindToVM(this, vm => vm.Store)
                     .DisposeWith(disposables);
 
                 this.WhenAnyValue(vm => vm.Installation)
-                    .Select(inst => MapGameStoreToIcon(inst.Store))
+                    .WhereNotNull()
+                    .Select(inst => MapGameStoreToIcon(inst.LocatorResult.Store))
                     .BindToVM(this, vm => vm.GameStoreIcon)
                     .DisposeWith(disposables);
                 
@@ -75,8 +78,10 @@ public class GameWidgetViewModel : AViewModel<IGameWidgetViewModel>, IGameWidget
         );
     }
 
-    private async Task<Bitmap?> LoadImage(GameInstallation source)
+    private async Task<Bitmap?> LoadImage(GameInstallation? source)
     {
+        if (source is null) return null;
+
         try
         {
             var stream = await source.Game.TileImage.GetStreamAsync();
@@ -90,29 +95,29 @@ public class GameWidgetViewModel : AViewModel<IGameWidgetViewModel>, IGameWidget
     }
 
     /// <summary>
-    /// Returns an <see cref="IconValue"/> for a given <see cref="Abstractions.GameLocators.GameStore"/>.
+    /// Returns an <see cref="IconValue"/> for a given <see cref="GameStore"/>.
     /// </summary>
-    /// <param name="store">A <see cref="Abstractions.GameLocators.GameStore"/> object</param>
+    /// <param name="store">A <see cref="GameStore"/> object</param>
     /// <returns>An <see cref="IconValue"/> icon representing the game store or a question mark icon if not found.</returns>
     internal static IconValue MapGameStoreToIcon(GameStore store)
     {
-        if (store == Abstractions.GameLocators.GameStore.Steam)
+        if (store == GameStore.Steam)
             return IconValues.Steam;
-        else if (store == Abstractions.GameLocators.GameStore.GOG)
+        else if (store == GameStore.GOG)
             return IconValues.GOG;
-        else if (store == Abstractions.GameLocators.GameStore.EGS)
+        else if (store == GameStore.EGS)
             return IconValues.Epic;
-        else if (store == Abstractions.GameLocators.GameStore.Origin)
+        else if (store == GameStore.Origin)
             return IconValues.Ubisoft;
-        else if (store == Abstractions.GameLocators.GameStore.EADesktop)
+        else if (store == GameStore.EADesktop)
             return IconValues.EA;
-        else if (store == Abstractions.GameLocators.GameStore.XboxGamePass)
+        else if (store == GameStore.XboxGamePass)
             return IconValues.Xbox;
 
         return IconValues.Help;
     }
 
-    [Reactive] public GameInstallation Installation { get; set; } = GameInstallation.Empty;
+    [Reactive] public GameInstallation? Installation { get; set; }
 
     [Reactive] public string Name { get; set; } = "";
     [Reactive] public string Version { get; set; } = "";

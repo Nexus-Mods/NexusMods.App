@@ -11,6 +11,7 @@ using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Collections;
 using NexusMods.UI.Sdk.Icons;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.Sdk.Loadouts;
 using NexusMods.UI.Sdk.Dialog;
 using ReactiveUI;
 

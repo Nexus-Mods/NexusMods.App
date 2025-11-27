@@ -1,11 +1,13 @@
 using FluentAssertions;
 using MartinCostello.Logging.XUnit;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.Games.RedEngine;
 using NexusMods.Games.RedEngine.Cyberpunk2077;
 using NexusMods.Games.TestFramework;
+using NexusMods.Games.TestFramework.FluentAssertionExtensions;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
+using NexusMods.Sdk.Games;
 using NexusMods.StandardGameLocators.TestHelpers;
 using Xunit.Abstractions;
 
@@ -24,14 +26,14 @@ public class SynchronizerUnitTests(ITestOutputHelper testOutputHelper) : ACyberp
         var loadoutA = await CreateLoadout();
 
         var nestedFile = new GamePath(LocationId.Game, "a/b/nested.txt");
-        var nestedFileFullPath = GameInstallation.LocationsRegister.GetResolvedPath(nestedFile);
+        var nestedFileFullPath = GameInstallation.Locations.ToAbsolutePath(nestedFile);
 
         nestedFileFullPath.Parent.CreateDirectory();
         await nestedFileFullPath.WriteAllTextAsync("Nested File");
 
         loadoutA = await Synchronizer.Synchronize(loadoutA);
 
-        loadoutA.Items.Should().ContainSingle(f => f.Name == "nested.txt");
+        LoadoutItem.FindByLoadout(loadoutA.Db, loadoutA).Should().ContainSingle(f => f.Name == "nested.txt");
 
         // Create new empty loadout
         var loadoutB = await CreateLoadout();
@@ -52,8 +54,8 @@ public class SynchronizerUnitTests(ITestOutputHelper testOutputHelper) : ACyberp
         var parentFile = new GamePath(LocationId.Game, "a/parent.txt");
         var grandChildFile = new GamePath(LocationId.Game, "a/b/c/grandchild.txt");
         
-        var parentFileFullPath = GameInstallation.LocationsRegister.GetResolvedPath(parentFile);
-        var grandChildFileFullPath = GameInstallation.LocationsRegister.GetResolvedPath(grandChildFile);
+        var parentFileFullPath = GameInstallation.Locations.ToAbsolutePath(parentFile);
+        var grandChildFileFullPath = GameInstallation.Locations.ToAbsolutePath(grandChildFile);
         
         parentFileFullPath.Parent.CreateDirectory();
         await parentFileFullPath.WriteAllTextAsync("Parent File");
@@ -63,13 +65,12 @@ public class SynchronizerUnitTests(ITestOutputHelper testOutputHelper) : ACyberp
         
         loadout = await Synchronizer.Synchronize(loadout);
         
-        loadout.Items.Should().ContainSingle(f => f.Name == "parent.txt");
-        loadout.Items.Should().ContainSingle(f => f.Name == "grandchild.txt");
-
+        LoadoutItem.FindByLoadout(loadout.Db, loadout).Should().ContainSingle(f => f.Name == "parent.txt");
+        LoadoutItem.FindByLoadout(loadout.Db, loadout).Should().ContainSingle(f => f.Name == "grandchild.txt");
 
         using (var tx = Connection.BeginTransaction())
         {
-            var toDelete = loadout.Items.First(f => f.Name == "grandchild.txt").Id;
+            var toDelete =LoadoutItem.FindByLoadout(loadout.Db, loadout).First(f => f.Name == "grandchild.txt").Id;
             tx.Delete(toDelete, false);
             await tx.Commit();
         }

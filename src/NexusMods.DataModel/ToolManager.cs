@@ -2,6 +2,7 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Sdk.Games;
 using NexusMods.Sdk.Jobs;
+using NexusMods.Sdk.Loadouts;
 
 namespace NexusMods.DataModel;
 
@@ -28,7 +29,7 @@ public class ToolManager : IToolManager
     /// <inheritdoc />
     public IEnumerable<ITool> GetTools(Loadout.ReadOnly loadout)
     {
-        return _tools[loadout.LocatableGame.GameId];
+        return _tools[loadout.Game.GameId];
     }
 
     /// <inheritdoc />
@@ -38,7 +39,7 @@ public class ToolManager : IToolManager
         IJobMonitor monitor,
         CancellationToken token = default)
     {
-        if (!tool.GameIds.Contains(loadout.LocatableGame.GameId)) throw new NotSupportedException("Tool does not support this game");
+        if (!tool.GameIds.Contains(loadout.Game.GameId)) throw new NotSupportedException("Tool does not support this game");
 
         _logger.LogInformation("Applying loadout {LoadoutId} on {GameName} {GameVersion}", 
             loadout.Id, loadout.InstallationInstance.Game.DisplayName, loadout.GameVersion);

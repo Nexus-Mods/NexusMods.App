@@ -3,10 +3,6 @@ using System.Reactive.Disposables;
 using Avalonia.Controls;
 using Avalonia.Media;
 using Avalonia.ReactiveUI;
-using NexusMods.Abstractions.GameLocators.Stores.EGS;
-using NexusMods.Abstractions.GameLocators.Stores.GOG;
-using NexusMods.Abstractions.GameLocators.Stores.Steam;
-using NexusMods.Abstractions.GameLocators.Stores.Xbox;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.Controls.MiniGameWidget.Standard;
@@ -39,13 +35,11 @@ public partial class MiniGameWidget : ReactiveUserControl<IMiniGameWidgetViewMod
 
                 this.WhenAnyValue(view => view.ViewModel!.Game)
                     .Subscribe(game =>
-                        {
-                            GogGrid.IsVisible = game is IGogGame;
-                            SteamGrid.IsVisible = game is ISteamGame;
-                            EpicGrid.IsVisible = game is IEpicGame;
-                            // XboxGrid.IsVisible = game is IXboxGame; // not used until we go to official xbox support
-                        }
-                    )
+                    {
+                        GogGrid.IsVisible = !(game?.StoreIdentifiers.GOGProductIds.IsEmpty ?? false);
+                        SteamGrid.IsVisible = !(game?.StoreIdentifiers.SteamAppIds.IsEmpty ?? false);
+                        EpicGrid.IsVisible = !(game?.StoreIdentifiers.EGSCatalogItemId.IsEmpty ?? false);
+                    })
                     .DisposeWith(d);
             }
         );

@@ -1,9 +1,7 @@
 using System.Text.Json.Serialization;
-using FomodInstaller.Utils.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Sdk.Settings;
 using NexusMods.Abstractions.Diagnostics;
-using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.GC;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Sorting;
@@ -23,9 +21,9 @@ using NexusMods.MnemonicDB;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Storage.Abstractions;
 using NexusMods.MnemonicDB.Storage.RocksDbBackend;
-using NexusMods.Paths;
 using NexusMods.Sdk;
 using NexusMods.Sdk.FileStore;
+using NexusMods.Sdk.Games;
 using NexusMods.Sdk.Resources;
 
 using IFileSystem = NexusMods.Paths.IFileSystem;
@@ -81,11 +79,6 @@ public static class Services
         coll.AddSingleton<JsonConverterFactory, OptionalConverterFactory>();
         coll.AddSingleton<JsonConverter, OptionalConverterFactory>();
 
-        // Game Registry
-        coll.AddSingleton<IGameRegistry, GameRegistry.GameRegistry>();
-        coll.AddHostedService(s => (GameRegistry.GameRegistry)s.GetRequiredService<IGameRegistry>());
-        coll.AddGameInstallMetadataModel();
-        
         // File Store
         coll.AddAllSingleton<IFileStore, NxFileStore>();
         

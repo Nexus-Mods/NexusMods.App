@@ -14,6 +14,7 @@ using NexusMods.App.UI.Controls;
 using R3;
 using NexusMods.App.UI.Controls.Alerts;
 using NexusMods.Sdk;
+using NexusMods.Sdk.Loadouts;
 using NexusMods.UI.Sdk;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;

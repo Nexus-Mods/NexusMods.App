@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using FomodInstaller.Interface;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -56,8 +57,8 @@ public static class DependencyInjectionHelper
         serviceCollection
             .AddLogging(builder => builder.AddXunitOutput().SetMinimumLevel(LogLevel.Debug))
             .AddSerializationAbstractions()
-            .AddSingleton<JsonConverter, GameInstallationConverter>()
             .AddFileSystem()
+            .AddSingleton<ICoreDelegates, MockDelegates>()
             .AddSingleton<TemporaryFileManager>(_ => new TemporaryFileManager(FileSystem.Shared, prefix))
             .AddNexusWebApi(true)
             .AddNexusModsCollections()

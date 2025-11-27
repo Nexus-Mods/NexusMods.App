@@ -1,6 +1,7 @@
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
+using NexusMods.Sdk.Loadouts;
 using OneOf;
 
 namespace NexusMods.DataModel.SchemaVersions.Migrations;

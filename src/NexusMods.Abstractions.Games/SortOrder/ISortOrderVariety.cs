@@ -4,6 +4,7 @@ using DynamicData;
 using DynamicData.Kernel;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.Sdk.Loadouts;
 using OneOf;
 
 namespace NexusMods.Abstractions.Games;

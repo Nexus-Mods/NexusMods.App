@@ -3,6 +3,7 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Serialization.Attributes;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.Sdk.Loadouts;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
 

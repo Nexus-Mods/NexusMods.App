@@ -14,6 +14,7 @@ using NexusMods.MnemonicDB.Abstractions.Query;
 using NexusMods.Paths;
 using NexusMods.Sdk;
 using NexusMods.Sdk.Library;
+using NexusMods.Sdk.Loadouts;
 using OneOf;
 
 namespace NexusMods.App;

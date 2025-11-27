@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Threading.Channels;
+using NexusMods.ProxyConsole.Messages;
 using NexusMods.Sdk.ProxyConsole;
 using Spectre.Console;
 using SpectreRender = Spectre.Console.Rendering;

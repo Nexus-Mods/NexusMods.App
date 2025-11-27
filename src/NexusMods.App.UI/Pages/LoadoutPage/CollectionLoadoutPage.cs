@@ -9,6 +9,7 @@ using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.UI.Sdk.Icons;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.Sdk.Loadouts;
 
 namespace NexusMods.App.UI.Pages.LoadoutPage;
 

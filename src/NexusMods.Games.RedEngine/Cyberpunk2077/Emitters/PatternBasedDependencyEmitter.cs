@@ -6,7 +6,7 @@ using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.Diagnostics.References;
 using NexusMods.Abstractions.Diagnostics.Values;
-using NexusMods.Abstractions.GameLocators;
+
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Extensions;
 using NexusMods.Abstractions.NexusWebApi;
@@ -14,6 +14,8 @@ using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Abstractions.Telemetry;
 using NexusMods.Paths;
 using NexusMods.Sdk.FileStore;
+using NexusMods.Sdk.Games;
+using NexusMods.Sdk.Loadouts;
 
 namespace NexusMods.Games.RedEngine.Cyberpunk2077.Emitters;
 
@@ -65,10 +67,10 @@ public class PatternBasedDependencyEmitter : ILoadoutDiagnosticEmitter
         // TODO: use a sorted index scan here to speed this up
         
         // All loadout items that are parts of dependency mods
-        var allFiles = loadout.Items.OfTypeLoadoutItemWithTargetPath()
+        var allFiles = LoadoutItem.FindByLoadout(loadout.Db, loadout).OfTypeLoadoutItemWithTargetPath()
             .Where(item => _dependencyFiles.Contains(item.TargetPath))
             .ToHashSet();
-        
+
         // Just the files that are part of enabled mods
         var enabledFiles = allFiles
             .Where(f => f.AsLoadoutItem().GetThisAndParents().All(p => p.IsEnabled()))
@@ -92,7 +94,7 @@ public class PatternBasedDependencyEmitter : ILoadoutDiagnosticEmitter
         var requiredMods = new Dictionary<string, MatchingDependency>();
         
         // Loop through all loadout items that match one of the patterns we have
-        foreach (var file in loadout.Items.OfTypeLoadoutItemWithTargetPath())
+        foreach (var file in LoadoutItem.FindByLoadout(loadout.Db, loadout).OfTypeLoadoutItemWithTargetPath())
         {
             if (!_byExtension.TryGetValue(file.TargetPath.Item3.Extension, out var patterns))
                 continue;
@@ -155,7 +157,7 @@ public class PatternBasedDependencyEmitter : ILoadoutDiagnosticEmitter
                var parent = row.File.AsLoadoutItem().Parent;
                
                // Group that is disabled
-               var disabledGroup = loadout.Items.OfTypeLoadoutItemGroup()
+               var disabledGroup = LoadoutItem.FindByLoadout(loadout.Db, loadout).OfTypeLoadoutItemGroup()
                    .Where(group =>
                        {
                            // This will be slow and break if the user has multiple groups that have overlapping dependencies, but it's good enough for now.

@@ -1,9 +1,7 @@
 using System.Collections.Immutable;
 using System.Text;
-using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.GameLocators.Stores.GOG;
-using NexusMods.Abstractions.GameLocators.Stores.Steam;
 using NexusMods.Sdk;
+using NexusMods.Sdk.Games;
 
 namespace NexusMods.Games.Generic;
 
@@ -11,10 +9,8 @@ public static class WineDiagnosticHelper
 {
     public static async ValueTask<string?> GetWinetricksInstructions(GameInstallation gameInstallation, ImmutableHashSet<string> requiredPackages, CancellationToken cancellationToken = default)
     {
-        var locatorResultMetadata = gameInstallation.LocatorResultMetadata;
-        if (locatorResultMetadata is null) return null;
-
-        var linuxCompatibilityDataProvider = locatorResultMetadata.LinuxCompatibilityDataProvider;
+        var locatorResultMetadata = gameInstallation.LocatorResult;
+        var linuxCompatibilityDataProvider = locatorResultMetadata.LinuxCompatabilityDataProvider;
         if (linuxCompatibilityDataProvider is null) return null;
 
         var installedPackages = await linuxCompatibilityDataProvider.GetInstalledWinetricksComponents(cancellationToken: cancellationToken);
@@ -26,7 +22,7 @@ public static class WineDiagnosticHelper
 
         var missingPackagesString = missingPackages.Select(x => $"* `{x}`").Aggregate((a, b) => $"{a}\n{b}");
 
-        if (locatorResultMetadata is SteamLocatorResultMetadata)
+        if (locatorResultMetadata.Store == GameStore.Steam)
         {
             sb.AppendLine($"""
 Use [protontricks](https://github.com/Matoking/protontricks) to install the following missing required packages:
@@ -48,10 +44,9 @@ Use [winetricks](https://github.com/Winetricks/winetricks) to install the follow
 
     public static async ValueTask<string?> GetWineDllOverridesUpdateInstructions(GameInstallation gameInstallation, WineDllOverride[] requiredOverrides, CancellationToken cancellationToken = default)
     {
-        var locatorResultMetadata = gameInstallation.LocatorResultMetadata;
-        if (locatorResultMetadata is null) return null;
+        var locatorResultMetadata = gameInstallation.LocatorResult;
 
-        var linuxCompatibilityDataProvider = locatorResultMetadata.LinuxCompatibilityDataProvider;
+        var linuxCompatibilityDataProvider = locatorResultMetadata.LinuxCompatabilityDataProvider;
         if (linuxCompatibilityDataProvider is null) return null;
 
         var existingOverrides = await linuxCompatibilityDataProvider.GetWineDllOverrides(cancellationToken: cancellationToken);
@@ -77,7 +72,7 @@ Use [winetricks](https://github.com/Winetricks/winetricks) to install the follow
         var sb = new StringBuilder();
 
         var dllOverridesString = requiredOverrides.Select(x => x.ToString()).Aggregate((a, b) => $"{a};{b}");
-        if (locatorResultMetadata is SteamLocatorResultMetadata)
+        if (locatorResultMetadata.Store == GameStore.Steam)
         {
             sb.AppendLine($"""
 * Open Steam
@@ -90,7 +85,7 @@ Use [winetricks](https://github.com/Winetricks/winetricks) to install the follow
 WINEDLLOVERRIDES="{dllOverridesString}" %command%
 ```                  
 """);
-        } else if (locatorResultMetadata is HeroicGOGLocatorResultMetadata)
+        } else if (locatorResultMetadata.Store == GameStore.GOG)
         {
             sb.AppendLine($"""
 * Open the Heroic Games Launcher
