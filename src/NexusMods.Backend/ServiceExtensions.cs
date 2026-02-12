@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
+using GameFinder.RegistryUtils;
 using NexusMods.Backend.FileExtractor;
 using NexusMods.Backend.FileExtractor.Extractors;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
@@ -33,9 +34,31 @@ public static class ServiceExtensions
         OSInformation.Shared.SwitchPlatform(
             onWindows: () =>
             {
-                serviceCollection.AddSingleton<IGameLocator, SteamLocator>();
-                serviceCollection.AddSingleton<IGameLocator, GOGLocator>();
-                serviceCollection.AddSingleton<IGameLocator, EGSLocator>();
+                serviceCollection.AddSingleton<IRegistry>(_ => OperatingSystem.IsWindows() ? WindowsRegistry.Shared : new InMemoryRegistry());
+                serviceCollection.AddSingleton<IGameLocator>(serviceProvider =>
+                    new SteamLocator(
+                        serviceProvider.GetServices<IGameData>(),
+                        serviceProvider.GetRequiredService<ILoggerFactory>(),
+                        serviceProvider.GetRequiredService<IFileSystem>(),
+                        serviceProvider.GetRequiredService<IRegistry>()
+                    )
+                );
+                serviceCollection.AddSingleton<IGameLocator>(serviceProvider =>
+                    new GOGLocator(
+                        serviceProvider.GetServices<IGameData>(),
+                        serviceProvider.GetRequiredService<ILoggerFactory>(),
+                        serviceProvider.GetRequiredService<IFileSystem>(),
+                        serviceProvider.GetRequiredService<IRegistry>()
+                    )
+                );
+                serviceCollection.AddSingleton<IGameLocator>(serviceProvider =>
+                    new EGSLocator(
+                        serviceProvider.GetServices<IGameData>(),
+                        serviceProvider.GetRequiredService<ILoggerFactory>(),
+                        serviceProvider.GetRequiredService<IFileSystem>(),
+                        serviceProvider.GetRequiredService<IRegistry>()
+                    )
+                );
 
                 if (settings?.EnableXboxGamePass ?? false)
                     serviceCollection.AddSingleton<IGameLocator, XboxLocator>();
@@ -58,7 +81,14 @@ public static class ServiceExtensions
             },
             onOSX: () =>
             {
-                serviceCollection.AddSingleton<IGameLocator, SteamLocator>();
+                serviceCollection.AddSingleton<IGameLocator>(serviceProvider =>
+                    new SteamLocator(
+                        serviceProvider.GetServices<IGameData>(),
+                        serviceProvider.GetRequiredService<ILoggerFactory>(),
+                        serviceProvider.GetRequiredService<IFileSystem>(),
+                        registry: null
+                    )
+                );
             }
         );
 

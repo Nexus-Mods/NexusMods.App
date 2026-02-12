@@ -25,6 +25,7 @@ using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceAttachments;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.Sdk.Games;
 using NexusMods.Sdk.Loadouts;
 using NexusMods.Sdk.NexusModsApi;
 using NexusMods.UI.Sdk;
@@ -90,19 +91,21 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
         Downloads.Click = ReactiveCommand.Create(NavigateToDownloads);
 
         var workspaceController = windowManager.ActiveWorkspaceController;
+        var gameRegistry = serviceProvider.GetRequiredService<IGameRegistry>();
 
         this.WhenActivated(disposables =>
             {
                 var loadouts = Loadout.ObserveAll(_conn);
 
                 loadouts
-                    .Filter(loadout => loadout.IsVisible())
+                    .Filter(loadout => loadout.IsVisible() && gameRegistry.TryGetGameInstallation(loadout, out _))
                     .TransformAsync(async loadout =>
                         {
-                            await using var iconStream = await loadout.InstallationInstance.Game.IconImage.GetStreamAsync();
+                            var game = loadout.Game;
+                            await using var iconStream = await game.IconImage.GetStreamAsync();
 
                             var vm = serviceProvider.GetRequiredService<IImageButtonViewModel>();
-                            vm.Name = loadout.InstallationInstance.Game.DisplayName + " - " + loadout.Name;
+                            vm.Name = game.DisplayName + " - " + loadout.Name;
                             vm.Image = LoadImageFromStream(iconStream);
                             vm.LoadoutBadgeViewModel = new LoadoutBadgeViewModel(_conn, _syncService, hideOnSingleLoadout: true);
                             vm.LoadoutBadgeViewModel.LoadoutValue = loadout;

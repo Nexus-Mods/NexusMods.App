@@ -40,11 +40,16 @@ public class GameLoadoutsSectionEntryViewModel : AViewModel<IGameLoadoutsSection
         _gameInstallation = gameInstallation;
         _windowManager = windowManager;
 
+        var gameRegistry = serviceProvider.GetRequiredService<IGameRegistry>();
         var loadoutManager = serviceProvider.GetRequiredService<ILoadoutManager>();
         HeadingText = string.Format(Language.MyLoadoutsGameSectionHeading, _gameInstallation.Game.DisplayName);
 
         Loadout.ObserveAll(conn)
-            .Filter(l => l.IsVisible() && l.InstallationInstance.Locations[LocationId.Game].Path == _gameInstallation.Locations[LocationId.Game].Path)
+            .Filter(loadout =>
+                loadout.IsVisible() &&
+                gameRegistry.TryGetGameInstallation(loadout, out var installation) &&
+                installation.Equals(_gameInstallation)
+            )
             .Transform(loadout =>
                 {
                     return (IViewModelInterface)new LoadoutCardViewModel(loadout, conn, serviceProvider)

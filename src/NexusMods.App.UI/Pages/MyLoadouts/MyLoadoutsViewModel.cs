@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using DynamicData;
+using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.App.UI.Pages.MyLoadouts.GameLoadoutsSectionEntry;
 using NexusMods.App.UI.Resources;
@@ -9,6 +10,7 @@ using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.UI.Sdk.Icons;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.Sdk.Games;
 using NexusMods.Sdk.Loadouts;
 using ReactiveUI;
 
@@ -25,14 +27,23 @@ public class MyLoadoutsViewModel : APageViewModel<IMyLoadoutsViewModel>, IMyLoad
         IConnection conn,
         IServiceProvider serviceProvider) : base(windowManager)
     {
+        var gameRegistry = serviceProvider.GetRequiredService<IGameRegistry>();
+
         TabTitle = Language.MyLoadoutsPageTitle;
         TabIcon = IconValues.Package;
         
-        this.WhenActivated(d =>
+        this.WhenActivated((CompositeDisposable d) =>
         {
             Loadout.ObserveAll(conn)
-                .Filter(l => l.IsVisible())
-                .DistinctValues(loadout => loadout.InstallationInstance)
+                .Filter(loadout => loadout.IsVisible())
+                .Transform(loadout =>
+                {
+                    var hasInstallation = gameRegistry.TryGetGameInstallation(loadout, out var installation);
+                    return (HasInstallation: hasInstallation, Installation: installation);
+                })
+                .Filter(tuple => tuple.HasInstallation && tuple.Installation is not null)
+                .Transform(tuple => tuple.Installation!)
+                .DistinctValues(installation => installation)
                 .Transform(managedGameInstall =>
                     {
                         return (IGameLoadoutsSectionEntryViewModel)new GameLoadoutsSectionEntryViewModel(
